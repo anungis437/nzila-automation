@@ -1,0 +1,45 @@
+{
+  "total_html": 3350,
+  "total_csv": 5,
+  "categories": {
+    "Other": 1750,
+    "Legal & Compliance": 32,
+    "UX/UI Design": 432,
+    "Privacy & Consent": 182,
+    "Gamification": 107,
+    "AI Companion": 181,
+    "Memora Product": 67,
+    "Technical Architecture": 92,
+    "Testing & QA": 73,
+    "Onboarding": 13,
+    "Business & Finance": 74,
+    "Goals & Milestones": 24,
+    "Clinic Solutions": 207,
+    "Product Strategy": 1,
+    "Prompt Engineering": 45,
+    "Accessibility": 49,
+    "FAQs": 21
+  },
+  "top_categories": [
+    [
+      "Other",
+      1750
+    ],
+    [
+      "UX/UI Design",
+      432
+    ],
+    [
+      "Clinic Solutions",
+      207
+    ],
+    [
+      "Privacy & Consent",
+      182
+    ],
+    [
+      "AI Companion",
+      181
+    ]
+  ]
+}

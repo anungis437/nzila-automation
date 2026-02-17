@@ -1,0 +1,33 @@
+# Nzila Backbone — Core Dependencies
+Django>=5.1,<5.2
+djangorestframework>=3.15
+django-cors-headers>=4.3
+django-filter>=24.0
+django-extensions>=3.2
+django-redis>=5.4
+django-health-check>=3.18
+drf-spectacular>=0.27
+psycopg[binary]>=3.1
+redis>=5.0
+gunicorn>=22.0
+uvicorn[standard]>=0.30
+# Auth
+PyJWT>=2.8
+cryptography>=42.0
+jwcrypto>=1.5
+# AI
+openai>=1.30
+pgvector>=0.3
+# Billing
+stripe>=9.0
+# Email
+resend>=2.0
+# Observability
+sentry-sdk[django]>=2.0
+opentelemetry-api>=1.24
+opentelemetry-sdk>=1.24
+opentelemetry-instrumentation-django>=0.45
+# Utilities
+python-dotenv>=1.0
+celery[redis]>=5.3
+pydantic>=2.7

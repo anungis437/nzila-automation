@@ -1,0 +1,26 @@
+[project]
+name = "nzila-platform"
+version = "0.1.0"
+description = "Nzila Backbone Platform — Multi-tenant SaaS infrastructure"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["test_*.py"]
+addopts = "-v --tb=short --cov=apps --cov-report=html"
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings.development"

@@ -1,0 +1,68 @@
+name: CI — Django Backend
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ["backend/**"]
+  pull_request:
+    branches: [main]
+    paths: ["backend/**"]
+
+env:
+  PYTHON_VERSION: "3.12"
+  DJANGO_SETTINGS_MODULE: "config.settings.test"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install ruff black mypy
+      - run: ruff check backend/
+      - run: black --check backend/
+      - run: mypy backend/ --ignore-missing-imports
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg15
+        env:
+          POSTGRES_DB: test_nzila_platform
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install -r backend/requirements/test.txt
+      - run: pytest backend/ --cov --cov-report=xml
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: test_nzila_platform
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: backend/
+          severity: HIGH,CRITICAL

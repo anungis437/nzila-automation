@@ -1,0 +1,994 @@
+{
+  "Union_Eyes_app_v1-main": {
+    "template_version": "1.0.0",
+    "product_name": "Union Eyes App V1 Main",
+    "repo_name": "Union_Eyes_app_v1-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "Union_Eyes_app_v1-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://Union_Eyes_app_v1-main-staging.azurecontainerapps.io",
+      "production_url": "https://Union_Eyes_app_v1-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 2,
+      "complexity": "LOW",
+      "auth_migration": {
+        "from": "clerk",
+        "to": "clerk",
+        "complexity": "LOW"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "shop_quoter_tool_v1-main": {
+    "template_version": "1.0.0",
+    "product_name": "Shop Quoter Tool V1 Main",
+    "repo_name": "shop_quoter_tool_v1-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "shop_quoter_tool_v1-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://shop_quoter_tool_v1-main-staging.azurecontainerapps.io",
+      "production_url": "https://shop_quoter_tool_v1-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "abr-insights-app-main": {
+    "template_version": "1.0.0",
+    "product_name": "Abr Insights App Main",
+    "repo_name": "abr-insights-app-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "abr-insights-app-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://abr-insights-app-main-staging.azurecontainerapps.io",
+      "production_url": "https://abr-insights-app-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "cora-platform-fix-tests-model-alignment": {
+    "template_version": "1.0.0",
+    "product_name": "Cora Platform Fix Tests Model Alignment",
+    "repo_name": "cora-platform-fix-tests-model-alignment-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 8000,
+    "tenant_key": "org_id",
+    "image_repo": "cora-platform-fix-tests-model-alignment-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://cora-platform-fix-tests-model-alignment-staging.azurecontainerapps.io",
+      "production_url": "https://cora-platform-fix-tests-model-alignment.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "django-aca-azurepg",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "django_version": null,
+      "python_version": "3.12",
+      "wsgi_server": "gunicorn",
+      "django_apps_count": 5,
+      "orm": "Django ORM",
+      "key_dependencies": [
+        "react",
+        "typescript",
+        "tailwindcss"
+      ],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": true,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": "Django",
+      "source_orm": "Django ORM",
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 6,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "drf-auth",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "court_lens_app_v1-main": {
+    "template_version": "1.0.0",
+    "product_name": "Court Lens App V1 Main",
+    "repo_name": "court_lens_app_v1-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "court_lens_app_v1-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://court_lens_app_v1-main-staging.azurecontainerapps.io",
+      "production_url": "https://court_lens_app_v1-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "congowave_app_v1-main": {
+    "template_version": "1.0.0",
+    "product_name": "Congowave App V1 Main",
+    "repo_name": "congowave_app_v1-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "congowave_app_v1-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://congowave_app_v1-main-staging.azurecontainerapps.io",
+      "production_url": "https://congowave_app_v1-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "nzila-trade-os-main": {
+    "template_version": "1.0.0",
+    "product_name": "Nzila Trade Os Main",
+    "repo_name": "nzila-trade-os-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 8000,
+    "tenant_key": "org_id",
+    "image_repo": "nzila-trade-os-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://nzila-trade-os-main-staging.azurecontainerapps.io",
+      "production_url": "https://nzila-trade-os-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "django-aca-azurepg",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "django_version": null,
+      "python_version": "3.12",
+      "wsgi_server": "gunicorn",
+      "django_apps_count": 5,
+      "orm": "Django ORM",
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": true,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": "Django",
+      "source_orm": "Django ORM",
+      "entity_count": 30,
+      "models_count": 30,
+      "migrations_count": 117,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "drf-auth",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "cyber_learn_app_v1-main": {
+    "template_version": "1.0.0",
+    "product_name": "Cyber Learn App V1 Main",
+    "repo_name": "cyber_learn_app_v1-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "cyber_learn_app_v1-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://cyber_learn_app_v1-main-staging.azurecontainerapps.io",
+      "production_url": "https://cyber_learn_app_v1-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "nzila_eexports-main": {
+    "template_version": "1.0.0",
+    "product_name": "Nzila Eexports Main",
+    "repo_name": "nzila_eexports-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 8000,
+    "tenant_key": "org_id",
+    "image_repo": "nzila_eexports-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://nzila_eexports-main-staging.azurecontainerapps.io",
+      "production_url": "https://nzila_eexports-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "django-aca-azurepg",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "django_version": null,
+      "python_version": "3.12",
+      "wsgi_server": "gunicorn",
+      "django_apps_count": 5,
+      "orm": "Django ORM",
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": true,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": "Django",
+      "source_orm": "Django ORM",
+      "entity_count": 50,
+      "models_count": 50,
+      "migrations_count": 43,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "drf-auth",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "c3uo-app-v1-main": {
+    "template_version": "1.0.0",
+    "product_name": "C3Uo App V1 Main",
+    "repo_name": "c3uo-app-v1-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "c3uo-app-v1-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://c3uo-app-v1-main-staging.azurecontainerapps.io",
+      "production_url": "https://c3uo-app-v1-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "SentryIQ-main": {
+    "template_version": "1.0.0",
+    "product_name": "Sentryiq Main",
+    "repo_name": "SentryIQ-main-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "SentryIQ-main-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://SentryIQ-main-staging.azurecontainerapps.io",
+      "production_url": "https://SentryIQ-main.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nodeapi-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": null,
+      "source_orm": null,
+      "entity_count": 0,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "ponduops": {
+    "template_version": "1.0.0",
+    "product_name": "Ponduops",
+    "repo_name": "ponduops-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "ponduops-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://ponduops-staging.azurecontainerapps.io",
+      "production_url": "https://ponduops.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nextjs-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [
+        "react",
+        "typescript",
+        "tailwindcss"
+      ],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": "React + Vite",
+      "source_orm": null,
+      "entity_count": 220,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "insight-cfo-bad2ab5f": {
+    "template_version": "1.0.0",
+    "product_name": "Insight Cfo Bad2Ab5F",
+    "repo_name": "insight-cfo-bad2ab5f-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "insight-cfo-bad2ab5f-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://insight-cfo-bad2ab5f-staging.azurecontainerapps.io",
+      "production_url": "https://insight-cfo-bad2ab5f.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nextjs-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [
+        "react",
+        "tailwindcss"
+      ],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": "React + Vite",
+      "source_orm": null,
+      "entity_count": 76,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  },
+  "stsa-ac5f24e9": {
+    "template_version": "1.0.0",
+    "product_name": "Stsa Ac5F24E9",
+    "repo_name": "stsa-ac5f24e9-platform",
+    "owner_github": "anungis437",
+    "primary_app_path": "src",
+    "app_port": 3000,
+    "tenant_key": "org_id",
+    "image_repo": "stsa-ac5f24e9-app",
+    "auth_provider": "clerk",
+    "db_provider": "azure_postgresql",
+    "deploy_provider": "azure_container_apps",
+    "environments": {
+      "staging_url": "https://stsa-ac5f24e9-staging.azurecontainerapps.io",
+      "production_url": "https://stsa-ac5f24e9.azurecontainerapps.io",
+      "api_base": "/api/v1"
+    },
+    "profile": "nextjs-aca-azurepg-clerk",
+    "modules": [
+      "core-governance",
+      "repo-bootstrap",
+      "db-azurepg",
+      "auth-clerk",
+      "deploy-aca-oidc",
+      "security-baseline",
+      "observability-audit"
+    ],
+    "options": {
+      "enable_ci": true,
+      "enable_deploy_workflows": true,
+      "enable_ai_ops": false,
+      "strict_parity": true
+    },
+    "custom_config": {
+      "key_dependencies": [
+        "react",
+        "tailwindcss"
+      ],
+      "feature_flags": {
+        "multi_tenant": true,
+        "api_gateway": false,
+        "background_jobs": false,
+        "real_time": false,
+        "file_storage": false,
+        "caching": false
+      }
+    },
+    "migration": {
+      "source_framework": "React + Vite",
+      "source_orm": null,
+      "entity_count": 95,
+      "models_count": 0,
+      "migrations_count": 0,
+      "has_rls": false,
+      "estimated_weeks": 4,
+      "complexity": "MEDIUM",
+      "auth_migration": {
+        "from": "custom",
+        "to": "clerk",
+        "complexity": "HIGH"
+      },
+      "priorities": [
+        "Phase 1: Infrastructure Setup (Azure resources, networking)",
+        "Phase 2: Database Migration (schema + data)",
+        "Phase 3: Auth Migration (Clerk integration + user sync)",
+        "Phase 4: Application Code (API routes, business logic)",
+        "Phase 5: Frontend Migration (UI components, pages)",
+        "Phase 6: Testing & Validation (E2E, integration, performance)",
+        "Phase 7: Production Cutover (DNS, monitoring, rollback plan)"
+      ]
+    }
+  }
+}

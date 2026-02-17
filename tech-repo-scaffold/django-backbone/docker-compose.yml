@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  db:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_DB: nzila_platform
+      POSTGRES_USER: nzilaadmin
+      POSTGRES_PASSWORD: ${PGPASSWORD:-localdev123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nzilaadmin -d nzila_platform"]
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  celery:
+    build: .
+    command: celery -A config worker -l info
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  pgdata:

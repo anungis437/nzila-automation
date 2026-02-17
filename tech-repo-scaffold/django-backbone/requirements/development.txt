@@ -1,0 +1,5 @@
+# Development
+-r base.txt
+django-debug-toolbar>=4.3
+ipython>=8.24
+django-stubs>=5.0

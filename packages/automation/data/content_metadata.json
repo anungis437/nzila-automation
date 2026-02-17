@@ -1,0 +1,1260 @@
+{
+  "generated_at": "2026-02-17T01:25:44.620746",
+  "total_documents": 96,
+  "total_skipped": 0,
+  "categories": {
+    "corporate/governance": {
+      "count": 22,
+      "total_size_kb": 95.91999999999999,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/finance": {
+      "count": 19,
+      "total_size_kb": 67.28999999999999,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/operations": {
+      "count": 2,
+      "total_size_kb": 2.06,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/compliance": {
+      "count": 11,
+      "total_size_kb": 51.900000000000006,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "business/reports": {
+      "count": 4,
+      "total_size_kb": 22.56,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "platform/architecture": {
+      "count": 3,
+      "total_size_kb": 14.4,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "business/verticals/healthtech": {
+      "count": 11,
+      "total_size_kb": 45.2,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "business/market-research": {
+      "count": 3,
+      "total_size_kb": 18.32,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "business/verticals": {
+      "count": 1,
+      "total_size_kb": 2.97,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/hr": {
+      "count": 8,
+      "total_size_kb": 42.95,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/legal": {
+      "count": 8,
+      "total_size_kb": 31.47,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "knowledge/playbooks": {
+      "count": 1,
+      "total_size_kb": 4.15,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/partnerships": {
+      "count": 2,
+      "total_size_kb": 11.65,
+      "owners": [
+        "Aubert"
+      ]
+    },
+    "corporate/intellectual-property": {
+      "count": 1,
+      "total_size_kb": 3.73,
+      "owners": [
+        "Aubert"
+      ]
+    }
+  },
+  "documents": [
+    {
+      "filename": "Strategy & Operating Model Dashboard 1e885df01907808b8ddee0d34de3f66f.md",
+      "title": "Strategy & Operating Model Dashboard",
+      "owner": "Aubert",
+      "size_kb": 18.51,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# Strategy & Operating Model Dashboard  Owner: Aubert  ## \ud83d\udd39 Executive Overview  Nzila's operating model is built for **multi-venture orchestration, ethical AI, and global readiness**. This dashboard s",
+      "source": "legacy\\notion_export_3\\part1\\Strategy & Operating Model Dashboard 1e885df01907808b8ddee0d34de3f66f.md",
+      "target": "corporate\\governance\\strategy-operating-model-dashboard.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udded Corporate Strategy Overview 1e685df0190780feba62c7f76b4995c8.md",
+      "title": "\ud83e\udded Corporate Strategy Overview",
+      "owner": "Aubert",
+      "size_kb": 4.86,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83e\udded Corporate Strategy Overview  Owner: Aubert  **Nzila Ventures**  ---  ### \ud83d\udd39 1. Mission  **Nzila Ventures** is a **venture studio and ethical IP-holding company** advancing human-centered solutions",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udded Corporate Strategy Overview 1e685df0190780feba62c7f76b4995c8.md",
+      "target": "corporate\\governance\\guide-corporate-strategy-overview.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udfdb\ufe0f Governance Docs 1e685df0190780708db5e193b4880bb0.md",
+      "title": "\ud83c\udfdb\ufe0f Governance Docs",
+      "owner": "Aubert",
+      "size_kb": 4.18,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83c\udfdb\ufe0f Governance Docs  Owner: Aubert  **Segment Type:** Oversight Framework  **Owner:** CEO + Legal & Strategy Office  **Review Frequency:** Semi-Annually (Q2 + Q4)  **Location:** \ud83d\udcc1 *Nzila HQ \u2192 Strateg",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udfdb\ufe0f Governance Docs 1e685df0190780708db5e193b4880bb0.md",
+      "target": "corporate\\governance\\governance-docs.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcb8 Capital Strategy & Resource Allocation 1e585df019078077ab8ef973f0d99ccf.md",
+      "title": "\ud83d\udcb8 Capital Strategy & Resource Allocation",
+      "owner": "Aubert",
+      "size_kb": 0.22,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83d\udcb8 Capital Strategy & Resource Allocation  Owner: Aubert  [\ud83d\udcda Capital Strategy & Resource Allocation Overview](%F0%9F%93%9A%20Capital%20Strategy%20&%20Resource%20Allocation%20Overview%201e885df0190780",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcb8 Capital Strategy & Resource Allocation 1e585df019078077ab8ef973f0d99ccf.md",
+      "target": "corporate\\finance\\finance-capital-strategy-resource-allocation.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde9 Shared Services Playbooks 1e685df01907802ab0acefa79d68e227.md",
+      "title": "\ud83e\udde9 Shared Services Playbooks",
+      "owner": "Aubert",
+      "size_kb": 0.2,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83e\udde9 Shared Services Playbooks  Owner: Aubert  [\ud83d\udcda Strategic Ops & Shared Services Overview](%F0%9F%93%9A%20Strategic%20Ops%20&%20Shared%20Services%20Overview%201e885df0190780348a40d5c7a2633e42.md)",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde9 Shared Services Playbooks 1e685df01907802ab0acefa79d68e227.md",
+      "target": "corporate\\operations\\framework-shared-services-playbooks.md",
+      "category": "corporate/operations",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udd10 Oversight & Compliance Integration 1e685df0190780b297f0e63bd5ac831f.md",
+      "title": "\ud83d\udd10 Oversight & Compliance Integration",
+      "owner": "Aubert",
+      "size_kb": 0.42,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83d\udd10 Oversight & Compliance Integration  Owner: Aubert  [\ud83d\udccb Quarterly Venture Audit Template](%F0%9F%93%8B%20Quarterly%20Venture%20Audit%20Template%201e685df019078088991ef23c068f6da1.md)  [\u26a0\ufe0f Strategic",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udd10 Oversight & Compliance Integration 1e685df0190780b297f0e63bd5ac831f.md",
+      "target": "corporate\\compliance\\security-oversight-compliance-integration.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcb0 Revenue Model Framework (2025\u20132027) 1e485df0190780408a77c59055098d60.md",
+      "title": "\ud83d\udcb0 Revenue Model Framework (2025\u20132027)",
+      "owner": "Aubert",
+      "size_kb": 4.02,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83d\udcb0 Revenue Model Framework (2025\u20132027)  Owner: Aubert  ### \ud83d\udd11 1. Core Revenue Streams \u2013 *Memora Suite*  | Stream | Description | Type | Lifecycle Stage | | --- | --- | --- | --- | | **Clinic SaaS Lice",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcb0 Revenue Model Framework (2025\u20132027) 1e485df0190780408a77c59055098d60.md",
+      "target": "corporate\\finance\\money-revenue-model-framework-20252027.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "Nzila Mission, Vision, Values 1e485df01907801d9e7dc0c264d93004.md",
+      "title": "Nzila Mission, Vision, Values",
+      "owner": "Aubert",
+      "size_kb": 1.36,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# Nzila Mission, Vision, Values  Owner: Aubert  ### \ud83c\udfaf **Mission**  To build powerful, compassionate technologies that transform how care, connection, and wellness are experienced by individuals, famil",
+      "source": "legacy\\notion_export_3\\part1\\Nzila Mission, Vision, Values 1e485df01907801d9e7dc0c264d93004.md",
+      "target": "corporate\\governance\\nzila-mission-vision-values.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "Nzila Ventures Operating Principles 1e485df019078045a862fc7b321db9a4.md",
+      "title": "Nzila Ventures Operating Principles",
+      "owner": "Aubert",
+      "size_kb": 2.6,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# Nzila Ventures Operating Principles  Owner: Aubert  ###   ### \ud83d\udd0d **Purpose**  These Operating Principles are the compass by which Nzila Ventures operates across all ventures, contributors, and care-c",
+      "source": "legacy\\notion_export_3\\part1\\Nzila Ventures Operating Principles 1e485df019078045a862fc7b321db9a4.md",
+      "target": "corporate\\governance\\nzila-ventures-operating-principles.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udd30 Nzila Strategic Roadmap (2025\u20132028) 1e485df0190780079a02fb4f0086877c.md",
+      "title": "\ud83d\udd30 Nzila Strategic Roadmap (2025\u20132028)",
+      "owner": "Aubert",
+      "size_kb": 4.19,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83d\udd30 Nzila Strategic Roadmap (2025\u20132028)  Owner: Aubert  ## \ud83d\udd30 **Overview**  Nzila Ventures is executing a multi-phase growth strategy to establish a portfolio of **ethical, AI-powered care and wellness",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udd30 Nzila Strategic Roadmap (2025\u20132028) 1e485df0190780079a02fb4f0086877c.md",
+      "target": "business\\reports\\strategy-nzila-strategic-roadmap-20252028.md",
+      "category": "business/reports",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udded Strategic Positioning Map (2025 1e585df019078042b661c24d4926c0e8.md",
+      "title": "\ud83e\udded Strategic Positioning Map (2025",
+      "owner": "Aubert",
+      "size_kb": 5.08,
+      "modified": "2026-02-17T04:12:54",
+      "preview": "# \ud83e\udded Strategic Positioning Map (2025  Owner: Aubert  ### 1. **Executive Summary**  **Nzila Ventures** is a purpose-built studio creating intelligent, ethical technologies for aging, caregiving, and cog",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udded Strategic Positioning Map (2025 1e585df019078042b661c24d4926c0e8.md",
+      "target": "business\\reports\\guide-strategic-positioning-map-2025.md",
+      "category": "business/reports",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udfd7\ufe0f Multi-Product Operating Architecture 1e585df01907804c85b6debb645d1f39.md",
+      "title": "\ud83c\udfd7\ufe0f Multi-Product Operating Architecture",
+      "owner": "Aubert",
+      "size_kb": 4.86,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\udfd7\ufe0f Multi-Product Operating Architecture  Owner: Aubert  **Nzila Ventures | 2025 Edition**  ---  ### \ud83d\udd0d Executive Summary  Nzila Ventures is a **mission-aligned, multi-product platform** supporting in",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udfd7\ufe0f Multi-Product Operating Architecture 1e585df01907804c85b6debb645d1f39.md",
+      "target": "platform\\architecture\\multi-product-operating-architecture.md",
+      "category": "platform/architecture",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udf0d Legacy & Impact Statement 1e585df0190780e4b765e2238cf14e36.md",
+      "title": "\ud83c\udf0d Legacy & Impact Statement",
+      "owner": "Aubert",
+      "size_kb": 4.37,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\udf0d Legacy & Impact Statement  Owner: Aubert  ### 1. \ud83c\udfaf Purpose  Nzila Ventures exists to **redesign the intersection of care, cognition, and technology** \u2014 not to disrupt, but to repair and uplift.  O",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udf0d Legacy & Impact Statement 1e585df0190780e4b765e2238cf14e36.md",
+      "target": "business\\verticals\\healthtech\\global-legacy-impact-statement.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc5 Quarterly Planning Cycle 1e585df019078099aaf9e09db371387f.md",
+      "title": "\ud83d\udcc5 Quarterly Planning Cycle",
+      "owner": "Aubert",
+      "size_kb": 3.71,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcc5 Quarterly Planning Cycle  Owner: Aubert  ### 1. \ud83c\udfaf Purpose  Nzila\u2019s quarterly planning framework ensures **company-wide clarity, momentum, and reflection** across all products (Memora, OptivaCare,",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc5 Quarterly Planning Cycle 1e585df019078099aaf9e09db371387f.md",
+      "target": "business\\verticals\\healthtech\\calendar-quarterly-planning-cycle.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddfe Exit & Long-Term Value Framework 1e585df01907807385dff648d93c1088.md",
+      "title": "\ud83e\uddfe Exit & Long-Term Value Framework",
+      "owner": "Aubert",
+      "size_kb": 4.51,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\uddfe Exit & Long-Term Value Framework  Owner: Aubert  *Version 1.1 \u2013 Strategic Optionality Without Mission Drift*  ---  ### 1. \ud83c\udfaf Purpose  This framework governs **Nzila\u2019s approach to long-term value cr",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddfe Exit & Long-Term Value Framework 1e585df01907807385dff648d93c1088.md",
+      "target": "corporate\\finance\\document-exit-long-term-value-framework.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udd1d Nzila Strategic Partnerships Map 1e585df0190780169612e800fdbefbb2.md",
+      "title": "\ud83e\udd1d Nzila Strategic Partnerships Map",
+      "owner": "Aubert",
+      "size_kb": 4.18,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udd1d Nzila Strategic Partnerships Map  Owner: Aubert  *Version 1.1 \u2013 Venture-Stage Alignment (2025\u20132026)*  ---  ### 1. \ud83c\udfaf Purpose  Nzila\u2019s partnerships are **foundational infrastructure**, not auxiliary",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udd1d Nzila Strategic Partnerships Map 1e585df0190780169612e800fdbefbb2.md",
+      "target": "corporate\\compliance\\nzila-strategic-partnerships-map.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udf0d Mission & Vision Deep Dive 1e585df0190780cc900ae12656b354f4.md",
+      "title": "\ud83c\udf0d Mission & Vision Deep Dive",
+      "owner": "Aubert",
+      "size_kb": 3.05,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\udf0d Mission & Vision Deep Dive  Owner: Aubert  ## \ud83c\udfaf 1. Mission Statement  **To build powerful, compassionate technologies that transform how care, connection, and wellness are experienced by individua",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udf0d Mission & Vision Deep Dive 1e585df0190780cc900ae12656b354f4.md",
+      "target": "business\\verticals\\healthtech\\global-mission-vision-deep-dive.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc8 CMO Growth Blueprint 1e485df01907804e8e0dd15d72420459.md",
+      "title": "\ud83d\udcc8 CMO Growth Blueprint",
+      "owner": "Aubert",
+      "size_kb": 4.76,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcc8 CMO Growth Blueprint  Owner: Aubert  **Nzila Ventures \u2013 Growth Strategy (2025\u20132028)**  *\u201cEarn trust. Enable behavior change. Embed in care.\u201d*  ---  ### \ud83e\udded 1. Growth Vision  Nzila\u2019s growth is **miss",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc8 CMO Growth Blueprint 1e485df01907804e8e0dd15d72420459.md",
+      "target": "business\\market-research\\cmo-growth-blueprint.md",
+      "category": "business/market-research",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udded Clinic Partnership Philosophy 1e485df0190780a8a380fbec8f29f6e8.md",
+      "title": "\ud83e\udded Clinic Partnership Philosophy",
+      "owner": "Aubert",
+      "size_kb": 4.32,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udded Clinic Partnership Philosophy  Owner: Aubert  ### \ud83c\udfaf Purpose  Nzila Ventures partners with clinics not as \u201cvendors,\u201d but as **co-architects of better care**. Our philosophy is grounded in:  - **Rec",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udded Clinic Partnership Philosophy 1e485df0190780a8a380fbec8f29f6e8.md",
+      "target": "business\\verticals\\healthtech\\guide-clinic-partnership-philosophy.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde9 Nzila Product Portfolio Overview (2025\u20132028) 1e485df01907808e8252f3689342949a.md",
+      "title": "\ud83e\udde9 Nzila Product Portfolio Overview (2025\u20132028)",
+      "owner": "Aubert",
+      "size_kb": 2.97,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udde9 Nzila Product Portfolio Overview (2025\u20132028)  Owner: Aubert  | **Product** | **Purpose** | **Primary User** | **Stage** | **Launch** | **\ud83d\udcb8 Monetization** | **\ud83e\udd16 AI Dependency** | **\ud83c\udfaf Strategic Alig",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde9 Nzila Product Portfolio Overview (2025\u20132028) 1e485df01907808e8252f3689342949a.md",
+      "target": "business\\verticals\\framework-nzila-product-portfolio-overview-20252028.md",
+      "category": "business/verticals",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udee0\ufe0f Nzila CTO Technical Strategy Summary 1e485df0190780d391c3c2e7f27f340f.md",
+      "title": "\ud83d\udee0\ufe0f Nzila CTO Technical Strategy Summary",
+      "owner": "Aubert",
+      "size_kb": 4.97,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udee0\ufe0f Nzila CTO Technical Strategy Summary  Owner: Aubert  ### \ud83d\udd27 1. Guiding Principles for Nzila\u2019s Technology  Nzila\u2019s tech backbone is intentionally **modular, ethical, and fast to iterate**, anchored",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udee0\ufe0f Nzila CTO Technical Strategy Summary 1e485df0190780d391c3c2e7f27f340f.md",
+      "target": "platform\\architecture\\tools-nzila-cto-technical-strategy-summary.md",
+      "category": "platform/architecture",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "AI Companion Manifesto 1e485df0190780cc85dce794648f26c2.md",
+      "title": "AI Companion Manifesto",
+      "owner": "Aubert",
+      "size_kb": 4.48,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# AI Companion Manifesto  Owner: Aubert  ## \ud83e\udded **Purpose**  Nzila\u2019s AI Companion is not a feature \u2014 it\u2019s a digital presence.  It is the **bridge** between users and their health journey, between clinic",
+      "source": "legacy\\notion_export_3\\part1\\AI Companion Manifesto 1e485df0190780cc85dce794648f26c2.md",
+      "target": "business\\verticals\\healthtech\\ai-companion-manifesto.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udded Nzila R&D Innovation Lens 1e485df0190780e1a255cfd31fb2ffdd.md",
+      "title": "\ud83e\udded Nzila R&D Innovation Lens",
+      "owner": "Aubert",
+      "size_kb": 4.0,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udded Nzila R&D Innovation Lens  Owner: Aubert  ## \ud83e\udded Nzila R&D Innovation Lens  **Version 2.0 \u2013 Strategic Framing for 2025\u20132028**  ### \ud83e\udde0 **Purpose**  Nzila\u2019s R&D is built around one core truth: **innova",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udded Nzila R&D Innovation Lens 1e485df0190780e1a255cfd31fb2ffdd.md",
+      "target": "business\\verticals\\healthtech\\guide-nzila-rd-innovation-lens.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udc65 HR Culture & Onboarding Philosophy 1e485df0190780d9ab3ccba0554b13c1.md",
+      "title": "\ud83d\udc65 HR Culture & Onboarding Philosophy",
+      "owner": "Aubert",
+      "size_kb": 4.74,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udc65 HR Culture & Onboarding Philosophy  Owner: Aubert  ### 1. \ud83e\udded Purpose  Nzila is a **mission-led studio**, not a traditional company. Every contributor\u2014whether founder, part-time designer, clinical a",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udc65 HR Culture & Onboarding Philosophy 1e485df0190780d9ab3ccba0554b13c1.md",
+      "target": "corporate\\hr\\people-hr-culture-onboarding-philosophy.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udd16 Ethical AI Charter 1e485df0190780a78548e5e40a6c6c76.md",
+      "title": "\ud83e\udd16 Ethical AI Charter",
+      "owner": "Aubert",
+      "size_kb": 4.87,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udd16 Ethical AI Charter  Owner: Aubert  ### \ud83e\udded Purpose  Nzila Ventures designs AI to **support care, not replace it**. This Charter outlines our **binding ethical standards** for AI development, governa",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udd16 Ethical AI Charter 1e485df0190780a78548e5e40a6c6c76.md",
+      "target": "corporate\\compliance\\ethical-ai-charter.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udd10 Data Governance Overview 1e485df01907800ab490fcfe7cb093af.md",
+      "title": "\ud83d\udd10 Data Governance Overview",
+      "owner": "Aubert",
+      "size_kb": 4.88,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udd10 Data Governance Overview  Owner: Aubert  *Version 1.1 \u2013 Designed for Consent, Built for Trust*  ---  ### \ud83e\udded Purpose  Nzila Ventures designs products for **care, cognition, and connection** \u2014 all of",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udd10 Data Governance Overview 1e485df01907800ab490fcfe7cb093af.md",
+      "target": "corporate\\compliance\\security-data-governance-overview.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\u2696\ufe0f Legal & Compliance Framework 1e485df01907805ca4a3e462e41ccb51.md",
+      "title": "\u2696\ufe0f Legal & Compliance Framework",
+      "owner": "Aubert",
+      "size_kb": 5.16,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \u2696\ufe0f Legal & Compliance Framework  Owner: Aubert  ## \u2696\ufe0f **Legal & Compliance Overview**  ### \ud83e\udded **Purpose**  This framework defines the legal, regulatory, and compliance infrastructure under which *Nzi",
+      "source": "legacy\\notion_export_3\\part1\\\u2696\ufe0f Legal & Compliance Framework 1e485df01907805ca4a3e462e41ccb51.md",
+      "target": "corporate\\legal\\legal-compliance-framework.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\u2696\ufe0f Shareholder and Corporate Structure Summary 1e485df0190780e39a5af8ddf2d738c1.md",
+      "title": "\u2696\ufe0f Shareholder and Corporate Structure Summary",
+      "owner": "Aubert",
+      "size_kb": 4.63,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \u2696\ufe0f Shareholder and Corporate Structure Summary  Owner: Aubert  ### \ud83e\udded **Purpose**  This document provides a clear, auditable record of the legal structure, shareholding framework, and governance mech",
+      "source": "legacy\\notion_export_3\\part1\\\u2696\ufe0f Shareholder and Corporate Structure Summary 1e485df0190780e39a5af8ddf2d738c1.md",
+      "target": "corporate\\governance\\legal-shareholder-and-corporate-structure-summary.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "CFO Budget Strategy & Tools 1e485df019078060bd27d668a6adcba9.md",
+      "title": "CFO Budget Strategy & Tools",
+      "owner": "Aubert",
+      "size_kb": 5.22,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# CFO Budget Strategy & Tools  Owner: Aubert  ## \ud83e\udded Purpose  This document outlines Nzila Ventures' financial strategy across planning, cost control, revenue modeling, and strategic capital deployment.",
+      "source": "legacy\\notion_export_3\\part1\\CFO Budget Strategy & Tools 1e485df019078060bd27d668a6adcba9.md",
+      "target": "corporate\\finance\\cfo-budget-strategy-tools.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "COO Playbook Overview 1e485df0190780ac80b8f52add45823c.md",
+      "title": "COO Playbook Overview",
+      "owner": "Aubert",
+      "size_kb": 4.15,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# COO Playbook Overview  Owner: Aubert  ## \ud83e\udded Purpose  This playbook defines the operational model, tools, systems, and execution rhythms that power Nzila Ventures. It ensures that vision turns into tr",
+      "source": "legacy\\notion_export_3\\part1\\COO Playbook Overview 1e485df0190780ac80b8f52add45823c.md",
+      "target": "knowledge\\playbooks\\coo-playbook-overview.md",
+      "category": "knowledge/playbooks",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udee1\ufe0f Security Policy Manual 1e885df01907801287fcc8861cc5544c.md",
+      "title": "\ud83d\udee1\ufe0f Security Policy Manual",
+      "owner": "Aubert",
+      "size_kb": 5.66,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udee1\ufe0f Security Policy Manual  Owner: Aubert  **Version:** 1.0  **Effective Date:** [Insert Date]  **Maintained By:** Security & Compliance Lead (with Legal, CTO, and COO support)  This manual outlines",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udee1\ufe0f Security Policy Manual 1e885df01907801287fcc8861cc5544c.md",
+      "target": "corporate\\compliance\\security-policy-manual.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udee1\ufe0f Incident Response Playbook (IRP) 1e885df0190780978b49e0aafeb05759.md",
+      "title": "\ud83d\udee1\ufe0f Incident Response Playbook (IRP)",
+      "owner": "Aubert",
+      "size_kb": 5.17,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udee1\ufe0f Incident Response Playbook (IRP)  Owner: Aubert  **Version:** 1.0  **Maintained By:** COO, Privacy Officer, CTO  **Review Cycle:** Quarterly or after any security event  **Legal Reference:** CBCA",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udee1\ufe0f Incident Response Playbook (IRP) 1e885df0190780978b49e0aafeb05759.md",
+      "target": "corporate\\compliance\\security-incident-response-playbook-irp.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udd10 Vendor Security Review SOP 1e885df019078023ada2f11be6799aa5.md",
+      "title": "\ud83d\udd10 Vendor Security Review SOP",
+      "owner": "Aubert",
+      "size_kb": 4.45,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udd10 Vendor Security Review SOP  Owner: Aubert  **Version:** 1.0  **Maintained By:** Privacy Officer + CTO  **Review Cycle:** Annually, or upon onboarding of new critical vendor  **Last Updated:** [Ins",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udd10 Vendor Security Review SOP 1e885df019078023ada2f11be6799aa5.md",
+      "target": "corporate\\legal\\vendor-security-review-sop.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddd1\u200d\ud83d\udcbc Org Chart & Hiring Plan Tracker 1e885df0190780d58fc8ddf334be3d7c.md",
+      "title": "\ud83e\uddd1\u200d\ud83d\udcbc Org Chart & Hiring Plan Tracker",
+      "owner": "Aubert",
+      "size_kb": 3.56,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\uddd1\u200d\ud83d\udcbc Org Chart & Hiring Plan Tracker  Owner: Aubert  **Version:** 1.0  **Maintained By:** COO + HR/People Ops  **Review Frequency:** Quarterly  **Last Updated:** [Insert Date]  ---  ## \ud83e\udded 1. Purpose",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddd1\u200d\ud83d\udcbc Org Chart & Hiring Plan Tracker 1e885df0190780d58fc8ddf334be3d7c.md",
+      "target": "corporate\\hr\\team-org-chart-hiring-plan-tracker.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcd0 Role Leveling & Compensation Matrix 1e885df01907806e96f3ca5730b1a453.md",
+      "title": "\ud83d\udcd0 Role Leveling & Compensation Matrix",
+      "owner": "Aubert",
+      "size_kb": 3.3,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcd0 Role Leveling & Compensation Matrix  Owner: Aubert  **Version:** 1.0  **Maintained by:** COO + CFO  **Review Frequency:** Quarterly or per funding milestone  **Last Updated:** [Insert Date]  ---",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcd0 Role Leveling & Compensation Matrix 1e885df01907806e96f3ca5730b1a453.md",
+      "target": "corporate\\hr\\design-role-leveling-compensation-matrix.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcca ESOP Grant Mechanics & Communication Deck 1e885df019078076830ad906274cc987.md",
+      "title": "\ud83d\udcca ESOP Grant Mechanics & Communication Deck",
+      "owner": "Aubert",
+      "size_kb": 2.12,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcca ESOP Grant Mechanics & Communication Deck  Owner: Aubert  **Version:** 1.0  **Audience:** Team members, advisors, early hires  **Delivered by:** CEO + Legal/Finance  ## \ud83e\udded Purpose  To explain how N",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcca ESOP Grant Mechanics & Communication Deck 1e885df019078076830ad906274cc987.md",
+      "target": "corporate\\governance\\metrics-esop-grant-mechanics-communication-deck.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcca DEI Commitment Snapshot 1e885df0190780048f9cc3a0c73bbe41.md",
+      "title": "\ud83d\udcca DEI Commitment Snapshot",
+      "owner": "Aubert",
+      "size_kb": 3.52,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcca DEI Commitment Snapshot  Owner: Aubert  ### \ud83e\udded Our Commitment  At Nzila Ventures Inc., we are dedicated to fostering a diverse, equitable, and inclusive environment where every individual feels val",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcca DEI Commitment Snapshot 1e885df0190780048f9cc3a0c73bbe41.md",
+      "target": "corporate\\hr\\metrics-dei-commitment-snapshot.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\uddfa\ud83c\uddf8 U S Expansion Binder \u2013 Required Documents 1e885df0190780eda9f2c2601cb4405c.md",
+      "title": "\ud83c\uddfa\ud83c\uddf8 U.S. Expansion Binder \u2013 Required Documents",
+      "owner": "Aubert",
+      "size_kb": 2.2,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\uddfa\ud83c\uddf8 U.S. Expansion Binder \u2013 Required Documents  Owner: Aubert  ### \ud83d\udcc1 **1. Legal Entity Setup**  - [ ]  U.S. Subsidiary Incorporation Summary (e.g., Delaware C-Corp or LLC) - [ ]  EIN Registration Con",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\uddfa\ud83c\uddf8 U S Expansion Binder \u2013 Required Documents 1e885df0190780eda9f2c2601cb4405c.md",
+      "target": "corporate\\legal\\us-u-s-expansion-binder-required-documents.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udf10 Data Jurisdiction Map 1e885df0190780b4b5b4d67a692fa1e9.md",
+      "title": "\ud83c\udf10 Data Jurisdiction Map",
+      "owner": "Aubert",
+      "size_kb": 4.17,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\udf10 Data Jurisdiction Map  Owner: Aubert  **Version:** 1.0  **Maintained by:** Legal & Corporate Affairs + Security Office  **Last Updated:** [Insert Date]  This document provides an authoritative, au",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udf10 Data Jurisdiction Map 1e885df0190780b4b5b4d67a692fa1e9.md",
+      "target": "corporate\\legal\\network-data-jurisdiction-map.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcd8 IP Commercialization Tracker 1e885df019078021b732d1f5b595fd61.md",
+      "title": "\ud83d\udcd8 IP Commercialization Tracker",
+      "owner": "Aubert",
+      "size_kb": 4.11,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcd8 IP Commercialization Tracker  Owner: Aubert  **Last Updated:** [Insert Date]  **Owner:** Chief Strategy Officer  **Collaborators:** Legal, R&D, Studio Leads (e.g., Memora, Optiva), Partnerships  -",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcd8 IP Commercialization Tracker 1e885df019078021b732d1f5b595fd61.md",
+      "target": "corporate\\legal\\guide-ip-commercialization-tracker.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc4 SDK API Licensing Terms (Draft) 1e885df0190780b99e1ce0c50c2e7ef1.md",
+      "title": "\ud83d\udcc4 SDK / API Licensing Terms (Draft)",
+      "owner": "Aubert",
+      "size_kb": 4.62,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcc4 SDK / API Licensing Terms (Draft)  Owner: Aubert  **Nzila Ventures Inc.**  **Version:** 0.9 \u2013 For Internal Use Only  **Prepared By:** Legal & Product Strategy  **Last Updated:** [Insert Date]  ---",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc4 SDK API Licensing Terms (Draft) 1e885df0190780b99e1ce0c50c2e7ef1.md",
+      "target": "corporate\\legal\\document-sdk-api-licensing-terms-draft.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udf33 IP Licensing Decision Tree Open vs Closed 1e885df01907809984bdc55f87035821.md",
+      "title": "\ud83c\udf33 IP Licensing Decision Tree: Open vs. Closed",
+      "owner": "Aubert",
+      "size_kb": 3.57,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\udf33 IP Licensing Decision Tree: Open vs. Closed  Owner: Aubert  ### 1. **Nature of the IP**  - **Is the IP a core business asset that drives differentiation?**     - **Yes** \u2192 Proceed to **Closed IP**",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udf33 IP Licensing Decision Tree Open vs Closed 1e885df01907809984bdc55f87035821.md",
+      "target": "corporate\\partnerships\\ip-licensing-decision-tree-open-vs-closed.md",
+      "category": "corporate/partnerships",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udca1 Partner Monetization Summary Revenue & Non-Reven 1e885df01907801fad10fe4c7f32c991.md",
+      "title": "\ud83d\udca1 Partner Monetization Summary: Revenue & Non-Revenue Models",
+      "owner": "Aubert",
+      "size_kb": 8.08,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udca1 Partner Monetization Summary: Revenue & Non-Revenue Models  Owner: Aubert  **Nzila Ventures Inc.**  **Version:** 0.9 \u2013 For Internal Use Only  **Prepared By:** Strategic Partnerships Team  **Last U",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udca1 Partner Monetization Summary Revenue & Non-Reven 1e885df01907801fad10fe4c7f32c991.md",
+      "target": "corporate\\partnerships\\innovation-partner-monetization-summary-revenue-non-reven.md",
+      "category": "corporate/partnerships",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcdc Founder Succession & Continuity Plan 1e885df0190780c0b39bfb37b4a9b752.md",
+      "title": "\ud83d\udcdc Founder Succession & Continuity Plan",
+      "owner": "Aubert",
+      "size_kb": 8.25,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcdc Founder Succession & Continuity Plan  Owner: Aubert  **Nzila Ventures Inc.**  **Version:** 1.0 \u2013 For Internal Use Only  **Prepared By:** Executive Leadership Team  **Last Updated:** [Insert Date]",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcdc Founder Succession & Continuity Plan 1e885df0190780c0b39bfb37b4a9b752.md",
+      "target": "corporate\\governance\\policy-founder-succession-continuity-plan.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcdc Board Continuity & Observer Policy 1e885df019078045b569edb9c49db453.md",
+      "title": "\ud83d\udcdc Board Continuity & Observer Policy",
+      "owner": "Aubert",
+      "size_kb": 6.18,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcdc Board Continuity & Observer Policy  Owner: Aubert  **Nzila Ventures Inc.**  **Version:** 1.0 \u2013 For Internal Use Only  **Prepared By:** Governance & Legal Team  **Last Updated:** [Insert Date]  ---",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcdc Board Continuity & Observer Policy 1e885df019078045b569edb9c49db453.md",
+      "target": "corporate\\governance\\board-continuity-observer-policy.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "Detailed Financial Strategy 1e885df01907805e8ec0f9a69a106683.md",
+      "title": "Detailed Financial Strategy",
+      "owner": "Aubert",
+      "size_kb": 3.31,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# Detailed Financial Strategy  Owner: Aubert  **Version**: 2.0  **Prepared By**: Finance & Strategy Team  **Last Updated**: [Insert Date]  ---  ### **Sections for Notion Integration**  1. **Introducti",
+      "source": "legacy\\notion_export_3\\part1\\Detailed Financial Strategy 1e885df01907805e8ec0f9a69a106683.md",
+      "target": "corporate\\finance\\detailed-financial-strategy.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcca Fundraising Strategy 1e885df01907806f8598ca52fb62aa8c.md",
+      "title": "\ud83d\udcca Fundraising Strategy",
+      "owner": "Aubert",
+      "size_kb": 8.89,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcca Fundraising Strategy  Owner: Aubert  **Version**: 1.0  **Prepared By**: Finance & Strategy Team  **Last Updated**: [Insert Date]  ---  ### 1. **Introduction**  The **Nzila Ventures Fundraising Str",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcca Fundraising Strategy 1e885df01907806f8598ca52fb62aa8c.md",
+      "target": "corporate\\finance\\metrics-fundraising-strategy.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udc65 HR and Talent Development Strategy 1e885df01907805bb46ef88599a2a09c.md",
+      "title": "\ud83d\udc65 HR and Talent Development Strategy",
+      "owner": "Aubert",
+      "size_kb": 9.42,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udc65 HR and Talent Development Strategy  Owner: Aubert  **Version**: 1.0  **Prepared By**: HR & Strategy Team  **Last Updated**: [Insert Date]  ---  ### 1. **Introduction**  The **HR and Talent Develop",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udc65 HR and Talent Development Strategy 1e885df01907805bb46ef88599a2a09c.md",
+      "target": "corporate\\hr\\people-hr-and-talent-development-strategy.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udc54 Leadership Succession Plan 1e885df01907803bb7b7e27ccfbfe963.md",
+      "title": "\ud83d\udc54 Leadership Succession Plan",
+      "owner": "Aubert",
+      "size_kb": 7.93,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udc54 Leadership Succession Plan  Owner: Aubert  **Version**: 1.0  **Prepared By**: HR & Strategy Team  **Last Updated**: [Insert Date]  ---  ### 1. **Introduction**  The **Leadership Succession Plan**",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udc54 Leadership Succession Plan 1e885df01907803bb7b7e27ccfbfe963.md",
+      "target": "corporate\\hr\\leadership-succession-plan.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udf0d Diversity, Equity, and Inclusion (DEI) Strategy 1e885df0190780de84bac7ee6799f30c.md",
+      "title": "\ud83c\udf0d Diversity, Equity, and Inclusion (DEI) Strategy",
+      "owner": "Aubert",
+      "size_kb": 4.78,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83c\udf0d Diversity, Equity, and Inclusion (DEI) Strategy  Owner: Aubert  **Version**: 1.0  **Prepared By**: HR & Strategy Team  **Last Updated**: [Insert Date]  ---  ### 1. **Introduction**  At **Nzila Ven",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udf0d Diversity, Equity, and Inclusion (DEI) Strategy 1e885df0190780de84bac7ee6799f30c.md",
+      "target": "corporate\\hr\\global-diversity-equity-and-inclusion-dei-strategy.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc8 Comprehensive Marketing Strategy 1e885df01907808a88d1c59d1f9bf480.md",
+      "title": "\ud83d\udcc8 Comprehensive Marketing Strategy",
+      "owner": "Aubert",
+      "size_kb": 9.06,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udcc8 Comprehensive Marketing Strategy  Owner: Aubert  **Version**: 1.0  **Prepared By**: Marketing & Strategy Team  **Last Updated**: [Insert Date]  ---  ### 1. **Introduction**  The **Comprehensive Ma",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc8 Comprehensive Marketing Strategy 1e885df01907808a88d1c59d1f9bf480.md",
+      "target": "business\\market-research\\growth-comprehensive-marketing-strategy.md",
+      "category": "business/market-research",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udde3\ufe0f Communications Plan 1e885df0190780b0ab92ec79bdf0d3a7.md",
+      "title": "\ud83d\udde3\ufe0f Communications Plan",
+      "owner": "Aubert",
+      "size_kb": 8.67,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\udde3\ufe0f Communications Plan  Owner: Aubert  ### 1. **Introduction**  The **Communications Plan** for **Nzila Ventures** aims to create a cohesive and effective communication strategy that aligns with the",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udde3\ufe0f Communications Plan 1e885df0190780b0ab92ec79bdf0d3a7.md",
+      "target": "business\\reports\\communications-plan.md",
+      "category": "business/reports",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\u2696\ufe0f Enterprise Risk Management (ERM) Framework 1e885df0190780fd9dfcdc1850b17650.md",
+      "title": "\u2696\ufe0f Enterprise Risk Management (ERM) Framework",
+      "owner": "Aubert",
+      "size_kb": 9.05,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \u2696\ufe0f Enterprise Risk Management (ERM) Framework  Owner: Aubert  ### 1. **Introduction**  The **Enterprise Risk Management (ERM) Framework** at **Nzila Ventures** is designed to proactively manage risk",
+      "source": "legacy\\notion_export_3\\part1\\\u2696\ufe0f Enterprise Risk Management (ERM) Framework 1e885df0190780fd9dfcdc1850b17650.md",
+      "target": "corporate\\compliance\\legal-enterprise-risk-management-erm-framework.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\u26a0\ufe0f Risk Appetite Definitions 1e885df0190780fd918fe3337bc1c04d.md",
+      "title": "\u26a0\ufe0f Risk Appetite Definitions",
+      "owner": "Aubert",
+      "size_kb": 4.81,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \u26a0\ufe0f Risk Appetite Definitions  Owner: Aubert  ### 1. **Introduction**  **Risk appetite** refers to the **amount and type of risk Nzila Ventures is willing to accept or tolerate** in pursuit of its st",
+      "source": "legacy\\notion_export_3\\part1\\\u26a0\ufe0f Risk Appetite Definitions 1e885df0190780fd918fe3337bc1c04d.md",
+      "target": "corporate\\compliance\\risk-appetite-definitions.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udd1d Customer Success Strategy 1e885df019078087a18fd5ed309d1b3f.md",
+      "title": "\ud83e\udd1d Customer Success Strategy",
+      "owner": "Aubert",
+      "size_kb": 4.62,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udd1d Customer Success Strategy  Owner: Aubert  ### 1. **Purpose**  This strategy ensures **customers realize continuous value** from Nzila Ventures\u2019 offerings. It focuses on structured onboarding, data",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udd1d Customer Success Strategy 1e885df019078087a18fd5ed309d1b3f.md",
+      "target": "business\\reports\\partnership-customer-success-strategy.md",
+      "category": "business/reports",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\ude0a Client Satisfaction & Retention Plan 1e885df0190780c68517e7ba38300d7e.md",
+      "title": "\ud83d\ude0a Client Satisfaction & Retention Plan",
+      "owner": "Aubert",
+      "size_kb": 4.31,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83d\ude0a Client Satisfaction & Retention Plan  Owner: Aubert  ### 1. **Purpose**  This plan defines how Nzila Ventures monitors, improves, and protects **client satisfaction and loyalty** across its ecosys",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\ude0a Client Satisfaction & Retention Plan 1e885df0190780c68517e7ba38300d7e.md",
+      "target": "business\\verticals\\healthtech\\customer-client-satisfaction-retention-plan.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde9 Mergers & Acquisitions (M&A) Strategy 1e885df0190780268343dcfebed4a675.md",
+      "title": "\ud83e\udde9 Mergers & Acquisitions (M&A) Strategy",
+      "owner": "Aubert",
+      "size_kb": 5.7,
+      "modified": "2026-02-17T04:12:56",
+      "preview": "# \ud83e\udde9 Mergers & Acquisitions (M&A) Strategy  Owner: Aubert  ### 1. **Purpose**  Nzila\u2019s M&A strategy defines how we **evaluate, pursue, and integrate** opportunities that align with our mission to build",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde9 Mergers & Acquisitions (M&A) Strategy 1e885df0190780268343dcfebed4a675.md",
+      "target": "corporate\\hr\\framework-mergers-acquisitions-ma-strategy.md",
+      "category": "corporate/hr",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udd10 Data Privacy & Security Strategy 1e885df01907806c9438fb2e8fb17768.md",
+      "title": "\ud83d\udd10 Data Privacy & Security Strategy",
+      "owner": "Aubert",
+      "size_kb": 6.34,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udd10 Data Privacy & Security Strategy  Owner: Aubert  ### 1. **Purpose**  This strategy defines how **Nzila Ventures** protects the integrity, confidentiality, and availability of its systems and data.",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udd10 Data Privacy & Security Strategy 1e885df01907806c9438fb2e8fb17768.md",
+      "target": "corporate\\compliance\\data-privacy-security-strategy.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udea7 Technology Roadmap (2025\u20132026) 1e885df01907800abe9bca90b05b3624.md",
+      "title": "\ud83d\udea7 Technology Roadmap (2025\u20132026)",
+      "owner": "Aubert",
+      "size_kb": 5.57,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udea7 Technology Roadmap (2025\u20132026)  Owner: Aubert  ### 1. **Strategic Purpose**  This roadmap aligns Nzila\u2019s **tech evolution** with its mission to build **scalable**, **privacy-respecting**, **AI-ena",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udea7 Technology Roadmap (2025\u20132026) 1e885df01907800abe9bca90b05b3624.md",
+      "target": "business\\verticals\\healthtech\\technology-roadmap-20252026.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udca1 Future Tech Investments Strategy 1e885df01907801c9a05df1c5ad3b61c.md",
+      "title": "\ud83d\udca1 Future Tech Investments Strategy",
+      "owner": "Aubert",
+      "size_kb": 4.57,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udca1 Future Tech Investments Strategy  Owner: Aubert  ### 1. **Purpose**  This strategy defines Nzila Ventures' **investment thesis** for technology exploration and capital deployment beyond the 2025\u20132",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udca1 Future Tech Investments Strategy 1e885df01907801c9a05df1c5ad3b61c.md",
+      "target": "platform\\architecture\\innovation-future-tech-investments-strategy.md",
+      "category": "platform/architecture",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udf31 Sustainability Strategy 1e885df0190780aa98cafbb9ed894873.md",
+      "title": "\ud83c\udf31 Sustainability Strategy",
+      "owner": "Aubert",
+      "size_kb": 4.94,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83c\udf31 Sustainability Strategy  Owner: Aubert  ### 1. **Purpose**  This strategy defines how Nzila will proactively embed **sustainability** into product development, operations, and long-term growth. It",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udf31 Sustainability Strategy 1e885df0190780aa98cafbb9ed894873.md",
+      "target": "corporate\\governance\\sustainability-strategy.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udd1d Social Impact Strategy 1e885df01907803fa095d33941c4d2e9.md",
+      "title": "\ud83e\udd1d Social Impact Strategy",
+      "owner": "Aubert",
+      "size_kb": 4.68,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udd1d Social Impact Strategy  Owner: Aubert  ### 1. **Purpose**  Nzila\u2019s Social Impact Strategy defines how we **embed equity, access, and measurable community value** into the core of each venture \u2014 no",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udd1d Social Impact Strategy 1e885df01907803fa095d33941c4d2e9.md",
+      "target": "corporate\\governance\\partnership-social-impact-strategy.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\u2705 Product Validation & Market Fit Strategy 1e885df0190780c58b08e814b3850f65.md",
+      "title": "\u2705 Product Validation & Market Fit Strategy",
+      "owner": "Aubert",
+      "size_kb": 4.5,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \u2705 Product Validation & Market Fit Strategy  Owner: Aubert  ### 1. **Purpose**  This strategy guides Nzila\u2019s studios in systematically validating new products, features, and platform extensions. It e",
+      "source": "legacy\\notion_export_3\\part1\\\u2705 Product Validation & Market Fit Strategy 1e885df0190780c58b08e814b3850f65.md",
+      "target": "business\\market-research\\product-validation-market-fit-strategy.md",
+      "category": "business/market-research",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde9 Unified Sales Strategy 1e985df019078089a3f3d38cc902aa65.md",
+      "title": "\ud83e\udde9 Unified Sales Strategy",
+      "owner": "Aubert",
+      "size_kb": 5.18,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udde9 Unified Sales Strategy  Owner: Aubert  *\u201cTechnology with soul. Generational by design.\u201d*  ---  ## \ud83d\udee0 **Framework**  All strategies are anchored in Nzila\u2019s principles:  | Core Value | Sales Applicat",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde9 Unified Sales Strategy 1e985df019078089a3f3d38cc902aa65.md",
+      "target": "business\\verticals\\healthtech\\framework-unified-sales-strategy.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83c\udfdb\ufe0f Board Governance Pack 1e685df019078035adabeca9400cfe63.md",
+      "title": "\ud83c\udfdb\ufe0f Board Governance Pack",
+      "owner": "Aubert",
+      "size_kb": 3.47,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83c\udfdb\ufe0f Board Governance Pack  Owner: Aubert  **Version:** 1.0  **Maintained By:** CEO / Legal & Strategy Office  **Approved By:** Board of Directors  **Review Frequency:** Annual (Q4 Governance Review)",
+      "source": "legacy\\notion_export_3\\part1\\\ud83c\udfdb\ufe0f Board Governance Pack 1e685df019078035adabeca9400cfe63.md",
+      "target": "corporate\\finance\\board-governance-pack.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddfe Founder & Executive Roles & Equity Memo 1e685df01907800a8c17d225b5312ca3.md",
+      "title": "\ud83e\uddfe Founder & Executive Roles & Equity Memo",
+      "owner": "Aubert",
+      "size_kb": 3.69,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\uddfe Founder & Executive Roles & Equity Memo  Owner: Aubert  **Version:** 1.0  **Maintained By:** CEO / Corporate Strategy Office  **Applies To:** Nzila HQ, Memora, Optiva  **Review Frequency:** Annual",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddfe Founder & Executive Roles & Equity Memo 1e685df01907800a8c17d225b5312ca3.md",
+      "target": "corporate\\governance\\document-founder-executive-roles-equity-memo.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcca Strategic Review Template (Quarterly) 1e685df01907800bac74e11345c7090e.md",
+      "title": "\ud83d\udcca Strategic Review Template (Quarterly)",
+      "owner": "Aubert",
+      "size_kb": 2.93,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcca Strategic Review Template (Quarterly)  Owner: Aubert  **Version:** 1.0  **Owner:** CEO / Strategy Office  **Audience:** Nzila Board, Strategic Advisors, Funders  **Use:** Required quarterly (Q1, Q",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcca Strategic Review Template (Quarterly) 1e685df01907800bac74e11345c7090e.md",
+      "target": "business\\verticals\\healthtech\\metrics-strategic-review-template-quarterly.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\ude99 Spinout Criteria & Checklist 1e685df01907804ab8fefed85c15f7e1.md",
+      "title": "\ud83e\ude99 Spinout Criteria & Checklist",
+      "owner": "Aubert",
+      "size_kb": 3.23,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\ude99 Spinout Criteria & Checklist  Owner: Aubert  **Version:** 1.0  **Maintained By:** CEO + Legal  **Required For:** Any new legal entity formed under Nzila's IP license  **Location:** \ud83d\udcc1 *Nzila HQ \u2192 S",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\ude99 Spinout Criteria & Checklist 1e685df01907804ab8fefed85c15f7e1.md",
+      "target": "corporate\\governance\\equity-spinout-criteria-checklist.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcd8 Operating Agreement Template (Venture-Level) 1e685df019078068b0dbecff03f67013.md",
+      "title": "\ud83d\udcd8 Operating Agreement Template (Venture-Level)",
+      "owner": "Aubert",
+      "size_kb": 4.02,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcd8 Operating Agreement Template (Venture-Level)  Owner: Aubert  **Version:** 1.0  **Purpose:** Venture Formation & Governance  **Applies To:** All spun-out or semi-autonomous entities using Nzila IP",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcd8 Operating Agreement Template (Venture-Level) 1e685df019078068b0dbecff03f67013.md",
+      "target": "corporate\\legal\\guide-operating-agreement-template-venture-level.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcda Capital Strategy & Resource Allocation Overview 1e885df0190780109b11cc129ceb092d.md",
+      "title": "\ud83d\udcda Capital Strategy & Resource Allocation Overview",
+      "owner": "Aubert",
+      "size_kb": 4.36,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcda Capital Strategy & Resource Allocation Overview  Owner: Aubert  **Nzila Ventures\u2019 capital strategy** ensures responsible, milestone-based funding that prioritizes venture readiness, protects IP, a",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcda Capital Strategy & Resource Allocation Overview 1e885df0190780109b11cc129ceb092d.md",
+      "target": "corporate\\finance\\knowledge-capital-strategy-resource-allocation-overview.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcda Strategic Ops & Shared Services Overview 1e885df0190780348a40d5c7a2633e42.md",
+      "title": "\ud83d\udcda Strategic Ops & Shared Services Overview",
+      "owner": "Aubert",
+      "size_kb": 3.61,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcda Strategic Ops & Shared Services Overview  Owner: Aubert  **Nzila Ventures \u2014 Governance, Capital, and Venture Lifecycle Controls**  ---  ### \ud83d\udd39 1. Purpose  This system defines how Nzila Ventures gov",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcda Strategic Ops & Shared Services Overview 1e885df0190780348a40d5c7a2633e42.md",
+      "target": "corporate\\compliance\\knowledge-strategic-ops-shared-services-overview.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udccb Quarterly Venture Audit Template 1e685df019078088991ef23c068f6da1.md",
+      "title": "\ud83d\udccb Quarterly Venture Audit Template",
+      "owner": "Aubert",
+      "size_kb": 2.11,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udccb Quarterly Venture Audit Template  Owner: Aubert  ### Section 1 \u2013 Governance & Compliance Snapshot  | Category | Status | Notes | | --- | --- | --- | | IP assigned to Nzila | \u2705/\u274c | Assignment date",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udccb Quarterly Venture Audit Template 1e685df019078088991ef23c068f6da1.md",
+      "target": "corporate\\finance\\checklist-quarterly-venture-audit-template.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\u26a0\ufe0f Strategic Risk Escalation SOP 1e685df0190780abbadec24e12481e48.md",
+      "title": "\u26a0\ufe0f Strategic Risk Escalation SOP",
+      "owner": "Aubert",
+      "size_kb": 2.99,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \u26a0\ufe0f Strategic Risk Escalation SOP  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To define a repeatable, accountable process for:  - **Identifying strategic risks** across product, legal, financial, and governanc",
+      "source": "legacy\\notion_export_3\\part1\\\u26a0\ufe0f Strategic Risk Escalation SOP 1e685df0190780abbadec24e12481e48.md",
+      "target": "corporate\\governance\\strategic-risk-escalation-sop.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcd1 Policy Sync Tracker 1e685df01907803b89cdc21ccdf4a344.md",
+      "title": "\ud83d\udcd1 Policy Sync Tracker",
+      "owner": "Aubert",
+      "size_kb": 2.71,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcd1 Policy Sync Tracker  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To provide:  - A **single source of truth** for all active policies and internal frameworks - Clear **versioning and ownership** for every doc",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcd1 Policy Sync Tracker 1e685df01907803b89cdc21ccdf4a344.md",
+      "target": "corporate\\governance\\criteria-policy-sync-tracker.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcb0 Capital Deployment Plan 1e685df0190780e58cd7f9800c4d80b8.md",
+      "title": "\ud83d\udcb0 Capital Deployment Plan",
+      "owner": "Aubert",
+      "size_kb": 4.29,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcb0 Capital Deployment Plan  Owner: Aubert  ### \ud83d\udd39 1. Purpose  This document defines how **Nzila Ventures**:  - Allocates capital across its portfolio of ventures in a **staged, milestone-based** fashi",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcb0 Capital Deployment Plan 1e685df0190780e58cd7f9800c4d80b8.md",
+      "target": "corporate\\governance\\money-capital-deployment-plan.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcbc Fundraising Gatekeeper Guide 1e685df01907805fa404dda1e437422b.md",
+      "title": "\ud83d\udcbc Fundraising Gatekeeper Guide",
+      "owner": "Aubert",
+      "size_kb": 3.86,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcbc Fundraising Gatekeeper Guide  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To ensure that **all fundraising activity across Nzila Ventures and its studio-built companies**:  - Aligns with Nzila\u2019s IP, brand, a",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcbc Fundraising Gatekeeper Guide 1e685df01907805fa404dda1e437422b.md",
+      "target": "corporate\\finance\\fundraising-gatekeeper-guide.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc8 Venture Forecasts (Finance Linkage) 1e685df0190780ef8661de551a168866.md",
+      "title": "\ud83d\udcc8 Venture Forecasts (Finance Linkage)",
+      "owner": "Aubert",
+      "size_kb": 3.69,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcc8 Venture Forecasts (Finance Linkage)  Owner: Aubert  ### \ud83d\udd39 1. Purpose  This guide governs how all Nzila ventures create and maintain financial forecasts to ensure:  - Transparent revenue, cost, and",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc8 Venture Forecasts (Finance Linkage) 1e685df0190780ef8661de551a168866.md",
+      "target": "corporate\\finance\\growth-venture-forecasts-finance-linkage.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddfe Royalty & Licensing Flow Model 1e685df01907808bacecd6bc61d1f84a.md",
+      "title": "\ud83e\uddfe Royalty & Licensing Flow Model",
+      "owner": "Aubert",
+      "size_kb": 3.73,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\uddfe Royalty & Licensing Flow Model  Owner: Aubert  ### \ud83d\udd39 1. Purpose  This framework defines how Nzila Ventures:  - Monetizes its **intellectual property, brand assets, and shared infrastructure** - Ma",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddfe Royalty & Licensing Flow Model 1e685df01907808bacecd6bc61d1f84a.md",
+      "target": "corporate\\intellectual-property\\document-royalty-licensing-flow-model.md",
+      "category": "corporate/intellectual-property",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcca Strategic Review Template 1e885df019078059ba51ee595889d694.md",
+      "title": "\ud83d\udcca Strategic Review Template",
+      "owner": "Aubert",
+      "size_kb": 2.49,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcca Strategic Review Template  Owner: Aubert  ### \ud83d\udd39 1. Review Purpose  This document captures a **quarterly strategic review** of each Nzila venture. It is used to:  - Evaluate **milestone progress vs",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcca Strategic Review Template 1e885df019078059ba51ee595889d694.md",
+      "target": "corporate\\finance\\metrics-strategic-review-template.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udccb Board Decision Tracker 1e885df019078000878ae83a65c42126.md",
+      "title": "\ud83d\udccb Board Decision Tracker",
+      "owner": "Aubert",
+      "size_kb": 2.24,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udccb Board Decision Tracker  Owner: Aubert  **Purpose:**  To log, monitor, and reference all board-level decisions across Nzila HQ and its ventures, including capital approvals, IP licensing, venture s",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udccb Board Decision Tracker 1e885df019078000878ae83a65c42126.md",
+      "target": "corporate\\governance\\checklist-board-decision-tracker.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddee Nzila Cap Table Impact Sheet 1e885df01907806f958cdd271ddc2ca8.md",
+      "title": "\ud83e\uddee Nzila Cap Table Impact Sheet",
+      "owner": "Aubert",
+      "size_kb": 2.87,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\uddee Nzila Cap Table Impact Sheet  Owner: Aubert  **Purpose:**  To provide a **standardized equity structure** across Nzila Ventures initiatives, showing ownership impact, IP retention, and dilution sc",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddee Nzila Cap Table Impact Sheet 1e885df01907806f958cdd271ddc2ca8.md",
+      "target": "corporate\\governance\\finance-nzila-cap-table-impact-sheet.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc2 SAFE Template (Nzila Version) 1e885df01907806c851ee47a07d595a4.md",
+      "title": "\ud83d\udcc2 SAFE Template (Nzila Version)",
+      "owner": "Aubert",
+      "size_kb": 2.67,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcc2 SAFE Template (Nzila Version)  Owner: Aubert  ### \ud83d\udd39 1. Purpose  This document defines Nzila's standardized **Simple Agreement for Future Equity (SAFE)** structure, designed for:  - Ventures incuba",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc2 SAFE Template (Nzila Version) 1e885df01907806c851ee47a07d595a4.md",
+      "target": "corporate\\governance\\safe-template-nzila-version.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcd1 Spinout Criteria & Checklist 1e885df019078021be23d952e065c2cc.md",
+      "title": "\ud83d\udcd1 Spinout Criteria & Checklist",
+      "owner": "Aubert",
+      "size_kb": 2.75,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcd1 Spinout Criteria & Checklist  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To define the **required conditions, documents, and approvals** for any Nzila-incubated venture to:  - Transition from internal entit",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcd1 Spinout Criteria & Checklist 1e885df019078021be23d952e065c2cc.md",
+      "target": "corporate\\governance\\spinout-criteria-checklist.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udee0\ufe0f Shared Services SLA Tracker 1e885df0190780aa8fa4fd6bb9fe1d1e.md",
+      "title": "\ud83d\udee0\ufe0f Shared Services SLA Tracker",
+      "owner": "Aubert",
+      "size_kb": 2.74,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udee0\ufe0f Shared Services SLA Tracker  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To ensure **transparent, measurable support delivery** from Nzila\u2019s internal teams to all active ventures by:  - Defining service cat",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udee0\ufe0f Shared Services SLA Tracker 1e885df0190780aa8fa4fd6bb9fe1d1e.md",
+      "target": "corporate\\legal\\tools-shared-services-sla-tracker.md",
+      "category": "corporate/legal",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc9 Runway Risk Response Protocol 1e885df019078052a187f29d9d41ffae.md",
+      "title": "\ud83d\udcc9 Runway Risk Response Protocol",
+      "owner": "Aubert",
+      "size_kb": 3.27,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcc9 Runway Risk Response Protocol  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To establish a clear, staged process for:  - Identifying and responding to **runway constraints** - Aligning **capital controls** wi",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc9 Runway Risk Response Protocol 1e885df019078052a187f29d9d41ffae.md",
+      "target": "corporate\\finance\\runway-risk-response-protocol.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udd0d Due Diligence Data Room Index 1e885df0190780428eddc10cb64de693.md",
+      "title": "\ud83d\udd0d Due Diligence Data Room Index",
+      "owner": "Aubert",
+      "size_kb": 2.91,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udd0d Due Diligence Data Room Index  Owner: Aubert  **Nzila Ventures \u2013 Master Folder Structure for Internal and External Reviews**  ---  ### \ud83d\udd39 1. Corporate & Legal  | Subfolder | Contents | | --- | ---",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udd0d Due Diligence Data Room Index 1e885df0190780428eddc10cb64de693.md",
+      "target": "corporate\\finance\\review-due-diligence-data-room-index.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddfe Revenue Recognition & Grant Accounting Guide 1e885df019078070aef1df6eebde8afb.md",
+      "title": "\ud83e\uddfe Revenue Recognition & Grant Accounting Guide",
+      "owner": "Aubert",
+      "size_kb": 3.83,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\uddfe Revenue Recognition & Grant Accounting Guide  Owner: Aubert  **Nzila Ventures Finance Protocol \u2013 2025 Edition**  ---  ### \ud83d\udd39 1. Purpose  This guide ensures that **revenue and grant income** across",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddfe Revenue Recognition & Grant Accounting Guide 1e885df019078070aef1df6eebde8afb.md",
+      "target": "corporate\\finance\\document-revenue-recognition-grant-accounting-guide.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udd1d Shared Services Directory 1e685df0190780178224c73fd564a794.md",
+      "title": "\ud83e\udd1d Shared Services Directory",
+      "owner": "Aubert",
+      "size_kb": 2.79,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udd1d Shared Services Directory  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To define:  - The full scope of **shared functional teams** available to Nzila-incubated ventures - Key personnel or partners responsibl",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udd1d Shared Services Directory 1e685df0190780178224c73fd564a794.md",
+      "target": "corporate\\finance\\partnership-shared-services-directory.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcc4 Internal SLA Guide 1e685df0190780bba3bfd001ec450db6.md",
+      "title": "\ud83d\udcc4 Internal SLA Guide",
+      "owner": "Aubert",
+      "size_kb": 2.78,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcc4 Internal SLA Guide  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To establish:  - **Service-level expectations** between Nzila HQ and each venture team - **Standard turnaround times** for common requests - **",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcc4 Internal SLA Guide 1e685df0190780bba3bfd001ec450db6.md",
+      "target": "corporate\\finance\\document-internal-sla-guide.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udeaa Internal Brand Use & Approval Flow 1e685df0190780aaa675d1560209a8d2.md",
+      "title": "\ud83e\udeaa Internal Brand Use & Approval Flow",
+      "owner": "Aubert",
+      "size_kb": 3.28,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udeaa Internal Brand Use & Approval Flow  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To:  - Ensure all use of Nzila or portfolio venture brands is **aligned, compliant, and consistent** - Establish a clear **appr",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udeaa Internal Brand Use & Approval Flow 1e685df0190780aaa675d1560209a8d2.md",
+      "target": "business\\verticals\\healthtech\\internal-brand-use-approval-flow.md",
+      "category": "business/verticals/healthtech",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde9 Access & Roles Matrix 1e685df019078071a5e2dc146571d30a.md",
+      "title": "\ud83e\udde9 Access & Roles Matrix",
+      "owner": "Aubert",
+      "size_kb": 3.21,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udde9 Access & Roles Matrix  Owner: Aubert  ### \ud83d\udd39 1. Purpose  To ensure:  - **Controlled access** to sensitive data, systems, and strategic assets - Role-based alignment between **authorization levels**",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde9 Access & Roles Matrix 1e685df019078071a5e2dc146571d30a.md",
+      "target": "corporate\\governance\\framework-access-roles-matrix.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\uddfe Shared Services Budget Allocation Sheet 1e885df019078071982ff25870d4e41b.md",
+      "title": "\ud83e\uddfe Shared Services Budget Allocation Sheet",
+      "owner": "Aubert",
+      "size_kb": 3.01,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\uddfe Shared Services Budget Allocation Sheet  Owner: Aubert  **Nzila\u2019s live tracker for budgeted shared resource use across all ventures**  ---  ### **1. Purpose**  This budget sheet ensures:  - Transp",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\uddfe Shared Services Budget Allocation Sheet 1e885df019078071982ff25870d4e41b.md",
+      "target": "corporate\\finance\\document-shared-services-budget-allocation-sheet.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udcca SLA Tracker (Live Ledger) 1e885df0190780799a2af76e3a1c8fd9.md",
+      "title": "\ud83d\udcca SLA Tracker (Live Ledger)",
+      "owner": "Aubert",
+      "size_kb": 2.55,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udcca SLA Tracker (Live Ledger)  Owner: Aubert  ### **1. Purpose**  This document governs how Nzila\u2019s Shared Services team tracks **actual usage vs. allocated service hours** across ventures. It enables",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udcca SLA Tracker (Live Ledger) 1e885df0190780799a2af76e3a1c8fd9.md",
+      "target": "corporate\\finance\\metrics-sla-tracker-live-ledger.md",
+      "category": "corporate/finance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83d\udccb Request Intake Form Template 1e885df019078038b994c1481b4734fd.md",
+      "title": "\ud83d\udccb Request Intake Form Template",
+      "owner": "Aubert",
+      "size_kb": 1.86,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83d\udccb Request Intake Form Template  Owner: Aubert  **For all Shared Services support requests (Design, Legal, Product, Finance, Content)**  ---  ### **1. Requestor Information**  | Field | Input Type |",
+      "source": "legacy\\notion_export_3\\part1\\\ud83d\udccb Request Intake Form Template 1e885df019078038b994c1481b4734fd.md",
+      "target": "corporate\\operations\\checklist-request-intake-form-template.md",
+      "category": "corporate/operations",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde0 Talent Assignment Protocol 1e885df0190780c68eb0d91030899a99.md",
+      "title": "\ud83e\udde0 Talent Assignment Protocol",
+      "owner": "Aubert",
+      "size_kb": 2.91,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udde0 Talent Assignment Protocol  Owner: Aubert  **How Nzila deploys internal and fractional talent across ventures**  ---  ### **1. Purpose**  This protocol ensures:  - Strategic, **milestone-tied depl",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde0 Talent Assignment Protocol 1e885df0190780c68eb0d91030899a99.md",
+      "target": "corporate\\compliance\\talent-assignment-protocol.md",
+      "category": "corporate/compliance",
+      "export": "Corporate Governance & Strategy"
+    },
+    {
+      "filename": "\ud83e\udde9 Handoff & Exit Criteria 1e885df0190780d78302c52266ae426f.md",
+      "title": "\ud83e\udde9 Handoff & Exit Criteria",
+      "owner": "Aubert",
+      "size_kb": 2.96,
+      "modified": "2026-02-17T04:12:58",
+      "preview": "# \ud83e\udde9 Handoff & Exit Criteria  Owner: Aubert  **Defining the moment when a venture, product, or service can be handed off, paused, or exited**  ---  ### **1. Purpose**  This guide defines the structured",
+      "source": "legacy\\notion_export_3\\part1\\\ud83e\udde9 Handoff & Exit Criteria 1e885df0190780d78302c52266ae426f.md",
+      "target": "corporate\\governance\\framework-handoff-exit-criteria.md",
+      "category": "corporate/governance",
+      "export": "Corporate Governance & Strategy"
+    }
+  ],
+  "skipped": []
+}

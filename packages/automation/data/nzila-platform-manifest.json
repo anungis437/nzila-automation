@@ -1,0 +1,334 @@
+{
+  "template_version": "1.0.0",
+  "product_name": "Nzila Backbone Platform",
+  "repo_name": "nzila-platform",
+  "owner_github": "anungis437",
+  "primary_app_path": "platform",
+  "app_port": 8000,
+  "tenant_key": "org_id",
+  "image_repo": "nzila-platform",
+  "auth_provider": "clerk",
+  "db_provider": "azure_postgresql",
+  "deploy_provider": "azure_container_apps",
+  "environments": {
+    "staging_url": "https://platform-staging.nzila.io",
+    "production_url": "https://platform.nzila.io",
+    "api_base": "/api/v1"
+  },
+  "profile": "django-aca-azurepg",
+  "modules": [
+    "core-governance",
+    "repo-bootstrap",
+    "db-azurepg",
+    "deploy-aca-oidc",
+    "security-baseline",
+    "observability-audit"
+  ],
+  "options": {
+    "enable_ci": true,
+    "enable_deploy_workflows": true,
+    "enable_ai_ops": true,
+    "strict_parity": true
+  },
+  "platform_purpose": "Multi-product backbone infrastructure serving 7+ Nzila ventures",
+  "platform_services": {
+    "foundation": {
+      "tenant_management": {
+        "description": "Multi-tenant core with clinic/trial/organization isolation",
+        "entities": ["Tenant", "TenantUser", "TenantInvitation", "TenantSettings"],
+        "features": ["Tenant provisioning", "Isolation enforcement", "Tenant switching", "Usage metering"]
+      },
+      "authentication": {
+        "description": "Unified auth with Clerk integration",
+        "entities": ["User", "UserProfile", "UserSession", "AuditLog"],
+        "features": ["SSO", "MFA", "Session management", "Password policies"]
+      },
+      "authorization": {
+        "description": "RBAC system across all products",
+        "entities": ["Role", "Permission", "UserRole", "RolePermission", "ResourcePolicy"],
+        "features": ["Role hierarchy", "Permission inheritance", "Resource-level access", "Dynamic policies"]
+      }
+    },
+    "consent_governance": {
+      "consent_management": {
+        "description": "PIPEDA/GDPR/HIPAA compliant consent system",
+        "entities": ["ConsentRecord", "ConsentScope", "ConsentVersion", "ConsentWithdrawal"],
+        "features": ["Granular scopes", "Version tracking", "Withdrawal processing", "Consent inheritance"]
+      },
+      "data_governance": {
+        "description": "Cross-product data governance",
+        "entities": ["DataPolicy", "RetentionRule", "DataClassification", "DSARRequest"],
+        "features": ["Retention automation", "DSAR fulfillment", "Anonymization", "Right to erasure"]
+      },
+      "audit_compliance": {
+        "description": "Comprehensive audit logging",
+        "entities": ["AuditEvent", "ComplianceReport", "SecurityIncident"],
+        "features": ["Immutable logs", "Compliance dashboards", "Incident tracking", "Forensic search"]
+      }
+    },
+    "ai_core": {
+      "llm_orchestration": {
+        "description": "Azure OpenAI gateway with governance",
+        "entities": ["LLMRequest", "PromptTemplate", "ModelConfig", "TokenUsage"],
+        "features": ["Multi-model routing", "Rate limiting", "Cost tracking", "Prompt versioning"]
+      },
+      "memory_engine": {
+        "description": "Companion memory with vector search",
+        "entities": ["MemoryGraph", "MemoryEmbedding", "MemoryContext", "MemoryRelationship"],
+        "features": ["Semantic search (pgvector)", "Context retrieval", "Memory isolation", "Consent-aware memory"]
+      },
+      "ai_safety": {
+        "description": "AI safety and governance layer",
+        "entities": ["SafetyCheck", "ContentFilter", "BiasDetection", "HallucinationAlert"],
+        "features": ["Prompt logging", "Content moderation", "Clinical safety triggers", "Explainability"]
+      },
+      "cognitive_analytics": {
+        "description": "Centralized cognitive scoring",
+        "entities": ["CognitiveScore", "DriftDetection", "PredictiveModel", "OutcomeAnalysis"],
+        "features": ["Domain scoring", "Anomaly detection", "Outcome prediction", "Cross-product insights"]
+      }
+    },
+    "shared_services": {
+      "notification_service": {
+        "description": "Multi-channel notification hub",
+        "entities": ["Notification", "NotificationTemplate", "DeliveryLog", "NotificationPreference"],
+        "features": ["Email/SMS/Push/In-app", "Template management", "Fatigue prevention", "Delivery tracking"]
+      },
+      "integration_hub": {
+        "description": "External system integration",
+        "entities": ["IntegrationConfig", "HL7Message", "FHIRResource", "WearableData"],
+        "features": ["HL7/FHIR gateway", "Wearable connectors", "Data transformation", "Sync orchestration"]
+      },
+      "file_storage": {
+        "description": "Secure file management",
+        "entities": ["File", "FileVersion", "FileAccess", "MediaProcessing"],
+        "features": ["Encrypted storage", "Access control", "Media processing", "CDN integration"]
+      },
+      "background_tasks": {
+        "description": "Async task orchestration with Celery",
+        "entities": ["Task", "TaskSchedule", "TaskResult", "TaskQueue"],
+        "features": ["Distributed processing", "Retry logic", "Scheduled jobs", "Priority queues"]
+      }
+    },
+    "platform_ops": {
+      "api_gateway": {
+        "description": "Service mesh and routing",
+        "entities": ["APIRoute", "RateLimit", "ServiceRegistry"],
+        "features": ["Request routing", "Rate limiting", "API versioning", "Service discovery"]
+      },
+      "observability": {
+        "description": "Monitoring and alerting",
+        "entities": ["LogEntry", "Metric", "Trace", "Alert"],
+        "features": ["Centralized logging", "Distributed tracing", "Performance metrics", "Error tracking"]
+      },
+      "developer_tools": {
+        "description": "Developer experience platform",
+        "entities": ["APIDoc", "ServiceCatalog", "SLATracker"],
+        "features": ["API documentation", "Service discovery", "SLA monitoring", "SDK generation"]
+      }
+    }
+  },
+  "django_apps": [
+    "tenants",
+    "users",
+    "auth_rbac",
+    "consent",
+    "governance",
+    "audit",
+    "llm_gateway",
+    "memory",
+    "ai_safety",
+    "cognitive",
+    "notifications",
+    "integrations",
+    "files",
+    "tasks",
+    "gateway",
+    "observability"
+  ],
+  "key_dependencies": [
+    "Django==5.0",
+    "djangorestframework==3.14",
+    "django-tenants==3.6",
+    "clerk-backend-api==0.1",
+    "psycopg2-binary==2.9",
+    "pgvector==0.2",
+    "celery==5.3",
+    "redis==5.0",
+    "openai==1.12",
+    "langchain==0.1",
+    "django-cors-headers==4.3",
+    "django-filter==24.1",
+    "drf-spectacular==0.27",
+    "django-environ==0.11",
+    "gunicorn==21.2",
+    "whitenoise==6.6",
+    "azure-identity==1.15",
+    "azure-storage-blob==12.19",
+    "sentry-sdk==1.40"
+  ],
+  "database_extensions": [
+    "uuid-ossp",
+    "pgvector",
+    "pg_trgm",
+    "pg_stat_statements"
+  ],
+  "ai_services": {
+    "llm_provider": "azure_openai",
+    "primary_model": "gpt-4",
+    "embedding_model": "text-embedding-ada-002",
+    "vector_store": "pgvector",
+    "max_tokens_per_request": 4096,
+    "token_budget_per_tenant": 1000000
+  },
+  "multi_tenant_strategy": {
+    "isolation_method": "schema_based",
+    "tenant_types": ["clinic", "trial", "organization", "partner"],
+    "default_tenant": "nzila_core",
+    "tenant_provisioning": "automated",
+    "cross_tenant_queries": "controlled_via_rbac"
+  },
+  "product_integration": {
+    "consumer_products": [
+      {
+        "name": "Memora",
+        "inherits": ["consent", "auth", "ai_core", "notifications", "cognitive", "files"],
+        "extends_with": ["games", "companion", "quests", "memory_garden"]
+      },
+      {
+        "name": "ClinicConnect",
+        "inherits": ["tenants", "auth", "governance", "integrations", "audit"],
+        "extends_with": ["clinical_workspace", "trials", "devices", "reporting"]
+      },
+      {
+        "name": "CareAI",
+        "inherits": ["ai_core", "ai_safety", "consent", "audit", "cognitive"],
+        "extends_with": ["clinical_recommendations", "emr_integration"]
+      },
+      {
+        "name": "FamilySync",
+        "inherits": ["users", "consent", "notifications", "files"],
+        "extends_with": ["supporter_dashboard", "observations", "care_coordination"]
+      },
+      {
+        "name": "Companion API",
+        "inherits": ["llm_gateway", "memory", "ai_safety", "auth"],
+        "extends_with": ["partner_onboarding", "usage_metering", "api_docs"]
+      },
+      {
+        "name": "WellLoop",
+        "inherits": ["cognitive", "consent", "governance"],
+        "extends_with": ["analytics_dashboard", "insights_engine"]
+      },
+      {
+        "name": "MyLearning (EdTech)",
+        "inherits": ["ai_core", "users", "notifications", "files"],
+        "extends_with": ["adaptive_learning", "curriculum", "offline_sync"]
+      }
+    ]
+  },
+  "compliance_requirements": {
+    "privacy": ["PIPEDA", "GDPR", "CCPA"],
+    "health": ["HIPAA (conditional)", "Clinical trial regulations (ICH-GCP)"],
+    "accessibility": ["WCAG 2.1 AA", "AODA"],
+    "security": ["SOC 2 Type II", "ISO 27001"]
+  },
+  "deployment_architecture": {
+    "containerization": "Docker",
+    "orchestration": "Azure Container Apps",
+    "database": "Azure PostgreSQL Flexible Server",
+    "cache": "Azure Cache for Redis",
+    "storage": "Azure Blob Storage",
+    "cdn": "Azure CDN",
+    "monitoring": "Azure Application Insights",
+    "secrets": "Azure Key Vault",
+    "ci_cd": "GitHub Actions"
+  },
+  "development_phases": {
+    "phase_0_scaffold": {
+      "duration_weeks": 2,
+      "deliverables": [
+        "Apply scripts-book template",
+        "Set up Azure infrastructure",
+        "Configure CI/CD pipelines",
+        "Create monorepo structure",
+        "Establish dev environments"
+      ]
+    },
+    "phase_1_foundation": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "Multi-tenant core (schema-based)",
+        "Clerk authentication integration",
+        "RBAC system",
+        "Audit logging infrastructure",
+        "User management service",
+        "API gateway with rate limiting"
+      ]
+    },
+    "phase_2_consent_governance": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "Consent management system",
+        "Data governance service",
+        "DSAR automation",
+        "Consent change tracking",
+        "Patient consent portal API",
+        "Privacy analytics framework"
+      ]
+    },
+    "phase_3_ai_core": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "LLM orchestration layer",
+        "Prompt management",
+        "Vector database (pgvector)",
+        "AI safety layer",
+        "Prompt logging",
+        "Token usage tracking"
+      ]
+    },
+    "phase_4_shared_services": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "Notification service",
+        "Integration hub (HL7/FHIR)",
+        "File storage service",
+        "Celery task orchestration",
+        "Observability stack",
+        "Cognitive analytics service"
+      ]
+    },
+    "phase_5_developer_platform": {
+      "duration_weeks": 2,
+      "deliverables": [
+        "Python SDK",
+        "React component library",
+        "API documentation automation",
+        "Developer portal",
+        "SLA dashboard",
+        "Platform launch"
+      ]
+    }
+  },
+  "success_metrics": {
+    "technical": {
+      "api_response_time_p95": "< 200ms",
+      "uptime_sla": "99.9%",
+      "ai_request_latency": "< 2s",
+      "database_query_time_p95": "< 50ms"
+    },
+    "business": {
+      "product_launch_acceleration": "50% faster than standalone",
+      "shared_service_reuse": "> 80% across products",
+      "compliance_audit_pass_rate": "100%",
+      "developer_onboarding_time": "< 2 weeks"
+    },
+    "ai_governance": {
+      "prompt_audit_coverage": "100%",
+      "safety_check_pass_rate": "> 99.5%",
+      "hallucination_detection_rate": "> 95%",
+      "consent_coverage_for_ai": "100%"
+    }
+  }
+}

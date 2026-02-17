@@ -1,0 +1,399 @@
+{
+  "platform_id": "abr",
+  "platform_name": "ABR Insights",
+  "overall_progress": 3.8461538461538463,
+  "started_at": "2026-02-17T13:32:40.978519",
+  "last_updated": "2026-02-17T13:47:30.742427",
+  "metadata": {},
+  "phases": {
+    "analysis": {
+      "phase": "analysis",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 50.0,
+      "tasks_total": 2,
+      "tasks_completed": 1,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "schema_report_exists",
+          "description": "Schema extraction report generated",
+          "status": "passed",
+          "checked_at": "2026-02-17T13:47:30.730476",
+          "message": "File exists",
+          "required": true
+        },
+        {
+          "name": "tech_stack_identified",
+          "description": "Tech stack fully documented",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "schema_extraction": {
+      "phase": "schema_extraction",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "all_tables_extracted",
+          "description": "All database tables captured",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "relationships_mapped",
+          "description": "Foreign key relationships documented",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "enums_catalogued",
+          "description": "All enum types catalogued",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "code_generation": {
+      "phase": "code_generation",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "models_generated",
+          "description": "Django models generated from schemas",
+          "status": "passed",
+          "checked_at": "2026-02-17T13:47:30.750568",
+          "message": "8 model files",
+          "required": true
+        },
+        {
+          "name": "serializers_generated",
+          "description": "DRF serializers generated",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "views_generated",
+          "description": "DRF viewsets generated",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "no_syntax_errors",
+          "description": "Generated code has no syntax errors",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "dependency_mapping": {
+      "phase": "dependency_mapping",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "deps_classified",
+          "description": "All packages classified",
+          "status": "passed",
+          "checked_at": "2026-02-17T13:47:30.756472",
+          "message": "Report generated",
+          "required": true
+        },
+        {
+          "name": "python_equivalents",
+          "description": "Python equivalents identified for migrate packages",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "risk_assessed",
+          "description": "High-risk migrations flagged",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "scaffold_population": {
+      "phase": "scaffold_population",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": []
+    },
+    "model_migration": {
+      "phase": "model_migration",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "migrations_run",
+          "description": "Django makemigrations succeeds",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "migrate_succeeds",
+          "description": "Django migrate runs cleanly",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "schema_parity",
+          "description": "Django schema matches source schema",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "data_migration": {
+      "phase": "data_migration",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": []
+    },
+    "auth_migration": {
+      "phase": "auth_migration",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "clerk_jwt_works",
+          "description": "Clerk JWT verification implemented",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "permissions_mapped",
+          "description": "RBAC permissions mapped to Django",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "auth_tests_pass",
+          "description": "Auth integration tests pass",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "api_migration": {
+      "phase": "api_migration",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "endpoints_parity",
+          "description": "All API endpoints have DRF equivalents",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "response_format_match",
+          "description": "Response formats match frontend expectations",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "api_tests_pass",
+          "description": "API integration tests pass",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "queue_migration": {
+      "phase": "queue_migration",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": []
+    },
+    "testing": {
+      "phase": "testing",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "unit_tests_pass",
+          "description": "All unit tests pass",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "integration_tests",
+          "description": "Integration tests pass",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "coverage_80pct",
+          "description": "Code coverage >= 80%",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "no_regressions",
+          "description": "No feature regressions detected",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "deployment": {
+      "phase": "deployment",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": [
+        {
+          "name": "docker_builds",
+          "description": "Docker image builds successfully",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "ci_pipeline_green",
+          "description": "CI/CD pipeline passes",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        },
+        {
+          "name": "staging_healthy",
+          "description": "Staging environment health check passes",
+          "status": "pending",
+          "checked_at": null,
+          "message": "",
+          "required": true
+        }
+      ]
+    },
+    "cutover": {
+      "phase": "cutover",
+      "status": "not_started",
+      "started_at": null,
+      "completed_at": null,
+      "progress_pct": 0.0,
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "notes": "",
+      "blockers": [],
+      "quality_gates": []
+    }
+  }
+}

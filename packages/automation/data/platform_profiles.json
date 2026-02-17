@@ -1,0 +1,521 @@
+[
+  {
+    "platform_id": "Union_Eyes_app_v1-main",
+    "name": "Union Eyes App V1 Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\Union_Eyes_app_v1-main",
+    "business_vertical": null,
+    "size_mb": 286.44,
+    "entity_count": 0,
+    "complexity": "LOW",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "clerk",
+      "providers": [
+        "clerk"
+      ],
+      "migration_complexity": "LOW"
+    },
+    "migration_estimate_weeks": 2,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "shop_quoter_tool_v1-main",
+    "name": "Shop Quoter Tool V1 Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\shop_quoter_tool_v1-main",
+    "business_vertical": null,
+    "size_mb": 101.98,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "abr-insights-app-main",
+    "name": "Abr Insights App Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\abr-insights-app-main",
+    "business_vertical": null,
+    "size_mb": 8.66,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "cora-platform-fix-tests-model-alignment",
+    "name": "Cora Platform Fix Tests Model Alignment",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\cora-platform-fix-tests-model-alignment",
+    "business_vertical": null,
+    "size_mb": 6.67,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": "Django",
+      "version": null,
+      "language": "Python",
+      "package_manager": "npm",
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": "Django ORM",
+      "provider": "PostgreSQL",
+      "migrations_count": 6,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "drf-auth",
+      "providers": [
+        "clerk",
+        "drf-auth"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 37,
+    "dependencies": [
+      "react",
+      "typescript",
+      "tailwindcss"
+    ]
+  },
+  {
+    "platform_id": "court_lens_app_v1-main",
+    "name": "Court Lens App V1 Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\court_lens_app_v1-main",
+    "business_vertical": null,
+    "size_mb": 198.39,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "congowave_app_v1-main",
+    "name": "Congowave App V1 Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\congowave_app_v1-main",
+    "business_vertical": null,
+    "size_mb": 10.94,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "nzila-trade-os-main",
+    "name": "Nzila Trade Os Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\nzila-trade-os-main",
+    "business_vertical": null,
+    "size_mb": 10.28,
+    "entity_count": 30,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": "Django",
+      "version": null,
+      "language": "Python",
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": "Django ORM",
+      "provider": "PostgreSQL",
+      "migrations_count": 117,
+      "models_count": 30,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "drf-auth",
+      "providers": [
+        "drf-auth"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 94,
+    "dependencies": []
+  },
+  {
+    "platform_id": "cyber_learn_app_v1-main",
+    "name": "Cyber Learn App V1 Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\cyber_learn_app_v1-main",
+    "business_vertical": null,
+    "size_mb": 4.99,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "nzila_eexports-main",
+    "name": "Nzila Eexports Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\nzila_eexports-main",
+    "business_vertical": null,
+    "size_mb": 6.6,
+    "entity_count": 50,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": "Django",
+      "version": null,
+      "language": "Python",
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": "Django ORM",
+      "provider": "PostgreSQL",
+      "migrations_count": 43,
+      "models_count": 50,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "drf-auth",
+      "providers": [
+        "drf-auth"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 97,
+    "dependencies": []
+  },
+  {
+    "platform_id": "c3uo-app-v1-main",
+    "name": "C3Uo App V1 Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\c3uo-app-v1-main",
+    "business_vertical": null,
+    "size_mb": 8.87,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "SentryIQ-main",
+    "name": "Sentryiq Main",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\SentryIQ-main",
+    "business_vertical": null,
+    "size_mb": 3.64,
+    "entity_count": 0,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": null,
+      "version": null,
+      "language": null,
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 0,
+    "api_routes_count": 0,
+    "dependencies": []
+  },
+  {
+    "platform_id": "ponduops",
+    "name": "Ponduops",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\ponduops",
+    "business_vertical": null,
+    "size_mb": 1.65,
+    "entity_count": 220,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": "React + Vite",
+      "version": null,
+      "language": "JavaScript",
+      "package_manager": "npm",
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 220,
+    "api_routes_count": 0,
+    "dependencies": [
+      "react",
+      "typescript",
+      "tailwindcss"
+    ]
+  },
+  {
+    "platform_id": "insight-cfo-bad2ab5f",
+    "name": "Insight Cfo Bad2Ab5F",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\insight-cfo-bad2ab5f",
+    "business_vertical": null,
+    "size_mb": 0.56,
+    "entity_count": 76,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": "React + Vite",
+      "version": null,
+      "language": "JavaScript",
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 76,
+    "api_routes_count": 0,
+    "dependencies": [
+      "react",
+      "tailwindcss"
+    ]
+  },
+  {
+    "platform_id": "stsa-ac5f24e9",
+    "name": "Stsa Ac5F24E9",
+    "path": "D:\\APPS\\nzila-automation\\legacy-codebases\\stsa-ac5f24e9",
+    "business_vertical": null,
+    "size_mb": 0.88,
+    "entity_count": 95,
+    "complexity": "MEDIUM",
+    "tech_stack": {
+      "framework": "React + Vite",
+      "version": null,
+      "language": "JavaScript",
+      "package_manager": null,
+      "monorepo": false,
+      "build_tool": null
+    },
+    "database": {
+      "orm": null,
+      "provider": null,
+      "migrations_count": 0,
+      "models_count": 0,
+      "has_rls": false,
+      "rls_policies": 0
+    },
+    "auth": {
+      "current": "custom",
+      "providers": [
+        "custom"
+      ],
+      "migration_complexity": "HIGH"
+    },
+    "migration_estimate_weeks": 4,
+    "components_count": 95,
+    "api_routes_count": 0,
+    "dependencies": [
+      "react",
+      "tailwindcss"
+    ]
+  }
+]

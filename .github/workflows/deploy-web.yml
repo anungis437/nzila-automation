@@ -1,0 +1,68 @@
+name: Deploy Web (Azure SWA)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/ui/**'
+      - 'packages/config/**'
+      - 'content/public/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/ui/**'
+      - 'packages/config/**'
+      - 'content/public/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build & Deploy Web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm build:web
+        env:
+          NEXT_PUBLIC_CONSOLE_URL: ${{ vars.CONSOLE_URL || 'https://console.nzila.app' }}
+
+      - name: Deploy to Azure Static Web Apps
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_TOKEN_WEB }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: apps/web
+          output_location: .next
+          skip_app_build: true
+
+  close-staging:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close PR staging
+    steps:
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_TOKEN_WEB }}
+          action: close

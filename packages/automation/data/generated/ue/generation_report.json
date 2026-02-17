@@ -1,0 +1,5183 @@
+{
+  "timestamp": "2026-02-17T13:47:10.017247",
+  "total_apps": 11,
+  "total_tables": 512,
+  "total_fields": 1938,
+  "apps": {
+    "ai_core": {
+      "table_count": 20,
+      "tables": [
+        {
+          "name": "ab_tests",
+          "model_name": "AbTests",
+          "field_count": 6,
+          "source": "drizzle",
+          "source_file": "ab-testing-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ab_test_variants",
+          "model_name": "AbTestVariants",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ab-testing-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ab_test_assignments",
+          "model_name": "AbTestAssignments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ab-testing-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ab_test_events",
+          "model_name": "AbTestEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ab-testing-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "accessibility_audits",
+          "model_name": "AccessibilityAudits",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accessibility-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "accessibility_issues",
+          "model_name": "AccessibilityIssues",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accessibility-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "wcag_success_criteria",
+          "model_name": "WcagSuccessCriteria",
+          "field_count": 16,
+          "source": "drizzle",
+          "source_file": "accessibility-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "accessibility_test_suites",
+          "model_name": "AccessibilityTestSuites",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accessibility-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "accessibility_user_testing",
+          "model_name": "AccessibilityUserTesting",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accessibility-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "chat_sessions",
+          "model_name": "ChatSessions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "chat_messages",
+          "model_name": "ChatMessages",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "knowledge_base",
+          "model_name": "KnowledgeBase",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "chatbot_suggestions",
+          "model_name": "ChatbotSuggestions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "chatbot_analytics",
+          "model_name": "ChatbotAnalytics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ai_safety_filters",
+          "model_name": "AiSafetyFilters",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "ai_usage_metrics",
+          "model_name": "AiUsageMetrics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ai_rate_limits",
+          "model_name": "AiRateLimits",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ai_budgets",
+          "model_name": "AiBudgets",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "ai-chatbot-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ml_predictions",
+          "model_name": "MlPredictions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "model_metadata",
+          "model_name": "ModelMetadata",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "predictions.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "core": {
+      "table_count": 59,
+      "tables": [
+        {
+          "name": "alert_rules",
+          "model_name": "AlertRules",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "alert_conditions",
+          "model_name": "AlertConditions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "alert_actions",
+          "model_name": "AlertActions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "alert_escalations",
+          "model_name": "AlertEscalations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "alert_executions",
+          "model_name": "AlertExecutions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "workflow_definitions",
+          "model_name": "WorkflowDefinitions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "workflow_executions",
+          "model_name": "WorkflowExecutions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "alert_recipients",
+          "model_name": "AlertRecipients",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "alerting-automation-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "audit_logs",
+          "model_name": "AuditLogs",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "audit-security-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "security_events",
+          "model_name": "SecurityEvents",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "audit-security-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "failed_login_attempts",
+          "model_name": "FailedLoginAttempts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "audit-security-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "rate_limit_events",
+          "model_name": "RateLimitEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "audit-security-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "automation_rules",
+          "model_name": "AutomationRules",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "automation-rules-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "automation_execution_log",
+          "model_name": "AutomationExecutionLog",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "automation-rules-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "automation_schedules",
+          "model_name": "AutomationSchedules",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "automation-rules-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_invoices",
+          "model_name": "ExternalInvoices",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_payments",
+          "model_name": "ExternalPayments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_customers",
+          "model_name": "ExternalCustomers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_accounts",
+          "model_name": "ExternalAccounts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_communication_channels",
+          "model_name": "ExternalCommunicationChannels",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_communication_messages",
+          "model_name": "ExternalCommunicationMessages",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_communication_users",
+          "model_name": "ExternalCommunicationUsers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_communication_files",
+          "model_name": "ExternalCommunicationFiles",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_document_sites",
+          "model_name": "ExternalDocumentSites",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "documents.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_document_libraries",
+          "model_name": "ExternalDocumentLibraries",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "documents.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_document_files",
+          "model_name": "ExternalDocumentFiles",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "documents.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_document_permissions",
+          "model_name": "ExternalDocumentPermissions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "documents.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_employees",
+          "model_name": "ExternalEmployees",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "hris.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_positions",
+          "model_name": "ExternalPositions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "hris.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_departments",
+          "model_name": "ExternalDepartments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "hris.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_benefit_plans",
+          "model_name": "ExternalBenefitPlans",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_benefit_enrollments",
+          "model_name": "ExternalBenefitEnrollments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_benefit_dependents",
+          "model_name": "ExternalBenefitDependents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_benefit_coverage",
+          "model_name": "ExternalBenefitCoverage",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_insurance_claims",
+          "model_name": "ExternalInsuranceClaims",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_insurance_policies",
+          "model_name": "ExternalInsurancePolicies",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_insurance_beneficiaries",
+          "model_name": "ExternalInsuranceBeneficiaries",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_benefit_utilization",
+          "model_name": "ExternalBenefitUtilization",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "insurance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_lms_courses",
+          "model_name": "ExternalLmsCourses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_lms_enrollments",
+          "model_name": "ExternalLmsEnrollments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_lms_progress",
+          "model_name": "ExternalLmsProgress",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_lms_completions",
+          "model_name": "ExternalLmsCompletions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_lms_learners",
+          "model_name": "ExternalLmsLearners",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "integration_configs",
+          "model_name": "IntegrationConfigs",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "integration_sync_log",
+          "model_name": "IntegrationSyncLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "webhook_events",
+          "model_name": "WebhookEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "integration_sync_schedules",
+          "model_name": "IntegrationSyncSchedules",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "integration_api_keys",
+          "model_name": "IntegrationApiKeys",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "integration_webhooks",
+          "model_name": "IntegrationWebhooks",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "webhook_deliveries",
+          "model_name": "WebhookDeliveries",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integrations.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "support_tickets",
+          "model_name": "SupportTickets",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "support.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ticket_comments",
+          "model_name": "TicketComments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "support.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ticket_history",
+          "model_name": "TicketHistory",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "support.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sla_policies",
+          "model_name": "SlaPolicies",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "support.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "knowledge_base_articles",
+          "model_name": "KnowledgeBaseArticles",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "support.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "webhook_subscriptions",
+          "model_name": "WebhookSubscriptions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integration-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "api_integrations",
+          "model_name": "ApiIntegrations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integration-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "integration_sync_logs",
+          "model_name": "IntegrationSyncLogs",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integration-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "api_access_tokens",
+          "model_name": "ApiAccessTokens",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "integration-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "analytics": {
+      "table_count": 23,
+      "tables": [
+        {
+          "name": "analytics_scheduled_reports",
+          "model_name": "AnalyticsScheduledReports",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics-reporting-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "report_delivery_history",
+          "model_name": "ReportDeliveryHistory",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics-reporting-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "benchmark_categories",
+          "model_name": "BenchmarkCategories",
+          "field_count": 13,
+          "source": "drizzle",
+          "source_file": "analytics-reporting-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "benchmark_data",
+          "model_name": "BenchmarkData",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics-reporting-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organization_benchmark_snapshots",
+          "model_name": "OrganizationBenchmarkSnapshots",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics-reporting-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "analytics_metrics",
+          "model_name": "AnalyticsMetrics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "kpi_configurations",
+          "model_name": "KpiConfigurations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "trend_analyses",
+          "model_name": "TrendAnalyses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "insight_recommendations",
+          "model_name": "InsightRecommendations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "comparative_analyses",
+          "model_name": "ComparativeAnalyses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "analytics.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "page_analytics",
+          "model_name": "PageAnalytics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "communication_analytics",
+          "model_name": "CommunicationAnalytics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication-analytics-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "user_engagement_scores",
+          "model_name": "UserEngagementScores",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication-analytics-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "reports",
+          "model_name": "Reports",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "reports.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "report_templates",
+          "model_name": "ReportTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "reports.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "report_executions",
+          "model_name": "ReportExecutions",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "reports.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "scheduled_reports",
+          "model_name": "ScheduledReports",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "reports.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "report_shares",
+          "model_name": "ReportShares",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "reports.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "wage_benchmarks",
+          "model_name": "WageBenchmarks",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "benchmarks.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "union_density",
+          "model_name": "UnionDensity",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "benchmarks.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cost_of_living_data",
+          "model_name": "CostOfLivingData",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "benchmarks.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "contribution_rates",
+          "model_name": "ContributionRates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "benchmarks.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_data_sync_log",
+          "model_name": "ExternalDataSyncLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "benchmarks.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "bargaining": {
+      "table_count": 22,
+      "tables": [
+        {
+          "name": "arbitration_precedents",
+          "model_name": "ArbitrationPrecedents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "arbitration-precedents-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "precedent_tags",
+          "model_name": "PrecedentTags",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "arbitration-precedents-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "precedent_citations",
+          "model_name": "PrecedentCitations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "arbitration-precedents-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "negotiations",
+          "model_name": "Negotiations",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "bargaining-negotiations-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bargaining_proposals",
+          "model_name": "BargainingProposals",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "bargaining-negotiations-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "tentative_agreements",
+          "model_name": "TentativeAgreements",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "bargaining-negotiations-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "negotiation_sessions",
+          "model_name": "NegotiationSessions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "bargaining-negotiations-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bargaining_team_members",
+          "model_name": "BargainingTeamMembers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "bargaining-negotiations-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cba_clauses",
+          "model_name": "CbaClauses",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "cba-clauses-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clause_comparisons",
+          "model_name": "ClauseComparisons",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-clauses-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "wage_progressions",
+          "model_name": "WageProgressions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-clauses-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "benefit_comparisons",
+          "model_name": "BenefitComparisons",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-clauses-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "arbitration_decisions",
+          "model_name": "ArbitrationDecisions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-intelligence-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "arbitrator_profiles",
+          "model_name": "ArbitratorProfiles",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-intelligence-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bargaining_notes",
+          "model_name": "BargainingNotes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-intelligence-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cba_footnotes",
+          "model_name": "CbaFootnotes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cba-intelligence-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "collective_agreements",
+          "model_name": "CollectiveAgreements",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "collective-agreements-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cba_version_history",
+          "model_name": "CbaVersionHistory",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "collective-agreements-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cba_contacts",
+          "model_name": "CbaContacts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "collective-agreements-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "shared_clause_library",
+          "model_name": "SharedClauseLibrary",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "shared-library.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clause_library_tags",
+          "model_name": "ClauseLibraryTags",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "shared-library.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clause_comparisons_history",
+          "model_name": "ClauseComparisonsHistory",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "shared-library.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "billing": {
+      "table_count": 81,
+      "tables": [
+        {
+          "name": "autopay_settings",
+          "model_name": "AutopaySettings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "autopay-settings-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_per_capita_benchmarks",
+          "model_name": "ClcPerCapitaBenchmarks",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-partnership-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_union_density",
+          "model_name": "ClcUnionDensity",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-partnership-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_bargaining_trends",
+          "model_name": "ClcBargainingTrends",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-partnership-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_sync_log",
+          "model_name": "ClcSyncLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-partnership-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_oauth_tokens",
+          "model_name": "ClcOauthTokens",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "clc-partnership-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "per_capita_remittances",
+          "model_name": "PerCapitaRemittances",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "clc-per-capita-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_chart_of_accounts",
+          "model_name": "ClcChartOfAccounts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-per-capita-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "remittance_approvals",
+          "model_name": "RemittanceApprovals",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "clc-per-capita-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_webhook_log",
+          "model_name": "ClcWebhookLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-per-capita-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organization_contacts",
+          "model_name": "OrganizationContacts",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "clc-per-capita-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_organization_sync_log",
+          "model_name": "ClcOrganizationSyncLog",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "clc-sync-audit-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "chart_of_accounts",
+          "model_name": "ChartOfAccounts",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "clc-sync-audit-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_remittance_mapping",
+          "model_name": "ClcRemittanceMapping",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-sync-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "clc_api_config",
+          "model_name": "ClcApiConfig",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "clc-sync-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "donation_campaigns",
+          "model_name": "DonationCampaigns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "donations",
+          "model_name": "Donations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "donation_receipts",
+          "model_name": "DonationReceipts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "stripe_connect_accounts",
+          "model_name": "StripeConnectAccounts",
+          "field_count": 17,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "payment_classification_policy",
+          "model_name": "PaymentClassificationPolicy",
+          "field_count": 12,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "payment_routing_rules",
+          "model_name": "PaymentRoutingRules",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "separated_payment_transactions",
+          "model_name": "SeparatedPaymentTransactions",
+          "field_count": 21,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "whiplash_violations",
+          "model_name": "WhiplashViolations",
+          "field_count": 19,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "strike_fund_payment_audit",
+          "model_name": "StrikeFundPaymentAudit",
+          "field_count": 17,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "account_balance_reconciliation",
+          "model_name": "AccountBalanceReconciliation",
+          "field_count": 13,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "whiplash_prevention_audit",
+          "model_name": "WhiplashPreventionAudit",
+          "field_count": 9,
+          "source": "drizzle",
+          "source_file": "whiplash.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "cost_centers",
+          "model_name": "CostCenters",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "gl_account_mappings",
+          "model_name": "GlAccountMappings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "gl_transaction_log",
+          "model_name": "GlTransactionLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "gl_trial_balance",
+          "model_name": "GlTrialBalance",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "accounting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organization_billing_config",
+          "model_name": "OrganizationBillingConfig",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "billing-config.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "dues_transactions",
+          "model_name": "DuesTransactions",
+          "field_count": 6,
+          "source": "drizzle",
+          "source_file": "dues.ts",
+          "has_fk": false,
+          "has_enum": true,
+          "has_jsonb": false
+        },
+        {
+          "name": "payments",
+          "model_name": "Payments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "payments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "payment_cycles",
+          "model_name": "PaymentCycles",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "payments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "payment_methods",
+          "model_name": "PaymentMethods",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "payments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bank_reconciliation",
+          "model_name": "BankReconciliation",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "payments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "payment_disputes",
+          "model_name": "PaymentDisputes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "payments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "stripe_webhook_events",
+          "model_name": "StripeWebhookEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "payments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "strike_fund_disbursements",
+          "model_name": "StrikeFundDisbursements",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "taxes.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "t4a_tax_slips",
+          "model_name": "T4aTaxSlips",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "taxes.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "rl1_tax_slips",
+          "model_name": "Rl1TaxSlips",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "taxes.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "tax_year_end_processing",
+          "model_name": "TaxYearEndProcessing",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "taxes.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "weekly_threshold_tracking",
+          "model_name": "WeeklyThresholdTracking",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "taxes.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "currency_enforcement_policy",
+          "model_name": "CurrencyEnforcementPolicy",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bank_of_canada_rates",
+          "model_name": "BankOfCanadaRates",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "transaction_currency_conversions",
+          "model_name": "TransactionCurrencyConversions",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "currency_enforcement_violations",
+          "model_name": "CurrencyEnforcementViolations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "t106_filing_tracking",
+          "model_name": "T106FilingTracking",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "transfer_pricing_documentation",
+          "model_name": "TransferPricingDocumentation",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "fx_rate_audit_log",
+          "model_name": "FxRateAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "currency_enforcement_audit",
+          "model_name": "CurrencyEnforcementAudit",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "exchange_rates",
+          "model_name": "ExchangeRates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cross_border_transactions",
+          "model_name": "CrossBorderTransactions",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "transfer-pricing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "account_mappings",
+          "model_name": "AccountMappings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "chart-of-accounts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "erp_connectors",
+          "model_name": "ErpConnectors",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "journal_entries",
+          "model_name": "JournalEntries",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "journal_entry_lines",
+          "model_name": "JournalEntryLines",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "erp_invoices",
+          "model_name": "ErpInvoices",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bank_accounts",
+          "model_name": "BankAccounts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bank_transactions",
+          "model_name": "BankTransactions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bank_reconciliations",
+          "model_name": "BankReconciliations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sync_jobs",
+          "model_name": "SyncJobs",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "financial_audit_log",
+          "model_name": "FinancialAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "currency_exchange_rates",
+          "model_name": "CurrencyExchangeRates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "erp.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "fmv_policy",
+          "model_name": "FmvPolicy",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cpi_data",
+          "model_name": "CpiData",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "fmv_benchmarks",
+          "model_name": "FmvBenchmarks",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "procurement_requests",
+          "model_name": "ProcurementRequests",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "procurement_bids",
+          "model_name": "ProcurementBids",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "independent_appraisals",
+          "model_name": "IndependentAppraisals",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cpi_adjusted_pricing",
+          "model_name": "CpiAdjustedPricing",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "fmv_violations",
+          "model_name": "FmvViolations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "fmv_audit_log",
+          "model_name": "FmvAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "trust-fmv.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "dues_rates",
+          "model_name": "DuesRates",
+          "field_count": 7,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_dues_ledger",
+          "model_name": "MemberDuesLedger",
+          "field_count": 7,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_arrears",
+          "model_name": "MemberArrears",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "employer_remittances",
+          "model_name": "EmployerRemittances",
+          "field_count": 10,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "remittance_line_items",
+          "model_name": "RemittanceLineItems",
+          "field_count": 10,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "remittance_exceptions",
+          "model_name": "RemittanceExceptions",
+          "field_count": 9,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "payment_plans",
+          "model_name": "PaymentPlans",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "financial_periods",
+          "model_name": "FinancialPeriods",
+          "field_count": 13,
+          "source": "drizzle",
+          "source_file": "dues-finance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "unions": {
+      "table_count": 77,
+      "tables": [
+        {
+          "name": "award_templates",
+          "model_name": "AwardTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "award-templates-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "award_history",
+          "model_name": "AwardHistory",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "award-templates-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "reward_wallet_ledger",
+          "model_name": "RewardWalletLedger",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "award-templates-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "budget_pool",
+          "model_name": "BudgetPool",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "award-templates-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "budget_reservations",
+          "model_name": "BudgetReservations",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "award-templates-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "calendars",
+          "model_name": "Calendars",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "calendar_events",
+          "model_name": "CalendarEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "event_attendees",
+          "model_name": "EventAttendees",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "meeting_rooms",
+          "model_name": "MeetingRooms",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "room_bookings",
+          "model_name": "RoomBookings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "calendar_sharing",
+          "model_name": "CalendarSharing",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "external_calendar_connections",
+          "model_name": "ExternalCalendarConnections",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "event_reminders",
+          "model_name": "EventReminders",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "calendar-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "congress_memberships",
+          "model_name": "CongressMemberships",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "congress-memberships-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "holidays",
+          "model_name": "Holidays",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "deadlines-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "steward_assignments",
+          "model_name": "StewardAssignments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "outreach_sequences",
+          "model_name": "OutreachSequences",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "outreach_enrollments",
+          "model_name": "OutreachEnrollments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "outreach_steps_log",
+          "model_name": "OutreachStepsLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "field_notes",
+          "model_name": "FieldNotes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organizer_tasks",
+          "model_name": "OrganizerTasks",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "task_comments",
+          "model_name": "TaskComments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_relationship_scores",
+          "model_name": "MemberRelationshipScores",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizer-workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "surveys",
+          "model_name": "Surveys",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "surveys.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "survey_questions",
+          "model_name": "SurveyQuestions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "surveys.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "survey_responses",
+          "model_name": "SurveyResponses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "surveys.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "survey_answers",
+          "model_name": "SurveyAnswers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "surveys.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "polls",
+          "model_name": "Polls",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "surveys.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "poll_votes",
+          "model_name": "PollVotes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "surveys.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_location_consent",
+          "model_name": "MemberLocationConsent",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federations",
+          "model_name": "Federations",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_memberships",
+          "model_name": "FederationMemberships",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_executives",
+          "model_name": "FederationExecutives",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_meetings",
+          "model_name": "FederationMeetings",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_remittances",
+          "model_name": "FederationRemittances",
+          "field_count": 14,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_campaigns",
+          "model_name": "FederationCampaigns",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_communications",
+          "model_name": "FederationCommunications",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "federation_resources",
+          "model_name": "FederationResources",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "federation-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "voting_sessions",
+          "model_name": "VotingSessions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "voting.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "voting_options",
+          "model_name": "VotingOptions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "voting.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "voter_eligibility",
+          "model_name": "VoterEligibility",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "voting.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "votes",
+          "model_name": "Votes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "voting.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "voting_notifications",
+          "model_name": "VotingNotifications",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "voting.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "voting_audit_log",
+          "model_name": "VotingAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "voting.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organizing_campaigns",
+          "model_name": "OrganizingCampaigns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organizing_contacts",
+          "model_name": "OrganizingContacts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "card_signing_events",
+          "model_name": "CardSigningEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "nlrb_clrb_filings",
+          "model_name": "NlrbClrbFilings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "union_representation_votes",
+          "model_name": "UnionRepresentationVotes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "field_organizer_activities",
+          "model_name": "FieldOrganizerActivities",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "employer_responses",
+          "model_name": "EmployerResponses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organizing_campaign_milestones",
+          "model_name": "OrganizingCampaignMilestones",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "organizing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "recognition_programs",
+          "model_name": "RecognitionPrograms",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "recognition_award_types",
+          "model_name": "RecognitionAwardTypes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "recognition_awards",
+          "model_name": "RecognitionAwards",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "reward_budget_envelopes",
+          "model_name": "RewardBudgetEnvelopes",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "reward_redemptions",
+          "model_name": "RewardRedemptions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_addresses",
+          "model_name": "MemberAddresses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "addresses.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_employment",
+          "model_name": "MemberEmployment",
+          "field_count": 13,
+          "source": "drizzle",
+          "source_file": "member-employment.ts",
+          "has_fk": true,
+          "has_enum": true,
+          "has_jsonb": false
+        },
+        {
+          "name": "employment_history",
+          "model_name": "EmploymentHistory",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "member-employment.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_leaves",
+          "model_name": "MemberLeaves",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "member-employment.ts",
+          "has_fk": true,
+          "has_enum": true,
+          "has_jsonb": false
+        },
+        {
+          "name": "job_classifications",
+          "model_name": "JobClassifications",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "member-employment.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_segments",
+          "model_name": "MemberSegments",
+          "field_count": 12,
+          "source": "drizzle",
+          "source_file": "member-segments.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "segment_executions",
+          "model_name": "SegmentExecutions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "member-segments.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "segment_exports",
+          "model_name": "SegmentExports",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "member-segments.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "training_courses",
+          "model_name": "TrainingCourses",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "training.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "course_sessions",
+          "model_name": "CourseSessions",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "training.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "course_registrations",
+          "model_name": "CourseRegistrations",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "training.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_certifications",
+          "model_name": "MemberCertifications",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "training.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "training_programs",
+          "model_name": "TrainingPrograms",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "training.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "program_enrollments",
+          "model_name": "ProgramEnrollments",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "training.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "employers",
+          "model_name": "Employers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "union-structure-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "worksites",
+          "model_name": "Worksites",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "union-structure-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "bargaining_units",
+          "model_name": "BargainingUnits",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "union-structure-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "committees",
+          "model_name": "Committees",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "union-structure-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "committee_memberships",
+          "model_name": "CommitteeMemberships",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "union-structure-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "role_tenure_history",
+          "model_name": "RoleTenureHistory",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "union-structure-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "content": {
+      "table_count": 45,
+      "tables": [
+        {
+          "name": "board_packets",
+          "model_name": "BoardPackets",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "board-packet-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "board_packet_sections",
+          "model_name": "BoardPacketSections",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "board-packet-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "board_packet_distributions",
+          "model_name": "BoardPacketDistributions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "board-packet-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "board_packet_templates",
+          "model_name": "BoardPacketTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "board-packet-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cms_templates",
+          "model_name": "CmsTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cms_pages",
+          "model_name": "CmsPages",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cms_blocks",
+          "model_name": "CmsBlocks",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cms_navigation_menus",
+          "model_name": "CmsNavigationMenus",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cms_media_library",
+          "model_name": "CmsMediaLibrary",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "public_events",
+          "model_name": "PublicEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "event_registrations",
+          "model_name": "EventRegistrations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "event_check_ins",
+          "model_name": "EventCheckIns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "job_postings",
+          "model_name": "JobPostings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "job_applications",
+          "model_name": "JobApplications",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "job_saved",
+          "model_name": "JobSaved",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "website_settings",
+          "model_name": "WebsiteSettings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "cms-website-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "document_folders",
+          "model_name": "DocumentFolders",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "documents-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "documents",
+          "model_name": "Documents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "documents-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "public_content",
+          "model_name": "PublicContent",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "public-content.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_documents",
+          "model_name": "MemberDocuments",
+          "field_count": 9,
+          "source": "drizzle",
+          "source_file": "member-documents.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_documents",
+          "model_name": "SignatureDocuments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "signatures.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "document_signers",
+          "model_name": "DocumentSigners",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "signatures.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_audit_trail",
+          "model_name": "SignatureAuditTrail",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "signatures.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_templates",
+          "model_name": "SignatureTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "signatures.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_webhooks_log",
+          "model_name": "SignatureWebhooksLog",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "signatures.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_workflows",
+          "model_name": "SignatureWorkflows",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signers",
+          "model_name": "Signers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_audit_log",
+          "model_name": "SignatureAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "signature_verification",
+          "model_name": "SignatureVerification",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "shopify_config",
+          "model_name": "ShopifyConfig",
+          "field_count": 1,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "webhook_receipts",
+          "model_name": "WebhookReceipts",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "rewards.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "social_accounts",
+          "model_name": "SocialAccounts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "social-media.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "social_posts",
+          "model_name": "SocialPosts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "social-media.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "social_campaigns",
+          "model_name": "SocialCampaigns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "social-media.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "social_analytics",
+          "model_name": "SocialAnalytics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "social-media.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "social_feeds",
+          "model_name": "SocialFeeds",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "social-media.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "social_engagement",
+          "model_name": "SocialEngagement",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "social-media.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "impact_metrics",
+          "model_name": "ImpactMetrics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "case_studies",
+          "model_name": "CaseStudies",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "testimonials",
+          "model_name": "Testimonials",
+          "field_count": 12,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pilot_applications",
+          "model_name": "PilotApplications",
+          "field_count": 13,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pilot_metrics",
+          "model_name": "PilotMetrics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organizer_impacts",
+          "model_name": "OrganizerImpacts",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_aggregation_consent",
+          "model_name": "DataAggregationConsent",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "movement_trends",
+          "model_name": "MovementTrends",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "marketing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "grievances": {
+      "table_count": 24,
+      "tables": [
+        {
+          "name": "claim_precedent_analysis",
+          "model_name": "ClaimPrecedentAnalysis",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "cba-intelligence-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "claims",
+          "model_name": "Claims",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "claims-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "claim_updates",
+          "model_name": "ClaimUpdates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "claims-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "deadline_rules",
+          "model_name": "DeadlineRules",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "deadlines-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "claim_deadlines",
+          "model_name": "ClaimDeadlines",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "deadlines-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "deadline_extensions",
+          "model_name": "DeadlineExtensions",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "deadlines-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "deadline_alerts",
+          "model_name": "DeadlineAlerts",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "deadlines-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "defensibility_packs",
+          "model_name": "DefensibilityPacks",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "defensibility-packs-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pack_download_log",
+          "model_name": "PackDownloadLog",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "defensibility-packs-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pack_verification_log",
+          "model_name": "PackVerificationLog",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "defensibility-packs-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievances",
+          "model_name": "Grievances",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "grievances.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_responses",
+          "model_name": "GrievanceResponses",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "grievances.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "arbitrations",
+          "model_name": "Arbitrations",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "grievances.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "settlements",
+          "model_name": "Settlements",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "grievances.ts",
+          "has_fk": true,
+          "has_enum": true,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_timeline",
+          "model_name": "GrievanceTimeline",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "grievances.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_deadlines",
+          "model_name": "GrievanceDeadlines",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "grievances.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_workflows",
+          "model_name": "GrievanceWorkflows",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_stages",
+          "model_name": "GrievanceStages",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_transitions",
+          "model_name": "GrievanceTransitions",
+          "field_count": 9,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_assignments",
+          "model_name": "GrievanceAssignments",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_documents",
+          "model_name": "GrievanceDocuments",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_settlements",
+          "model_name": "GrievanceSettlements",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_communications",
+          "model_name": "GrievanceCommunications",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "grievance_approvals",
+          "model_name": "GrievanceApprovals",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "workflows.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "compliance": {
+      "table_count": 93,
+      "tables": [
+        {
+          "name": "certification_types",
+          "model_name": "CertificationTypes",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "staff_certifications",
+          "model_name": "StaffCertifications",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "continuing_education",
+          "model_name": "ContinuingEducation",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "license_renewals",
+          "model_name": "LicenseRenewals",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "certification_alerts",
+          "model_name": "CertificationAlerts",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "certification_compliance_reports",
+          "model_name": "CertificationComplianceReports",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "certification_audit_log",
+          "model_name": "CertificationAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "certification-management-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "dsr_requests",
+          "model_name": "DsrRequests",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "data-governance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "dsr_activity_log",
+          "model_name": "DsrActivityLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "data-governance-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_residency_configs",
+          "model_name": "DataResidencyConfigs",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "data-governance-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "consent_records",
+          "model_name": "ConsentRecords",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "data-governance-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_classification_policy",
+          "model_name": "DataClassificationPolicy",
+          "field_count": 14,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_classification_registry",
+          "model_name": "DataClassificationRegistry",
+          "field_count": 10,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "firewall_access_rules",
+          "model_name": "FirewallAccessRules",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "employer_access_attempts",
+          "model_name": "EmployerAccessAttempts",
+          "field_count": 17,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "access_justification_requests",
+          "model_name": "AccessJustificationRequests",
+          "field_count": 19,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "union_only_data_tags",
+          "model_name": "UnionOnlyDataTags",
+          "field_count": 12,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "firewall_violations",
+          "model_name": "FirewallViolations",
+          "field_count": 19,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "firewall_compliance_audit",
+          "model_name": "FirewallComplianceAudit",
+          "field_count": 14,
+          "source": "drizzle",
+          "source_file": "employer-interference.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "swiss_cold_storage",
+          "model_name": "SwissColdStorage",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "break_glass_system",
+          "model_name": "BreakGlassSystem",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "disaster_recovery_drills",
+          "model_name": "DisasterRecoveryDrills",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "key_holder_registry",
+          "model_name": "KeyHolderRegistry",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "recovery_time_objectives",
+          "model_name": "RecoveryTimeObjectives",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "emergency_declarations",
+          "model_name": "EmergencyDeclarations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "break_glass_activations",
+          "model_name": "BreakGlassActivations",
+          "field_count": 10,
+          "source": "drizzle",
+          "source_file": "force-majeure.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "user_consents",
+          "model_name": "UserConsents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "gdpr.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cookie_consents",
+          "model_name": "CookieConsents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "gdpr.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "gdpr_data_requests",
+          "model_name": "GdprDataRequests",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "gdpr.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_processing_records",
+          "model_name": "DataProcessingRecords",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "gdpr.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_retention_policies",
+          "model_name": "DataRetentionPolicies",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "gdpr.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_anonymization_log",
+          "model_name": "DataAnonymizationLog",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "gdpr.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "location_tracking",
+          "model_name": "LocationTracking",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "geofences",
+          "model_name": "Geofences",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "geofence_events",
+          "model_name": "GeofenceEvents",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "location_tracking_audit",
+          "model_name": "LocationTrackingAudit",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "location_deletion_log",
+          "model_name": "LocationDeletionLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "location_tracking_config",
+          "model_name": "LocationTrackingConfig",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "geofence.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "foreign_workers",
+          "model_name": "ForeignWorkers",
+          "field_count": 28,
+          "source": "drizzle",
+          "source_file": "immigration.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "lmbp_letters",
+          "model_name": "LmbpLetters",
+          "field_count": 17,
+          "source": "drizzle",
+          "source_file": "immigration.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "gss_applications",
+          "model_name": "GssApplications",
+          "field_count": 18,
+          "source": "drizzle",
+          "source_file": "immigration.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "mentorships",
+          "model_name": "Mentorships",
+          "field_count": 21,
+          "source": "drizzle",
+          "source_file": "immigration.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "lmbp_compliance_alerts",
+          "model_name": "LmbpComplianceAlerts",
+          "field_count": 17,
+          "source": "drizzle",
+          "source_file": "immigration.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "lmbp_compliance_reports",
+          "model_name": "LmbpComplianceReports",
+          "field_count": 14,
+          "source": "drizzle",
+          "source_file": "immigration.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "band_councils",
+          "model_name": "BandCouncils",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "indigenous-data.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "band_council_consent",
+          "model_name": "BandCouncilConsent",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "indigenous-data.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "indigenous_member_data",
+          "model_name": "IndigenousMemberData",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "indigenous-data.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "indigenous_data_access_log",
+          "model_name": "IndigenousDataAccessLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "indigenous-data.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "indigenous_data_sharing_agreements",
+          "model_name": "IndigenousDataSharingAgreements",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "indigenous-data.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "traditional_knowledge_registry",
+          "model_name": "TraditionalKnowledgeRegistry",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "indigenous-data.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pci_dss_saq_assessments",
+          "model_name": "PciDssSaqAssessments",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "pci-dss.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pci_dss_requirements",
+          "model_name": "PciDssRequirements",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "pci-dss.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pci_dss_quarterly_scans",
+          "model_name": "PciDssQuarterlyScans",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "pci-dss.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pci_dss_cardholder_data_flow",
+          "model_name": "PciDssCardholderDataFlow",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "pci-dss.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pci_dss_encryption_keys",
+          "model_name": "PciDssEncryptionKeys",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "pci-dss.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "provincial_privacy_config",
+          "model_name": "ProvincialPrivacyConfig",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "provincial-privacy.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "provincial_consent",
+          "model_name": "ProvincialConsent",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "provincial-privacy.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "privacy_breaches",
+          "model_name": "PrivacyBreaches",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "provincial-privacy.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "provincial_data_handling",
+          "model_name": "ProvincialDataHandling",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "provincial-privacy.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "data_subject_access_requests",
+          "model_name": "DataSubjectAccessRequests",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "provincial-privacy.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "lrb_agreements",
+          "model_name": "LrbAgreements",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lrb.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "lrb_employers",
+          "model_name": "LrbEmployers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lrb.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "lrb_unions",
+          "model_name": "LrbUnions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lrb.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "lrb_sync_log",
+          "model_name": "LrbSyncLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "lrb.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "conflict_of_interest_policy",
+          "model_name": "ConflictOfInterestPolicy",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "blind_trust_registry",
+          "model_name": "BlindTrustRegistry",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "conflict_disclosures",
+          "model_name": "ConflictDisclosures",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "arms_length_verification",
+          "model_name": "ArmsLengthVerification",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "recusal_tracking",
+          "model_name": "RecusalTracking",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "conflict_review_committee",
+          "model_name": "ConflictReviewCommittee",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "conflict_training",
+          "model_name": "ConflictTraining",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "conflict_audit_log",
+          "model_name": "ConflictAuditLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "conflicts.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "golden_shares",
+          "model_name": "GoldenShares",
+          "field_count": 19,
+          "source": "drizzle",
+          "source_file": "governance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "reserved_matter_votes",
+          "model_name": "ReservedMatterVotes",
+          "field_count": 5,
+          "source": "drizzle",
+          "source_file": "governance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mission_audits",
+          "model_name": "MissionAudits",
+          "field_count": 32,
+          "source": "drizzle",
+          "source_file": "governance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "governance_events",
+          "model_name": "GovernanceEvents",
+          "field_count": 14,
+          "source": "drizzle",
+          "source_file": "governance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "council_elections",
+          "model_name": "CouncilElections",
+          "field_count": 13,
+          "source": "drizzle",
+          "source_file": "governance.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "workplace_incidents",
+          "model_name": "WorkplaceIncidents",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "safety_inspections",
+          "model_name": "SafetyInspections",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "hazard_reports",
+          "model_name": "HazardReports",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "safety_committee_meetings",
+          "model_name": "SafetyCommitteeMeetings",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "safety_training_records",
+          "model_name": "SafetyTrainingRecords",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "ppe_equipment",
+          "model_name": "PpeEquipment",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "safety_audits",
+          "model_name": "SafetyAudits",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "injury_logs",
+          "model_name": "InjuryLogs",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "safety_policies",
+          "model_name": "SafetyPolicies",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "corrective_actions",
+          "model_name": "CorrectiveActions",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "safety_certifications",
+          "model_name": "SafetyCertifications",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "health-safety-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "policy_rules",
+          "model_name": "PolicyRules",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "policy-engine-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "policy_evaluations",
+          "model_name": "PolicyEvaluations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "policy-engine-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "retention_policies",
+          "model_name": "RetentionPolicies",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "policy-engine-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "legal_holds",
+          "model_name": "LegalHolds",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "policy-engine-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "policy_exceptions",
+          "model_name": "PolicyExceptions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "policy-engine-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "notifications": {
+      "table_count": 43,
+      "tables": [
+        {
+          "name": "notification_log",
+          "model_name": "NotificationLog",
+          "field_count": 4,
+          "source": "drizzle",
+          "source_file": "clc-per-capita-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "communication_preferences",
+          "model_name": "CommunicationPreferences",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "communication-analytics-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "message_templates",
+          "model_name": "MessageTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "campaigns.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "campaigns",
+          "model_name": "Campaigns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "campaigns.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "message_log",
+          "model_name": "MessageLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "campaigns.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "communication_channels",
+          "model_name": "CommunicationChannels",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "campaigns.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "message_threads",
+          "model_name": "MessageThreads",
+          "field_count": 12,
+          "source": "drizzle",
+          "source_file": "messages.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "messages",
+          "model_name": "Messages",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "messages.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "message_read_receipts",
+          "model_name": "MessageReadReceipts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "messages.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "message_participants",
+          "model_name": "MessageParticipants",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "messages.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "message_notifications",
+          "model_name": "MessageNotifications",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "messages.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "newsletter_templates",
+          "model_name": "NewsletterTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "newsletters.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "newsletter_distribution_lists",
+          "model_name": "NewsletterDistributionLists",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "newsletters.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "newsletter_list_subscribers",
+          "model_name": "NewsletterListSubscribers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "newsletters.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "newsletter_campaigns",
+          "model_name": "NewsletterCampaigns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "newsletters.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "newsletter_recipients",
+          "model_name": "NewsletterRecipients",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "newsletters.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "newsletter_engagement",
+          "model_name": "NewsletterEngagement",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "newsletters.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "user_notification_preferences",
+          "model_name": "UserNotificationPreferences",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notification_tracking",
+          "model_name": "NotificationTracking",
+          "field_count": 23,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "in_app_notifications",
+          "model_name": "InAppNotifications",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notification_history",
+          "model_name": "NotificationHistory",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notifications",
+          "model_name": "Notifications",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notification_templates",
+          "model_name": "NotificationTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notification_queue",
+          "model_name": "NotificationQueue",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notification_delivery_log",
+          "model_name": "NotificationDeliveryLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "notification_bounces",
+          "model_name": "NotificationBounces",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "push_devices",
+          "model_name": "PushDevices",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "push-notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "push_notification_templates",
+          "model_name": "PushNotificationTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "push-notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "push_notifications",
+          "model_name": "PushNotifications",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "push-notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "push_deliveries",
+          "model_name": "PushDeliveries",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "push-notifications.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_templates",
+          "model_name": "SmsTemplates",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_campaigns",
+          "model_name": "SmsCampaigns",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_messages",
+          "model_name": "SmsMessages",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_conversations",
+          "model_name": "SmsConversations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_campaign_recipients",
+          "model_name": "SmsCampaignRecipients",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_opt_outs",
+          "model_name": "SmsOptOuts",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sms_rate_limits",
+          "model_name": "SmsRateLimits",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sms.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mobile_devices",
+          "model_name": "MobileDevices",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "mobile-devices-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mobile_notifications",
+          "model_name": "MobileNotifications",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "mobile-devices-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mobile_sync_queue",
+          "model_name": "MobileSyncQueue",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "mobile-devices-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mobile_analytics",
+          "model_name": "MobileAnalytics",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "mobile-devices-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mobile_app_config",
+          "model_name": "MobileAppConfig",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "mobile-devices-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "communication_preferences_phase4",
+          "model_name": "CommunicationPreferencesPhase4",
+          "field_count": 10,
+          "source": "drizzle",
+          "source_file": "phase-4-messaging-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    },
+    "auth_core": {
+      "table_count": 25,
+      "tables": [
+        {
+          "name": "international_addresses",
+          "model_name": "InternationalAddresses",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "addresses.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "country_address_formats",
+          "model_name": "CountryAddressFormats",
+          "field_count": 27,
+          "source": "drizzle",
+          "source_file": "addresses.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "address_validation_cache",
+          "model_name": "AddressValidationCache",
+          "field_count": 18,
+          "source": "drizzle",
+          "source_file": "addresses.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "address_change_history",
+          "model_name": "AddressChangeHistory",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "addresses.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "feature_flags",
+          "model_name": "FeatureFlags",
+          "field_count": 10,
+          "source": "drizzle",
+          "source_file": "features.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "organization_sharing_settings",
+          "model_name": "OrganizationSharingSettings",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sharing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "cross_org_access_log",
+          "model_name": "CrossOrgAccessLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sharing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organization_sharing_grants",
+          "model_name": "OrganizationSharingGrants",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sharing.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "user_uuid_mapping",
+          "model_name": "UserUuidMapping",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "uuid-mapping.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "pending_profiles",
+          "model_name": "PendingProfiles",
+          "field_count": 18,
+          "source": "drizzle",
+          "source_file": "pending-profiles.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "profiles",
+          "model_name": "Profiles",
+          "field_count": 17,
+          "source": "drizzle",
+          "source_file": "profiles.ts",
+          "has_fk": false,
+          "has_enum": true,
+          "has_jsonb": false
+        },
+        {
+          "name": "users",
+          "model_name": "Users",
+          "field_count": 1,
+          "source": "drizzle",
+          "source_file": "user-management.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "organization_users",
+          "model_name": "OrganizationUsers",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "user-management.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "user_sessions",
+          "model_name": "UserSessions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "user-management.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "oauth_providers",
+          "model_name": "OauthProviders",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "user-management.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "member_contact_preferences",
+          "model_name": "MemberContactPreferences",
+          "field_count": 23,
+          "source": "drizzle",
+          "source_file": "member-profile-v2-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "member_employment_details",
+          "model_name": "MemberEmploymentDetails",
+          "field_count": 38,
+          "source": "drizzle",
+          "source_file": "member-profile-v2-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "member_consents",
+          "model_name": "MemberConsents",
+          "field_count": 19,
+          "source": "drizzle",
+          "source_file": "member-profile-v2-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "member_history_events",
+          "model_name": "MemberHistoryEvents",
+          "field_count": 16,
+          "source": "drizzle",
+          "source_file": "member-profile-v2-schema.ts",
+          "has_fk": false,
+          "has_enum": false,
+          "has_jsonb": true
+        },
+        {
+          "name": "organization_members",
+          "model_name": "OrganizationMembers",
+          "field_count": 11,
+          "source": "drizzle",
+          "source_file": "organization-members-schema.ts",
+          "has_fk": true,
+          "has_enum": true,
+          "has_jsonb": false
+        },
+        {
+          "name": "sso_providers",
+          "model_name": "SsoProviders",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sso-scim-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "scim_configurations",
+          "model_name": "ScimConfigurations",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sso-scim-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "sso_sessions",
+          "model_name": "SsoSessions",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sso-scim-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "scim_events_log",
+          "model_name": "ScimEventsLog",
+          "field_count": 2,
+          "source": "drizzle",
+          "source_file": "sso-scim-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        },
+        {
+          "name": "mfa_configurations",
+          "model_name": "MfaConfigurations",
+          "field_count": 3,
+          "source": "drizzle",
+          "source_file": "sso-scim-schema.ts",
+          "has_fk": true,
+          "has_enum": false,
+          "has_jsonb": false
+        }
+      ]
+    }
+  }
+}
