@@ -1,0 +1,40 @@
+name: CD — Deploy to Production
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/docker-login@v2
+        with:
+          login-server: ${{ vars.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - name: Build and push backend
+        run: |
+          docker build -t ${{ vars.ACR_LOGIN_SERVER }}/backend:${{ github.ref_name }} backend/
+          docker push ${{ vars.ACR_LOGIN_SERVER }}/backend:${{ github.ref_name }}
+      - name: Build and push frontend
+        run: |
+          docker build -t ${{ vars.ACR_LOGIN_SERVER }}/frontend:${{ github.ref_name }} frontend/
+          docker push ${{ vars.ACR_LOGIN_SERVER }}/frontend:${{ github.ref_name }}
+      - name: Deploy backend
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: ${{ vars.CONTAINER_APP_NAME }}-backend
+          resourceGroup: ${{ vars.RESOURCE_GROUP }}
+          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER }}/backend:${{ github.ref_name }}
+      - name: Deploy frontend
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: ${{ vars.CONTAINER_APP_NAME }}-frontend
+          resourceGroup: ${{ vars.RESOURCE_GROUP }}
+          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER }}/frontend:${{ github.ref_name }}
