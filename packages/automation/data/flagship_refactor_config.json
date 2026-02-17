@@ -1,0 +1,245 @@
+{
+  "flagships": {
+    "union-eyes": {
+      "platform_id": "union-eyes",
+      "product_name": "Union Eyes",
+      "repo_name": "nzila-union-eyes",
+      "vertical": "uniontech",
+      "gtm_driver": "CLC real movement — active union organizing",
+      "priority": 1,
+      "legacy_path": "legacy-codebases/Union_Eyes_app_v1-main/Union_Eyes_app_v1-main",
+      "current_stack": {
+        "framework": "nextjs",
+        "framework_version": "15.5",
+        "language": "typescript",
+        "package_manager": "pnpm",
+        "database": "drizzle-orm-postgresql",
+        "auth": "clerk",
+        "hosting": "docker-azure-container-apps",
+        "observability": ["sentry", "opentelemetry", "application-insights"],
+        "payments": ["stripe", "square"],
+        "ai": ["azure-openai", "tensorflow-js"],
+        "email": "resend",
+        "queue": "bullmq-ioredis",
+        "graphql": "graphql-yoga",
+        "tests": {
+          "unit": "vitest",
+          "e2e": "playwright"
+        }
+      },
+      "target_stack": {
+        "frontend": {
+          "framework": "nextjs",
+          "version": "15",
+          "auth": "clerk",
+          "pattern": "bff-proxy-to-backbone"
+        },
+        "backend": {
+          "framework": "django",
+          "version": "5.1",
+          "orm": "django-orm",
+          "database": "azure-postgresql",
+          "auth": "clerk-jwt-verification",
+          "api": "django-rest-framework"
+        }
+      },
+      "migration_tasks": {
+        "auth": {
+          "action": "KEEP",
+          "detail": "Clerk already in place — verify JWT verification works with Django backend"
+        },
+        "database": {
+          "action": "MIGRATE",
+          "from": "drizzle-orm-typescript",
+          "to": "django-orm-python",
+          "risk": "HIGH",
+          "detail": "Auto-generate Django models from Drizzle TypeScript schemas"
+        },
+        "supabase_cleanup": {
+          "action": "REMOVE",
+          "detail": "Remove legacy supabase/ directory and all @supabase/* imports"
+        },
+        "api_consolidation": {
+          "action": "REFACTOR",
+          "detail": "Consolidate 130+ API routes into BFF pattern — frontend calls backbone API"
+        },
+        "queue_migration": {
+          "action": "MIGRATE",
+          "from": "bullmq-ioredis",
+          "to": "celery-redis",
+          "risk": "MEDIUM"
+        },
+        "graphql": {
+          "action": "EVALUATE",
+          "detail": "Decide: keep graphql-yoga or replace with DRF + OpenAPI"
+        }
+      },
+      "django_apps": [
+        "unions",
+        "grievances",
+        "bargaining",
+        "finance",
+        "governance",
+        "cases",
+        "pension",
+        "insurance",
+        "calendar"
+      ],
+      "quality_gates": {
+        "typescript_strict": true,
+        "zero_any_types": true,
+        "test_coverage_min": 80,
+        "zero_high_cves": true,
+        "docker_build_clean": true,
+        "e2e_critical_flows": true,
+        "api_latency_p95_ms": 500
+      },
+      "go_live_checklist": [
+        "All union management CRUD operations work end-to-end",
+        "Clerk auth with full RBAC (admin/steward/member) functional",
+        "Stripe billing flows (dues, subscriptions) work",
+        "Grievance/case management pipeline works",
+        "Pension processor runs correctly",
+        "Calendar sync functional",
+        "Email notifications delivering",
+        "AI features responding correctly",
+        "Docker builds succeed for frontend and backend",
+        "CI/CD pipeline green",
+        "Staging deployment successful",
+        "Load test passes (100 concurrent users)"
+      ]
+    },
+    "abr-insights": {
+      "platform_id": "abr-insights",
+      "product_name": "ABR Insights",
+      "repo_name": "nzila-abr-insights",
+      "vertical": "edtech-antiracism",
+      "gtm_driver": "Partnership-ready anti-racism learning platform",
+      "priority": 2,
+      "legacy_path": "legacy-codebases/abr-insights-app-main/abr-insights-app-main",
+      "current_stack": {
+        "framework": "nextjs",
+        "framework_version": "16.1",
+        "language": "typescript",
+        "package_manager": "npm",
+        "database": "supabase-postgresql",
+        "auth": "supabase-auth",
+        "auth_extras": ["saml-node-saml", "msal-azure-ad"],
+        "hosting": "docker-azure-static-web-apps",
+        "observability": ["sentry"],
+        "payments": ["stripe"],
+        "ai": ["azure-openai", "openai-sdk"],
+        "email": "resend",
+        "ingestion": "custom-cli-tsx",
+        "tests": {
+          "unit": "vitest",
+          "e2e": "playwright"
+        }
+      },
+      "target_stack": {
+        "frontend": {
+          "framework": "nextjs",
+          "version": "15",
+          "auth": "clerk",
+          "pattern": "bff-proxy-to-backbone"
+        },
+        "backend": {
+          "framework": "django",
+          "version": "5.1",
+          "orm": "django-orm",
+          "database": "azure-postgresql",
+          "auth": "clerk-jwt-verification",
+          "api": "django-rest-framework"
+        }
+      },
+      "migration_tasks": {
+        "auth": {
+          "action": "MIGRATE",
+          "from": "supabase-auth",
+          "to": "clerk",
+          "risk": "HIGH",
+          "detail": "Replace Supabase Auth + SAML + MSAL with Clerk Enterprise SSO. Rewrite all RLS policies as Django permissions."
+        },
+        "database": {
+          "action": "MIGRATE",
+          "from": "supabase-client-postgresql",
+          "to": "django-orm-azure-postgresql",
+          "risk": "HIGH",
+          "detail": "Extract Supabase migration SQL → generate Django models. Remove all @supabase/* dependencies."
+        },
+        "nextjs_downgrade": {
+          "action": "DOWNGRADE",
+          "from": "16.1",
+          "to": "15",
+          "risk": "LOW",
+          "detail": "Align with stable Next.js 15 — same version as UE"
+        },
+        "ingestion": {
+          "action": "MIGRATE",
+          "from": "tsx-cli",
+          "to": "django-management-command",
+          "risk": "LOW",
+          "detail": "Port ingestion/src/cli.ts to Django management command"
+        },
+        "i18n": {
+          "action": "INTEGRATE",
+          "detail": "Wire EN/FR bilingual content to Django i18n framework"
+        }
+      },
+      "django_apps": [
+        "courses",
+        "tribunal",
+        "achievements",
+        "certificates",
+        "ai_coach",
+        "ingestion",
+        "quiz",
+        "blog"
+      ],
+      "quality_gates": {
+        "typescript_strict": true,
+        "zero_any_types": true,
+        "test_coverage_min": 80,
+        "zero_high_cves": true,
+        "docker_build_clean": true,
+        "e2e_critical_flows": true,
+        "api_latency_p95_ms": 500
+      },
+      "go_live_checklist": [
+        "All course CRUD and enrollment flows work",
+        "Clerk auth replaces Supabase Auth completely (incl SAML)",
+        "Tribunal case explorer loads and filters correctly",
+        "AI Coach responds with Azure OpenAI",
+        "CE credit tracking and certificate generation work",
+        "Achievement/badge system functional",
+        "Quiz engine works with scoring",
+        "Bilingual EN/FR content renders correctly",
+        "Data ingestion pipeline works as Django management command",
+        "Stripe subscription/entitlement flows work",
+        "Docker builds succeed",
+        "CI/CD pipeline green",
+        "Staging deployment successful",
+        "Load test passes (200 concurrent users)"
+      ]
+    }
+  },
+  "shared_backbone_services": [
+    "auth_core",
+    "billing",
+    "ai_core",
+    "analytics",
+    "compliance",
+    "notifications",
+    "integrations",
+    "content"
+  ],
+  "timeline": {
+    "week_1": "Audit & Extraction — deep analysis of both codebases",
+    "week_2": "Scaffold + Structure — create repo structures, backbone skeleton",
+    "week_3": "Core Migration — auth migration (ABR), DB migration (UE), API clients",
+    "week_4": "Feature Completion — all Django apps, E2E tests, CI/CD",
+    "week_5": "Integration Testing — full E2E, Docker, load testing, security",
+    "week_6": "Go-Live Prep — production deploy, data migration, monitoring"
+  },
+  "generated_at": "2026-02-17T00:00:00Z"
+}

@@ -1,0 +1,139 @@
+{
+  "template_version": "1.0.0",
+  "product_name": "Memora",
+  "repo_name": "memora-platform",
+  "owner_github": "anungis437",
+  "primary_app_path": "backend",
+  "app_port": 8000,
+  "tenant_key": "clinic_id",
+  "image_repo": "memora-backend",
+  "auth_provider": "clerk",
+  "db_provider": "azure_postgresql",
+  "deploy_provider": "azure_container_apps",
+  "environments": {
+    "staging_url": "https://memora-staging.azurecontainerapps.io",
+    "production_url": "https://memora.azurecontainerapps.io",
+    "api_base": "/api/v1"
+  },
+  "profile": "django-aca-azurepg",
+  "modules": [
+    "core-governance",
+    "repo-bootstrap",
+    "db-azurepg",
+    "deploy-aca-oidc",
+    "security-baseline",
+    "observability-audit"
+  ],
+  "options": {
+    "enable_ci": true,
+    "enable_deploy_workflows": true,
+    "enable_ai_ops": true,
+    "strict_parity": true
+  },
+  "custom_config": {
+    "django_version": "5.0",
+    "python_version": "3.12",
+    "django_apps": [
+      "users",
+      "clinical",
+      "games",
+      "companion",
+      "consent",
+      "community",
+      "supporters",
+      "memories",
+      "quests",
+      "integrations",
+      "notifications",
+      "insights",
+      "platform",
+      "offline",
+      "reporting"
+    ],
+    "key_dependencies": [
+      "djangorestframework",
+      "django-allauth",
+      "celery",
+      "redis",
+      "psycopg2-binary",
+      "pgvector",
+      "openai",
+      "langchain",
+      "django-cors-headers",
+      "django-filter",
+      "drf-spectacular",
+      "django-environ",
+      "gunicorn",
+      "whitenoise"
+    ],
+    "feature_flags": {
+      "ai_companion": true,
+      "clinical_trials": true,
+      "gamification": true,
+      "offline_sync": true,
+      "multi_tenant": true,
+      "hl7_integration": false,
+      "wearables": false
+    },
+    "ai_services": {
+      "llm_provider": "azure_openai",
+      "model": "gpt-4",
+      "embedding_model": "text-embedding-ada-002",
+      "vector_store": "pgvector"
+    },
+    "database_extensions": [
+      "uuid-ossp",
+      "pgvector",
+      "pg_trgm"
+    ],
+    "background_tasks": {
+      "broker": "redis",
+      "result_backend": "redis",
+      "task_queues": [
+        "companion_ai",
+        "notifications",
+        "analytics",
+        "integrations",
+        "reporting"
+      ]
+    }
+  },
+  "notion_alignment": {
+    "product_portfolio_position": "Flagship cognitive wellness app",
+    "experience_pillars": [
+      "Sustainable Engagement",
+      "Relational Technology",
+      "Cognitive Lightness",
+      "Caregiver Empowerment",
+      "Trust-First Design"
+    ],
+    "strategic_initiatives": [
+      "AGE-WELL partnership",
+      "Memory clinic network expansion",
+      "2025-2028 roadmap execution"
+    ],
+    "compliance_requirements": [
+      "PIPEDA (Canada)",
+      "GDPR (EU)",
+      "HIPAA (US if applicable)",
+      "Clinical trial regulations (ICH-GCP)"
+    ]
+  },
+  "legacy_migration": {
+    "source_framework": "React 18 + Vite + @base44/sdk",
+    "entity_count": 100,
+    "migration_priority": [
+      "Phase 1: Core Foundation (users, consent, auth)",
+      "Phase 2: Patient Experience (games, companion, quests)",
+      "Phase 3: Clinical Platform (trials, clinics, safety)",
+      "Phase 4: Advanced Features (community, integrations, insights)",
+      "Phase 5: Platform Maturity (governance, reporting, i18n)"
+    ],
+    "preserved_features": [
+      "React frontend (separate repo)",
+      "Radix UI + Tailwind design system",
+      "54 existing page components",
+      "Base44 SDK entity structure as Django models"
+    ]
+  }
+}

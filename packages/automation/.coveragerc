@@ -1,0 +1,18 @@
+[run]
+source = .
+omit =
+    tests/*
+    */tests/*
+    */__pycache__/*
+    */venv/*
+    */virtualenv/*
+    setup.py
+    */site-packages/*
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+
+[html]
+directory = coverage_html
