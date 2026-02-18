@@ -28,6 +28,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "eslint": "^9",
     "jsdom": "^28.1.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   }
 }

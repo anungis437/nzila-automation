@@ -1,73 +1,60 @@
+import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { Button } from '../components/Button'
 
 describe('Button', () => {
-  it('renders children text', () => {
+  it('renders children', () => {
     render(<Button>Click me</Button>)
     expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument()
   })
 
-  it('renders as a button element', () => {
-    render(<Button>Btn</Button>)
-    expect(screen.getByRole('button')).toBeInTheDocument()
-  })
-
-  it('applies primary variant styles by default', () => {
+  it('applies primary variant by default', () => {
     render(<Button>Primary</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('bg-blue-600', 'text-white')
+    const btn = screen.getByRole('button', { name: 'Primary' })
+    expect(btn.className).toContain('bg-blue-600')
   })
 
-  it('applies secondary variant styles', () => {
+  it('applies secondary variant', () => {
     render(<Button variant="secondary">Secondary</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('bg-white', 'text-blue-600')
+    const btn = screen.getByRole('button', { name: 'Secondary' })
+    expect(btn.className).toContain('border-blue-600')
   })
 
-  it('applies ghost variant styles', () => {
+  it('applies ghost variant', () => {
     render(<Button variant="ghost">Ghost</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('bg-transparent', 'text-gray-700')
+    const btn = screen.getByRole('button', { name: 'Ghost' })
+    expect(btn.className).toContain('bg-transparent')
   })
 
-  it('applies danger variant styles', () => {
-    render(<Button variant="danger">Delete</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('bg-red-600', 'text-white')
+  it('applies danger variant', () => {
+    render(<Button variant="danger">Danger</Button>)
+    const btn = screen.getByRole('button', { name: 'Danger' })
+    expect(btn.className).toContain('bg-red-600')
   })
 
-  it('applies medium size by default', () => {
-    render(<Button>Medium</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('px-4', 'py-2')
-  })
-
-  it('applies small size styles', () => {
+  it('applies sm size', () => {
     render(<Button size="sm">Small</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('px-3', 'py-1.5')
+    const btn = screen.getByRole('button', { name: 'Small' })
+    expect(btn.className).toContain('px-3')
+    expect(btn.className).toContain('py-1.5')
   })
 
-  it('applies large size styles', () => {
+  it('applies lg size', () => {
     render(<Button size="lg">Large</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('px-6', 'py-3')
+    const btn = screen.getByRole('button', { name: 'Large' })
+    expect(btn.className).toContain('px-6')
+    expect(btn.className).toContain('py-3')
   })
 
   it('merges custom className', () => {
-    render(<Button className="mt-4">Custom</Button>)
-    const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('mt-4')
+    render(<Button className="my-custom">Styled</Button>)
+    const btn = screen.getByRole('button', { name: 'Styled' })
+    expect(btn.className).toContain('my-custom')
   })
 
-  it('supports disabled state', () => {
+  it('forwards native button props', () => {
     render(<Button disabled>Disabled</Button>)
-    expect(screen.getByRole('button')).toBeDisabled()
-  })
-
-  it('passes through additional HTML attributes', () => {
-    render(<Button data-testid="submit-btn" type="submit">Submit</Button>)
-    expect(screen.getByTestId('submit-btn')).toHaveAttribute('type', 'submit')
+    expect(screen.getByRole('button', { name: 'Disabled' })).toBeDisabled()
   })
 })

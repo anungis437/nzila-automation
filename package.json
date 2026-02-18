@@ -12,9 +12,9 @@
     "build:console": "turbo build --filter=@nzila/console",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "test": "turbo test",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "link": "pwsh -NoProfile -File scripts/link-workspaces.ps1"
   },
