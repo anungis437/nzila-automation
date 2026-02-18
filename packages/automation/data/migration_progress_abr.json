@@ -1,0 +1,15 @@
+{
+  "platform": "abr",
+  "started_at": "2026-02-17T21:45:23.372613",
+  "last_updated": "2026-02-17T21:45:23.815889",
+  "completed_tables": [
+    "organizations"
+  ],
+  "failed_tables": {},
+  "row_counts": {
+    "organizations": 255
+  },
+  "total_tables": 1,
+  "total_rows": 255,
+  "status": "completed"
+}

@@ -125,7 +125,7 @@ export default function Verticals() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 py-20">
+      <section className="bg-linear-to-r from-blue-600 to-indigo-600 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
@@ -173,7 +173,7 @@ export default function Verticals() {
                 className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden border border-gray-200"
               >
                 {/* Header with gradient */}
-                <div className={`bg-gradient-to-r ${vertical.color} p-6`}>
+                <div className={`bg-linear-to-r ${vertical.color} p-6`}>
                   <div className="flex items-center gap-4">
                     <vertical.icon className="h-10 w-10 text-white" />
                     <div>
@@ -260,7 +260,7 @@ export default function Verticals() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <section className="py-20 bg-linear-to-r from-blue-600 to-indigo-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Interested in a Specific Vertical?

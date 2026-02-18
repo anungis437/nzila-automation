@@ -7,10 +7,10 @@ import { SignInButton, SignedIn, SignedOut } from '@clerk/nextjs'
  */
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-blue-50">
       <div className="text-center max-w-lg px-6">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Nzila Console
           </span>
         </h1>

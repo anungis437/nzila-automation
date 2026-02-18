@@ -1,0 +1,424 @@
+{
+  "platform_id": "abr_insights",
+  "platform_name": "ABR Insights",
+  "audit_date": "2026-02-17",
+  "auditor": "Nzila Platform Analyzer V2",
+  "version": "1.0.0",
+  
+  "executive_summary": {
+    "total_entities": 132,
+    "codebase_size_mb": 200,
+    "complexity_score": "EXTREME",
+    "migration_estimate_weeks": "12-14",
+    "critical_dependencies": [
+      "@supabase/supabase-js",
+      "@supabase/auth-helpers-nextjs",
+      "@supabase/ssr",
+      "openai",
+      "langchain",
+      "ingestion CLI tool"
+    ],
+    "migration_risks": [
+      "Supabase Auth → Clerk migration affects all users",
+      "18 API route groups need backend migration",
+      "Ingestion CLI (src/cli.ts) needs Django management command rewrite",
+      "CanLII case database (10,000+ records) needs migration",
+      "Azure OpenAI + embeddings integration",
+      "Bilingual content (EN/FR) i18n system"
+    ]
+  },
+  
+  "schema_extraction": {
+    "orm": "Supabase (PostgreSQL + RLS)",
+    "tables_count": 116,
+    "tables": "See packages/automation/data/SCHEMA_EXTRACTION_REPORT.md section 3",
+    "foreign_keys": "Moderate - mostly in courses, enrollments, achievements",
+    "indexes": "Defined in SQL migrations",
+    "enums": [
+      "organization_type",
+      "subscription_status",
+      "course_level",
+      "content_type",
+      "achievement_type",
+      "notification_type",
+      "tribunal_case_category"
+    ],
+    "rls_policies": [
+      "50+ RLS policies for multi-tenant isolation",
+      "Row-level security on organizations, profiles, courses, enrollments"
+    ],
+    "generated_models_location": "packages/automation/data/generated/abr/",
+    "status": "complete"
+  },
+  
+  "api_inventory": {
+    "total_routes": 18,
+    "route_groups": [
+      "app/api/organizations",
+      "app/api/profiles",
+      "app/api/courses",
+      "app/api/enrollments",
+      "app/api/achievements",
+      "app/api/certificates",
+      "app/api/tribunal-cases",
+      "app/api/ai/coach",
+      "app/api/ai/embeddings",
+      "app/api/blog",
+      "app/api/quiz",
+      "app/api/ce-credits",
+      "app/api/billing",
+      "app/api/analytics",
+      "app/api/content",
+      "app/api/notifications",
+      "app/api/feedback",
+      "app/api/admin"
+    ],
+    "classification": {
+      "backbone_shared": [
+        "auth",
+        "billing",
+        "analytics",
+        "ai/coach",
+        "ai/embeddings",
+        "notifications",
+        "content (partially)"
+      ],
+      "product_specific": [
+        "courses",
+        "tribunal-cases",
+        "achievements",
+        "ce-credits",
+        "certificates",
+        "quiz",
+        "blog",
+        "ingestion pipeline"
+      ],
+      "legacy_to_remove": [
+        "All Supabase direct client calls",
+        "Supabase Auth flows",
+        "Supabase Storage (migrate to Azure Blob)"
+      ]
+    },
+    "rest_vs_graphql": {
+      "rest_count": 18,
+      "graphql_count": 0,
+      "trpc_count": 0
+    }
+  },
+  
+  "auth_flow_mapping": {
+    "current_provider": "Supabase Auth",
+    "auth_methods": [
+      "Email + Password",
+      "Magic Link",
+      "SAML (enterprise - via custom integration)",
+      "Microsoft Entra ID (MSAL)"
+    ],
+    "rbac_implementation": {
+      "has_roles": true,
+      "has_permissions": true,
+      "role_count": 8,
+      "permission_count": 25,
+      "notes": "Roles stored in Supabase roles table + RLS policies"
+    },
+    "sso_integrations": [
+      "Microsoft Entra ID (custom MSAL implementation)",
+      "SAML for partner organizations"
+    ],
+    "migration_plan": {
+      "target_provider": "clerk",
+      "complexity": "HIGH",
+      "estimated_hours": 60,
+      "risks": [
+        "All user sessions will be invalidated - need migration strategy",
+        "SAML/MSAL integrations need to be reconfigured in Clerk",
+        "User password migration not possible - force password reset",
+        "Profile data mapping from Supabase profiles → Clerk metadata"
+      ]
+    }
+  },
+  
+  "service_dependencies": {
+    "npm_packages": {
+      "total": "Needs analysis with legacy codebase access",
+      "production": "TBD",
+      "dev": "TBD",
+      "backbone_shared": [
+        "@clerk/nextjs (target)",
+        "stripe",
+        "@sentry/nextjs",
+        "openai",
+        "langchain",
+        "react-email",
+        "resend"
+      ],
+      "product_specific": [
+        "CanLII API client (custom)",
+        "PDF generation for certificates",
+        "Chart.js for gamification dashboard",
+        "i18next (bilingual support)"
+      ],
+      "to_remove": [
+        "@supabase/supabase-js",
+        "@supabase/auth-helpers-nextjs",
+        "@supabase/ssr",
+        "@supabase/postgrest-js",
+        "@supabase/storage-js"
+      ],
+      "to_migrate": [
+        "stripe → stripe-python",
+        "@supabase/supabase-js → Django ORM",
+        "Node.js ingestion CLI → Django management commands"
+      ]
+    },
+    "external_apis": [
+      "CanLII API (Canadian Legal Information Institute)",
+      "Azure OpenAI",
+      "Stripe API",
+      "Resend email API",
+      "Clerk Management API (target)",
+      "Microsoft Graph API (for MSAL users)"
+    ],
+    "cloud_services": [
+      "Supabase (current - to be replaced)",
+      "Azure PostgreSQL (target)",
+      "Azure Blob Storage (target)",
+      "Azure CDN",
+      "Azure Container Apps (target)",
+      "Azure Redis Cache (target)",
+      "Azure OpenAI"
+    ]
+  },
+  
+  "queue_worker_inventory": {
+    "has_queues": false,
+    "queue_technology": "none",
+    "job_types": [
+      "Email delivery (currently synchronous - should be async)",
+      "Certificate generation (currently on-demand)",
+      "CanLII case ingestion (CLI tool - should be scheduled job)",
+      "AI embeddings generation (batch processing needed)"
+    ],
+    "cron_jobs": [
+      "Ingestion CLI needs to be scheduled (currently manual)",
+      "Daily CE credit expiry checks (planned)",
+      "Weekly engagement reports (planned)"
+    ],
+    "migration_target": "celery with celery-beat"
+  },
+  
+  "ai_ml_pipeline": {
+    "has_ai": true,
+    "llm_providers": [
+      "Azure OpenAI (GPT-4)"
+    ],
+    "model_types": [
+      "GPT-4 — AI Learning Coach",
+      "GPT-4 — Tribunal case analysis",
+      "GPT-4 — Content recommendations",
+      "text-embedding-ada-002 — Semantic search",
+      "text-embedding-ada-002 — Course similarity"
+    ],
+    "features": [
+      "AI Companion (personalized learning coach)",
+      "Tribunal case summarization",
+      "Legal precedent extraction",
+      "Quiz question generation",
+      "Content recommendation engine",
+      "Semantic search across courses & cases"
+    ],
+    "vector_db": "None (currently storing embeddings in PostgreSQL jsonb)",
+    "embeddings": "Azure OpenAI text-embedding-ada-002",
+    "cost_estimate_monthly": 600,
+    "notes": "Should migrate embeddings to Azure Cosmos DB for MongoDB vCore for better performance"
+  },
+  
+  "compliance_inventory": {
+    "frameworks": [
+      "PIPEDA (Canadian privacy)",
+      "WCAG 2.1 AA (accessibility)",
+      "SOC 2 Type II (target)"
+    ],
+    "audit_logging": true,
+    "data_retention": true,
+    "encryption_at_rest": true,
+    "encryption_in_transit": true,
+    "pci_compliant": true,
+    "hipaa_compliant": false,
+    "gdpr_compliant": true,
+    "required_migrations": [
+      "Migrate audit logs from Supabase to Django audit framework",
+      "Implement WCAG compliance monitoring",
+      "Add consent management for AI features"
+    ]
+  },
+  
+  "code_quality": {
+    "typescript_coverage": 90,
+    "test_coverage": 35,
+    "linting_configured": true,
+    "formatting_configured": true,
+    "ci_cd_present": false,
+    "security_scan_present": false
+  },
+  
+  "ingestion_pipeline": {
+    "description": "Custom Node.js CLI tool for ingesting CanLII tribunal cases",
+    "location": "ingestion/src/cli.ts",
+    "features": [
+      "Fetch cases from CanLII API",
+      "Parse legal citations",
+      "Extract key facts and holdings",
+      "Generate embeddings for semantic search",
+      "Store in Supabase database"
+    ],
+    "migration_plan": {
+      "target": "Django management command",
+      "estimated_hours": 24,
+      "new_location": "backend/abr_specific/management/commands/ingest_canlii.py",
+      "dependencies": [
+        "requests (HTTP client)",
+        "beautifulsoup4 (HTML parsing)",
+        "openai (embeddings)",
+        "Django ORM (storage)"
+      ]
+    }
+  },
+  
+  "i18n_audit": {
+    "languages": ["en", "fr"],
+    "i18n_library": "next-i18next or i18next",
+    "content_structure": "JSON translation files",
+    "translation_coverage": {
+      "courses": 100,
+      "ui": 95,
+      "tribunal_cases": 80,
+      "emails": 90
+    },
+    "migration_plan": {
+      "django_i18n": "Use Django's built-in i18n with django-modeltranslation",
+      "frontend_i18n": "Keep next-i18next or use i18next with React",
+      "estimated_hours": 16
+    }
+  },
+  
+  "hooks_audit": {
+    "custom_hooks": [
+      "useSupabaseClient",
+      "useSession",
+      "useUser",
+      "useAICoach",
+      "useQuizState"
+    ],
+    "classification": {
+      "reusable": [
+        "useAICoach (backbone AI)",
+        "useSession (migrate to Clerk hooks)"
+      ],
+      "product_specific": [
+        "useQuizState",
+        "useCourseProgress",
+        "useTribunalCase"
+      ],
+      "to_remove": [
+        "useSupabaseClient (replace with API client)",
+        "useUser (replace with Clerk's useUser)"
+      ]
+    }
+  },
+  
+  "migration_roadmap": {
+    "phase_1_audit": {
+      "status": "complete",
+      "estimated_hours": 40
+    },
+    "phase_2_backend_migration": {
+      "status": "in_progress",
+      "estimated_hours": 240,
+      "tasks": [
+        "Generate Django models from Supabase schemas ✅",
+        "Create DRF serializers, views, URLs ✅",
+        "Migrate ingestion CLI to Django management command",
+        "Set up Clerk backend integration",
+        "Implement Django RBAC system",
+        "Migrate AI features to backbone AI service",
+        "Set up Celery for async tasks"
+      ]
+    },
+    "phase_3_auth_migration": {
+      "status": "not_started",
+      "estimated_hours": 60,
+      "tasks": [
+        "Set up Clerk for ABR Insights",
+        "Migrate user data from Supabase",
+        "Configure SAML/MSAL in Clerk",
+        "Update frontend auth flows",
+        "User communication plan",
+        "Staged rollout with feature flags"
+      ]
+    },
+    "phase_4_frontend_refactor": {
+      "status": "not_started",
+      "estimated_hours": 100,
+      "tasks": [
+        "Remove all Supabase client calls",
+        "Replace with Backbone API client",
+        "Update hooks to use new backend",
+        "Refactor components for new API",
+        "Update i18n integration"
+      ]
+    },
+    "phase_5_testing": {
+      "status": "not_started",
+      "estimated_hours": 80,
+      "tasks": [
+        "Write Django unit tests",
+        "Write API integration tests",
+        "E2E tests with Playwright",
+        "Load testing",
+        "Accessibility testing (WCAG 2.1 AA)"
+      ]
+    },
+    "phase_6_deployment": {
+      "status": "not_started",
+      "estimated_hours": 60,
+      "tasks": [
+        "Bicep infrastructure templates",
+        "GitHub Actions CI/CD",
+        "Staging environment setup",
+        "User data migration scripts",
+        "Production deployment",
+        "Monitoring & alerting"
+      ]
+    }
+  },
+  
+  "blockers": [
+    "Legacy codebase not accessible in current workspace - need to run dependency analyzer",
+    "Supabase user migration strategy needs approval",
+    "CanLII API access credentials need to be secured",
+    "Bilingual content migration requires French-speaking reviewer"
+  ],
+  
+  "recommendations": [
+    "Use Clerk's gradual user migration features",
+    "Set up comprehensive logging before auth migration",
+    "Create rollback plan for auth migration",
+    "Migrate embeddings to Azure Cosmos DB for MongoDB vCore",
+    "Implement feature flags for gradual rollout",
+    "Set up staging environment with Supabase copy for testing",
+    "Create user communication plan for auth migration",
+    "Consider parallel auth systems during transition"
+  ],
+  
+  "next_steps": [
+    "Access legacy ABR Insights codebase for detailed analysis",
+    "Run dependency analyzer on actual codebase",
+    "Map ingestion CLI to Django management commands",
+    "Plan Supabase → Clerk user migration strategy",
+    "Set up new nzila-abr-insights repository",
+    "Populate scaffold with Django backend + Next.js frontend",
+    "Begin ingestion pipeline migration",
+    "Set up Clerk app and configure SAML/MSAL"
+  ]
+}

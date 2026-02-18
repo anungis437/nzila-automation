@@ -58,7 +58,7 @@ export default function About() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 py-20">
+      <section className="bg-linear-to-r from-blue-600 to-indigo-600 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">About Nzila Ventures</h1>
@@ -133,7 +133,7 @@ export default function About() {
           <div className="space-y-8">
             {timeline.map((milestone, index) => (
               <div key={milestone.year} className="flex gap-6">
-                <div className="flex-shrink-0 w-32 text-right">
+                <div className="shrink-0 w-32 text-right">
                   <span className="text-lg font-bold text-blue-600">{milestone.year}</span>
                 </div>
                 <div className="relative flex-1 pb-8">
@@ -153,7 +153,7 @@ export default function About() {
       </section>
 
       {/* Stats Banner */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <section className="py-16 bg-linear-to-r from-blue-600 to-indigo-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>

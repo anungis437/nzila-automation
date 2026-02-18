@@ -32,11 +32,11 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
+      <section className="relative overflow-hidden bg-linear-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
           <div className="text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Nzila Ventures
               </span>
             </h1>
@@ -82,7 +82,7 @@ export default function Home() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <section className="py-20 bg-linear-to-r from-blue-600 to-indigo-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Infrastructure for Social Impact
@@ -178,7 +178,7 @@ export default function Home() {
               <Link
                 key={vertical.name}
                 href="/verticals"
-                className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 text-center hover:shadow-lg transition-all hover:scale-105"
+                className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-6 text-center hover:shadow-lg transition-all hover:scale-105"
               >
                 <div className="text-3xl mb-3">{vertical.icon}</div>
                 <h3 className="font-semibold text-gray-900 mb-1">{vertical.name}</h3>
