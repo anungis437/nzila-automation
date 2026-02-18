@@ -14,12 +14,17 @@
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",
     "@heroicons/react": "^2.2.0",
+    "@nzila/db": "workspace:*",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/blob": "workspace:*",
     "@nzila/ui": "workspace:*",
+    "drizzle-orm": "^0.39.0",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remark": "^15.0.1",
+    "zod": "^3.24.0",
     "remark-html": "^16.0.1"
   },
   "devDependencies": {

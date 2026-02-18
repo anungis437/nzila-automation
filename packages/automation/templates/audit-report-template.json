@@ -1,0 +1,141 @@
+{
+  "platform_id": "",
+  "platform_name": "",
+  "audit_date": "",
+  "auditor": "Nzila Platform Analyzer V2",
+  "version": "1.0.0",
+  
+  "executive_summary": {
+    "total_entities": 0,
+    "codebase_size_mb": 0,
+    "complexity_score": "MEDIUM",
+    "migration_estimate_weeks": 0,
+    "critical_dependencies": [],
+    "migration_risks": []
+  },
+  
+  "schema_extraction": {
+    "orm": "",
+    "tables_count": 0,
+    "tables": [],
+    "foreign_keys": [],
+    "indexes": [],
+    "enums": [],
+    "rls_policies": [],
+    "generated_models_location": "",
+    "status": "complete"
+  },
+  
+  "api_inventory": {
+    "total_routes": 0,
+    "route_groups": [],
+    "classification": {
+      "backbone_shared": [],
+      "product_specific": [],
+      "legacy_to_remove": []
+    },
+    "rest_vs_graphql": {
+      "rest_count": 0,
+      "graphql_count": 0,
+      "trpc_count": 0
+    }
+  },
+  
+  "auth_flow_mapping": {
+    "current_provider": "",
+    "auth_methods": [],
+    "rbac_implementation": {
+      "has_roles": false,
+      "has_permissions": false,
+      "role_count": 0,
+      "permission_count": 0
+    },
+    "sso_integrations": [],
+    "migration_plan": {
+      "target_provider": "clerk",
+      "complexity": "MEDIUM",
+      "estimated_hours": 0,
+      "risks": []
+    }
+  },
+  
+  "service_dependencies": {
+    "npm_packages": {
+      "total": 0,
+      "production": 0,
+      "dev": 0,
+      "backbone_shared": [],
+      "product_specific": [],
+      "to_remove": [],
+      "to_migrate": []
+    },
+    "external_apis": [],
+    "cloud_services": []
+  },
+  
+  "queue_worker_inventory": {
+    "has_queues": false,
+    "queue_technology": "",
+    "job_types": [],
+    "cron_jobs": [],
+    "migration_target": "celery"
+  },
+  
+  "ai_ml_pipeline": {
+    "has_ai": false,
+    "llm_providers": [],
+    "model_types": [],
+    "features": [],
+    "vector_db": null,
+    "embeddings": null,
+    "cost_estimate_monthly": 0
+  },
+  
+  "compliance_inventory": {
+    "frameworks": [],
+    "audit_logging": false,
+    "data_retention": false,
+    "encryption_at_rest": false,
+    "encryption_in_transit": false,
+    "pci_compliant": false,
+    "hipaa_compliant": false,
+    "gdpr_compliant": false,
+    "required_migrations": []
+  },
+  
+  "code_quality": {
+    "typescript_coverage": 0,
+    "test_coverage": 0,
+    "linting_configured": false,
+    "formatting_configured": false,
+    "ci_cd_present": false,
+    "security_scan_present": false
+  },
+  
+  "migration_roadmap": {
+    "phase_1_audit": {
+      "status": "in_progress",
+      "estimated_hours": 0
+    },
+    "phase_2_backend_migration": {
+      "status": "not_started",
+      "estimated_hours": 0
+    },
+    "phase_3_frontend_refactor": {
+      "status": "not_started",
+      "estimated_hours": 0
+    },
+    "phase_4_testing": {
+      "status": "not_started",
+      "estimated_hours": 0
+    },
+    "phase_5_deployment": {
+      "status": "not_started",
+      "estimated_hours": 0
+    }
+  },
+  
+  "blockers": [],
+  "recommendations": [],
+  "next_steps": []
+}

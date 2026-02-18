@@ -3,9 +3,18 @@ Nzila Migration Generators
 ===========================
 Code generation, dependency analysis, and progress tracking
 for legacy codebase migration to Django backbone.
+
+Sub-packages
+------------
+core/       – CodeGenerator, DependencyAnalyzer, ProgressTracker
+migration/  – Migration executors, Django project scaffolding
+services/   – Service-view generators (UE, ABR)
+fixers/     – Model & ViewSet fixers (FK, PK, related-names)
+infra/      – Azure resources, Supabase, connection tests
+reports/    – Audit reports, progress updates, repo populator
 """
 
-from .code_generator import (
+from .core.code_generator import (
     CodeGenerator,
     SQLSchemaParser,
     DrizzleSchemaParser,
@@ -16,7 +25,7 @@ from .code_generator import (
     run_ue_generation,
 )
 
-from .dependency_analyzer import (
+from .core.dependency_analyzer import (
     DependencyAnalyzer,
     DependencyCategory,
     MigrationTarget,
@@ -26,7 +35,7 @@ from .dependency_analyzer import (
     analyze_ue_dependencies,
 )
 
-from .progress_tracker import (
+from .core.progress_tracker import (
     ProgressTracker,
     MigrationPhase,
     PhaseStatus,

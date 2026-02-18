@@ -1,0 +1,21 @@
+{
+  "platform": "ue",
+  "started_at": "2026-02-17T21:51:41.656363",
+  "last_updated": "2026-02-17T21:51:42.286496",
+  "completed_tables": [
+    "claim_updates",
+    "notification_log",
+    "profiles",
+    "user_uuid_mapping"
+  ],
+  "failed_tables": {},
+  "row_counts": {
+    "claim_updates": 319,
+    "notification_log": 5,
+    "profiles": 23,
+    "user_uuid_mapping": 1
+  },
+  "total_tables": 4,
+  "total_rows": 348,
+  "status": "completed"
+}

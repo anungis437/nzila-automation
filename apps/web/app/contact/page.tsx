@@ -49,7 +49,7 @@ export default function Contact() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 py-20">
+      <section className="bg-linear-to-r from-blue-600 to-indigo-600 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">Get In Touch</h1>
@@ -186,7 +186,7 @@ export default function Contact() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <EnvelopeIcon className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                  <EnvelopeIcon className="h-6 w-6 text-blue-600 shrink-0 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <a
@@ -200,7 +200,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <PhoneIcon className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                  <PhoneIcon className="h-6 w-6 text-blue-600 shrink-0 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
                     <a href="tel:+1234567890" className="text-blue-600 hover:text-blue-700">
@@ -211,7 +211,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <MapPinIcon className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                  <MapPinIcon className="h-6 w-6 text-blue-600 shrink-0 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Office</h3>
                     <p className="text-gray-600">

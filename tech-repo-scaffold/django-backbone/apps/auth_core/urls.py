@@ -1,7 +1,16 @@
+"""URL configuration for auth_core app."""
 from django.urls import path
+from . import views
 
 app_name = "auth_core"
 
 urlpatterns = [
-    # TODO: Add auth_core API endpoints
+    # User profile
+    path("me/", views.me, name="me"),
+    
+    # Health check
+    path("health/", views.health_check, name="health"),
+    
+    # Clerk webhooks (no auth required - webhook secret verification)
+    path("webhooks/clerk/", views.clerk_webhook, name="clerk_webhook"),
 ]
