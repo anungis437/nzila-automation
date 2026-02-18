@@ -1,0 +1,240 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Standard Incident Response Runbook (ir-001)
+#
+# Formalises the 5-stage lifecycle defined in ops/incident-response/README.md
+# into an executable, compliance-evidence-capturing runbook template.
+#
+# Schema:  ops/runbooks/TEMPLATE_SCHEMA.md
+# Owner:   CISO / On-Call Engineer
+# Review:  After every P1/P2 incident; quarterly
+# ─────────────────────────────────────────────────────────────────────────────
+
+template:
+  id: ir-001
+  name: Standard Incident Response
+  version: 1.0.0
+  category: security
+  description: >
+    Standard incident response procedure for security or operational
+    incidents rated P1 or P2.  Covers the full lifecycle — detect, contain,
+    eradicate, recover, post-incident review — with evidence capture at
+    every stage.
+
+# ── Replicability metadata ──────────────────────────────────────────────────
+replicability:
+  replicationId: e4a7c1d8-0001-4000-9000-000000000001
+  relation: IS_TEMPLATE
+
+# ── Content ─────────────────────────────────────────────────────────────────
+content:
+  title: Security & Operational Incident Response
+  severity: P1
+  steps:
+
+    # ───── Stage 1: Detect & Triage ──────────────────────────────────────────
+    - order: 1
+      action: Detect & Triage
+      command: |
+        1. Acknowledge the alert in PagerDuty / monitoring channel.
+        2. Open a new incident ticket (use incident ID format: IR-YYYY-NNN).
+        3. Assign severity (P1–P4) per the severity matrix:
+           - P1: Service outage, data breach, integrity compromise
+           - P2: Degraded service, security alert, failed control
+           - P3: Minor issue, cosmetic, single-user impact
+           - P4: Informational, improvement opportunity
+        4. Notify the on-call escalation path (see ops/oncall/).
+        5. Post initial status to #security-incidents Slack channel.
+      verification: >
+        Incident ticket created with severity label assigned.
+        On-call engineer acknowledged within SLA
+        (P1: 15 min, P2: 1 hr, P3: 4 hr, P4: next business day).
+      timeout: 300
+      rollback: N/A
+
+      evidence:
+        artifacts:
+          - artifactType: alert-screenshot
+            filename: detection/alert-screenshot.png
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+          - artifactType: incident-ticket
+            filename: detection/incident-ticket.json
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+
+    # ───── Stage 2: Contain ──────────────────────────────────────────────────
+    - order: 2
+      action: Contain
+      command: |
+        1. Isolate affected systems:
+           - Revoke compromised credentials via Clerk admin / DB rotation.
+           - Block attacker IPs in Azure NSG / WAF.
+           - Disable affected service endpoints if necessary.
+        2. Preserve forensic evidence:
+           - Take blob snapshots of affected storage containers.
+           - Export audit_events for the incident window using:
+             SELECT * FROM audit_events
+             WHERE entity_id = $ENTITY_ID
+               AND created_at BETWEEN $START AND $NOW
+             ORDER BY created_at;
+        3. Confirm containment scope with team lead.
+      verification: >
+        Systems isolated and verified unreachable from external network.
+        Forensic evidence preserved (blob snapshots + audit trail export).
+        Containment log captured.
+      timeout: 900
+      rollback: >
+        If containment causes unintended outage, restore network access
+        for unaffected systems.  Re-enable only verified-clean endpoints.
+
+      evidence:
+        artifacts:
+          - artifactType: containment-log
+            filename: containment-log/containment-actions.json
+            retentionClass: 7_YEARS
+            classification: CONFIDENTIAL
+          - artifactType: audit-trail-export
+            filename: audit-trail/audit-events-snapshot.json
+            retentionClass: 7_YEARS
+            classification: CONFIDENTIAL
+
+    # ───── Stage 3: Eradicate ────────────────────────────────────────────────
+    - order: 3
+      action: Eradicate
+      command: |
+        1. Identify and remove the root cause:
+           - If malware: quarantine + delete, rebuild from clean image.
+           - If vulnerability: apply patch / hotfix.
+           - If misconfiguration: correct IaC and redeploy.
+        2. Rotate ALL potentially compromised credentials:
+           - Clerk API keys, DB passwords, Azure Storage keys.
+           - Invalidate existing sessions.
+        3. Re-scan for indicators of compromise (IOC).
+        4. Verify hash-chain integrity on audit_events:
+           npx tsx packages/os-core/src/evidence/generate-evidence-index.ts \
+             --pack-request /tmp/ir-eradication-pack.json
+      verification: >
+        Clean system state confirmed — no IOC detected on rescan.
+        All compromised credentials rotated and logged in audit_events.
+      timeout: 1800
+      rollback: >
+        If eradication breaks dependent services, roll back patch and
+        re-contain.  Document in divergence log.
+
+      evidence:
+        artifacts:
+          - artifactType: credential-rotation-log
+            filename: eradication/credential-rotation.json
+            retentionClass: 7_YEARS
+            classification: CONFIDENTIAL
+          - artifactType: patch-details
+            filename: eradication/patch-details.json
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+
+    # ───── Stage 4: Recover ──────────────────────────────────────────────────
+    - order: 4
+      action: Recover
+      command: |
+        1. Restore from clean backups if data was affected:
+           - Verify backup integrity (SHA-256 check against stored hashes).
+           - Use point-in-time restore for Cosmos DB / PostgreSQL.
+        2. Bring services back online incrementally:
+           - Start with internal health checks.
+           - Enable external traffic via Azure Front Door / load balancer.
+        3. Verify system integrity:
+           - Run hash-chain verification on audit_events.
+           - Compare cap table snapshots pre- and post-incident.
+        4. Set up enhanced monitoring for 72 hours:
+           - Increase alert sensitivity for affected systems.
+           - Enable verbose logging.
+      verification: >
+        All services operational.
+        Health check endpoints return 200.
+        No anomalous activity detected in first 15 minutes.
+      timeout: 3600
+      rollback: >
+        If restored service shows corruption, re-isolate and escalate
+        to DR procedure (see ops/disaster-recovery/).
+
+      evidence:
+        artifacts:
+          - artifactType: health-check-results
+            filename: recovery/health-check-results.json
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+          - artifactType: monitoring-dashboard-snapshot
+            filename: recovery/monitoring-snapshot.png
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+
+    # ───── Stage 5: Post-Incident Review ─────────────────────────────────────
+    - order: 5
+      action: Post-Incident Review (PIR)
+      command: |
+        1. Document the full timeline:
+           - When was the incident detected?
+           - When was containment achieved?
+           - When was root cause identified?
+           - When were services restored?
+        2. Write the postmortem document using the template:
+           ops/incident-response/templates/postmortem-template.md
+        3. Identify root cause (use 5-Whys or fishbone analysis).
+        4. Create remediation items as follow-up tickets.
+        5. Schedule PIR meeting within:
+           - 5 business days for P1
+           - 10 business days for P2
+        6. Generate the evidence pack:
+           npx tsx packages/os-core/src/evidence/generate-evidence-index.ts \
+             --pack-request /tmp/ir-evidence-pack-request.json
+        7. Update this runbook if process gaps were found.
+      verification: >
+        PIR document completed and uploaded.
+        Evidence pack sealed with all required artifacts.
+        Remediation items tracked in issue tracker.
+      timeout: 432000  # 5 business days = 5 × 86400
+      rollback: N/A
+
+      evidence:
+        artifacts:
+          - artifactType: postmortem
+            filename: postmortem/postmortem.pdf
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+          - artifactType: remediation-tracker
+            filename: remediation/remediation-tracker.json
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+          - artifactType: evidence-pack-index
+            filename: evidence-pack-index.json
+            retentionClass: 7_YEARS
+            classification: INTERNAL
+
+  # ── References ─────────────────────────────────────────────────────────────
+  references:
+    - ops/incident-response/README.md
+    - ops/oncall/escalation-matrix.md
+    - ops/compliance/Required-Evidence-Map.md
+    - ops/compliance/Evidence-Storage-Convention.md
+    - ops/compliance/Evidence-Pack-Index.schema.json
+    - ops/disaster-recovery/README.md
+
+  dependencies:
+    - PagerDuty / Azure Monitor alerts
+    - Clerk admin console (credential rotation)
+    - Azure Portal (NSG / WAF / Blob snapshots)
+    - PostgreSQL admin access (audit_events queries)
+    - Slack #security-incidents channel
+
+# ── Compliance mapping ──────────────────────────────────────────────────────
+compliance:
+  controlFamily: incident-response
+  controlsCovered:
+    - IR-01  # Incident detection and triage
+    - IR-02  # Audit trail preservation
+    - IR-03  # Containment actions documented
+    - IR-04  # Remediation tracked to closure
+  retentionClass: 7_YEARS
+  evidencePackEventType: incident
+  blobPathTemplate: >
+    evidence/{entity_id}/incident-response/{YYYY}/{MM}/{incident_id}/

@@ -1,7 +1,22 @@
 /**
- * Simple audit logger — writes to stdout/stderr.
- * In production, replace with a database / Azure Monitor sink.
+ * Audit logger — backward-compatible wrapper.
+ *
+ * The real implementation is in ./audit-db.ts which writes to the
+ * append-only `audit_events` table with SHA-256 hash-chain integrity.
+ *
+ * This file is kept for backward compatibility with existing call-sites
+ * that use `auditLog()`. New code should import from `@/lib/audit-db`.
+ *
+ * @deprecated Use `recordAuditEvent` from `@/lib/audit-db` instead.
  */
+
+// Re-export the real implementation
+export {
+  recordAuditEvent,
+  verifyEntityAuditChain,
+  exportAuditTrailBuffer,
+  AUDIT_ACTIONS,
+} from './audit-db'
 
 interface AuditEvent {
   userId: string | null
@@ -11,10 +26,14 @@ interface AuditEvent {
   timestamp?: string
 }
 
+/**
+ * @deprecated Use `recordAuditEvent` from `@/lib/audit-db` for DB-backed,
+ * hash-chained audit logging. This function only writes to stdout.
+ */
 export function auditLog(event: AuditEvent) {
   const entry = {
     ...event,
     timestamp: event.timestamp || new Date().toISOString(),
   }
-  console.log('[AUDIT]', JSON.stringify(entry))
+  console.log('[AUDIT][LEGACY]', JSON.stringify(entry))
 }
