@@ -1,0 +1,505 @@
+{
+  "generated_at": "2026-02-18T09:26:37.242115",
+  "project": "ABR Insights",
+  "target_dir": "D:\\APPS\\nzila-abr-insights\\backend\\services\\api",
+  "dry_run": false,
+  "services": [
+    {
+      "service": "ai-personalization",
+      "file": "ai_personalization_views.py",
+      "class": "AIPersonalizationViewSet",
+      "app": "ai_core",
+      "models": [
+        "CaseEmbeddings",
+        "CourseEmbeddings"
+      ],
+      "endpoints": 6,
+      "lines": 176
+    },
+    {
+      "service": "ai-quota",
+      "file": "ai_quota_views.py",
+      "class": "AIQuotaViewSet",
+      "app": "core",
+      "models": [
+        "AiQuota",
+        "AiUsageDaily"
+      ],
+      "endpoints": 4,
+      "lines": 193
+    },
+    {
+      "service": "ai-quotas",
+      "file": "ai_quotas_views.py",
+      "class": "AIQuotasViewSet",
+      "app": "core",
+      "models": [
+        "AiQuota",
+        "AiUsageDaily"
+      ],
+      "endpoints": 3,
+      "lines": 158
+    },
+    {
+      "service": "ai-training",
+      "file": "ai_training_views.py",
+      "class": "AITrainingViewSet",
+      "app": "ai_core",
+      "models": [
+        "TrainingJobs",
+        "AutomatedTrainingConfig",
+        "ClassificationFeedback"
+      ],
+      "endpoints": 7,
+      "lines": 298
+    },
+    {
+      "service": "ai-verification",
+      "file": "ai_verification_views.py",
+      "class": "AIVerificationViewSet",
+      "app": "core",
+      "models": [
+        "AiInteractionLogs"
+      ],
+      "endpoints": 6,
+      "lines": 234
+    },
+    {
+      "service": "audit-logger",
+      "file": "audit_logger_views.py",
+      "class": "AuditLoggerViewSet",
+      "app": "auth_core",
+      "models": [
+        "AuditLogs"
+      ],
+      "endpoints": 3,
+      "lines": 140
+    },
+    {
+      "service": "canlii-ingestion",
+      "file": "canlii_ingestion_views.py",
+      "class": "CanLIIIngestionViewSet",
+      "app": "core",
+      "models": [
+        "CanliiIngestionRuns",
+        "CanliiApiRequests",
+        "CanliiDailyQuotas",
+        "TribunalCasesRaw",
+        "IngestionJobs",
+        "IngestionErrors"
+      ],
+      "endpoints": 5,
+      "lines": 230
+    },
+    {
+      "service": "case-alerts",
+      "file": "case_alerts_views.py",
+      "class": "CaseAlertsViewSet",
+      "app": "analytics",
+      "models": [
+        "SavedSearches",
+        "CaseAlerts",
+        "CaseDigests"
+      ],
+      "endpoints": 11,
+      "lines": 438
+    },
+    {
+      "service": "ce-credits",
+      "file": "ce_credits_views.py",
+      "class": "CECreditsViewSet",
+      "app": "content",
+      "models": [
+        "Achievements",
+        "UserAchievements"
+      ],
+      "endpoints": 8,
+      "lines": 215
+    },
+    {
+      "service": "certificates",
+      "file": "certificates_views.py",
+      "class": "CertificatesViewSet",
+      "app": "core",
+      "models": [
+        "Certificates",
+        "CertificateTemplates",
+        "DigitalBadges"
+      ],
+      "endpoints": 16,
+      "lines": 625
+    },
+    {
+      "service": "codespring",
+      "file": "codespring_views.py",
+      "class": "CodespringViewSet",
+      "app": "core",
+      "models": [],
+      "endpoints": 2,
+      "lines": 90
+    },
+    {
+      "service": "compliance-reports",
+      "file": "compliance_reports_views.py",
+      "class": "ComplianceReportsViewSet",
+      "app": "core",
+      "models": [
+        "ComplianceReports"
+      ],
+      "endpoints": 8,
+      "lines": 288
+    },
+    {
+      "service": "course-gamification",
+      "file": "course_gamification_views.py",
+      "class": "CourseGamificationViewSet",
+      "app": "core",
+      "models": [
+        "AchievementCategories",
+        "AchievementProgress",
+        "UserStreaks",
+        "Leaderboards",
+        "LeaderboardEntries"
+      ],
+      "endpoints": 17,
+      "lines": 635
+    },
+    {
+      "service": "course-workflow",
+      "file": "course_workflow_views.py",
+      "class": "CourseWorkflowViewSet",
+      "app": "core",
+      "models": [
+        "CourseWorkflowReviews",
+        "CourseWorkflowHistory",
+        "ContentQualityChecklists",
+        "CourseVersions"
+      ],
+      "endpoints": 17,
+      "lines": 606
+    },
+    {
+      "service": "courses-enhanced",
+      "file": "courses_enhanced_views.py",
+      "class": "CoursesEnhancedViewSet",
+      "app": "core",
+      "models": [
+        "CourseModules",
+        "CourseDiscussions"
+      ],
+      "endpoints": 25,
+      "lines": 856
+    },
+    {
+      "service": "dashboard-analytics",
+      "file": "dashboard_analytics_views.py",
+      "class": "DashboardAnalyticsViewSet",
+      "app": "content",
+      "models": [
+        "Enrollments",
+        "LessonProgress",
+        "Achievements",
+        "LearningStreaks"
+      ],
+      "endpoints": 5,
+      "lines": 168
+    },
+    {
+      "service": "data-export",
+      "file": "data_export_views.py",
+      "class": "DataExportViewSet",
+      "app": "core",
+      "models": [
+        "DataExportContents",
+        "AuditLogExports"
+      ],
+      "endpoints": 3,
+      "lines": 156
+    },
+    {
+      "service": "embedding-service",
+      "file": "embedding_service_views.py",
+      "class": "EmbeddingServiceViewSet",
+      "app": "ai_core",
+      "models": [
+        "CaseEmbeddings",
+        "CourseEmbeddings",
+        "LessonEmbeddings",
+        "EmbeddingJobs"
+      ],
+      "endpoints": 10,
+      "lines": 370
+    },
+    {
+      "service": "entitlements",
+      "file": "entitlements_views.py",
+      "class": "EntitlementsViewSet",
+      "app": "billing",
+      "models": [
+        "OrganizationSubscriptions"
+      ],
+      "endpoints": 4,
+      "lines": 134
+    },
+    {
+      "service": "evidence-bundles",
+      "file": "evidence_bundles_views.py",
+      "class": "EvidenceBundlesViewSet",
+      "app": "compliance",
+      "models": [
+        "EvidenceBundles",
+        "EvidenceBundleComponents",
+        "EvidenceBundlePolicyMappings",
+        "EvidenceBundleTimeline"
+      ],
+      "endpoints": 12,
+      "lines": 444
+    },
+    {
+      "service": "gamification",
+      "file": "gamification_views.py",
+      "class": "GamificationViewSet",
+      "app": "core",
+      "models": [
+        "AchievementCategories",
+        "AchievementProgress",
+        "UserStreaks",
+        "PointsSources",
+        "PointsTransactions",
+        "RewardsCatalog",
+        "UserRewards",
+        "Leaderboards",
+        "LeaderboardEntries"
+      ],
+      "endpoints": 25,
+      "lines": 887
+    },
+    {
+      "service": "instructors",
+      "file": "instructors_views.py",
+      "class": "InstructorsViewSet",
+      "app": "core",
+      "models": [
+        "InstructorProfiles",
+        "CourseInstructors",
+        "InstructorAnalytics",
+        "InstructorCommunications",
+        "InstructorEarnings"
+      ],
+      "endpoints": 18,
+      "lines": 664
+    },
+    {
+      "service": "lesson-notes",
+      "file": "lesson_notes_views.py",
+      "class": "LessonNotesViewSet",
+      "app": "content",
+      "models": [
+        "Bookmarks"
+      ],
+      "endpoints": 6,
+      "lines": 245
+    },
+    {
+      "service": "live-session",
+      "file": "live_session_views.py",
+      "class": "LiveSessionViewSet",
+      "app": "core",
+      "models": [
+        "DiscussionForums",
+        "ForumPosts"
+      ],
+      "endpoints": 7,
+      "lines": 202
+    },
+    {
+      "service": "org-offboarding",
+      "file": "org_offboarding_views.py",
+      "class": "OrgOffboardingViewSet",
+      "app": "core",
+      "models": [
+        "OrgOffboardingRequests",
+        "OffboardingAuditLog"
+      ],
+      "endpoints": 4,
+      "lines": 193
+    },
+    {
+      "service": "outcome-prediction",
+      "file": "outcome_prediction_views.py",
+      "class": "OutcomePredictionViewSet",
+      "app": "core",
+      "models": [
+        "CaseOutcomes",
+        "OutcomePredictions",
+        "PredictionModels"
+      ],
+      "endpoints": 4,
+      "lines": 190
+    },
+    {
+      "service": "pdf-generator",
+      "file": "pdf_generator_views.py",
+      "class": "PDFGeneratorViewSet",
+      "app": "core",
+      "models": [
+        "EvidenceBundlePdfs"
+      ],
+      "endpoints": 2,
+      "lines": 119
+    },
+    {
+      "service": "quiz",
+      "file": "quiz_views.py",
+      "class": "QuizViewSet",
+      "app": "content",
+      "models": [
+        "Quizzes",
+        "QuizAttempts"
+      ],
+      "endpoints": 13,
+      "lines": 506
+    },
+    {
+      "service": "quiz-questions",
+      "file": "quiz_questions_views.py",
+      "class": "QuizQuestionsViewSet",
+      "app": "core",
+      "models": [
+        "Questions",
+        "QuestionOptions",
+        "QuestionPools",
+        "PoolQuestions"
+      ],
+      "endpoints": 12,
+      "lines": 468
+    },
+    {
+      "service": "rbac",
+      "file": "rbac_views.py",
+      "class": "RBACViewSet",
+      "app": "core",
+      "models": [
+        "ResourcePermissions",
+        "PermissionOverrides",
+        "RoleHierarchy",
+        "PermissionCache"
+      ],
+      "endpoints": 10,
+      "lines": 354
+    },
+    {
+      "service": "risk-analytics",
+      "file": "risk_analytics_views.py",
+      "class": "RiskAnalyticsViewSet",
+      "app": "compliance",
+      "models": [
+        "RiskScoreHistory",
+        "OrganizationRiskHistory"
+      ],
+      "endpoints": 5,
+      "lines": 230
+    },
+    {
+      "service": "risk-report-export",
+      "file": "risk_report_export_views.py",
+      "class": "RiskReportExportViewSet",
+      "app": "compliance",
+      "models": [
+        "RiskScoreHistory",
+        "OrganizationRiskHistory"
+      ],
+      "endpoints": 3,
+      "lines": 110
+    },
+    {
+      "service": "seat-management",
+      "file": "seat_management_views.py",
+      "class": "SeatManagementViewSet",
+      "app": "billing",
+      "models": [
+        "OrganizationSubscriptions",
+        "SeatAllocations",
+        "SubscriptionInvoices"
+      ],
+      "endpoints": 12,
+      "lines": 446
+    },
+    {
+      "service": "skills",
+      "file": "skills_views.py",
+      "class": "SkillsViewSet",
+      "app": "core",
+      "models": [
+        "Skills",
+        "CourseSkills",
+        "LessonSkills",
+        "QuestionSkills",
+        "UserSkills",
+        "SkillValidations",
+        "SkillPrerequisites"
+      ],
+      "endpoints": 11,
+      "lines": 420
+    },
+    {
+      "service": "social",
+      "file": "social_views.py",
+      "class": "SocialViewSet",
+      "app": "core",
+      "models": [
+        "UserProfilesExtended",
+        "UserFollows",
+        "StudyBuddies",
+        "UserActivityFeed",
+        "UserGroups",
+        "GroupMembers"
+      ],
+      "endpoints": 22,
+      "lines": 788
+    },
+    {
+      "service": "sso",
+      "file": "sso_views.py",
+      "class": "SSOViewSet",
+      "app": "core",
+      "models": [
+        "SsoProviders",
+        "EnterpriseSessions",
+        "IdentityProviderMapping",
+        "SsoLoginAttempts"
+      ],
+      "endpoints": 11,
+      "lines": 434
+    },
+    {
+      "service": "tenant-offboarding",
+      "file": "tenant_offboarding_views.py",
+      "class": "TenantOffboardingViewSet",
+      "app": "core",
+      "models": [
+        "OrgOffboardingRequests",
+        "OffboardingAuditLog"
+      ],
+      "endpoints": 4,
+      "lines": 175
+    },
+    {
+      "service": "watch-history",
+      "file": "watch_history_views.py",
+      "class": "WatchHistoryViewSet",
+      "app": "content",
+      "models": [
+        "LessonProgress"
+      ],
+      "endpoints": 9,
+      "lines": 240
+    }
+  ],
+  "totals": {
+    "files": 38,
+    "viewsets": 38,
+    "endpoints": 350,
+    "lines": 13125
+  }
+}
