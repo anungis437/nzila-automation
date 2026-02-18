@@ -506,11 +506,15 @@ def analyze_abr_dependencies(workspace_root: Path) -> DependencyReport:
     logger.info("ABR Insights — Dependency Analysis")
     logger.info("=" * 60)
 
-    project_root = (
-        workspace_root / "legacy-codebases" / "abr-insights-app-main"
-        / "abr-insights-app-main"
-    )
-    output_path = workspace_root / "automation" / "data" / "abr-dependency-report.json"
+    # Try D:\APPS first (with nested structure), then fall back to workspace/legacy-codebases
+    project_root = Path("D:/APPS/abr-insights-app-main/abr-insights-app-main")
+    if not project_root.exists():
+        project_root = (
+            workspace_root / "legacy-codebases" / "abr-insights-app-main"
+            / "abr-insights-app-main"
+        )
+    
+    output_path = workspace_root / "packages" / "automation" / "data" / "abr-dependency-report.json"
 
     analyzer = DependencyAnalyzer(project_root=project_root, platform="abr-insights")
     return analyzer.write_report(output_path)
@@ -522,11 +526,15 @@ def analyze_ue_dependencies(workspace_root: Path) -> DependencyReport:
     logger.info("Union Eyes — Dependency Analysis")
     logger.info("=" * 60)
 
-    project_root = (
-        workspace_root / "legacy-codebases" / "Union_Eyes_app_v1-main"
-        / "Union_Eyes_app_v1-main"
-    )
-    output_path = workspace_root / "automation" / "data" / "ue-dependency-report.json"
+    # Try D:\APPS first (with nested structure), then fall back to workspace/legacy-codebases
+    project_root = Path("D:/APPS/Union_Eyes_app_v1-main/Union_Eyes_app_v1-main")
+    if not project_root.exists():
+        project_root = (
+            workspace_root / "legacy-codebases" / "Union_Eyes_app_v1-main"
+            / "Union_Eyes_app_v1-main"
+        )
+    
+    output_path = workspace_root / "packages" / "automation" / "data" / "ue-dependency-report.json"
 
     analyzer = DependencyAnalyzer(project_root=project_root, platform="union-eyes")
     return analyzer.write_report(output_path)

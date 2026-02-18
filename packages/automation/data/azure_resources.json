@@ -1,0 +1,758 @@
+﻿[
+  {
+    "location": "canadaeast",
+    "name": "courtlens0086479842",
+    "rg": "court_lens",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "canadaeast",
+    "name": "courtlens",
+    "rg": "court_lens",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "canadaeast",
+    "name": "courtlens8580509665",
+    "rg": "court_lens",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "canadaeast",
+    "name": "courtlens4881273031",
+    "rg": "court_lens",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "canadaeast",
+    "name": "courtlens2028293339",
+    "rg": "court_lens",
+    "type": "Microsoft.Insights/components"
+  },
+  {
+    "location": "canadaeast",
+    "name": "court_lens",
+    "rg": "court_lens",
+    "type": "Microsoft.MachineLearningServices/workspaces"
+  },
+  {
+    "location": "canadaeast",
+    "name": "courtlens-7310-resource",
+    "rg": "rg-support-7310",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "canadaeast",
+    "name": "courtlens-7310-resource/courtlens-7310",
+    "rg": "rg-support-7310",
+    "type": "Microsoft.CognitiveServices/accounts/projects"
+  },
+  {
+    "location": "global",
+    "name": "Application Insights Smart Detection",
+    "rg": "court_lens",
+    "type": "microsoft.insights/actiongroups"
+  },
+  {
+    "location": "eastus",
+    "name": "courtlens-openai",
+    "rg": "court_lens",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "eastus2",
+    "name": "redis-union-claims-dev-4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.Cache/Redis"
+  },
+  {
+    "location": "eastus2",
+    "name": "stunionclaimsdev4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "eastus2",
+    "name": "log-union-claims-dev-4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "eastus2",
+    "name": "kv-union-claims-dev-4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "eastus2",
+    "name": "psql-union-claims-dev-4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "eastus2",
+    "name": "acrunionclaimsdev4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "eastus2",
+    "name": "appi-union-claims-dev-4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.Insights/components"
+  },
+  {
+    "location": "eastus2",
+    "name": "aks-union-claims-dev-4x25",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.ContainerService/managedClusters"
+  },
+  {
+    "location": "eastus2",
+    "name": "7452eddd-443f-47a5-a7f3-cafa54d70cf3",
+    "rg": "MC_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Network/publicIPAddresses"
+  },
+  {
+    "location": "eastus2",
+    "name": "kubernetes",
+    "rg": "mc_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Network/loadBalancers"
+  },
+  {
+    "location": "eastus2",
+    "name": "omsagent-aks-union-claims-dev-4x25",
+    "rg": "MC_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+  },
+  {
+    "location": "eastus2",
+    "name": "aks-union-claims-dev-4x25-agentpool",
+    "rg": "MC_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+  },
+  {
+    "location": "eastus2",
+    "name": "aks-agentpool-28915550-nsg",
+    "rg": "mc_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Network/networkSecurityGroups"
+  },
+  {
+    "location": "eastus2",
+    "name": "aks-vnet-28915550",
+    "rg": "MC_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Network/virtualNetworks"
+  },
+  {
+    "location": "eastus2",
+    "name": "NetworkWatcher_eastus2",
+    "rg": "NetworkWatcherRG",
+    "type": "Microsoft.Network/networkWatchers"
+  },
+  {
+    "location": "eastus2",
+    "name": "ContainerInsights(log-union-claims-dev-4x25)",
+    "rg": "rg-union-claims-dev-4x25",
+    "type": "Microsoft.OperationsManagement/solutions"
+  },
+  {
+    "location": "eastus2",
+    "name": "aks-default-41627016-vmss",
+    "rg": "MC_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Compute/virtualMachineScaleSets"
+  },
+  {
+    "location": "eastus2",
+    "name": "kubernetes-adea2223249ed4532ade8742e1ae36b2",
+    "rg": "mc_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Network/publicIPAddresses"
+  },
+  {
+    "location": "eastus2",
+    "name": "kubernetes-afe994c936f844934ab30d78c5f7d95b",
+    "rg": "mc_rg-union-claims-dev-4x25_aks-union-claims-dev-4x25_eastus2",
+    "type": "Microsoft.Network/publicIPAddresses"
+  },
+  {
+    "location": "canadacentral",
+    "name": "NetworkWatcher_canadacentral",
+    "rg": "NetworkWatcherRG",
+    "type": "Microsoft.Network/networkWatchers"
+  },
+  {
+    "location": "eastus",
+    "name": "NetworkWatcher_eastus",
+    "rg": "NetworkWatcherRG",
+    "type": "Microsoft.Network/networkWatchers"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-kv",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlensacr",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-app-plan",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/serverFarms"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-union-claims-staging",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-union-claims-prod",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-dashboard",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-case-analysis",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-documents",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-employment",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-research",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-public",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-admin",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-family-law",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-real-estate",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "courtlens-matters",
+    "rg": "courtlens-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "eastus2",
+    "name": "abr-insights-app",
+    "rg": "rg-abr-insights",
+    "type": "Microsoft.Web/staticSites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-staging-plan",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.Web/serverFarms"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-staging-db",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-staging-speech",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-staging-openai",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-prod-plan",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.Web/serverFarms"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-prod-db",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-prod-speech",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-prod-openai",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyesstagingacr",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyesprodacr",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyesstagingstorage",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyesprodstorage",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-staging-app",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-prod-app",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "eastus",
+    "name": "unioneyes-staging-openai-eastus",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "eastus",
+    "name": "unioneyes-prod-openai-eastus",
+    "rg": "unioneyes-prod-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "unioneyes-keyvault",
+    "rg": "unioneyes-staging-rg",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nzilaexport-secrets-kv",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "canadacentral",
+    "name": "log-nzilaexport-canadacentral",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "canadacentral",
+    "name": "redis-nzilaexport-stg",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Cache/Redis"
+  },
+  {
+    "location": "canadacentral",
+    "name": "psql-nzilaexport-stg",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "canadacentral",
+    "name": "stnzilastg2oh5hcpfmwo66",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nzilaexportacr",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "canadacentral",
+    "name": "plan-nzilaexport-stg",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Web/serverFarms"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nsg-nzilaexport-stg-appservices",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Network/networkSecurityGroups"
+  },
+  {
+    "location": "canadacentral",
+    "name": "vnet-nzilaexport-stg",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Network/virtualNetworks"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nzilaexport-frontend-staging",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "appi-nzilaexport-stg",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Insights/components"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nzilaexport-backend-staging",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "canadacentral",
+    "name": "kv-nzilastg2oh5hcpfmwo66",
+    "rg": "nzilaexport-staging-rg",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "canadacentral",
+    "name": "union-eyes-db-1771184129",
+    "rg": "union-eyes-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "eastus",
+    "name": "cs210032000d23f28ec",
+    "rg": "cloud-shell-storage-eastus",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "eastus2",
+    "name": "cyberlearn-app",
+    "rg": "cyberlearn-rg",
+    "type": "Microsoft.Web/staticSites"
+  },
+  {
+    "location": "eastus",
+    "name": "cyberlearnregistry",
+    "rg": "cyberlearn-container-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "eastus",
+    "name": "workspace-cyberlearncontainerrgHA1x",
+    "rg": "cyberlearn-container-rg",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "eastus",
+    "name": "cyberlearn-env",
+    "rg": "cyberlearn-container-rg",
+    "type": "Microsoft.App/managedEnvironments"
+  },
+  {
+    "location": "eastus",
+    "name": "cyberlearn-app",
+    "rg": "cyberlearn-container-rg",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "location": "global",
+    "name": "cyberlearn-bot",
+    "rg": "cyberlearn-rg",
+    "type": "Microsoft.BotService/botServices"
+  },
+  {
+    "location": "eastus",
+    "name": "cyberlearnlessons",
+    "rg": "cyber-learn-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "eastus",
+    "name": "cyber-learn-speech",
+    "rg": "cyber-learn-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "eastus",
+    "name": "cyber-learn-lesson-gen",
+    "rg": "cyber-learn-rg",
+    "type": "Microsoft.Web/sites"
+  },
+  {
+    "location": "eastus",
+    "name": "DefaultWorkspace-5d819f33-d16f-429c-a3c0-5b0e94740ba3-EUS",
+    "rg": "DefaultResourceGroup-EUS",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "eastus",
+    "name": "cyber-learn-lesson-gen",
+    "rg": "cyber-learn-rg",
+    "type": "Microsoft.Insights/components"
+  },
+  {
+    "location": "eastus",
+    "name": "cyberlearn-apenai",
+    "rg": "cyberlearn-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "eastus",
+    "name": "EastUSLinuxDynamicPlan",
+    "rg": "cyber-learn-rg",
+    "type": "Microsoft.Web/serverFarms"
+  },
+  {
+    "location": "eastus",
+    "name": "abr-insights-openai",
+    "rg": "abr-insights-rg",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "location": "eastus",
+    "name": "pondu-ops-keyvault",
+    "rg": "pondu-ops-rg",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "eastus",
+    "name": "nzila-staging-vnet",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.Network/virtualNetworks"
+  },
+  {
+    "location": "eastus",
+    "name": "nzila-staging-logs",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nzila-staging-db",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "canadacentral",
+    "name": "nzila-staging-cache",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.Cache/Redis"
+  },
+  {
+    "location": "eastus",
+    "name": "nzilastagingstore",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "eastus",
+    "name": "nzila-staging-kv",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "location": "eastus",
+    "name": "nzilastagingacr",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "eastus",
+    "name": "nzila-staging-env",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.App/managedEnvironments"
+  },
+  {
+    "location": "eastus",
+    "name": "capp-svc-lb-ip",
+    "rg": "ME_nzila-staging-env_nzila-staging-rg_eastus",
+    "type": "Microsoft.Network/publicIPAddresses"
+  },
+  {
+    "location": "eastus",
+    "name": "capp-svc-lb",
+    "rg": "ME_nzila-staging-env_nzila-staging-rg_eastus",
+    "type": "Microsoft.Network/loadBalancers"
+  },
+  {
+    "location": "eastus",
+    "name": "nzila-api",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "location": "eastus",
+    "name": "nzila-web",
+    "rg": "nzila-staging-rg",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "location": "eastus",
+    "name": "congowavemedia",
+    "rg": "congowave-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "global",
+    "name": "congowave-cdn",
+    "rg": "congowave-rg",
+    "type": "Microsoft.Cdn/profiles"
+  },
+  {
+    "location": "global",
+    "name": "congowave-cdn/congowave-media",
+    "rg": "congowave-rg",
+    "type": "Microsoft.Cdn/profiles/afdendpoints"
+  },
+  {
+    "location": "canadacentral",
+    "name": "congowave-db",
+    "rg": "congowave-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "eastus",
+    "name": "congowave-vnet",
+    "rg": "congowave-rg",
+    "type": "Microsoft.Network/virtualNetworks"
+  },
+  {
+    "location": "eastus",
+    "name": "appgw-pip",
+    "rg": "congowave-rg",
+    "type": "Microsoft.Network/publicIPAddresses"
+  },
+  {
+    "location": "eastus",
+    "name": "congowave-appgw",
+    "rg": "congowave-rg",
+    "type": "Microsoft.Network/applicationGateways"
+  },
+  {
+    "location": "eastus",
+    "name": "congowavetfstate",
+    "rg": "congowave-terraform-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "eastus",
+    "name": "congowaveacr",
+    "rg": "congowave-prod-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "eastus",
+    "name": "workspace-abrinsightsrgFg3q",
+    "rg": "abr-insights-rg",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "eastus",
+    "name": "abr-insights-env",
+    "rg": "abr-insights-rg",
+    "type": "Microsoft.App/managedEnvironments"
+  },
+  {
+    "location": "eastus",
+    "name": "abrinsightsacr",
+    "rg": "abr-insights-rg",
+    "type": "Microsoft.ContainerRegistry/registries"
+  },
+  {
+    "location": "eastus",
+    "name": "abr-insights-app",
+    "rg": "abr-insights-rg",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "location": "westus2",
+    "name": "congowave-logs-staging",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "location": "westus2",
+    "name": "congowave-db-staging",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+  },
+  {
+    "location": "westus2",
+    "name": "congowave-redis-staging",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.Cache/Redis"
+  },
+  {
+    "location": "westus2",
+    "name": "congowavestagingmedia",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.Storage/storageAccounts"
+  },
+  {
+    "location": "westus2",
+    "name": "congowave-env-staging",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.App/managedEnvironments"
+  },
+  {
+    "location": "westus2",
+    "name": "congowave-backend-staging",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "location": "westus2",
+    "name": "congowave-frontend-staging",
+    "rg": "congowave-staging-rg",
+    "type": "Microsoft.App/containerApps"
+  }
+]

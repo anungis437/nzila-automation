@@ -1,0 +1,343 @@
+{
+  "phase_1_critical": [
+    {
+      "name": "workflows.test",
+      "operations": 92,
+      "file": "services\\financial-service\\src\\tests\\workflows.test.ts"
+    },
+    {
+      "name": "governance-service",
+      "operations": 74,
+      "file": "services\\governance-service.ts"
+    },
+    {
+      "name": "schema",
+      "operations": 68,
+      "file": "services\\financial-service\\src\\db\\schema.ts"
+    },
+    {
+      "name": "certification-management-service",
+      "operations": 62,
+      "file": "services\\certification-management-service.ts"
+    },
+    {
+      "name": "lmbp-immigration-service",
+      "operations": 62,
+      "file": "services\\lmbp-immigration-service.ts"
+    },
+    {
+      "name": "schema",
+      "operations": 62,
+      "file": "services\\financial-service\\drizzle\\schema.ts"
+    },
+    {
+      "name": "tax-slip-service",
+      "operations": 53,
+      "file": "services\\tax-slip-service.ts"
+    },
+    {
+      "name": "signature-service",
+      "operations": 51,
+      "file": "services\\pki\\signature-service.ts"
+    }
+  ],
+  "phase_2_high": [
+    {
+      "name": "joint-trust-fmv-service",
+      "operations": 46,
+      "file": "services\\joint-trust-fmv-service.ts"
+    },
+    {
+      "name": "indigenous-data-service",
+      "operations": 45,
+      "file": "services\\indigenous-data-service.ts"
+    },
+    {
+      "name": "remittances",
+      "operations": 45,
+      "file": "services\\financial-service\\src\\routes\\remittances.ts"
+    },
+    {
+      "name": "break-glass-service",
+      "operations": 44,
+      "file": "services\\break-glass-service.ts"
+    },
+    {
+      "name": "geofence-privacy-service",
+      "operations": 44,
+      "file": "services\\geofence-privacy-service.ts"
+    },
+    {
+      "name": "employer-non-interference-service",
+      "operations": 43,
+      "file": "services\\employer-non-interference-service.ts"
+    },
+    {
+      "name": "founder-conflict-service",
+      "operations": 43,
+      "file": "services\\founder-conflict-service.ts"
+    },
+    {
+      "name": "whiplash-prevention-service",
+      "operations": 43,
+      "file": "services\\whiplash-prevention-service.ts"
+    },
+    {
+      "name": "provincial-privacy-service",
+      "operations": 42,
+      "file": "services\\provincial-privacy-service.ts"
+    },
+    {
+      "name": "analytics",
+      "operations": 41,
+      "file": "services\\financial-service\\src\\routes\\analytics.ts"
+    },
+    {
+      "name": "twilio-sms-service",
+      "operations": 40,
+      "file": "services\\twilio-sms-service.ts"
+    },
+    {
+      "name": "arrears",
+      "operations": 38,
+      "file": "services\\financial-service\\src\\routes\\arrears.ts"
+    },
+    {
+      "name": "transfer-pricing-service",
+      "operations": 37,
+      "file": "services\\transfer-pricing-service.ts"
+    },
+    {
+      "name": "subscription-event-tracker",
+      "operations": 36,
+      "file": "services\\financial-service\\src\\services\\subscription-event-tracker.ts"
+    },
+    {
+      "name": "clc-api-integration",
+      "operations": 35,
+      "file": "services\\clc\\clc-api-integration.ts"
+    },
+    {
+      "name": "compliance-reports",
+      "operations": 35,
+      "file": "services\\clc\\compliance-reports.ts"
+    },
+    {
+      "name": "remittance-audit",
+      "operations": 35,
+      "file": "services\\clc\\remittance-audit.ts"
+    },
+    {
+      "name": "fcm-service",
+      "operations": 32,
+      "file": "services\\fcm-service.ts"
+    },
+    {
+      "name": "stipend-calculation",
+      "operations": 32,
+      "file": "services\\financial-service\\src\\services\\stipend-calculation.ts"
+    },
+    {
+      "name": "notification-service",
+      "operations": 31,
+      "file": "services\\financial-service\\src\\services\\notification-service.ts"
+    },
+    {
+      "name": "per-capita-calculator",
+      "operations": 29,
+      "file": "services\\clc\\per-capita-calculator.ts"
+    },
+    {
+      "name": "payment-processing",
+      "operations": 29,
+      "file": "services\\financial-service\\src\\services\\payment-processing.ts"
+    },
+    {
+      "name": "force-majeure-integration",
+      "operations": 28,
+      "file": "services\\force-majeure-integration.ts"
+    },
+    {
+      "name": "picket-tracking",
+      "operations": 28,
+      "file": "services\\financial-service\\src\\services\\picket-tracking.ts"
+    },
+    {
+      "name": "chart-of-accounts",
+      "operations": 27,
+      "file": "services\\clc\\chart-of-accounts.ts"
+    },
+    {
+      "name": "payment-collection-workflow",
+      "operations": 26,
+      "file": "services\\financial-service\\src\\jobs\\payment-collection-workflow.ts"
+    },
+    {
+      "name": "currency-enforcement-service",
+      "operations": 23,
+      "file": "services\\currency-enforcement-service.ts"
+    },
+    {
+      "name": "certificate-manager",
+      "operations": 22,
+      "file": "services\\pki\\certificate-manager.ts"
+    },
+    {
+      "name": "remittance-notifications",
+      "operations": 21,
+      "file": "services\\clc\\remittance-notifications.ts"
+    },
+    {
+      "name": "stipend-processing-workflow",
+      "operations": 21,
+      "file": "services\\financial-service\\src\\jobs\\stipend-processing-workflow.ts"
+    },
+    {
+      "name": "burn-rate-predictor",
+      "operations": 20,
+      "file": "services\\financial-service\\src\\services\\burn-rate-predictor.ts"
+    }
+  ],
+  "phase_3_medium": [
+    {
+      "name": "dues-rules-backup",
+      "operations": 19,
+      "file": "services\\financial-service\\src\\routes\\dues-rules-backup.ts"
+    },
+    {
+      "name": "dues-rules-complete",
+      "operations": 19,
+      "file": "services\\financial-service\\src\\routes\\dues-rules-complete.ts"
+    },
+    {
+      "name": "dues-rules",
+      "operations": 19,
+      "file": "services\\financial-service\\src\\routes\\dues-rules.ts"
+    },
+    {
+      "name": "verification-service",
+      "operations": 18,
+      "file": "services\\pki\\verification-service.ts"
+    },
+    {
+      "name": "dues-assignments",
+      "operations": 18,
+      "file": "services\\financial-service\\src\\routes\\dues-assignments.ts"
+    },
+    {
+      "name": "dues-transactions",
+      "operations": 17,
+      "file": "services\\financial-service\\src\\routes\\dues-transactions.ts"
+    },
+    {
+      "name": "arrears-detection",
+      "operations": 16,
+      "file": "services\\financial-service\\src\\services\\arrears-detection.ts"
+    },
+    {
+      "name": "financial-reports",
+      "operations": 13,
+      "file": "services\\financial-service\\src\\services\\financial-reports.ts"
+    },
+    {
+      "name": "arrears-management-workflow",
+      "operations": 12,
+      "file": "services\\financial-service\\src\\jobs\\arrears-management-workflow.ts"
+    },
+    {
+      "name": "dues-calculation-workflow",
+      "operations": 12,
+      "file": "services\\financial-service\\src\\jobs\\dues-calculation-workflow.ts"
+    },
+    {
+      "name": "analytics.test",
+      "operations": 12,
+      "file": "services\\financial-service\\src\\tests\\analytics.test.ts"
+    },
+    {
+      "name": "remittance-export",
+      "operations": 11,
+      "file": "services\\clc\\remittance-export.ts"
+    },
+    {
+      "name": "strike-funds",
+      "operations": 10,
+      "file": "services\\financial-service\\src\\routes\\strike-funds.ts"
+    },
+    {
+      "name": "donations",
+      "operations": 9,
+      "file": "services\\financial-service\\src\\routes\\donations.ts"
+    },
+    {
+      "name": "workflow-engine",
+      "operations": 6,
+      "file": "services\\pki\\workflow-engine.ts"
+    }
+  ],
+  "phase_4_low": [
+    {
+      "name": "migrate-strike-funds",
+      "operations": 4,
+      "file": "services\\financial-service\\migrate-strike-funds.ts"
+    },
+    {
+      "name": "remittance-exporter",
+      "operations": 3,
+      "file": "services\\clc\\remittance-exporter.ts"
+    },
+    {
+      "name": "check-stipend-structure",
+      "operations": 2,
+      "file": "services\\financial-service\\check-stipend-structure.ts"
+    },
+    {
+      "name": "check-tables",
+      "operations": 2,
+      "file": "services\\financial-service\\check-tables.ts"
+    },
+    {
+      "name": "add-missing-tables",
+      "operations": 1,
+      "file": "services\\financial-service\\add-missing-tables.ts"
+    },
+    {
+      "name": "check-donations",
+      "operations": 1,
+      "file": "services\\financial-service\\check-donations.ts"
+    },
+    {
+      "name": "check-dues-amount-cols",
+      "operations": 1,
+      "file": "services\\financial-service\\check-dues-amount-cols.ts"
+    },
+    {
+      "name": "check-dues-transactions",
+      "operations": 1,
+      "file": "services\\financial-service\\check-dues-transactions.ts"
+    },
+    {
+      "name": "check-stipends",
+      "operations": 1,
+      "file": "services\\financial-service\\check-stipends.ts"
+    }
+  ],
+  "no_migration_needed": [
+    "carbon-accounting-integration",
+    "carbon-accounting-service",
+    "email",
+    "remittance-validation",
+    "audit-analysis",
+    "drizzle.config",
+    "jest.config",
+    "run-migrations",
+    "relations",
+    "schema-platform-economics",
+    "analytics-processor",
+    "notifications",
+    "payments",
+    "picket-tracking",
+    "reports",
+    "stipends"
+  ]
+}

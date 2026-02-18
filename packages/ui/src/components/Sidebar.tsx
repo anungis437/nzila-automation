@@ -69,7 +69,7 @@ export function SidebarItem({ href, icon, active = false, children, onClick }: S
     return (
       <li>
         <a href={href} className={classes}>
-          {icon && <span className="flex-shrink-0 w-5 h-5">{icon}</span>}
+          {icon && <span className="shrink-0 w-5 h-5">{icon}</span>}
           <span className="truncate">{children}</span>
         </a>
       </li>
@@ -79,7 +79,7 @@ export function SidebarItem({ href, icon, active = false, children, onClick }: S
   return (
     <li>
       <button onClick={onClick} className={`${classes} w-full text-left`}>
-        {icon && <span className="flex-shrink-0 w-5 h-5">{icon}</span>}
+        {icon && <span className="shrink-0 w-5 h-5">{icon}</span>}
         <span className="truncate">{children}</span>
       </button>
     </li>

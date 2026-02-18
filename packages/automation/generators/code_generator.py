@@ -56,8 +56,12 @@ class ColumnDef:
     is_array: bool = False
     array_base_type: Optional[str] = None
 
-    def to_django_field_str(self) -> str:
+    def to_django_field_str(self, model_registry: Optional[Dict[str, str]] = None, 
+                           current_app: Optional[str] = None) -> str:
         """Generate Django field definition string"""
+        # Note: primary_key=True UUID fields are no longer emitted here;
+        # BaseModel provides the canonical id field. Non-id PKs are
+        # converted to unique fields in TableDef.to_django_model_str().
         if self.is_primary_key and "uuid" in self.source_type.lower():
             return "models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)"
 
@@ -71,8 +75,17 @@ class ColumnDef:
             }
             on_delete = on_delete_map.get(self.fk_on_delete.upper(), "models.CASCADE")
             fk_model = _table_to_model_name(self.fk_table)
+            
+            # Determine if we need app-qualified reference
+            fk_reference = fk_model
+            if model_registry and current_app:
+                fk_app = model_registry.get(fk_model)
+                if fk_app and fk_app != current_app:
+                    # Cross-app reference - use app-qualified format
+                    fk_reference = f"{fk_app}.{fk_model}"
+            
             related = self.django_name.replace("_id", "").replace("_", "") + "s"
-            kwargs = [f"'{fk_model}'", f"on_delete={on_delete}"]
+            kwargs = [f"'{fk_reference}'", f"on_delete={on_delete}"]
             kwargs.append(f"related_name='{related}'")
             if self.is_nullable:
                 kwargs.append("null=True")
@@ -129,7 +142,7 @@ class TableDef:
     source_file: str = ""
     domain: str = ""
 
-    def to_django_model_str(self) -> str:
+    def to_django_model_str(self, model_registry: Optional[Dict[str, str]] = None) -> str:
         """Generate Django model class string"""
         lines = []
         # Choices constants
@@ -144,35 +157,28 @@ class TableDef:
             lines.append("")
 
         # Fields
-        has_uuid_pk = False
-        has_created_at = False
-        has_updated_at = False
         has_org_fk = False
 
         for col in self.columns:
-            if col.is_primary_key and "uuid" in col.source_type.lower():
-                has_uuid_pk = True
-            if col.django_name == "created_at":
-                has_created_at = True
-            if col.django_name == "updated_at":
-                has_updated_at = True
             if col.is_foreign_key and col.fk_table in ("organizations",):
                 has_org_fk = True
 
-        # Determine base class
-        if has_uuid_pk and has_created_at and has_updated_at and has_org_fk:
-            base_class = "TenantModel"
-        elif has_uuid_pk and has_created_at and has_updated_at:
-            base_class = "BaseModel"
+        # Determine base class — always use BaseModel (provides id, created_at, updated_at)
+        if has_org_fk:
+            base_class = "OrganizationModel"
         else:
-            base_class = "models.Model"
+            base_class = "BaseModel"
 
         # Skip fields handled by base class
-        skip_fields = set()
-        if base_class in ("BaseModel", "TenantModel"):
-            skip_fields.update(["id", "created_at", "updated_at"])
-        if base_class == "TenantModel":
+        skip_fields = {"id", "created_at", "updated_at"}
+        if base_class == "OrganizationModel":
             skip_fields.add("organization_id")
+
+        # Convert non-id primary key fields to unique fields (BaseModel provides the real PK)
+        for col in self.columns:
+            if col.is_primary_key and col.django_name != "id":
+                col.is_primary_key = False
+                col.is_unique = True
 
         header = f"class {self.django_model_name}({base_class}):"
         docstring = f'    """Migrated from {self.source_type}: {self.source_file}"""'
@@ -185,11 +191,13 @@ class TableDef:
         for col in self.columns:
             if col.django_name in skip_fields:
                 continue
+            # Sanitize reserved word field names
+            field_name = _sanitize_field_name(col.django_name)
             # For FK fields, Django adds _id automatically
-            field_name = col.django_name
             if col.is_foreign_key:
                 field_name = field_name.replace("_id", "") if field_name.endswith("_id") else field_name
-            field_str = col.to_django_field_str()
+            field_str = col.to_django_field_str(model_registry=model_registry, 
+                                                current_app=self.django_app)
             field_lines.append(f"    {field_name} = {field_str}")
 
         if field_lines:
@@ -206,16 +214,17 @@ class TableDef:
             for i, uc in enumerate(self.unique_constraints):
                 fields_str = ", ".join([f"'{f}'" for f in uc])
                 uc_suffix = "_".join(uc)
+                constraint_name = _truncate_index_name(f'unique_{self.name}_{uc_suffix}')
                 constraints.append(
                     f"            models.UniqueConstraint(fields=[{fields_str}], "
-                    f"name='unique_{self.name}_{uc_suffix}')"
+                    f"name='{constraint_name}')"
                 )
             if constraints:
                 meta_lines.append("        constraints = [")
                 meta_lines.extend([c + "," for c in constraints])
                 meta_lines.append("        ]")
-        if has_created_at:
-            meta_lines.append("        ordering = ['-created_at']")
+        # BaseModel always provides created_at
+        meta_lines.append("        ordering = ['-created_at']")
 
         result.extend(meta_lines)
 
@@ -262,6 +271,45 @@ def _camel_to_snake(name: str) -> str:
     """Convert camelCase to snake_case"""
     s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+
+# Python reserved words and builtins that cannot be used as field names
+_PYTHON_RESERVED_WORDS = {
+    'False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await',
+    'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except',
+    'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is',
+    'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try',
+    'while', 'with', 'yield',
+}
+
+
+def _sanitize_field_name(name: str) -> str:
+    """Sanitize field name: append _field suffix if it's a Python reserved word."""
+    if name in _PYTHON_RESERVED_WORDS:
+        return f"{name}_field"
+    return name
+
+
+def _truncate_index_name(name: str, max_length: int = 30) -> str:
+    """Truncate index/constraint name to max_length chars for database compatibility."""
+    if len(name) <= max_length:
+        return name
+    # Try abbreviating common words first
+    abbreviations = {
+        'organization': 'org', 'organizations': 'orgs',
+        'hierarchy': 'hier', 'level': 'lvl',
+        'unique': 'uniq', 'index': 'idx',
+        'created': 'crt', 'updated': 'upd',
+        'status': 'stat', 'type': 'typ',
+    }
+    result = name
+    for full, abbr in abbreviations.items():
+        if len(result) <= max_length:
+            break
+        result = result.replace(full, abbr)
+    if len(result) > max_length:
+        result = result[:max_length]
+    return result
 
 
 # ──────────────────────────────────────────────
@@ -481,7 +529,7 @@ class SQLSchemaParser:
 
         col = ColumnDef(
             name=col_name,
-            django_name=_camel_to_snake(col_name),
+            django_name=_sanitize_field_name(_camel_to_snake(col_name)),
             source_type=raw_type,
             django_field=django_field,
             django_kwargs=kwargs,
@@ -756,7 +804,7 @@ class DrizzleSchemaParser:
 
         col = ColumnDef(
             name=field_name,
-            django_name=snake_name,
+            django_name=_sanitize_field_name(snake_name),
             source_type=drizzle_type,
             django_field=django_field,
             django_kwargs=kwargs,
@@ -864,10 +912,10 @@ class DjangoCodeTemplates:
                     abstract = True
             
             
-            class TenantModel(BaseModel):
-                """Abstract base for multi-tenant models."""
+            class OrganizationModel(BaseModel):
+                """Abstract base for multi-organization models."""
                 organization = models.ForeignKey(
-                    'organizations.Organization',
+                    'auth_core.Organizations',
                     on_delete=models.CASCADE,
                     related_name='%(class)ss'
                 )
@@ -990,13 +1038,13 @@ class DjangoCodeTemplates:
             '',
         ]
         for t in models:
+            # id and created_at always available via BaseModel inheritance
             list_display = ["'id'"]
             for c in t.columns:
                 if c.django_name in ("name", "title", "slug", "email", "status",
                                      "claim_number", "grievance_number"):
                     list_display.append(f"'{c.django_name}'")
-            if any(c.django_name == "created_at" for c in t.columns):
-                list_display.append("'created_at'")
+            list_display.append("'created_at'")
             list_display = list_display[:6]
 
             list_filter = []
@@ -1166,6 +1214,14 @@ class CodeGenerator:
             self.tables[table.django_app].append(table)
             self.all_tables.append(table)
 
+    def build_model_registry(self) -> Dict[str, str]:
+        """Build a registry mapping model names to their app names"""
+        registry = {}
+        for table in self.all_tables:
+            model_name = _table_to_model_name(table.name)
+            registry[model_name] = table.django_app
+        return registry
+
     # ──────── Code Generation ────────
 
     def generate_all(self) -> List[GenerationResult]:
@@ -1178,10 +1234,13 @@ class CodeGenerator:
 
     def generate_app(self, app_name: str, tables: List[TableDef]) -> GenerationResult:
         """Generate all Django files for an app"""
+        # Build model registry for cross-app FK references
+        model_registry = self.build_model_registry()
+        
         # Models
         models_code = DjangoCodeTemplates.models_header(app_name)
         for table in tables:
-            models_code += "\n\n" + table.to_django_model_str()
+            models_code += "\n\n" + table.to_django_model_str(model_registry=model_registry)
 
         # Serializers
         serializers_code = DjangoCodeTemplates.serializers_file(app_name, tables)
@@ -1869,11 +1928,10 @@ def run_abr_generation(workspace_root: Path) -> List[GenerationResult]:
     logger.info("=" * 60)
 
     migrations_dir = (
-        workspace_root / "legacy-codebases" / "abr-insights-app-main"
-        / "abr-insights-app-main" / "supabase" / "migrations"
+        Path("D:/APPS/abr-insights-app-main/abr-insights-app-main/supabase/migrations")
     )
 
-    output_dir = workspace_root / "automation" / "data" / "generated" / "abr"
+    output_dir = workspace_root / "packages" / "automation" / "data" / "generated" / "abr"
 
     gen = CodeGenerator(output_root=output_dir)
     gen.load_sql_schemas(migrations_dir, app_mapping=ABR_TABLE_APP_MAPPING)
@@ -1900,11 +1958,10 @@ def run_ue_generation(workspace_root: Path) -> List[GenerationResult]:
     logger.info("=" * 60)
 
     schema_dir = (
-        workspace_root / "legacy-codebases" / "Union_Eyes_app_v1-main"
-        / "Union_Eyes_app_v1-main" / "db" / "schema"
+        Path("D:/APPS/Union_Eyes_app_v1-main/Union_Eyes_app_v1-main/db/schema")
     )
 
-    output_dir = workspace_root / "automation" / "data" / "generated" / "ue"
+    output_dir = workspace_root / "packages" / "automation" / "data" / "generated" / "ue"
 
     gen = CodeGenerator(output_root=output_dir)
     gen.load_drizzle_schemas(schema_dir, app_mapping=UE_TABLE_APP_MAPPING)
