@@ -12,6 +12,7 @@
     "build:console": "turbo build --filter=@nzila/console",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "prettier": "^3.4.2",
-    "turbo": "^2.4.4"
+    "turbo": "^2.4.4",
+    "vitest": "^4.0.18"
   }
 }
