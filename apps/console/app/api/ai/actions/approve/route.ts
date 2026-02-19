@@ -15,6 +15,7 @@ import {
   appendAiAuditEvent,
 } from '@nzila/ai-core'
 import { requireEntityAccess } from '@/lib/api-guards'
+import { asAiError } from '@/lib/catch-utils'
 
 export async function POST(req: NextRequest) {
   try {
@@ -82,10 +83,11 @@ export async function POST(req: NextRequest) {
       approvedBy: access.context.userId,
     })
   } catch (err) {
-    if (err instanceof AiControlPlaneError) {
+    const aiErr = asAiError(err)
+    if (aiErr) {
       return NextResponse.json(
-        { error: err.message, code: err.code },
-        { status: err.statusCode },
+        { error: aiErr.message, code: aiErr.code },
+        { status: aiErr.statusCode },
       )
     }
     console.error('[AI Action Approve Error]', err)

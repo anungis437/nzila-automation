@@ -9,6 +9,8 @@ $root = $PSScriptRoot | Split-Path -Parent
 
 $pairs = @(
     # ── Root node_modules (every workspace package resolvable from root) ──
+    @{src="packages\ai-core";          dst="node_modules\@nzila\ai-core"},
+    @{src="packages\ai-sdk";           dst="node_modules\@nzila\ai-sdk"},
     @{src="packages\config";           dst="node_modules\@nzila\config"},
     @{src="packages\db";               dst="node_modules\@nzila\db"},
     @{src="packages\blob";             dst="node_modules\@nzila\blob"},
@@ -25,6 +27,14 @@ $pairs = @(
     @{src="packages\blob";             dst="packages\payments-stripe\node_modules\@nzila\blob"},
     @{src="packages\db";               dst="packages\payments-stripe\node_modules\@nzila\db"},
 
+    # packages/ai-core → deps @nzila/db, @nzila/blob, @nzila/os-core
+    @{src="packages\db";               dst="packages\ai-core\node_modules\@nzila\db"},
+    @{src="packages\blob";             dst="packages\ai-core\node_modules\@nzila\blob"},
+    @{src="packages\os-core";          dst="packages\ai-core\node_modules\@nzila\os-core"},
+
+    # packages/ai-sdk → dep @nzila/ai-core
+    @{src="packages\ai-core";          dst="packages\ai-sdk\node_modules\@nzila\ai-core"},
+
     # packages/tax → deps @nzila/db, @nzila/os-core, @nzila/blob
     @{src="packages\db";               dst="packages\tax\node_modules\@nzila\db"},
     @{src="packages\os-core";          dst="packages\tax\node_modules\@nzila\os-core"},
@@ -36,6 +46,8 @@ $pairs = @(
 
     # ── apps/console → deps @nzila/db, @nzila/os-core, @nzila/blob, ──
     #    @nzila/payments-stripe, @nzila/ui; devDeps @nzila/config
+    @{src="packages\ai-core";          dst="apps\console\node_modules\@nzila\ai-core"},
+    @{src="packages\ai-sdk";           dst="apps\console\node_modules\@nzila\ai-sdk"},
     @{src="packages\db";               dst="apps\console\node_modules\@nzila\db"},
     @{src="packages\os-core";          dst="apps\console\node_modules\@nzila\os-core"},
     @{src="packages\blob";             dst="apps\console\node_modules\@nzila\blob"},

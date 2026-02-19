@@ -86,9 +86,9 @@ export async function POST(
       WorkflowType.SHARE_ISSUANCE,
       userId,
       'system',
-      parsed.data.actionType,
+      String(parsed.data.actionType),
       parsed.data.payload as Record<string, unknown>,
-      `Auto-generated workflow for ${parsed.data.actionType}`,
+      `Auto-generated workflow for ${String(parsed.data.actionType)}`,
       evaluation.workflowSpec as Parameters<typeof createWorkflow>[6],
     )
   }

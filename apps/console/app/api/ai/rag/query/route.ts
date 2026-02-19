@@ -17,6 +17,7 @@ import {
 } from '@nzila/ai-core'
 import { requireEntityAccess } from '@/lib/api-guards'
 import { eq, and, sql } from 'drizzle-orm'
+import { asAiError } from '@/lib/catch-utils'
 
 export async function POST(req: NextRequest) {
   try {
@@ -67,7 +68,8 @@ export async function POST(req: NextRequest) {
       LIMIT ${topK}
     `)
 
-    const resultChunks = (chunks.rows ?? chunks as unknown[]).map((row: Record<string, unknown>) => ({
+    // db.execute() with the postgres driver returns rows directly as RowList (iterable)
+    const resultChunks = (chunks as unknown as Record<string, unknown>[]).map((row) => ({
       chunkId: row.chunk_id as string,
       chunkText: row.chunk_text as string,
       score: Number(row.score),
@@ -82,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     if (resultChunks.length > 0) {
       const context = resultChunks
-        .map((c, i) => `[${i + 1}] ${c.chunkText}`)
+        .map((c: { chunkText: string }, i: number) => `[${i + 1}] ${c.chunkText}`)
         .join('\n\n')
 
       const ragPrompt = `Answer the following question using ONLY the provided context. If the context doesn't contain enough information, say so.\n\nContext:\n${context}\n\nQuestion: ${query}`
@@ -111,10 +113,11 @@ export async function POST(req: NextRequest) {
       tokensOut: answerTokensOut,
     })
   } catch (err) {
-    if (err instanceof AiControlPlaneError) {
+    const aiErr = asAiError(err)
+    if (aiErr) {
       return NextResponse.json(
-        { error: err.message, code: err.code },
-        { status: err.statusCode },
+        { error: aiErr.message, code: aiErr.code },
+        { status: aiErr.statusCode },
       )
     }
     console.error('[AI RAG Query Error]', err)
