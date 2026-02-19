@@ -24,6 +24,7 @@ import type {
   NormalizedDispute,
   NormalizedPayout,
   SupportedStripeEventType,
+  StripeDisputeStatus,
 } from './types'
 import { SUPPORTED_EVENT_TYPES } from './types'
 
@@ -190,7 +191,7 @@ function normalizeDisputeCreated(
     disputeId: obj.id as string,
     paymentStripeObjectId: (obj.payment_intent as string) ?? '',
     amountCents: BigInt((obj.amount as number) ?? 0),
-    status: obj.status as string,
+    status: (obj.status as StripeDisputeStatus) ?? 'needs_response',
     reason: (obj.reason as string) ?? null,
     dueBy: evidenceDetails?.due_by
       ? new Date((evidenceDetails.due_by as number) * 1000)
@@ -308,7 +309,7 @@ async function persistPayout(data: NormalizedPayout): Promise<void> {
       payoutId: data.payoutId,
       amountCents: data.amountCents,
       currency: data.currency,
-      status: data.status as 'pending' | 'failed' | 'paid' | 'in_transit' | 'canceled',
+      status: data.status,
       arrivalDate: data.arrivalDate,
       occurredAt: data.occurredAt,
     })

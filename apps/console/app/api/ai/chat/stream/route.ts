@@ -7,6 +7,7 @@
 import { NextRequest } from 'next/server'
 import { chatStream, AiChatStreamRequestSchema, AiControlPlaneError } from '@nzila/ai-core'
 import { requireEntityAccess } from '@/lib/api-guards'
+import { asAiError } from '@/lib/catch-utils'
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,8 +45,9 @@ export async function POST(req: NextRequest) {
           }
           controller.close()
         } catch (err) {
-          const errorData = err instanceof AiControlPlaneError
-            ? { error: err.message, code: err.code }
+          const aiErr = asAiError(err)
+          const errorData = aiErr
+            ? { error: aiErr.message, code: aiErr.code }
             : { error: 'Stream error', code: 'unknown' }
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify(errorData)}\n\n`),
@@ -63,10 +65,11 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (err) {
-    if (err instanceof AiControlPlaneError) {
+    const aiErr = asAiError(err)
+    if (aiErr) {
       return new Response(
-        JSON.stringify({ error: err.message, code: err.code }),
-        { status: err.statusCode, headers: { 'Content-Type': 'application/json' } },
+        JSON.stringify({ error: aiErr.message, code: aiErr.code }),
+        { status: aiErr.statusCode, headers: { 'Content-Type': 'application/json' } },
       )
     }
     console.error('[AI Chat Stream Error]', err)

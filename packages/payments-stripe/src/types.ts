@@ -5,10 +5,14 @@ import type Stripe from 'stripe'
 
 // ── Stripe metadata convention ──────────────────────────────────────────────
 
+/**
+ * All values must be `string` — never `undefined` or `null`.
+ * Build metadata by conditionally spreading optional keys (e.g.
+ * `...(ventureId && { venture_id: ventureId })`) before passing here.
+ */
 export interface NzilaStripeMetadata {
   entity_id: string
-  venture_id?: string
-  [key: string]: string | undefined
+  [key: string]: string
 }
 
 // ── Webhook processing ──────────────────────────────────────────────────────
@@ -58,6 +62,20 @@ export interface NormalizedPayment {
   rawEventId: string
 }
 
+// ── Normalized status unions (match DB enum values) ─────────────────────────
+
+export type StripePayoutStatus = 'paid' | 'pending' | 'in_transit' | 'canceled' | 'failed'
+
+export type StripeDisputeStatus =
+  | 'warning_needs_response'
+  | 'warning_under_review'
+  | 'warning_closed'
+  | 'needs_response'
+  | 'under_review'
+  | 'charge_refunded'
+  | 'won'
+  | 'lost'
+
 export interface NormalizedRefund {
   entityId: string
   refundId: string
@@ -72,7 +90,7 @@ export interface NormalizedDispute {
   disputeId: string
   paymentStripeObjectId: string
   amountCents: bigint
-  status: string
+  status: StripeDisputeStatus
   reason: string | null
   dueBy: Date | null
   occurredAt: Date
@@ -83,7 +101,7 @@ export interface NormalizedPayout {
   payoutId: string
   amountCents: bigint
   currency: string
-  status: string
+  status: StripePayoutStatus
   arrivalDate: string | null
   occurredAt: Date
 }

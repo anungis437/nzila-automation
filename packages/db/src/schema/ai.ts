@@ -52,6 +52,8 @@ export const aiRequestFeatureEnum = pgEnum('ai_request_feature', [
   'rag_query',
   'extract',
   'actions_propose',
+  'summarize',
+  'classify',
 ])
 
 export const aiRequestStatusEnum = pgEnum('ai_request_status', [
