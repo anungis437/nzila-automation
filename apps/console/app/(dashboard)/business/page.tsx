@@ -6,6 +6,7 @@
  */
 
 import Link from 'next/link'
+import React from 'react'
 import { currentUser } from '@clerk/nextjs/server'
 import {
   DocumentTextIcon,
@@ -27,7 +28,16 @@ import { ShareClass } from '@/lib/equity/models'
 // TILE CONFIGURATION
 // ============================================================================
 
-const tiles = [
+interface Tile {
+  name: string
+  href: string
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  description: string
+  color: string
+  comingSoon?: boolean
+}
+
+const tiles: Tile[] = [
   {
     name: 'EquityOS',
     href: '/business/equity',

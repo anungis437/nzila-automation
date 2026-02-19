@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     targetId: row.id,
     afterJson: {
       taxType: parsed.data.taxType,
-      accountNumber: parsed.data.accountNumber,
+      accountNumber: parsed.data.programAccountNumber,
     },
   })
 

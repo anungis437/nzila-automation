@@ -59,7 +59,7 @@ function initializeSampleData() {
     },
     {
       id: '22222222-2222-2222-2222-222222222222',
-      type: 'FOUNDER' as const,
+      type: ShareholderType.FOUNDER,
       name: 'John Doe',
       email: 'john@nzila.ventures',
       legalName: 'John Doe',
@@ -76,7 +76,7 @@ function initializeSampleData() {
     },
     {
       id: '33333333-3333-3333-3333-333333333333',
-      type: 'CORPORATION' as const,
+      type: ShareholderType.CORPORATION,
       name: 'Acme Ventures Fund I',
       email: 'deals@acmeventures.com',
       legalName: 'Acme Ventures Fund I, LP',
@@ -87,7 +87,7 @@ function initializeSampleData() {
     },
     {
       id: '44444444-4444-4444-4444-444444444444',
-      type: 'INDIVIDUAL' as const,
+      type: ShareholderType.INDIVIDUAL,
       name: 'Alice Investor',
       email: 'alice@example.com',
       jurisdiction: 'CANADA',

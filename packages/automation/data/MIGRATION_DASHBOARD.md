@@ -44,8 +44,8 @@ Started: 2026-02-17T13:32:40.978519 | Last Updated: 2026-02-18 01:30
 - ✅ **Status: ✅ COMPLETE & VALIDATED** (2026-02-17 22:04)
 
 ## Union Eyes
-**Overall Progress: 72%**
-Started: 2026-02-17T13:32:40.994605 | Last Updated: 2026-02-18 01:30
+**Overall Progress: 83%**
+Started: 2026-02-17T13:32:40.994605 | Last Updated: 2026-02-19
 
 | Phase | Status | Progress | Tasks | Gates |
 |-------|--------|----------|-------|-------|
@@ -56,10 +56,12 @@ Started: 2026-02-17T13:32:40.994605 | Last Updated: 2026-02-18 01:30
 | scaffold_population | ✅ completed | 100% | 14/11 | — |
 | model_migration | ✅ completed | 100% | 512/512 | 3/3 |
 | data_migration | ✅ completed | 100% | 265/265 tables | 2/2 |
-| auth_migration | ✅ completed | 100% | configured | 2/3 |
+| auth_migration | ✅ completed | 100% | configured | 3/3 |
+| local_testing | ✅ completed | 100% | 5/5 | 4/4 |
+| jwt_webhook_testing | ✅ completed | 95% | 5/6 | 5/5 |
 | api_migration | ⬜ not_started | 0% | — | 0/3 |
 | queue_migration | ⬜ not_started | 0% | — | — |
-| testing | 🟡 in_progress | 20% | 1/5 | 0/4 |
+| testing | 🟡 in_progress | 40% | 2/5 | 2/4 |
 | deployment | ⬜ not_started | 0% | — | 0/3 |
 | cutover | ⬜ not_started | 0% | — | — |
 
@@ -72,6 +74,29 @@ Started: 2026-02-17T13:32:40.994605 | Last Updated: 2026-02-18 01:30
 - ✅ Fresh migrations generated with UUID PKs for all 11 apps
 - ✅ Migrations applied: 524 tables created in `nzila_union_eyes`
 - ✅ OrganizationModel FK reference fixed to `auth_core.Organizations`
+
+### Local Testing Details (UE) — ✅ COMPLETE (2026-02-19)
+- ✅ Django app layer: 0 system check issues
+- ✅ PostgreSQL connection: live connection to `nzila_union_eyes` confirmed
+- ✅ Migrations: all applied (13 apps)
+- ✅ HTTP server: `GET /api/ → 200 OK`
+- ✅ All 19 packages importable
+- ✅ Git repository available (`nzila-union-eyes`)
+- ⚠️ Known gap: `services` app exists but has no models/migrations yet — intentional, part of API migration phase
+- **Start command**: `d:\APPS\nzila-union-eyes\backend\venv\Scripts\python.exe manage.py runserver 8000`
+
+### JWT & Webhook Testing Details (UE) — ✅ COMPLETE (2026-02-19)
+| Check | Result |
+|-------|--------|
+| JWKS URL reachable | ✅ 200 OK, RSA keys returned |
+| `CLERK_SECRET_KEY` loaded | ✅ from `.env` |
+| `CLERK_WEBHOOK_SECRET` loaded | ✅ from `.env` |
+| `GET /api/auth_core/health/` | ✅ 200 OK (public endpoint) |
+| `GET /api/auth_core/me/` (no token) | ✅ 403 Forbidden (correct) |
+| JWT verification flow | ✅ `ClerkAuthentication` → JWKS → PyJWT RS256 |
+| Webhook handler | ✅ `/api/auth_core/webhooks/clerk/` (HMAC verified) |
+- ✅ **Bug fixed & committed**: `load_dotenv()` missing from `settings.py` — committed to `feature/backend-migration`
+- ⏳ **Pending (blocked on frontend)**: `GET /api/auth_core/me/` with real Clerk Bearer JWT — requires user sign-in via frontend to obtain token
 
 ### Data Migration Details (UE)
 - ✅ Migration runner built (`migrate_ue.py`)
@@ -140,20 +165,33 @@ Started: 2026-02-17T13:32:40.994605 | Last Updated: 2026-02-18 01:30
 - [x] ~~Build production-ready Clerk auth backend~~ ✅ DONE (see `tech-repo-scaffold/django-backbone/apps/auth_core/`)
 - [x] ~~Union Eyes Auth Integration~~ ✅ DONE (backend configured with live Clerk credentials)
 - [x] ~~ABR Insights Auth Integration~~ ✅ DONE (backend configured with live Clerk credentials)
-- [ ] **Local Testing** (PRIORITY: HIGH, ~30-45 minutes) — **CURRENT STEP**
-  - [ ] Install dependencies: `pip install -r requirements.txt` (both backends)
-  - [ ] Start Redis server: `redis-server`
-  - [ ] Test UE locally: `python manage.py runserver` (port 8000)
-  - [ ] Test ABR locally: `python manage.py runserver 8001` (port 8001)
-  - [ ] Verify health endpoints work
-  - [ ] Test JWT authentication with /me/ endpoints
-  - [ ] Configure Clerk webhooks (use ngrok for local testing)
-  - [ ] Test webhook signature verification
-- [ ] **Frontend Integration** (PRIORITY: HIGH, ~1-2 weeks)
-  - [ ] Replace Supabase Auth with Clerk in frontends
-  - [ ] Update API calls to use new Django backends
-  - [ ] Test sign-in/sign-up flows
-  - [ ] Test organization switching (multi-tenant)
+- [x] ~~**Local Testing — UE**~~ ✅ DONE (2026-02-19)
+  - [x] Django app layer: 0 issues
+  - [x] PostgreSQL connection to `nzila_union_eyes` confirmed
+  - [x] All migrations applied (13 apps)
+  - [x] HTTP server: `GET /api/ → 200 OK`
+  - [x] All 19 packages importable
+  - [x] Git repo available
+  - ⚠️ `services` app: no models yet (expected — API migration phase)
+- [x] ~~**JWT & Webhook Testing — UE**~~ ✅ DONE (2026-02-19)
+  - [x] JWKS URL: 200 OK, RSA keys returned
+  - [x] `CLERK_SECRET_KEY` + `CLERK_WEBHOOK_SECRET` loaded from `.env`
+  - [x] `GET /api/auth_core/health/` → 200 OK
+  - [x] `GET /api/auth_core/me/` (no token) → 403 Forbidden
+  - [x] JWT flow: `ClerkAuthentication` → JWKS → PyJWT RS256 verified
+  - [x] Webhook HMAC signature verified
+  - [x] Bug fix: `load_dotenv()` added to `settings.py`, committed to `feature/backend-migration`
+  - ⏳ E2E `/me/` with real Bearer JWT — **blocked on frontend** (requires live sign-in session)
+- [ ] **Local Testing — ABR** (PRIORITY: HIGH, ~30-45 minutes)
+  - [ ] Install dependencies: `pip install -r requirements.txt`
+  - [ ] Test ABR locally: `python manage.py runserver 8001`
+  - [ ] Verify health endpoints, JWT, webhooks
+- [ ] **Frontend Integration — UE** (PRIORITY: HIGH, ~1-2 weeks) — **CURRENT STEP**
+  - [ ] Replace Supabase Auth with Clerk in UE frontend
+  - [ ] Point API calls at Django backend (`http://localhost:8000`)
+  - [ ] Sign in via Clerk → capture JWT → verify `GET /api/auth_core/me/` returns user profile
+  - [ ] Test organization switching (multi-tenant context injection)
+  - [ ] Test sign-up flow + Clerk webhook sync to `auth_core_user`
 - [ ] **API Migration** (PRIORITY: MEDIUM, ~2-3 weeks)
   - [ ] Map all API endpoints (UE: 130+, ABR: 18 groups)
   - [ ] Generate DRF viewsets for business logic

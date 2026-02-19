@@ -12,7 +12,7 @@
 ## Multi-Vertical Platform Company
 ### Powering Underserved Markets with World-Class Software
 
-**15 Production Platforms | 3 Flagship Products | $4M+ Technical IP**
+**15 Production Platforms | 4 Flagship Products | $4M+ Technical IP**
 
 **Series A Investment Opportunity**  
 $3M-$5M Raise | Q2 2026
@@ -64,8 +64,8 @@ investors@nzila.ventures
 # **15 Production Platforms Across 10+ Verticals**
 
 ### **Nzila Ventures is a multi-vertical platform company** with:
-- **3 Flagship B2B SaaS Products** (Union Eyes, ABR Insights, CORA)
-- **12 Additional Platforms** (fintech, legaltech, healthtech, trade, entertainment, edtech)
+- **4 Flagship Products** (Union Eyes, ABR Insights, CORA, 3CUO/DiasporaCore)
+- **11 Additional Platforms** (insurtech, legaltech, healthtech, trade, entertainment, edtech)
 - **Standardized Technical Architecture** (3 profiles, 100% Azure, shared backbone)
 - **$5.7M-$7.5M IP Portfolio** (12,000+ entities, proprietary algorithms, patents pending)
 
@@ -196,11 +196,11 @@ investors@nzila.ventures
 
 ## SLIDE 7: THE PORTFOLIO — 15 PLATFORMS ACROSS 10+ VERTICALS
 
-# **Beyond the Flagships: 12 Additional Production Platforms**
+# **Beyond the Flagships: 11 Additional Production Platforms**
 
 | Platform | Vertical | Entities | Status | Key Feature | ARR Target (2030) |
 |----------|----------|----------|--------|-------------|-------------------|
-| **DiasporaCore V2 (C3UO)** | Fintech (Banking) | 485 | Production | KYC/AML, PCI-DSS banking, multi-currency remittances | $600K |
+| **3CUO / DiasporaCore V2** | Fintech (Banking) | 485 | **Flagship** | KYC/AML, PCI-DSS banking, multi-currency remittances | $600K |
 | **SentryIQ360** | Insurancetech | 79+ | Production | Insurance arbitrage engine, underwriting AI | $450K |
 | **Trade OS** | Trade-Commerce | 337 | Production | Multi-carrier rate optimization, customs duty calculator | $350K |
 | **Court Lens** | Legaltech | 682 | Production | Legal AI (outcome prediction), semantic search | $300K |

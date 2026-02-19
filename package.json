@@ -19,7 +19,9 @@
     "link": "pwsh -NoProfile -File scripts/link-workspaces.ps1"
   },
   "devDependencies": {
+    "@tailwindcss/oxide": "^4.2.0",
     "prettier": "^3.4.2",
+    "tailwindcss": "^4.2.0",
     "turbo": "^2.4.4",
     "typescript": "^5",
     "vitest": "^4.0.18"

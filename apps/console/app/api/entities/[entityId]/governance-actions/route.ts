@@ -89,7 +89,7 @@ export async function POST(
       parsed.data.actionType,
       parsed.data.payload as Record<string, unknown>,
       `Auto-generated workflow for ${parsed.data.actionType}`,
-      evaluation.workflowSpec,
+      evaluation.workflowSpec as Parameters<typeof createWorkflow>[6],
     )
   }
 

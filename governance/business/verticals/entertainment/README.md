@@ -7,7 +7,7 @@
 
 ---
 
-## 🏆 FLAGSHIP: CONGOWAVE
+## CONGOWAVE
 
 ### **Product Overview**
 **CongoWave** is a music streaming platform for African diaspora music (Afro beats, Soukous, Rumba, Gospel) with artist management, playlist curation, royalty distribution, and social features.

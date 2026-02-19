@@ -8,13 +8,40 @@ $ErrorActionPreference = "SilentlyContinue"
 $root = $PSScriptRoot | Split-Path -Parent
 
 $pairs = @(
-    @{src="packages\config"; dst="node_modules\@nzila\config"},
-    @{src="packages\config"; dst="apps\web\node_modules\@nzila\config"},
-    @{src="packages\config"; dst="apps\console\node_modules\@nzila\config"},
-    @{src="packages\config"; dst="packages\ui\node_modules\@nzila\config"},
-    @{src="packages\ui"; dst="node_modules\@nzila\ui"},
-    @{src="packages\ui"; dst="apps\web\node_modules\@nzila\ui"},
-    @{src="packages\ui"; dst="apps\console\node_modules\@nzila\ui"}
+    # ── Root node_modules (every workspace package resolvable from root) ──
+    @{src="packages\config";           dst="node_modules\@nzila\config"},
+    @{src="packages\db";               dst="node_modules\@nzila\db"},
+    @{src="packages\blob";             dst="node_modules\@nzila\blob"},
+    @{src="packages\os-core";          dst="node_modules\@nzila\os-core"},
+    @{src="packages\ui";               dst="node_modules\@nzila\ui"},
+    @{src="packages\payments-stripe";  dst="node_modules\@nzila\payments-stripe"},
+    @{src="packages\tax";              dst="node_modules\@nzila\tax"},
+
+    # ── Cross-package linking ──
+    # packages/ui → devDep @nzila/config
+    @{src="packages\config";           dst="packages\ui\node_modules\@nzila\config"},
+
+    # packages/payments-stripe → deps @nzila/blob, @nzila/db
+    @{src="packages\blob";             dst="packages\payments-stripe\node_modules\@nzila\blob"},
+    @{src="packages\db";               dst="packages\payments-stripe\node_modules\@nzila\db"},
+
+    # packages/tax → deps @nzila/db, @nzila/os-core, @nzila/blob
+    @{src="packages\db";               dst="packages\tax\node_modules\@nzila\db"},
+    @{src="packages\os-core";          dst="packages\tax\node_modules\@nzila\os-core"},
+    @{src="packages\blob";             dst="packages\tax\node_modules\@nzila\blob"},
+
+    # ── apps/web → deps @nzila/ui; devDeps @nzila/config ──
+    @{src="packages\ui";               dst="apps\web\node_modules\@nzila\ui"},
+    @{src="packages\config";           dst="apps\web\node_modules\@nzila\config"},
+
+    # ── apps/console → deps @nzila/db, @nzila/os-core, @nzila/blob, ──
+    #    @nzila/payments-stripe, @nzila/ui; devDeps @nzila/config
+    @{src="packages\db";               dst="apps\console\node_modules\@nzila\db"},
+    @{src="packages\os-core";          dst="apps\console\node_modules\@nzila\os-core"},
+    @{src="packages\blob";             dst="apps\console\node_modules\@nzila\blob"},
+    @{src="packages\payments-stripe";  dst="apps\console\node_modules\@nzila\payments-stripe"},
+    @{src="packages\ui";               dst="apps\console\node_modules\@nzila\ui"},
+    @{src="packages\config";           dst="apps\console\node_modules\@nzila\config"}
 )
 
 Push-Location $root

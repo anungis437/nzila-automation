@@ -1,45 +1,92 @@
+'use client';
+
 import Link from 'next/link';
+import TechStackBar from './TechStackBar';
+
+const footerLinks = {
+  Company: [
+    { name: 'About Us', href: '/about' },
+    { name: 'Portfolio', href: '/portfolio' },
+    { name: 'Verticals', href: '/verticals' },
+    { name: 'Platform', href: '/platform' },
+    { name: 'Contact', href: '/contact' },
+  ],
+  Investors: [
+    { name: 'Investment Thesis', href: '/investors' },
+    { name: 'Products', href: '/products' },
+    { name: 'Resources', href: '/resources' },
+  ],
+  Legal: [
+    { name: 'Privacy Policy', href: '#' },
+    { name: 'Terms of Service', href: '#' },
+    { name: 'IP Governance', href: '#' },
+  ],
+};
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold text-white mb-4">Nzila Ventures</h3>
-            <p className="text-gray-400 mb-4">
-              Venture studio and ethical IP-holding company advancing human-centered 
-              solutions across 10 verticals.
+    <footer className="bg-navy text-gray-300">
+      {/* Tech Stack */}
+      <div className="border-b border-white/10 py-10">
+        <TechStackBar label="Powered By" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+          {/* Brand */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-electric to-violet flex items-center justify-center">
+                <span className="text-white font-bold text-sm">NV</span>
+              </div>
+              <span className="text-2xl font-bold text-white">Nzila Ventures</span>
+            </div>
+            <p className="text-gray-400 mb-6 max-w-sm">
+              The APEX of AI — a venture studio building ethical, human-centered 
+              technology across 10+ verticals and 15 platforms.
             </p>
-            <p className="text-sm text-gray-500">
-              Building intentional, equitable technology for care, cognition, learning, and equity.
-            </p>
+            <div className="flex items-center gap-3">
+              <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-gold/20 text-gold">
+                Series A Ready
+              </span>
+              <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-emerald/20 text-emerald">
+                $100B+ TAM
+              </span>
+            </div>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
-              <li><Link href="/portfolio" className="hover:text-white transition">Portfolio</Link></li>
-              <li><Link href="/verticals" className="hover:text-white transition">Verticals</Link></li>
-              <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-semibold mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/dashboard" className="hover:text-white transition">Team Portal</Link></li>
-              <li><a href="https://github.com/anungis437/nzila-automation" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">Documentation</a></li>
-              <li><Link href="#" className="hover:text-white transition">Privacy Policy</Link></li>
-              <li><Link href="#" className="hover:text-white transition">Terms of Service</Link></li>
-            </ul>
-          </div>
+          {/* Link Columns */}
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">
+                {category}
+              </h4>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
+      </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} Nzila Ventures. All rights reserved.</p>
-          <p className="mt-2">Built with intentionality, ethics, and impact.</p>
+      {/* Bottom Bar */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-500">
+            &copy; {new Date().getFullYear()} Nzila Ventures. All rights reserved.
+          </p>
+          <p className="text-sm text-gray-500">
+            Built with intentionality, ethics, and impact.
+          </p>
         </div>
       </div>
     </footer>

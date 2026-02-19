@@ -1,193 +1,248 @@
-import { CheckCircleIcon, LightBulbIcon, HeartIcon, ScaleIcon } from '@heroicons/react/24/outline'
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import ScrollReveal from '@/components/public/ScrollReveal';
+import AnimatedCounter from '@/components/public/AnimatedCounter';
+import SectionHeading from '@/components/public/SectionHeading';
+import InvestorCTA from '@/components/public/InvestorCTA';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Nzila Ventures is a venture studio building ethical, human-centered AI across 10+ verticals — powering social impact at scale.',
+  openGraph: {
+    title: 'About Nzila Ventures',
+    description: 'Venture studio building ethical AI across healthcare, finance, agriculture, and justice.',
+    images: [{ url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=630&fit=crop&q=80', width: 1200, height: 630, alt: 'Diverse team collaborating around laptops in a modern workspace — Nzila Ventures' }],
+  },
+  alternates: { canonical: '/about' },
+};
+
+const values = [
+  {
+    title: 'Human-Centered',
+    color: 'from-electric to-violet',
+    description:
+      'Every solution we build prioritizes the people it serves — accessibility, dignity, and real-world impact above all.',
+  },
+  {
+    title: 'Ethical Integrity',
+    color: 'from-gold to-gold-light',
+    description:
+      'Unwavering ethical standards in IP management, data handling, AI governance, and platform stewardship.',
+  },
+  {
+    title: 'Innovation-Driven',
+    color: 'from-violet to-coral',
+    description:
+      'Continuous innovation through our unified Backbone — powering transformation across all 10+ verticals.',
+  },
+  {
+    title: 'Impact-Focused',
+    color: 'from-emerald to-cyan-400',
+    description:
+      'Measurable outcomes: 56% time savings, 80%+ code reuse, and $4M+ in engineering investment across the portfolio.',
+  },
+];
+
+const timeline = [
+  { year: '2019–2022', title: 'Foundation', description: 'Built core IP, engineered 12,000+ data entities, created 200+ AI prompts, and pioneered union and diaspora banking technology.' },
+  { year: '2023', title: 'Portfolio Consolidation', description: 'Analyzed $2M+ in legacy investments. Designed unified Backbone architecture. Expanded to 15 platforms across 10 verticals.' },
+  { year: '2024', title: 'Migration & Scale', description: 'Legacy-to-cloud migration underway. Union Eyes 83% migrated. Production deployments on Azure. Django + Next.js stack.' },
+  { year: '2025', title: 'Revenue Activation', description: 'Series A readiness. Revenue activation across flagships. $6M ARR target. Strategic partnerships pipeline.' },
+];
 
 export default function About() {
-  const values = [
-    {
-      icon: HeartIcon,
-      title: 'Human-Centered',
-      description:
-        'Every solution we build prioritizes the people it serves, ensuring accessibility, dignity, and real-world impact.',
-    },
-    {
-      icon: ScaleIcon,
-      title: 'Ethical Integrity',
-      description:
-        'We maintain unwavering ethical standards in IP management, data handling, and platform governance.',
-    },
-    {
-      icon: LightBulbIcon,
-      title: 'Innovation-Driven',
-      description:
-        'Continuous innovation through our unified Backbone infrastructure powers transformation across all verticals.',
-    },
-    {
-      icon: CheckCircleIcon,
-      title: 'Impact-Focused',
-      description:
-        'Measurable outcomes drive our work—68.6% time savings and 47.7% cost savings across our portfolio.',
-    },
-  ]
-
-  const timeline = [
-    {
-      year: '2020-2023',
-      title: 'Platform Development',
-      description:
-        'Built 15 specialized platforms across 10 verticals, serving healthcare, legal, insurance, agriculture, and more.',
-    },
-    {
-      year: '2024',
-      title: 'Portfolio Consolidation',
-      description:
-        'Analyzed $2M+ in legacy investments and designed unified Backbone architecture for sustainable growth.',
-    },
-    {
-      year: '2025-2026',
-      title: 'Backbone Migration',
-      description:
-        'Currently executing ~100-week migration roadmap to transform all platforms onto shared infrastructure.',
-    },
-    {
-      year: '2026+',
-      title: 'Scale & Innovation',
-      description:
-        'Expanding platform capabilities, deepening vertical integration, and amplifying community impact.',
-    },
-  ]
-
   return (
-    <main className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="bg-linear-to-r from-blue-600 to-indigo-600 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">About Nzila Ventures</h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              A venture studio and ethical IP-holding company transforming legacy platforms into
-              modern, scalable solutions that serve communities worldwide.
+    <main className="min-h-screen">
+      {/* ═══════════════════════ HERO ═══════════════════════ */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
+          alt="Diverse team of professionals collaborating around laptops in a bright modern workspace"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/70 to-navy/90" />
+        <div className="absolute inset-0 bg-mesh opacity-50" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+          <ScrollReveal>
+            <span className="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase rounded-full bg-gold/20 text-gold mb-6">
+              About Nzila Ventures
+            </span>
+          </ScrollReveal>
+          <ScrollReveal delay={0.1}>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              Building Ethical AI<br />
+              <span className="gradient-text">For Social Impact</span>
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <p className="text-xl text-gray-300 max-w-3xl">
+              A venture studio and IP-holding company transforming legacy platforms into
+              modern, scalable AI solutions that serve communities worldwide.
             </p>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              To advance human-centered solutions in care, cognition, learning, and equity by
-              building and maintaining ethical technology platforms that serve real-world needs. We
-              transform fragmented legacy systems into unified, scalable infrastructure that
-              amplifies impact while respecting user dignity and data sovereignty.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Vision</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              A world where technology seamlessly supports human flourishing across healthcare,
-              justice, commerce, and culture. Through our Backbone infrastructure, we envision
-              interconnected platforms that reduce operational burden, increase accessibility, and
-              create measurable improvements in people&apos;s lives.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section className="py-20 bg-gray-50">
+      {/* ═══════════════════════ MISSION & VISION ═══════════════════════ */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Core Values</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              The principles that guide every decision, every line of code, and every partnership.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {values.map((value) => (
-              <div
-                key={value.title}
-                className="bg-white rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <value.icon className="h-12 w-12 text-blue-600 mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
-                <p className="text-gray-600">{value.description}</p>
+          <div className="grid lg:grid-cols-2 gap-16">
+            <ScrollReveal direction="left">
+              <div className="relative">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-electric to-violet" />
+                <div className="pl-8">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase rounded-full bg-electric/10 text-electric mb-4">
+                    Mission
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-bold text-navy mb-6">
+                    Advancing Human-Centered Solutions
+                  </h2>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    To advance human-centered solutions in care, cognition, learning, and equity by
+                    building and maintaining ethical technology platforms that serve real-world needs. We
+                    transform fragmented legacy systems into unified, scalable infrastructure that
+                    amplifies impact while respecting user dignity and data sovereignty.
+                  </p>
+                </div>
               </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="right">
+              <div className="relative">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-gold to-gold-light" />
+                <div className="pl-8">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase rounded-full bg-gold/10 text-gold mb-4">
+                    Vision
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-bold text-navy mb-6">
+                    Technology for Human Flourishing
+                  </h2>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    A world where technology seamlessly supports human flourishing across healthcare,
+                    justice, commerce, and culture. Through our Backbone infrastructure, we envision
+                    interconnected platforms that reduce operational burden, increase accessibility, and
+                    create measurable improvements in people&apos;s lives.
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════ CORE VALUES ═══════════════════════ */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            badge="Principles"
+            title="Our Core Values"
+            subtitle="The principles that guide every decision, every line of code, and every partnership"
+          />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {values.map((value, i) => (
+              <ScrollReveal key={value.title} delay={i * 0.1}>
+                <div className="bg-white rounded-2xl p-8 border border-gray-100 hover-lift">
+                  <div className={`w-12 h-1.5 rounded-full bg-gradient-to-r ${value.color} mb-6`} />
+                  <h3 className="text-xl font-bold text-navy mb-3">{value.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{value.description}</p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Journey</h2>
-            <p className="text-lg text-gray-600">
-              From diverse platforms to unified infrastructure
-            </p>
-          </div>
+      {/* ═══════════════════════ TIMELINE ═══════════════════════ */}
+      <section className="py-24 bg-navy relative overflow-hidden">
+        <div className="absolute inset-0 bg-mesh opacity-30" />
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            badge="Journey"
+            title="From Vision to Execution"
+            subtitle="Five years of building, data curation, and AI innovation"
+            light
+          />
 
-          <div className="space-y-8">
-            {timeline.map((milestone, index) => (
-              <div key={milestone.year} className="flex gap-6">
-                <div className="shrink-0 w-32 text-right">
-                  <span className="text-lg font-bold text-blue-600">{milestone.year}</span>
-                </div>
-                <div className="relative flex-1 pb-8">
-                  {index !== timeline.length - 1 && (
-                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-blue-200" />
-                  )}
-                  <div className="absolute left-0 top-0 w-4 h-4 -ml-[7px] rounded-full bg-blue-600" />
-                  <div className="ml-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{milestone.title}</h3>
-                    <p className="text-gray-600">{milestone.description}</p>
+          <div className="relative">
+            <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-electric via-violet to-gold hidden md:block" />
+
+            <div className="space-y-10">
+              {timeline.map((milestone, i) => (
+                <ScrollReveal key={milestone.year} delay={i * 0.15}>
+                  <div className="flex gap-6 md:gap-10 items-start">
+                    <div className="hidden md:flex items-center justify-center w-16 h-16 rounded-full bg-white/5 border border-white/20 flex-shrink-0 z-10">
+                      <span className="text-xs font-bold text-gold">{milestone.year.slice(0, 4)}</span>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10 flex-1 hover-lift">
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        {milestone.title} <span className="text-sm font-normal text-gray-400">• {milestone.year}</span>
+                      </h3>
+                      <p className="text-gray-400">{milestone.description}</p>
+                    </div>
                   </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════ STATS BANNER ═══════════════════════ */}
+      <section className="py-16 bg-navy-light relative overflow-hidden">
+        <div className="absolute inset-0 bg-mesh opacity-40" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { target: 15, label: 'AI Platforms' },
+              { target: 10, suffix: '+', label: 'Verticals' },
+              { target: 4, prefix: '$', suffix: 'M+', label: 'Engineering Investment' },
+              { target: 12000, suffix: '+', label: 'Data Entities' },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">
+                  <AnimatedCounter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} />
                 </div>
+                <div className="text-gray-400 font-medium text-sm tracking-wider uppercase">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats Banner */}
-      <section className="py-16 bg-linear-to-r from-blue-600 to-indigo-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">15</div>
-              <div className="text-blue-100">Legacy Platforms</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">10</div>
-              <div className="text-blue-100">Strategic Verticals</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">$2M+</div>
-              <div className="text-blue-100">Total Investment</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">~100</div>
-              <div className="text-blue-100">Week Migration</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Closing Statement */}
-      <section className="py-20">
+      {/* ═══════════════════════ CLOSING + CTA ═══════════════════════ */}
+      <section className="py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Built with Intentionality, Ethics, and Impact
-          </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Every platform we build, every line of code we write, and every partnership we form is
-            guided by our commitment to ethical technology that truly serves humanity.
-          </p>
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-4xl font-bold text-navy mb-6">
+              Built with Intentionality, Ethics, and Impact
+            </h2>
+            <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+              Every platform we build, every line of code we write, and every partnership we form is
+              guided by our commitment to ethical technology that truly serves humanity.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/investors"
+                className="inline-flex items-center justify-center px-8 py-4 bg-electric text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-lg"
+              >
+                For Investors
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center px-8 py-4 bg-navy text-white font-bold rounded-xl hover:bg-navy-light transition-all text-lg"
+              >
+                Get In Touch
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
     </main>
-  )
+  );
 }

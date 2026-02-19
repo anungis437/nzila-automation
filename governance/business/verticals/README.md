@@ -4,11 +4,12 @@ Business strategies for each of Nzila's 8+ verticals.
 
 **Verticals**:
 - Healthtech (Memora)
-- Uniontech (Union Eyes, C3UO)
+- Uniontech (Union Eyes)
+- Fintech (3CUO / DiasporaCore — flagship, STSA, Insight CFO)
 - Insurancetech (SentryIQ)
 - Legaltech (CourtLens)
 - Trade & Commerce (Shop Quoter, Trade OS, eExports)
 - Justice & Equity (ABR Insights)
-- Arts & Culture (CongoWave)
+- Entertainment (CongoWave)
 - Agrotech (CORA)
 - Cybersecurity (CyberLearn)

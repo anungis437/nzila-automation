@@ -68,8 +68,7 @@ export async function POST(req: NextRequest) {
     targetId: row.id,
     afterJson: {
       taxYearId: parsed.data.taxYearId,
-      installmentType: parsed.data.installmentType,
-      amount: parsed.data.amount,
+      amount: parsed.data.requiredAmount,
     },
   })
 
