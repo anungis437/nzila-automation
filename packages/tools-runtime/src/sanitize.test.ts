@@ -9,7 +9,7 @@ describe('sanitize', () => {
     const input = {
       username: 'alice',
       password: 'hunter2',
-      apiKey: 'sk-123',
+      apiKey: 'fake-api-key-for-testing',
       data: { token: 'tok-456' },
     }
     const result = sanitize(input) as Record<string, unknown>
@@ -102,7 +102,7 @@ describe('createToolCallEntry', () => {
       toolName: 'test.tool',
       startedAt: new Date(),
       finishedAt: new Date(),
-      inputs: { apiKey: 'sk-secret-1', name: 'test' },
+      inputs: { apiKey: 'fake-api-key-alpha', name: 'test' },
       outputs: {},
       status: 'success',
     })
@@ -110,7 +110,7 @@ describe('createToolCallEntry', () => {
       toolName: 'test.tool',
       startedAt: new Date(),
       finishedAt: new Date(),
-      inputs: { apiKey: 'sk-secret-DIFFERENT', name: 'test' },
+      inputs: { apiKey: 'fake-api-key-beta', name: 'test' },
       outputs: {},
       status: 'success',
     })
