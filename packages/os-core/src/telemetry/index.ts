@@ -5,7 +5,7 @@
  */
 export { createRequestContext, getRequestContext, runWithContext, contextToHeaders } from './requestContext'
 export type { RequestContext } from './requestContext'
-export { createLogger, logger, childLogger } from './logger'
+export { createLogger, logger, childLogger, redactFields } from './logger'
 export type { Logger, LogLevel, LogEntry } from './logger'
 export { initOtel, withSpan } from './otel'
 export type { OtelConfig } from './otel'

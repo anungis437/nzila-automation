@@ -16,6 +16,18 @@
 /packages/qbo/**             @nzila/platform @nzila/security
 /packages/blob/**            @nzila/platform
 
+# Auth & policy — any change to authorization logic requires security review
+/packages/os-core/src/policy/**  @nzila/security @nzila/platform
+/packages/os-core/src/policy.ts  @nzila/security @nzila/platform
+/apps/console/middleware.ts      @nzila/security @nzila/platform
+/apps/partners/middleware.ts     @nzila/security @nzila/platform
+/apps/union-eyes/middleware.ts   @nzila/security @nzila/platform
+
+# Audit & compliance
+/apps/console/lib/audit*.ts   @nzila/security @nzila/platform
+/ops/compliance/**             @nzila/security @nzila/platform
+/tooling/contract-tests/**     @nzila/platform
+
 # AI / ML packages
 /packages/ai-core/**  @nzila/ai
 /packages/ai-sdk/**   @nzila/ai @nzila/eng
@@ -28,6 +40,7 @@
 
 # Repo contract — requires platform sign-off
 /docs/repo-contract/**  @nzila/platform
+/docs/hardening/**      @nzila/platform @nzila/security
 /ARCHITECTURE.md        @nzila/platform
 /SECURITY.md            @nzila/security
 /CODEOWNERS             @nzila/platform

@@ -74,6 +74,87 @@ function writeEntry(entry: LogEntry): void {
   }
 }
 
+// ── PII redaction ─────────────────────────────────────────────────────────
+
+/**
+ * List of field keys (case-insensitive) whose values should be redacted.
+ * Extend this list to cover any new sensitive fields.
+ */
+const REDACT_KEYS = new Set([
+  'email',
+  'phone',
+  'phonenumber',
+  'ssn',
+  'taxid',
+  'bankaccount',
+  'accountnumber',
+  'routingnumber',
+  'password',
+  'passwd',
+  'secret',
+  'token',
+  'accesstoken',
+  'refreshtoken',
+  'idtoken',
+  'apikey',
+  'api_key',
+  'privatekey',
+  'private_key',
+  'authorization',
+  'databaseurl',
+  'database_url',
+  'connectionstring',
+  'connection_string',
+])
+
+/**
+ * Recursively walk an object and replace the _values_ of any key whose
+ * lowercase name appears in REDACT_KEYS with the string `"[REDACTED]"`.
+ *
+ * - Top-level string values that look like `Bearer …` are also redacted
+ *   regardless of key name.
+ * - Arrays are traversed element-by-element.
+ * - The original object is never mutated; a deep copy is returned.
+ *
+ * @example
+ * ```ts
+ * logger.info('checkout', redactFields({ userId, email, amount }))
+ * // => { userId: '…', email: '[REDACTED]', amount: 9.99 }
+ * ```
+ */
+export function redactFields(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
+  return _redactValue(obj) as Record<string, unknown>
+}
+
+function _redactValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(_redactValue)
+  }
+  if (value !== null && typeof value === 'object') {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (REDACT_KEYS.has(k.toLowerCase())) {
+        out[k] = '[REDACTED]'
+      } else {
+        out[k] = _redactValue(v)
+      }
+    }
+    return out
+  }
+  // Redact raw Bearer tokens even when not nested under a recognised key
+  if (
+    typeof value === 'string' &&
+    /^Bearer\s+\S+$/i.test(value.trim())
+  ) {
+    return '[REDACTED]'
+  }
+  return value
+}
+
+// ── Logger factory ────────────────────────────────────────────────────────
+
 /**
  * Creates a namespaced logger.
  *

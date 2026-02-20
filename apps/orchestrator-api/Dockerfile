@@ -1,7 +1,7 @@
 # Orchestrator API — lightweight Dockerfile
 # Uses tsx for TypeScript execution (no compile step)
 
-FROM node:22-alpine AS base
+FROM node:22.13.1-alpine3.21 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
