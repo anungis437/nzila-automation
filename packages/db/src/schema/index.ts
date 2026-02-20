@@ -4,4 +4,5 @@
 export * from './entities'
 export * from './governance'
 export * from './equity'
+export * from './finance'
 export * from './operations'

@@ -44,6 +44,9 @@ importers:
       '@nzila/os-core':
         specifier: workspace:*
         version: link:../../packages/os-core
+      '@nzila/qbo':
+        specifier: workspace:*
+        version: link:../../packages/qbo
       '@nzila/ui':
         specifier: workspace:*
         version: link:../../packages/ui
