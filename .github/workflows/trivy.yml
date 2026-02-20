@@ -1,0 +1,105 @@
+name: Container Security Scan (Trivy)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Dockerfile'
+      - 'apps/orchestrator-api/Dockerfile'
+      - '.github/workflows/trivy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Dockerfile'
+      - 'apps/orchestrator-api/Dockerfile'
+      - '.github/workflows/trivy.yml'
+  schedule:
+    # Weekly scan to catch newly published CVEs in base images
+    - cron: '0 6 * * 1'
+
+jobs:
+  trivy-scan:
+    name: Trivy — ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: monorepo
+            dockerfile: Dockerfile
+            image: nzila-web
+          - target: orchestrator
+            dockerfile: apps/orchestrator-api/Dockerfile
+            image: nzila-orchestrator
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image (${{ matrix.image }})
+        run: |
+          docker build \
+            -f ${{ matrix.dockerfile }} \
+            -t ${{ matrix.image }}:scan \
+            --target base \
+            .
+
+      - name: Run Trivy (table output)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ matrix.image }}:scan
+          format: table
+          exit-code: 0
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
+      - name: Run Trivy (SARIF — GitHub Security tab)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ matrix.image }}:scan
+          format: sarif
+          output: trivy-${{ matrix.target }}.sarif
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-${{ matrix.target }}.sarif
+          category: trivy-${{ matrix.target }}
+
+  trivy-fs:
+    name: Trivy — filesystem (repo secrets + misconfig)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          skip-dirs: 'node_modules,.pnpm-store,CAPPSnzila-automation.pnpm-store'
+
+      - name: Upload filesystem SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-filesystem

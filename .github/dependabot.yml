@@ -41,3 +41,16 @@ updates:
       time: "08:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
+
+  # ── Python (automation package) ──────────────────────────────────────────
+  - package-ecosystem: pip
+    directory: /packages/automation
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"

@@ -1,4 +1,6 @@
 import Fastify from 'fastify'
+import helmet from '@fastify/helmet'
+import rateLimit from '@fastify/rate-limit'
 import { commandRoutes } from './routes/commands.js'
 import { healthRoutes } from './routes/health.js'
 
@@ -13,6 +15,31 @@ const app = Fastify({
         ? { target: 'pino-pretty' }
         : undefined,
   },
+  trustProxy: true,
+})
+
+// ── Security ────────────────────────────────────────────────────────────────
+await app.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+  hsts: { maxAge: 63072000, includeSubDomains: true, preload: true },
+})
+
+await app.register(rateLimit, {
+  global: true,
+  max: process.env.RATE_LIMIT_MAX ? Number(process.env.RATE_LIMIT_MAX) : 200,
+  timeWindow: '1 minute',
+  errorResponseBuilder: () => ({
+    statusCode: 429,
+    error: 'Too Many Requests',
+    message: 'Rate limit exceeded. Please retry after 1 minute.',
+  }),
 })
 
 // ── Routes ──

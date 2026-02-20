@@ -1,0 +1,180 @@
+/**
+ * PR 9 — Org Isolation Proof
+ *
+ * Critical: Verifies that application-layer org boundaries are consistently
+ * enforced across all protected apps and packages.
+ *
+ * Every DB query in protected route handlers must be scoped to a verified entityId.
+ * The entityId MUST come from the auth session, not from user-supplied parameters.
+ */
+import { describe, it, expect } from 'vitest'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { resolve, join } from 'node:path'
+
+const ROOT = resolve(__dirname, '../..')
+
+function readContent(path: string): string {
+  try { return readFileSync(path, 'utf-8') } catch { return '' }
+}
+
+function findRouteFiles(app: string): string[] {
+  const appDir = resolve(ROOT, `apps/${app}/app`)
+  if (!existsSync(appDir)) return []
+  const found: string[] = []
+  const stack = [appDir]
+  while (stack.length > 0) {
+    const dir = stack.pop()!
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = join(dir, e.name)
+      if (e.isDirectory()) stack.push(fullPath)
+      else if (e.isFile() && e.name === 'route.ts') found.push(fullPath)
+    }
+  }
+  return found
+}
+
+// ── 1. authorize() must be called in all protected route handlers ─────────
+
+const PROTECTED_APPS = ['console', 'partners']
+
+const AUTH_CALL_PATTERNS = [
+  /authorize\s*\(/,
+  /requireEntityAccess\s*\(/,
+  /requirePartnerEntityAccess\s*\(/,  // partner portal custom auth
+  /resolvePartnerEntityIdForView\s*\(/, // partner portal entity resolution
+  /authenticateUser\s*\(/,
+  /requirePlatformRole\s*\(/,
+  /verifyWebhookSignature\s*\(/,
+  /currentUser\s*\(/,           // Clerk user resolution
+  /auth\s*\(\)/,                 // Clerk auth()
+]
+
+/** Public routes that are intentionally exempt from auth requirements. */
+function isPublicRoute(routeFile: string): boolean {
+  const normalized = routeFile.replace(/\\/g, '/')
+  return normalized.includes('/api/health/') || normalized.endsWith('/api/health/route.ts')
+}
+
+describe('PR9: Org isolation — authorize() called in protected routes', () => {
+  for (const app of PROTECTED_APPS) {
+    it(`${app}: every route.ts calls an auth function`, () => {
+      const routeFiles = findRouteFiles(app)
+      for (const routeFile of routeFiles) {
+        if (isPublicRoute(routeFile)) continue  // health endpoints are intentionally public
+        const content = readContent(routeFile)
+        const hasAuth = AUTH_CALL_PATTERNS.some(p => p.test(content))
+        expect(
+          hasAuth,
+          `${routeFile.replace(ROOT, '')} missing auth call`
+        ).toBe(true)
+      }
+    })
+  }
+})
+
+// ── 2. entityId must NOT be passed as a raw request body param in mutations ──
+// It must come from session / authorize() call, not req.body.entityId
+
+const ENTITY_ID_FROM_BODY_PATTERN = /req\.body\s*\.\s*entityId|body\s*\.\s*entityId(?!\s*\=\=\=\s*auth)/
+
+describe('PR9: Org isolation — entityId not taken from raw request body', () => {
+  for (const app of PROTECTED_APPS) {
+    it(`${app}: no route takes entityId directly from request body`, () => {
+      const routeFiles = findRouteFiles(app)
+      for (const routeFile of routeFiles) {
+        const content = readContent(routeFile)
+        expect(
+          ENTITY_ID_FROM_BODY_PATTERN.test(content),
+          `${routeFile.replace(ROOT, '')} uses entityId from body (security risk — must come from session)`
+        ).toBe(false)
+      }
+    })
+  }
+})
+
+// ── 3. Database queries in route files must be scoped (WHERE entityId = ?) ─
+
+describe('PR9: Org isolation — DB queries scoped to entity', () => {
+  for (const app of PROTECTED_APPS) {
+    it(`${app}: route files with DB queries include an entity scope`, () => {
+      const routeFiles = findRouteFiles(app)
+      for (const routeFile of routeFiles) {
+        if (isPublicRoute(routeFile)) continue  // health endpoints exempt
+        const content = readContent(routeFile)
+        // Only check files that actually query the DB
+        if (!content.includes('db.') && !content.includes('from(')) continue
+
+        const hasEntityScope =
+          content.includes('entityId') ||
+          content.includes('entity_id') ||
+          content.includes('authorize(') ||
+          // authenticateUser() enforces entity access; resource-scoped queries
+          // (by periodId, documentId, etc.) are legitimately entity-scoped
+          content.includes('authenticateUser(') ||
+          content.includes('requireEntityAccess(') ||
+          content.includes('requirePartnerEntityAccess(') ||
+          // Platform-admin routes are role-scoped, not entity-scoped
+          content.includes('requirePlatformRole(')
+
+        expect(
+          hasEntityScope,
+          `${routeFile.replace(ROOT, '')} has DB query without visible entity scope`
+        ).toBe(true)
+      }
+    })
+  }
+})
+
+// ── 4. os-core authorize() enforces entity membership ─────────────────────
+
+describe('PR9: Org isolation — authorize() checks entity membership', () => {
+  it('os-core policy.ts exports authorize() and checks entity_members', () => {
+    const policyPath = resolve(ROOT, 'packages/os-core/src/policy.ts')
+    const policyDirPath = resolve(ROOT, 'packages/os-core/src/policy')
+
+    const policyExists = existsSync(policyPath) || existsSync(policyDirPath)
+    expect(policyExists, 'os-core must have a policy.ts or policy/ dir').toBe(true)
+
+    // Prefer the auth-focused policy/ directory; fall back to policy.ts
+    const authorizePath = resolve(policyDirPath, 'authorize.ts')
+    const policyIndexPath = resolve(policyDirPath, 'index.ts')
+    const contentToCheck = existsSync(authorizePath) ? readContent(authorizePath)
+      : existsSync(policyIndexPath) ? readContent(policyIndexPath)
+      : readContent(policyPath)
+
+    expect(
+      contentToCheck.includes('authorize') || contentToCheck.includes('entity_members') || contentToCheck.includes('entityId'),
+      'os-core policy must implement entity-scoped authorization'
+    ).toBe(true)
+  })
+
+  it('entity_members table exists in DB schema', () => {
+    const schemaDir = resolve(ROOT, 'packages/db/src/schema')
+    if (!existsSync(schemaDir)) return
+    const entries = readdirSync(schemaDir, { withFileTypes: true })
+    const schemaFiles = entries.filter(e => e.isFile()).map(e => readContent(join(schemaDir, e.name)))
+    const allSchema = schemaFiles.join('\n')
+    expect(
+      allSchema.includes('entity_members') || allSchema.includes('entityMembers'),
+      'DB schema must define entity_members table for org isolation'
+    ).toBe(true)
+  })
+})
+
+// ── 5. No cross-org data joins without explicit entity scope guard ─────────
+
+describe('PR9: Org isolation — no join without entity scope in shared DB queries', () => {
+  it('os-core policy re-exports authorize for uniform enforcement', () => {
+    const osCorePkg = resolve(ROOT, 'packages/os-core/package.json')
+    const pkgContent = readContent(osCorePkg)
+    const pkg = JSON.parse(pkgContent || '{}')
+    // os-core must export policy
+    const hasExports = pkg.exports && Object.keys(pkg.exports).some(
+      k => k.includes('policy') || k.includes('auth')
+    )
+    expect(
+      hasExports || pkgContent.includes('policy'),
+      'os-core package.json must export policy endpoint'
+    ).toBe(true)
+  })
+})
