@@ -7,6 +7,9 @@
  *   - 'public':   further reduced, only aggregate/non-identifiable fields
  */
 
+import type { EvidenceArtifact } from './types'
+
+export type { EvidenceArtifact }
 export type RedactionMode = 'internal' | 'partner' | 'public'
 
 /**
@@ -51,11 +54,6 @@ const PUBLIC_STRIPPED_FIELDS = [
   'tenantId',
 ]
 
-export interface EvidenceArtifact {
-  type: string
-  [key: string]: unknown
-}
-
 /**
  * Redact a single evidence artifact for the given audience.
  * Returns `null` if the artifact should be fully excluded.
@@ -96,7 +94,7 @@ export function redactArtifacts(
 function deepStrip(
   obj: Record<string, unknown>,
   fields: string[],
-): Record<string, unknown> {
+): EvidenceArtifact {
   const result: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(obj)) {
     if (fields.includes(key)) continue
@@ -112,5 +110,5 @@ function deepStrip(
       result[key] = value
     }
   }
-  return result as Record<string, unknown> & EvidenceArtifact
+  return result as EvidenceArtifact
 }
