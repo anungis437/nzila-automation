@@ -385,7 +385,7 @@ async function main() {
 
   // Write result to file for CI artifact upload
   const fs = await import('node:fs')
-  const resultPath = '/tmp/ct-01-result.json'
+  const resultPath = '/tmp/CT-01-result.json'
   fs.writeFileSync(resultPath, JSON.stringify(result, null, 2))
   console.log(`\n[DR-SIM] Result written to ${resultPath}`)
 

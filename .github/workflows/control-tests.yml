@@ -31,8 +31,8 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '9'
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
 
 jobs:
   # ── Determine which tests to run ─────────────────────────────────────────
@@ -74,7 +74,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+
+    # Postgres service container — used by CT-01 for clean-DB DR simulation
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: nzila_ct
+          POSTGRES_PASSWORD: nzila_ct_pass
+          POSTGRES_DB: nzila_ct_db
+        options: >-
+          --health-cmd "pg_isready -U nzila_ct"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     env:
+      # CT-01 always uses the clean service container DB (migrations applied fresh)
+      CT_DATABASE_URL: postgresql://nzila_ct:nzila_ct_pass@localhost:5432/nzila_ct_db
+      # Other CTs that need the production DB can still use secrets
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
       AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
@@ -97,11 +117,21 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # ── CT-01  DR restore test (quarterly) ───────────────────────────────
-      - name: 'CT-01: DR restore test'
+      - name: 'CT-01: Apply migrations to clean DB'
         if: matrix.test_id == 'CT-01'
         run: |
-          echo "::group::CT-01 — DR Restore Simulation"
-          npx tsx tooling/ops/dr-restore-simulation.ts --db-url "$DATABASE_URL" || true
+          echo "::group::CT-01 — Replay Drizzle migrations on clean Postgres"
+          cd packages/db
+          npx drizzle-kit push --force --verbose 2>&1
+          echo "::endgroup::"
+        env:
+          DATABASE_URL: ${{ env.CT_DATABASE_URL }}
+
+      - name: 'CT-01: DR restore simulation'
+        if: matrix.test_id == 'CT-01'
+        run: |
+          echo "::group::CT-01 — DR Restore Simulation (clean DB)"
+          npx tsx tooling/ops/dr-restore-simulation.ts --db-url "$CT_DATABASE_URL"
           echo "::endgroup::"
 
       # ── CT-02  Access review (quarterly) ─────────────────────────────────

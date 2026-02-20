@@ -62,6 +62,9 @@ ENV/
 # ----- Logs ------
 **/*.log
 
+# ----- AI Eval artifacts (CI-generated, not committed) ------
+tooling/ai-evals/report.json
+
 # ----- Django (legacy) ------
 local_settings.py
 db.sqlite3
