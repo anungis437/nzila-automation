@@ -31,6 +31,7 @@ on:
 permissions:
   contents: read
   actions: read
+  issues: write
 
 env:
   CORRELATION_ID: ${{ inputs.correlation_id }}
@@ -181,7 +182,7 @@ jobs:
 
       # ============================================================
       # On failure: create issue (if not dry_run)
-      # Requires NZILA_AUTOMATION_TOKEN secret with issues:write scope
+      # Uses GITHUB_TOKEN (requires issues: write permission above)
       # ============================================================
       - name: Create issue on failure
         if: |
@@ -192,10 +193,8 @@ jobs:
             env.UNIT_TESTS_FAILED == 'true'
           )
         uses: actions/github-script@v7
-        env:
-          GH_TOKEN: ${{ secrets.NZILA_AUTOMATION_TOKEN }}
         with:
-          github-token: ${{ secrets.NZILA_AUTOMATION_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const failures = [];
             if (process.env.CONTRACT_TESTS_FAILED === 'true') failures.push('Contract Tests');
