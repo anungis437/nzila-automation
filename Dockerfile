@@ -27,12 +27,16 @@ COPY packages/os-core/package.json ./packages/os-core/
 COPY packages/blob/package.json ./packages/blob/
 COPY packages/payments-stripe/package.json ./packages/payments-stripe/
 COPY packages/tax/package.json ./packages/tax/
+COPY packages/ai-core/package.json ./packages/ai-core/
+COPY packages/ai-sdk/package.json ./packages/ai-sdk/
+COPY packages/analytics/package.json ./packages/analytics/
+COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
 # Install dependencies (no --frozen-lockfile in case lockfile is stale)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ============================================
 # Builder stage
@@ -158,14 +162,16 @@ COPY packages/os-core/package.json ./packages/os-core/
 COPY packages/blob/package.json ./packages/blob/
 COPY packages/payments-stripe/package.json ./packages/payments-stripe/
 COPY packages/tax/package.json ./packages/tax/
+COPY packages/ai-core/package.json ./packages/ai-core/
+COPY packages/ai-sdk/package.json ./packages/ai-sdk/
+COPY packages/analytics/package.json ./packages/analytics/
+COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
 # Install dependencies
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
-
-# Copy everything (volumes will override in docker-compose)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
 
 EXPOSE 3000 3001 3002

@@ -97,6 +97,12 @@ secrets/
 *.pem
 *.key
 
+# ----- Misplaced pnpm store (Windows exFAT artefact) ------
+CAPPSnzila-automation.pnpm-store/
+
+# ----- Nested package duplication (generated data in wrong path) ------
+packages/packages/
+
 # ----- Temporary files ------
 *.tmp
 *.bak
