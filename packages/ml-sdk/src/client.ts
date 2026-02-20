@@ -22,6 +22,10 @@ import type {
   StripeTxnScoreResponse,
   MlScoresDailyParams,
   MlScoresTxnParams,
+  UEPriorityScoreResponse,
+  UESlaRiskScoreResponse,
+  UEPriorityScoresParams,
+  UESlaRiskScoresParams,
 } from './types'
 
 // ── Config ───────────────────────────────────────────────────────────────────
@@ -92,7 +96,7 @@ export function createMlClient(config: MlSdkConfig) {
      * Get Stripe daily anomaly scores for a date range.
      */
     getStripeDailyScores(params: MlScoresDailyParams): Promise<StripeDailyScoreResponse[]> {
-      return get<StripeDailyScoreResponse[]>('/api/ml/scores/stripe/daily', params as Record<string, string>)
+      return get<StripeDailyScoreResponse[]>('/api/ml/scores/stripe/daily', { ...params })
     },
 
     /**
@@ -101,7 +105,27 @@ export function createMlClient(config: MlSdkConfig) {
     getStripeTxnScores(
       params: MlScoresTxnParams,
     ): Promise<{ items: StripeTxnScoreResponse[]; nextCursor: string | null; totalInPeriod: number; anomalyInPeriod: number }> {
-      return get('/api/ml/scores/stripe/transactions', params as Record<string, string>)
+      return get('/api/ml/scores/stripe/transactions', { ...params })
+    },
+
+    /**
+     * Get Union Eyes case priority scores (paginated).
+     * Returns predicted priority class + confidence for each case in the period.
+     */
+    getUEPriorityScores(
+      params: UEPriorityScoresParams,
+    ): Promise<{ items: UEPriorityScoreResponse[]; nextCursor: string | null; total: number }> {
+      return get('/api/ml/scores/ue/cases/priority', { ...params })
+    },
+
+    /**
+     * Get Union Eyes case SLA breach risk scores (paginated).
+     * Returns P(breach) + predicted breach decision for each case in the period.
+     */
+    getUESlaRiskScores(
+      params: UESlaRiskScoresParams,
+    ): Promise<{ items: UESlaRiskScoreResponse[]; nextCursor: string | null; total: number }> {
+      return get('/api/ml/scores/ue/cases/sla-risk', { ...params })
     },
   }
 }

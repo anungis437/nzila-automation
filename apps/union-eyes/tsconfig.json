@@ -4,9 +4,9 @@
     "paths": {
       "@/*": ["./*"],
       "@nzila/ui": ["../../packages/ui/src"],
-      "@nzila/db": ["../../packages/db/src/index.ts"],
-      "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
-      "@nzila/db/client": ["../../packages/db/src/client.ts"]
+      "@nzila/ml-sdk": ["../../packages/ml-sdk/src/index.ts"],
+      "@nzila/ml-sdk/client": ["../../packages/ml-sdk/src/client.ts"],
+      "@nzila/ml-sdk/types": ["../../packages/ml-sdk/src/types.ts"]
     }
   },
   "include": [

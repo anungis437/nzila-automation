@@ -5,7 +5,7 @@
  * No DB imports — pure TypeScript interfaces safe for any client/server.
  */
 
-export type { MlModelStatus, MlRunStatus, MlModelKey, MlDatasetKey, FeatureSpec } from './types-internal'
+export type { MlModelStatus, MlRunStatus, MlModelKey, MlDatasetKey, FeatureSpec, UEPriorityClass } from './types-internal'
 
 // ── API response types ───────────────────────────────────────────────────────
 
@@ -133,4 +133,59 @@ export class MlSdkError extends Error {
     super(message)
     this.name = 'MlSdkError'
   }
+}
+
+// ── UE ML signal types ────────────────────────────────────────────────────────
+
+export interface UEPriorityScoreResponse {
+  id: string
+  caseId: string
+  occurredAt: string
+  score: string
+  predictedPriority: string
+  actualPriority: string | null
+  modelId: string
+  modelKey: string
+  inferenceRunId: string | null
+  createdAt: string
+  /** Only present when includeFeatures=true and caller is entity_admin */
+  features?: Record<string, unknown>
+}
+
+export interface UESlaRiskScoreResponse {
+  id: string
+  caseId: string
+  occurredAt: string
+  probability: string
+  predictedBreach: boolean
+  actualBreach: boolean | null
+  modelId: string
+  modelKey: string
+  inferenceRunId: string | null
+  createdAt: string
+  /** Only present when includeFeatures=true and caller is entity_admin */
+  features?: Record<string, unknown>
+}
+
+export interface UEPriorityScoresParams {
+  entityId: string
+  startDate: string
+  endDate: string
+  priority?: string
+  limit?: number
+  cursor?: string
+  includeFeatures?: boolean
+}
+
+export interface UESlaRiskScoresParams {
+  entityId: string
+  startDate: string
+  endDate: string
+  /** Filter by breach prediction: true | false */
+  breach?: boolean
+  /** Minimum probability threshold for filtering results */
+  minProb?: number
+  limit?: number
+  cursor?: string
+  includeFeatures?: boolean
 }

@@ -15,6 +15,8 @@ export type MlRunStatus = 'started' | 'success' | 'failed'
 export const ML_MODEL_KEYS = {
   STRIPE_DAILY_IFOREST_V1: 'stripe_anomaly_daily_iforest_v1',
   STRIPE_TXN_IFOREST_V1: 'stripe_anomaly_txn_iforest_v1',
+  UE_CASE_PRIORITY_V1: 'ue.case_priority_v1',
+  UE_SLA_BREACH_RISK_V1: 'ue.sla_breach_risk_v1',
 } as const
 
 export type MlModelKey = (typeof ML_MODEL_KEYS)[keyof typeof ML_MODEL_KEYS]
@@ -24,6 +26,8 @@ export type MlModelKey = (typeof ML_MODEL_KEYS)[keyof typeof ML_MODEL_KEYS]
 export const ML_DATASET_KEYS = {
   STRIPE_DAILY_METRICS_V1: 'stripe_daily_metrics_v1',
   STRIPE_TXN_FEATURES_V1: 'stripe_txn_features_v1',
+  UE_CASE_PRIORITY_DATASET_V1: 'ue_case_priority_dataset_v1',
+  UE_CASE_SLA_DATASET_V1: 'ue_case_sla_dataset_v1',
 } as const
 
 export type MlDatasetKey = (typeof ML_DATASET_KEYS)[keyof typeof ML_DATASET_KEYS]
@@ -98,6 +102,42 @@ export interface MlScoreStripeDaily {
   createdAt: string
 }
 
+// ── UE ML score types ─────────────────────────────────────────────────────────
+
+/** Priority class values for ue.case_priority_v1 */
+export type UEPriorityClass = 'low' | 'medium' | 'high' | 'critical'
+
+export interface MlScoreUECasePriority {
+  id: string
+  entityId: string
+  caseId: string
+  occurredAt: string
+  /** Calibrated confidence for predictedPriority — range 0..1 */
+  score: string
+  predictedPriority: UEPriorityClass
+  /** Snapshot ground-truth label (nullable until eval) */
+  actualPriority: UEPriorityClass | null
+  featuresJson: Record<string, unknown>
+  modelId: string
+  inferenceRunId: string | null
+  createdAt: string
+}
+
+export interface MlScoreUESlaRisk {
+  id: string
+  entityId: string
+  caseId: string
+  occurredAt: string
+  /** P(SLA breach) — range 0..1 */
+  probability: string
+  predictedBreach: boolean
+  /** Actual breach outcome (nullable until case resolved) */
+  actualBreach: boolean | null
+  featuresJson: Record<string, unknown>
+  modelId: string
+  inferenceRunId: string | null
+  createdAt: string
+}
 export interface MlScoreStripeTxn {
   id: string
   entityId: string
