@@ -11,6 +11,8 @@ import {
   mlInferenceRuns,
   mlScoresStripeDaily,
   mlScoresStripeTxn,
+  mlScoresUECasesPriority,
+  mlScoresUESlaRisk,
 } from '@nzila/db/schema'
 import { eq, and, gte, lte, count } from 'drizzle-orm'
 
@@ -52,6 +54,27 @@ export interface TopTxnAnomaly {
   stripeChargeId: string | null
 }
 
+// ── UE supervisor summaries ──────────────────────────────────────────────────
+
+export interface UEPriorityClassCount {
+  class: 'low' | 'medium' | 'high' | 'critical'
+  count: number
+}
+
+export interface UEPrioritySummary {
+  /** Total case-priority scores in the period (across all classes). */
+  totalScored: number
+  /** Distribution of predictedPriority values. */
+  byClass: UEPriorityClassCount[]
+}
+
+export interface UESlaSummary {
+  /** Total SLA-risk scores recorded in the period. */
+  totalScored: number
+  /** Cases where predictedBreach === true. */
+  predictedBreachCount: number
+}
+
 export interface MlAnomalySummary {
   dailyAnomalies: number
   txnAnomalies: number
@@ -67,6 +90,10 @@ export interface MlEvidenceAppendix {
   activeModels: MlModelRef[]
   inferenceRuns: MlInferenceRef[]
   anomalySummary: MlAnomalySummary
+  /** UE case priority model summary for the period. Null if no scores exist. */
+  uePrioritySummary: UEPrioritySummary | null
+  /** UE SLA breach risk model summary for the period. Null if no scores exist. */
+  ueSlaSummary: UESlaSummary | null
 }
 
 /**
@@ -119,6 +146,118 @@ export async function collectMlEvidence(
         ),
       ),
   ])
+
+  // ── UE ML summaries ──────────────────────────────────────────────────────
+  const ueStart = new Date(periodStart)
+  const ueEnd = new Date(periodEnd + 'T23:59:59Z')
+
+  const [ueLoCount, ueMedCount, ueHighCount, ueCritCount, uePriorityTotal,
+         ueSlaBreachCount, ueSlaTotal] = await Promise.all([
+    db
+      .select({ n: count() })
+      .from(mlScoresUECasesPriority)
+      .where(
+        and(
+          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.predictedPriority, 'low'),
+          gte(mlScoresUECasesPriority.occurredAt, ueStart),
+          lte(mlScoresUECasesPriority.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+
+    db
+      .select({ n: count() })
+      .from(mlScoresUECasesPriority)
+      .where(
+        and(
+          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.predictedPriority, 'medium'),
+          gte(mlScoresUECasesPriority.occurredAt, ueStart),
+          lte(mlScoresUECasesPriority.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+
+    db
+      .select({ n: count() })
+      .from(mlScoresUECasesPriority)
+      .where(
+        and(
+          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.predictedPriority, 'high'),
+          gte(mlScoresUECasesPriority.occurredAt, ueStart),
+          lte(mlScoresUECasesPriority.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+
+    db
+      .select({ n: count() })
+      .from(mlScoresUECasesPriority)
+      .where(
+        and(
+          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.predictedPriority, 'critical'),
+          gte(mlScoresUECasesPriority.occurredAt, ueStart),
+          lte(mlScoresUECasesPriority.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+
+    db
+      .select({ n: count() })
+      .from(mlScoresUECasesPriority)
+      .where(
+        and(
+          eq(mlScoresUECasesPriority.entityId, entityId),
+          gte(mlScoresUECasesPriority.occurredAt, ueStart),
+          lte(mlScoresUECasesPriority.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+
+    db
+      .select({ n: count() })
+      .from(mlScoresUESlaRisk)
+      .where(
+        and(
+          eq(mlScoresUESlaRisk.entityId, entityId),
+          eq(mlScoresUESlaRisk.predictedBreach, true),
+          gte(mlScoresUESlaRisk.occurredAt, ueStart),
+          lte(mlScoresUESlaRisk.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+
+    db
+      .select({ n: count() })
+      .from(mlScoresUESlaRisk)
+      .where(
+        and(
+          eq(mlScoresUESlaRisk.entityId, entityId),
+          gte(mlScoresUESlaRisk.occurredAt, ueStart),
+          lte(mlScoresUESlaRisk.occurredAt, ueEnd),
+        ),
+      )
+      .then((r) => Number(r[0]?.n ?? 0)),
+  ])
+
+  const uePrioritySummary: UEPrioritySummary | null = uePriorityTotal > 0
+    ? {
+        totalScored: uePriorityTotal,
+        byClass: [
+          { class: 'low', count: ueLoCount },
+          { class: 'medium', count: ueMedCount },
+          { class: 'high', count: ueHighCount },
+          { class: 'critical', count: ueCritCount },
+        ],
+      }
+    : null
+
+  const ueSlaSummary: UESlaSummary | null = ueSlaTotal > 0
+    ? { totalScored: ueSlaTotal, predictedBreachCount: ueSlaBreachCount }
+    : null
 
   // Anomaly counts
   const [dailyCount, txnCount] = await Promise.all([
@@ -214,5 +353,7 @@ export async function collectMlEvidence(
         stripeChargeId: t.stripeChargeId,
       })),
     },
+    uePrioritySummary,
+    ueSlaSummary,
   }
 }
