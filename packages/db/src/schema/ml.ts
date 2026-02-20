@@ -2,12 +2,14 @@
  * Nzila OS — ML Registry + Scores tables
  *
  * Tables:
- *   mlDatasets         — dataset snapshots with sha256 + blob document ref
- *   mlModels           — versioned model registry (draft/active/retired)
- *   mlTrainingRuns     — training run ledger with artifact refs
- *   mlInferenceRuns    — inference run ledger with output artifact ref
- *   mlScoresStripeDaily  — daily aggregate anomaly scores
- *   mlScoresStripeTxn    — per-transaction anomaly scores (Option B)
+ *   mlDatasets               — dataset snapshots with sha256 + blob document ref
+ *   mlModels                 — versioned model registry (draft/active/retired)
+ *   mlTrainingRuns           — training run ledger with artifact refs
+ *   mlInferenceRuns          — inference run ledger with output artifact ref
+ *   mlScoresStripeDaily      — daily aggregate anomaly scores
+ *   mlScoresStripeTxn        — per-transaction anomaly scores (Option B)
+ *   mlScoresUECasesPriority  — per-case priority multi-class scores (Union Eyes)
+ *   mlScoresUESlaRisk        — per-case SLA breach binary risk scores (Union Eyes)
  *
  * All tables are entity-scoped. Apps access data through @nzila/ml-sdk,
  * never by importing these tables directly.
@@ -228,5 +230,95 @@ export const mlScoresStripeTxn = pgTable(
     index('ml_scores_stripe_txn_entity_time_idx').on(table.entityId, table.occurredAt),
     index('ml_scores_stripe_txn_anomaly_idx').on(table.entityId, table.isAnomaly),
     index('ml_scores_stripe_txn_pi_idx').on(table.entityId, table.stripePaymentIntentId),
+  ],
+)
+// ── G) mlScoresUECasesPriority ────────────────────────────────────────────────
+//
+// Per-case priority multi-class ML scores for Union Eyes.
+// predictedPriority stores the argmax class ("low"|"medium"|"high"|"critical").
+// score stores the calibrated confidence for the predicted class (0..1).
+// actualPriority is a snapshot of the live label for post-hoc eval windows.
+
+export const mlScoresUECasesPriority = pgTable(
+  'ml_scores_ue_cases_priority',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    entityId: uuid('entity_id')
+      .notNull()
+      .references(() => entities.id),
+    /** UUID of the UE case row (logical FK, no DDL constraint to keep schema decoupled) */
+    caseId: uuid('case_id').notNull(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    /** Calibrated confidence for the predicted class — range 0..1 */
+    score: numeric('score', { precision: 12, scale: 6 }).notNull(),
+    /** Predicted priority class: low | medium | high | critical */
+    predictedPriority: text('predicted_priority').notNull(),
+    /** Snapshot of the ground-truth label at inference time (nullable for eval) */
+    actualPriority: text('actual_priority'),
+    /** Safe engineered features vector — no PII */
+    featuresJson: jsonb('features_json').notNull().default({}),
+    /** FK → mlModels.id */
+    modelId: uuid('model_id')
+      .notNull()
+      .references(() => mlModels.id),
+    /** FK → mlInferenceRuns.id */
+    inferenceRunId: uuid('inference_run_id').references(() => mlInferenceRuns.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('ml_scores_ue_cases_priority_entity_case_model_idx').on(
+      table.entityId,
+      table.caseId,
+      table.modelId,
+    ),
+    index('ml_scores_ue_cases_priority_entity_pred_idx').on(
+      table.entityId,
+      table.predictedPriority,
+    ),
+    index('ml_scores_ue_cases_priority_entity_time_idx').on(table.entityId, table.occurredAt),
+  ],
+)
+
+// ── H) mlScoresUESlaRisk ──────────────────────────────────────────────────────
+//
+// Per-case SLA breach binary risk scores for Union Eyes.
+// probability is the model's P(breach) — range 0..1.
+// predictedBreach is the thresholded boolean decision.
+// actualBreach is the ground-truth label snapshot for evaluation.
+
+export const mlScoresUESlaRisk = pgTable(
+  'ml_scores_ue_sla_risk',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    entityId: uuid('entity_id')
+      .notNull()
+      .references(() => entities.id),
+    /** UUID of the UE case row (logical FK, no DDL constraint) */
+    caseId: uuid('case_id').notNull(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    /** P(SLA breach) — range 0..1 */
+    probability: numeric('probability', { precision: 12, scale: 6 }).notNull(),
+    /** Thresholded boolean: true if probability ≥ chosen threshold */
+    predictedBreach: boolean('predicted_breach').notNull().default(false),
+    /** Snapshot of actual breach outcome (nullable until resolved) */
+    actualBreach: boolean('actual_breach'),
+    /** Safe engineered features vector — no PII */
+    featuresJson: jsonb('features_json').notNull().default({}),
+    /** FK → mlModels.id */
+    modelId: uuid('model_id')
+      .notNull()
+      .references(() => mlModels.id),
+    /** FK → mlInferenceRuns.id */
+    inferenceRunId: uuid('inference_run_id').references(() => mlInferenceRuns.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('ml_scores_ue_sla_risk_entity_case_model_idx').on(
+      table.entityId,
+      table.caseId,
+      table.modelId,
+    ),
+    index('ml_scores_ue_sla_risk_entity_breach_idx').on(table.entityId, table.predictedBreach),
+    index('ml_scores_ue_sla_risk_entity_time_idx').on(table.entityId, table.occurredAt),
   ],
 )
