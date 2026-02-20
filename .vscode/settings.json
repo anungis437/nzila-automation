@@ -4,6 +4,11 @@
   "python.terminal.activateEnvironment": true,
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.autoImportCompletions": true,
+  // tooling/ml scripts use their own venv (requirements.txt) — suppress
+  // "could not be resolved" errors for packages not in the workspace venv.
+  "python.analysis.ignore": [
+    "tooling/ml/**"
+  ],
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": [
     "packages/automation"

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/pyright/main/packages/pyright/schemas/pyrightconfig.schema.json",
+  "_comment": "Pyright/Pylance config for tooling/ml/ scripts. All dependencies are installed at runtime via requirements.txt — suppress resolution errors for packages that are not in the active VS Code interpreter.",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportOptionalSubscript": "none",
+  "reportIndexIssue": "none",
+  "reportCallIssue": "none",
+  "reportOperatorIssue": "none",
+  "reportGeneralTypeIssues": "none"
+}
