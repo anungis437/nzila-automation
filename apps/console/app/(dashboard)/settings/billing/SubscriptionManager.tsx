@@ -55,12 +55,12 @@ function ActiveSubscriptionCard({ sub }: { sub: ActiveSub }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const statusBadge: 'success' | 'warning' | 'error' =
+  const statusBadge: 'success' | 'warning' | 'danger' =
     sub.status === 'active' || sub.status === 'trialing'
       ? 'success'
       : sub.status === 'past_due'
         ? 'warning'
-        : 'error'
+        : 'danger'
 
   async function openPortal() {
     setLoading(true)

@@ -165,6 +165,11 @@
       "minItems": 1,
       "description": "Array of evidence artifacts in this pack"
     },
+    "appendices": {
+      "type": "object",
+      "description": "Optional named appendices attached to this evidence pack (e.g., ai_actions from AI control-plane review)",
+      "additionalProperties": true
+    },
     "verification": {
       "type": "object",
       "properties": {
@@ -217,3 +222,4 @@
   ],
   "additionalProperties": false
 }
+

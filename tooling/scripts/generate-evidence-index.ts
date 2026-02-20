@@ -116,6 +116,7 @@ interface EvidencePackIndex {
     verified_at?: string
     verified_by?: string
   }
+  appendices?: Record<string, unknown>
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -225,6 +226,8 @@ async function main(): Promise<void> {
       artifacts: { type: 'string', multiple: true },
       out: { type: 'string' },
       upload: { type: 'boolean', default: false },
+      'include-ai-actions': { type: 'boolean', default: false },
+      'period-label': { type: 'string' },
       help: { type: 'boolean', default: false },
     },
     allowPositionals: true,
@@ -253,6 +256,8 @@ Optional:
   --controls         Comma-separated control IDs (e.g., IR-01,IR-02)
   --out              Output file path (default: stdout)
   --upload           Upload artifacts to Azure Blob + create DB rows (requires DATABASE_URL, AZURE_STORAGE_*)
+  --include-ai-actions  Collect AI action evidence and attach as appendices.ai_actions (requires DATABASE_URL)
+  --period-label     Period label for AI action collection, e.g. 2026-02 (defaults to current month)
   --help             Show this help
 `)
     process.exit(0)
@@ -305,6 +310,8 @@ Optional:
   const now = new Date().toISOString()
   const runId = randomUUID()
   const doUpload = values.upload as boolean
+  const includeAiActions = values['include-ai-actions'] as boolean
+  const periodLabel = (values['period-label'] as string | undefined) ?? now.slice(0, 7)
 
   // Build artifacts array (with raw data for upload)
   const artifactsWithData = files.map((filePath) => {
@@ -356,6 +363,17 @@ Optional:
       verified_at: now,
       verified_by: 'generate-evidence-index.ts',
     },
+  }
+
+  // ── AI Actions appendix ──────────────────────────────────────────────
+  if (includeAiActions) {
+    const { collectAiActionEvidence } = await import('@nzila/ai-core/actions/evidence-pack')
+    const aiAppendix = await collectAiActionEvidence(entityId, periodLabel)
+    index.appendices = { ai_actions: aiAppendix }
+    console.error(
+      `  ✔ AI actions appendix collected (${aiAppendix.summary.totalActions} actions, ` +
+        `${aiAppendix.summary.documentCount} documents, period: ${periodLabel})`,
+    )
   }
 
   // ── Upload mode ───────────────────────────────────────────────────────
