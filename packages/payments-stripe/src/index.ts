@@ -10,6 +10,10 @@ export {
   createCheckoutSession,
   executeRefund,
   requiresApproval,
+  createSubscription,
+  createSubscriptionCheckoutSession,
+  createPortalSession,
+  createCustomerSession,
 } from './primitives'
 export { generateStripeReports, buildReportBlobPath } from './reports'
 export {

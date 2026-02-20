@@ -11,6 +11,7 @@ import {
   KeyIcon,
   BuildingOfficeIcon,
   PuzzlePieceIcon,
+  CreditCardIcon,
 } from '@heroicons/react/24/outline'
 
 const sections = [
@@ -55,6 +56,13 @@ const sections = [
     icon: PuzzlePieceIcon,
     badge: null,
     href: '/settings/integrations',
+  },
+  {
+    title: 'Billing',
+    description: 'Manage your subscription plan, invoices, and payment methods.',
+    icon: CreditCardIcon,
+    badge: null,
+    href: '/settings/billing',
   },
 ]
 

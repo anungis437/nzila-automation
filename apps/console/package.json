@@ -14,19 +14,21 @@
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",
     "@heroicons/react": "^2.2.0",
+    "@nzila/blob": "workspace:*",
     "@nzila/db": "workspace:*",
     "@nzila/os-core": "workspace:*",
-    "@nzila/blob": "workspace:*",
     "@nzila/qbo": "workspace:*",
     "@nzila/ui": "workspace:*",
+    "@stripe/react-stripe-js": "^5.6.0",
+    "@stripe/stripe-js": "^8.7.0",
     "drizzle-orm": "^0.39.0",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remark": "^15.0.1",
-    "zod": "^3.24.0",
-    "remark-html": "^16.0.1"
+    "remark-html": "^16.0.1",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@nzila/config": "workspace:*",

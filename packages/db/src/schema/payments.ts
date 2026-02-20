@@ -75,6 +75,17 @@ export const stripeReportTypeEnum = pgEnum('stripe_report_type', [
   'disputes_summary',
 ])
 
+export const stripeSubscriptionStatusEnum = pgEnum('stripe_subscription_status', [
+  'incomplete',
+  'incomplete_expired',
+  'trialing',
+  'active',
+  'past_due',
+  'canceled',
+  'unpaid',
+  'paused',
+])
+
 // ── 1) stripe_connections ───────────────────────────────────────────────────
 
 export const stripeConnections = pgTable('stripe_connections', {
@@ -210,3 +221,36 @@ export const stripeReports = pgTable('stripe_reports', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+// ── 8) stripe_subscriptions ─────────────────────────────────────────────────
+
+export const stripeSubscriptions = pgTable('stripe_subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  entityId: uuid('entity_id')
+    .notNull()
+    .references(() => entities.id),
+  // Stripe object IDs
+  stripeCustomerId: text('stripe_customer_id').notNull(),
+  stripeSubscriptionId: text('stripe_subscription_id').notNull(),
+  stripePriceId: text('stripe_price_id').notNull(),
+  stripeProductId: text('stripe_product_id'),
+  // Plan info (denormalised for quick reads)
+  planName: text('plan_name'),
+  planInterval: text('plan_interval'), // 'month' | 'year'
+  amountCents: bigint('amount_cents', { mode: 'bigint' }),
+  currency: varchar('currency', { length: 3 }).notNull().default('CAD'),
+  // Status tracking
+  status: stripeSubscriptionStatusEnum('status').notNull().default('incomplete'),
+  currentPeriodStart: timestamp('current_period_start', { withTimezone: true }),
+  currentPeriodEnd: timestamp('current_period_end', { withTimezone: true }),
+  cancelAtPeriodEnd: boolean('cancel_at_period_end').notNull().default(false),
+  canceledAt: timestamp('canceled_at', { withTimezone: true }),
+  trialStart: timestamp('trial_start', { withTimezone: true }),
+  trialEnd: timestamp('trial_end', { withTimezone: true }),
+  // Audit
+  createdBy: text('created_by').notNull(), // clerk_user_id
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex('stripe_subscriptions_stripe_id_idx').on(table.stripeSubscriptionId),
+])
