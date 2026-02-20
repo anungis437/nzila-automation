@@ -1,0 +1,247 @@
+name: Nzila Playbook Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      playbook:
+        description: "Playbook to run (contract_guardian, lint_check, typecheck, unit_tests, full_ci)"
+        required: true
+        type: choice
+        options:
+          - contract_guardian
+          - lint_check
+          - typecheck
+          - unit_tests
+          - full_ci
+      correlation_id:
+        description: "Correlation ID from orchestrator (UUID)"
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run mode (true = no mutations)"
+        required: false
+        type: boolean
+        default: true
+      args_json:
+        description: "Additional arguments as JSON"
+        required: false
+        type: string
+        default: "{}"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+
+env:
+  CORRELATION_ID: ${{ inputs.correlation_id }}
+  PLAYBOOK: ${{ inputs.playbook }}
+  DRY_RUN: ${{ inputs.dry_run }}
+
+jobs:
+  run-playbook:
+    name: "Playbook: ${{ inputs.playbook }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Audit — Start
+        run: |
+          echo "::notice::Playbook: $PLAYBOOK | Correlation: $CORRELATION_ID | Dry Run: $DRY_RUN"
+          echo "STARTED_AT=$(date -u +%FT%TZ)" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ============================================================
+      # Playbook: contract_guardian
+      # ============================================================
+      - name: "[contract_guardian] Run contract tests"
+        if: inputs.playbook == 'contract_guardian' || inputs.playbook == 'full_ci'
+        id: contract_tests
+        run: |
+          set +e
+          pnpm --filter @nzila/contract-tests test 2>&1 | tee /tmp/contract-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "CONTRACT_TESTS_FAILED=true" >> $GITHUB_ENV
+            echo "::error::Contract tests failed (exit code: $EXIT_CODE)"
+          else
+            echo "CONTRACT_TESTS_FAILED=false" >> $GITHUB_ENV
+          fi
+          exit 0  # Don't fail the step — we handle this below
+
+      # ============================================================
+      # Playbook: lint_check
+      # ============================================================
+      - name: "[lint_check] Run ESLint"
+        if: inputs.playbook == 'lint_check' || inputs.playbook == 'full_ci'
+        id: lint
+        run: |
+          set +e
+          pnpm lint 2>&1 | tee /tmp/lint-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "LINT_FAILED=true" >> $GITHUB_ENV
+          else
+            echo "LINT_FAILED=false" >> $GITHUB_ENV
+          fi
+          exit 0
+
+      # ============================================================
+      # Playbook: typecheck
+      # ============================================================
+      - name: "[typecheck] Run TypeScript check"
+        if: inputs.playbook == 'typecheck' || inputs.playbook == 'full_ci'
+        id: typecheck
+        run: |
+          set +e
+          pnpm typecheck 2>&1 | tee /tmp/typecheck-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "TYPECHECK_FAILED=true" >> $GITHUB_ENV
+          else
+            echo "TYPECHECK_FAILED=false" >> $GITHUB_ENV
+          fi
+          exit 0
+
+      # ============================================================
+      # Playbook: unit_tests
+      # ============================================================
+      - name: "[unit_tests] Run Vitest"
+        if: inputs.playbook == 'unit_tests' || inputs.playbook == 'full_ci'
+        id: unit_tests
+        run: |
+          set +e
+          pnpm test 2>&1 | tee /tmp/test-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "UNIT_TESTS_FAILED=true" >> $GITHUB_ENV
+          else
+            echo "UNIT_TESTS_FAILED=false" >> $GITHUB_ENV
+          fi
+          exit 0
+
+      # ============================================================
+      # Upload results as artifacts
+      # ============================================================
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playbook-results-${{ inputs.correlation_id }}
+          path: /tmp/*-results.txt
+          retention-days: 30
+
+      # ============================================================
+      # On failure: create issue (if not dry_run)
+      # ============================================================
+      - name: Create issue on failure
+        if: |
+          !inputs.dry_run && (
+            env.CONTRACT_TESTS_FAILED == 'true' ||
+            env.LINT_FAILED == 'true' ||
+            env.TYPECHECK_FAILED == 'true' ||
+            env.UNIT_TESTS_FAILED == 'true'
+          )
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failures = [];
+            if (process.env.CONTRACT_TESTS_FAILED === 'true') failures.push('Contract Tests');
+            if (process.env.LINT_FAILED === 'true') failures.push('ESLint');
+            if (process.env.TYPECHECK_FAILED === 'true') failures.push('TypeScript');
+            if (process.env.UNIT_TESTS_FAILED === 'true') failures.push('Unit Tests');
+
+            const body = [
+              `## 🤖 Automated Playbook Failure Report`,
+              ``,
+              `**Playbook:** \`${process.env.PLAYBOOK}\``,
+              `**Correlation ID:** \`${process.env.CORRELATION_ID}\``,
+              `**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              `**Started:** ${process.env.STARTED_AT}`,
+              ``,
+              `### Failed Checks`,
+              failures.map(f => `- ❌ ${f}`).join('\n'),
+              ``,
+              `### Next Steps`,
+              `1. Review the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              `2. Download artifacts for detailed logs`,
+              `3. Fix the failures and push to \`main\``,
+              ``,
+              `---`,
+              `*Auto-generated by Nzila Orchestrator (correlation: ${process.env.CORRELATION_ID})*`,
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Automation] ${process.env.PLAYBOOK} failed — ${failures.join(', ')}`,
+              body,
+              labels: ['automation', 'ci-failure'],
+            });
+
+      # ============================================================
+      # Summary
+      # ============================================================
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## Playbook Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          for CHECK in CONTRACT_TESTS LINT TYPECHECK UNIT_TESTS; do
+            FAILED_VAR="${CHECK}_FAILED"
+            VALUE="${!FAILED_VAR:-skipped}"
+            if [ "$VALUE" = "true" ]; then
+              echo "| $CHECK | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+            elif [ "$VALUE" = "false" ]; then
+              echo "| $CHECK | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $CHECK | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Correlation ID:** \`$CORRELATION_ID\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Playbook:** \`$PLAYBOOK\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run:** $DRY_RUN" >> $GITHUB_STEP_SUMMARY
+
+      # ============================================================
+      # Final status: fail if any check failed
+      # ============================================================
+      - name: Evaluate final status
+        if: always()
+        run: |
+          FAILED=false
+          [ "${CONTRACT_TESTS_FAILED:-false}" = "true" ] && FAILED=true
+          [ "${LINT_FAILED:-false}" = "true" ] && FAILED=true
+          [ "${TYPECHECK_FAILED:-false}" = "true" ] && FAILED=true
+          [ "${UNIT_TESTS_FAILED:-false}" = "true" ] && FAILED=true
+
+          if [ "$FAILED" = "true" ]; then
+            echo "::error::One or more checks failed"
+            exit 1
+          fi
+          echo "All checks passed"
