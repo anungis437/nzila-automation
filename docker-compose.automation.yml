@@ -1,0 +1,110 @@
+# docker-compose.automation.yml
+#
+# The "two-loop" automation stack:
+#   - postgres:   audit/state DB (matches packages/db schema)
+#   - orchestrator-api:  outer-loop service (WhatsApp → GitHub Actions)
+#   - healthcheck:  periodic liveness probe
+#   - backup:  nightly pg_dump
+#
+# Usage:
+#   docker compose -f docker-compose.automation.yml up -d
+#   docker compose -f docker-compose.automation.yml logs -f orchestrator
+
+services:
+  # ── Postgres (audit + orchestrator state) ──
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nzila}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nzila_local}
+      POSTGRES_DB: ${POSTGRES_DB:-nzila}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nzila}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Orchestrator API ──
+  orchestrator:
+    build:
+      context: .
+      dockerfile: apps/orchestrator-api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${ORCHESTRATOR_PORT:-4000}:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      LOG_LEVEL: info
+      DATABASE_URL: postgres://${POSTGRES_USER:-nzila}:${POSTGRES_PASSWORD:-nzila_local}@postgres:5432/${POSTGRES_DB:-nzila}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_REPO_OWNER: ${GITHUB_REPO_OWNER:-anungis437}
+      GITHUB_REPO_NAME: ${GITHUB_REPO_NAME:-nzila-automation}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ── Periodic healthcheck reporter ──
+  healthcheck:
+    image: curlimages/curl:latest
+    restart: unless-stopped
+    depends_on:
+      orchestrator:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        while true; do
+          STATUS=$$(curl -sf http://orchestrator:4000/health | head -c 200)
+          echo "[healthcheck] $$(date -u +%FT%TZ) $$STATUS"
+          sleep 300
+        done
+
+  # ── Nightly Postgres backup ──
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backups:/backups
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-nzila}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-nzila_local}
+      PGDATABASE: ${POSTGRES_DB:-nzila}
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "[backup] Starting nightly backup loop"
+        while true; do
+          STAMP=$$(date -u +%Y%m%dT%H%M%SZ)
+          FILE="/backups/nzila-$$STAMP.sql.gz"
+          pg_dump | gzip > "$$FILE"
+          echo "[backup] $$STAMP → $$FILE ($$(du -h "$$FILE" | cut -f1))"
+          # Prune backups older than 30 days
+          find /backups -name "nzila-*.sql.gz" -mtime +30 -delete
+          # Sleep 24h
+          sleep 86400
+        done
+
+volumes:
+  pgdata:
+    driver: local
+  backups:
+    driver: local

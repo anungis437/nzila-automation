@@ -1,0 +1,97 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // ── Monorepo core ──
+    {
+      "label": "Install",
+      "type": "shell",
+      "command": "pnpm install",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "pnpm lint",
+      "group": "build",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "Typecheck",
+      "type": "shell",
+      "command": "pnpm typecheck",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Test (unit)",
+      "type": "shell",
+      "command": "pnpm test",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Contract tests",
+      "type": "shell",
+      "command": "pnpm contract-tests",
+      "group": "test",
+      "problemMatcher": []
+    },
+    // ── Dev servers ──
+    {
+      "label": "Dev (all)",
+      "type": "shell",
+      "command": "pnpm dev",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev web",
+      "type": "shell",
+      "command": "pnpm dev:web",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev console",
+      "type": "shell",
+      "command": "pnpm dev:console",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    // ── Python ──
+    {
+      "label": "Python tests (automation)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/bin/python -m pytest packages/automation -v",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe -m pytest packages/automation -v"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    // ── Build ──
+    {
+      "label": "Build all",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    // ── Docker ──
+    {
+      "label": "Docker compose up (dev)",
+      "type": "shell",
+      "command": "docker compose up --build dev",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
