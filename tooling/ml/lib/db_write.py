@@ -263,6 +263,90 @@ def insert_document(
     return doc_id
 
 
+# ── UE score upserts ──────────────────────────────────────────────────────────
+
+def upsert_ue_priority_score(
+    *,
+    entity_id: str,
+    case_id: str,
+    occurred_at: str,
+    score: float,
+    predicted_priority: str,
+    actual_priority: str | None,
+    features: dict[str, Any],
+    model_id: str,
+    inference_run_id: str,
+) -> None:
+    """Upsert a row into ml_scores_ue_cases_priority.
+    Unique constraint: (entity_id, case_id, model_id).
+    """
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO ml_scores_ue_cases_priority
+              (id, entity_id, case_id, occurred_at, score, predicted_priority,
+               actual_priority, features_json, model_id, inference_run_id, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (entity_id, case_id, model_id)
+            DO UPDATE SET
+              occurred_at        = EXCLUDED.occurred_at,
+              score              = EXCLUDED.score,
+              predicted_priority = EXCLUDED.predicted_priority,
+              actual_priority    = EXCLUDED.actual_priority,
+              features_json      = EXCLUDED.features_json,
+              inference_run_id   = EXCLUDED.inference_run_id
+            """,
+            (
+                str(uuid.uuid4()),
+                entity_id, case_id, occurred_at,
+                score, predicted_priority, actual_priority,
+                json.dumps(features),
+                model_id, inference_run_id, _now(),
+            ),
+        )
+
+
+def upsert_ue_sla_risk_score(
+    *,
+    entity_id: str,
+    case_id: str,
+    occurred_at: str,
+    probability: float,
+    predicted_breach: bool,
+    actual_breach: bool | None,
+    features: dict[str, Any],
+    model_id: str,
+    inference_run_id: str,
+) -> None:
+    """Upsert a row into ml_scores_ue_sla_risk.
+    Unique constraint: (entity_id, case_id, model_id).
+    """
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO ml_scores_ue_sla_risk
+              (id, entity_id, case_id, occurred_at, probability, predicted_breach,
+               actual_breach, features_json, model_id, inference_run_id, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (entity_id, case_id, model_id)
+            DO UPDATE SET
+              occurred_at      = EXCLUDED.occurred_at,
+              probability      = EXCLUDED.probability,
+              predicted_breach = EXCLUDED.predicted_breach,
+              actual_breach    = EXCLUDED.actual_breach,
+              features_json    = EXCLUDED.features_json,
+              inference_run_id = EXCLUDED.inference_run_id
+            """,
+            (
+                str(uuid.uuid4()),
+                entity_id, case_id, occurred_at,
+                probability, predicted_breach, actual_breach,
+                json.dumps(features),
+                model_id, inference_run_id, _now(),
+            ),
+        )
+
+
 # ── Audit events ──────────────────────────────────────────────────────────────
 
 def insert_audit_event(
