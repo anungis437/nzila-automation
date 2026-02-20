@@ -2,17 +2,15 @@
  * /console/ml/runs — ML Training & Inference Run History
  *
  * Unified log of all training and inference runs for this entity.
+ *
+ * Dogfoods @nzila/ml-sdk — zero direct DB access.
  */
-import { db } from '@nzila/db'
-import { mlModels, mlTrainingRuns, mlInferenceRuns } from '@nzila/db/schema'
-import { eq, desc } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { mlClient, getEntityId } from '@/lib/ml-server'
 
 export const dynamic = 'force-dynamic'
-
-const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
 const ML_NAV = [
   { label: 'Overview', href: '/console/ml/overview' },
@@ -23,35 +21,11 @@ const ML_NAV = [
 ]
 
 async function getRuns(entityId: string) {
+  const ml = mlClient()
   const [training, inference] = await Promise.all([
-    db
-      .select()
-      .from(mlTrainingRuns)
-      .where(eq(mlTrainingRuns.entityId, entityId))
-      .orderBy(desc(mlTrainingRuns.startedAt))
-      .limit(50),
-
-    db
-      .select({
-        id: mlInferenceRuns.id,
-        modelKey: mlModels.modelKey,
-        modelId: mlInferenceRuns.modelId,
-        status: mlInferenceRuns.status,
-        startedAt: mlInferenceRuns.startedAt,
-        finishedAt: mlInferenceRuns.finishedAt,
-        inputPeriodStart: mlInferenceRuns.inputPeriodStart,
-        inputPeriodEnd: mlInferenceRuns.inputPeriodEnd,
-        summaryJson: mlInferenceRuns.summaryJson,
-        error: mlInferenceRuns.error,
-        createdAt: mlInferenceRuns.createdAt,
-      })
-      .from(mlInferenceRuns)
-      .innerJoin(mlModels, eq(mlInferenceRuns.modelId, mlModels.id))
-      .where(eq(mlInferenceRuns.entityId, entityId))
-      .orderBy(desc(mlInferenceRuns.startedAt))
-      .limit(50),
+    ml.getTrainingRuns(entityId, 50),
+    ml.getInferenceRuns(entityId, 50),
   ])
-
   return { training, inference }
 }
 
@@ -59,7 +33,7 @@ export default async function MlRunsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = DEFAULT_ENTITY_ID
+  const entityId = getEntityId()
   const { training, inference } = await getRuns(entityId)
 
   return (
@@ -160,7 +134,7 @@ export default async function MlRunsPage() {
                       : {}
                   return (
                     <tr key={r.id} className="bg-white hover:bg-gray-50">
-                      <td className="px-4 py-2 font-mono text-xs">{r.modelKey}</td>
+                      <td className="px-4 py-2 font-mono text-xs">{r.modelKey ?? r.modelId}</td>
                       <td className="px-4 py-2">
                         <StatusPill status={r.status} />
                       </td>

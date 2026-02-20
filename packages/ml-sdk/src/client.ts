@@ -14,6 +14,7 @@
  */
 import { MlSdkError } from './types'
 import type {
+  MlModelResponse,
   MlActiveModelResponse,
   MlTrainingRunResponse,
   MlInferenceRunResponse,
@@ -60,6 +61,13 @@ export function createMlClient(config: MlSdkConfig) {
 
   return {
     /**
+     * Get all models for an entity (all statuses).
+     */
+    getAllModels(entityId: string, status?: string): Promise<MlModelResponse[]> {
+      return get<MlModelResponse[]>('/api/ml/models', { entityId, status })
+    },
+
+    /**
      * Get all active models for an entity.
      */
     getActiveModels(entityId: string): Promise<MlActiveModelResponse[]> {
@@ -92,7 +100,7 @@ export function createMlClient(config: MlSdkConfig) {
      */
     getStripeTxnScores(
       params: MlScoresTxnParams,
-    ): Promise<{ items: StripeTxnScoreResponse[]; nextCursor: string | null }> {
+    ): Promise<{ items: StripeTxnScoreResponse[]; nextCursor: string | null; totalInPeriod: number; anomalyInPeriod: number }> {
       return get('/api/ml/scores/stripe/transactions', params as Record<string, string>)
     },
   }

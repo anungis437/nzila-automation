@@ -2,20 +2,17 @@
  * /console/ml/stripe/transactions — Stripe Transaction Anomaly Scores
  *
  * Paginated table of per-transaction IsolationForest scores.
- * Default view: anomalies only (isAnomaly=true), last 30 days, limit 100.
+ * Default view: anomalies only (isAnomaly=true), last 30 days.
  *
- * Note: This is a Server Component — pagination navigates via URL params.
+ * Dogfoods @nzila/ml-sdk — zero direct DB access.
+ * Uses cursor-based pagination provided by the ML API.
  */
-import { db } from '@nzila/db'
-import { mlScoresStripeTxn, mlModels } from '@nzila/db/schema'
-import { eq, and, desc, gte, lte } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { mlClient, getEntityId } from '@/lib/ml-server'
 
 export const dynamic = 'force-dynamic'
-
-const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
 const ML_NAV = [
   { label: 'Overview', href: '/console/ml/overview' },
@@ -32,67 +29,8 @@ interface PageProps {
     anomalyOnly?: string
     startDate?: string
     endDate?: string
-    page?: string
+    cursor?: string
   }>
-}
-
-async function getTxnScores(
-  entityId: string,
-  opts: { anomalyOnly: boolean; startDate: string; endDate: string; offset: number },
-) {
-  const startTs = new Date(opts.startDate + 'T00:00:00Z')
-  const endTs = new Date(opts.endDate + 'T23:59:59Z')
-
-  const conditions = [
-    eq(mlScoresStripeTxn.entityId, entityId),
-    gte(mlScoresStripeTxn.occurredAt, startTs),
-    lte(mlScoresStripeTxn.occurredAt, endTs),
-    ...(opts.anomalyOnly ? [eq(mlScoresStripeTxn.isAnomaly, true)] : []),
-  ]
-
-  const [rows, totals] = await Promise.all([
-    db
-      .select({
-        id: mlScoresStripeTxn.id,
-        occurredAt: mlScoresStripeTxn.occurredAt,
-        amount: mlScoresStripeTxn.amount,
-        currency: mlScoresStripeTxn.currency,
-        score: mlScoresStripeTxn.score,
-        isAnomaly: mlScoresStripeTxn.isAnomaly,
-        threshold: mlScoresStripeTxn.threshold,
-        stripePaymentIntentId: mlScoresStripeTxn.stripePaymentIntentId,
-        stripeChargeId: mlScoresStripeTxn.stripeChargeId,
-        modelKey: mlModels.modelKey,
-      })
-      .from(mlScoresStripeTxn)
-      .innerJoin(mlModels, eq(mlScoresStripeTxn.modelId, mlModels.id))
-      .where(and(...conditions))
-      .orderBy(desc(mlScoresStripeTxn.occurredAt))
-      .limit(PAGE_SIZE + 1)
-      .offset(opts.offset),
-
-    db
-      .select({
-        id: mlScoresStripeTxn.id,
-        isAnomaly: mlScoresStripeTxn.isAnomaly,
-      })
-      .from(mlScoresStripeTxn)
-      .where(
-        and(
-          eq(mlScoresStripeTxn.entityId, entityId),
-          gte(mlScoresStripeTxn.occurredAt, startTs),
-          lte(mlScoresStripeTxn.occurredAt, endTs),
-        ),
-      ),
-  ])
-
-  const hasMore = rows.length > PAGE_SIZE
-  return {
-    items: hasMore ? rows.slice(0, PAGE_SIZE) : rows,
-    hasMore,
-    totalInPeriod: totals.length,
-    anomalyInPeriod: totals.filter((t) => t.isAnomaly).length,
-  }
 }
 
 export default async function MlStripeTxnPage({ searchParams }: PageProps) {
@@ -101,25 +39,26 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
 
   const params = await searchParams
   const anomalyOnly = params.anomalyOnly !== 'false'
-  const page = Math.max(0, parseInt(params.page ?? '0', 10))
   const today = new Date().toISOString().slice(0, 10)
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
   const startDate = params.startDate ?? thirtyDaysAgo
   const endDate = params.endDate ?? today
+  const cursor = params.cursor
 
-  const entityId = DEFAULT_ENTITY_ID
-  const { items, hasMore, totalInPeriod, anomalyInPeriod } = await getTxnScores(entityId, {
-    anomalyOnly,
+  const entityId = getEntityId()
+  const result = await mlClient().getStripeTxnScores({
+    entityId,
     startDate,
     endDate,
-    offset: page * PAGE_SIZE,
+    isAnomaly: anomalyOnly ? true : undefined,
+    limit: PAGE_SIZE,
+    cursor,
   })
 
-  const prevHref = page > 0
-    ? buildHref({ anomalyOnly, startDate, endDate, page: page - 1 })
-    : null
-  const nextHref = hasMore
-    ? buildHref({ anomalyOnly, startDate, endDate, page: page + 1 })
+  const { items, nextCursor, totalInPeriod, anomalyInPeriod } = result
+
+  const nextHref = nextCursor
+    ? buildHref({ anomalyOnly, startDate, endDate, cursor: nextCursor })
     : null
 
   return (
@@ -153,7 +92,7 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <Link
-          href={buildHref({ anomalyOnly: !anomalyOnly, startDate, endDate, page: 0 })}
+          href={buildHref({ anomalyOnly: !anomalyOnly, startDate, endDate })}
           className={`text-xs px-3 py-1.5 rounded-full border font-medium transition ${
             anomalyOnly
               ? 'bg-amber-100 border-amber-300 text-amber-800'
@@ -162,7 +101,7 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
         >
           {anomalyOnly ? '⚠ Anomalies only' : 'All transactions'}
         </Link>
-        <span className="text-xs text-gray-400">Page {page + 1}</span>
+        <span className="text-xs text-gray-400">{cursor ? 'Next page' : 'Page 1'}</span>
       </div>
 
       {items.length === 0 ? (
@@ -171,7 +110,7 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
           {anomalyOnly && (
             <> Try{' '}
               <Link
-                href={buildHref({ anomalyOnly: false, startDate, endDate, page: 0 })}
+                href={buildHref({ anomalyOnly: false, startDate, endDate })}
                 className="underline text-blue-500"
               >
                 showing all transactions
@@ -235,7 +174,7 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-500">{s.modelKey}</td>
+                  <td className="px-4 py-2 font-mono text-xs text-gray-500">{s.modelKey ?? s.modelId}</td>
                   <td className="px-4 py-2 font-mono text-xs text-gray-400 truncate max-w-[8rem]">
                     {s.stripePaymentIntentId ?? '—'}
                   </td>
@@ -251,15 +190,12 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
 
       {/* Pagination */}
       <div className="flex items-center gap-3 text-sm">
-        {prevHref ? (
-          <Link href={prevHref} className="px-4 py-1.5 rounded border border-gray-300 hover:bg-gray-50">
-            ← Prev
-          </Link>
-        ) : (
-          <span className="px-4 py-1.5 rounded border border-gray-100 text-gray-300 cursor-default">
-            ← Prev
-          </span>
-        )}
+        <Link
+          href={buildHref({ anomalyOnly, startDate, endDate })}
+          className="px-4 py-1.5 rounded border border-gray-300 hover:bg-gray-50"
+        >
+          ← First
+        </Link>
         {nextHref ? (
           <Link href={nextHref} className="px-4 py-1.5 rounded border border-gray-300 hover:bg-gray-50">
             Next →
@@ -278,13 +214,13 @@ function buildHref(p: {
   anomalyOnly: boolean
   startDate: string
   endDate: string
-  page: number
+  cursor?: string
 }) {
   const qs = new URLSearchParams({
     anomalyOnly: String(p.anomalyOnly),
     startDate: p.startDate,
     endDate: p.endDate,
-    page: String(p.page),
+    ...(p.cursor ? { cursor: p.cursor } : {}),
   })
   return `/console/ml/stripe/transactions?${qs.toString()}`
 }

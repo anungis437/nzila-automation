@@ -3,68 +3,35 @@
  *
  * Summary cards: active models, last training runs, recent anomaly
  * counts for both Stripe tracks. Entry point for the ML section.
+ *
+ * Dogfoods @nzila/ml-sdk — zero direct DB access.
  */
-import { db } from '@nzila/db'
-import {
-  mlModels,
-  mlTrainingRuns,
-  mlInferenceRuns,
-  mlScoresStripeDaily,
-  mlScoresStripeTxn,
-} from '@nzila/db/schema'
-import { eq, desc, and, count } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { mlClient, getEntityId } from '@/lib/ml-server'
 
 export const dynamic = 'force-dynamic'
 
-const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
-
 async function getMlOverview(entityId: string) {
-  const [activeModels, recentTraining, recentInference] = await Promise.all([
-    db
-      .select()
-      .from(mlModels)
-      .where(and(eq(mlModels.entityId, entityId), eq(mlModels.status, 'active')))
-      .orderBy(desc(mlModels.createdAt)),
+  const ml = mlClient()
 
-    db
-      .select()
-      .from(mlTrainingRuns)
-      .where(eq(mlTrainingRuns.entityId, entityId))
-      .orderBy(desc(mlTrainingRuns.startedAt))
-      .limit(5),
+  const ninetyDaysAgo = new Date()
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
+  const startDate = ninetyDaysAgo.toISOString().slice(0, 10)
+  const endDate = new Date().toISOString().slice(0, 10)
 
-    db
-      .select({
-        id: mlInferenceRuns.id,
-        modelKey: mlModels.modelKey,
-        status: mlInferenceRuns.status,
-        startedAt: mlInferenceRuns.startedAt,
-        finishedAt: mlInferenceRuns.finishedAt,
-        rowsProcessed: mlInferenceRuns.summaryJson,
-      })
-      .from(mlInferenceRuns)
-      .innerJoin(mlModels, eq(mlInferenceRuns.modelId, mlModels.id))
-      .where(eq(mlInferenceRuns.entityId, entityId))
-      .orderBy(desc(mlInferenceRuns.startedAt))
-      .limit(5),
-  ])
+  const [activeModels, recentTraining, recentInference, dailyScores, txnResult] =
+    await Promise.all([
+      ml.getActiveModels(entityId),
+      ml.getTrainingRuns(entityId, 5),
+      ml.getInferenceRuns(entityId, 5),
+      ml.getStripeDailyScores({ entityId, startDate, endDate }),
+      ml.getStripeTxnScores({ entityId, startDate, endDate, isAnomaly: true, limit: 500 }),
+    ])
 
-  const [dailyAnomalyCount, txnAnomalyCount] = await Promise.all([
-    db
-      .select({ count: count() })
-      .from(mlScoresStripeDaily)
-      .where(and(eq(mlScoresStripeDaily.entityId, entityId), eq(mlScoresStripeDaily.isAnomaly, true)))
-      .then((r) => r[0]?.count ?? 0),
-
-    db
-      .select({ count: count() })
-      .from(mlScoresStripeTxn)
-      .where(and(eq(mlScoresStripeTxn.entityId, entityId), eq(mlScoresStripeTxn.isAnomaly, true)))
-      .then((r) => r[0]?.count ?? 0),
-  ])
+  const dailyAnomalyCount = dailyScores.filter((s) => s.isAnomaly).length
+  const txnAnomalyCount = txnResult.anomalyInPeriod
 
   return { activeModels, recentTraining, recentInference, dailyAnomalyCount, txnAnomalyCount }
 }
@@ -73,7 +40,7 @@ export default async function MlOverviewPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = DEFAULT_ENTITY_ID
+  const entityId = getEntityId()
   const { activeModels, recentTraining, recentInference, dailyAnomalyCount, txnAnomalyCount } =
     await getMlOverview(entityId)
 
@@ -138,7 +105,7 @@ export default async function MlOverviewPage() {
                       </span>
                     </td>
                     <td className="px-4 py-2 text-gray-500">
-                      {m.approvedAt ? new Date(m.approvedAt).toLocaleDateString() : '—'}
+                      {m.meta.approvedAt ? new Date(m.meta.approvedAt).toLocaleDateString() : '—'}
                     </td>
                   </tr>
                 ))}
@@ -174,8 +141,8 @@ export default async function MlOverviewPage() {
             startedAt: r.startedAt,
             finishedAt: r.finishedAt ?? null,
             rowsProcessed:
-              r.rowsProcessed && typeof r.rowsProcessed === 'object' && 'totalRows' in r.rowsProcessed
-                ? Number((r.rowsProcessed as Record<string, unknown>).totalRows)
+              r.summaryJson && typeof r.summaryJson === 'object' && 'totalRows' in r.summaryJson
+                ? Number((r.summaryJson as Record<string, unknown>).totalRows)
                 : null,
           }))}
         />
@@ -216,8 +183,8 @@ function RunTable({
     id: string
     modelKey: string
     status: string
-    startedAt: Date
-    finishedAt: Date | null
+    startedAt: string
+    finishedAt: string | null
     rowsProcessed: number | null
   }[]
 }) {

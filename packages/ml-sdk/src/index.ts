@@ -9,6 +9,7 @@
 export { createMlClient, type MlSdkConfig, type MlClient } from './client'
 
 export type {
+  MlModelResponse,
   MlActiveModelResponse,
   MlTrainingRunResponse,
   MlInferenceRunResponse,

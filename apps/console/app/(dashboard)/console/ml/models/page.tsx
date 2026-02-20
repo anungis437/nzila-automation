@@ -4,17 +4,15 @@
  * Shows all versions of every model for this entity.
  * Active/retire actions are entity_admin only (shown server-side
  * based on role; actual mutations go through API routes).
+ *
+ * Dogfoods @nzila/ml-sdk — zero direct DB access.
  */
-import { db } from '@nzila/db'
-import { mlModels, mlDatasets, documents } from '@nzila/db/schema'
-import { eq, desc } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { mlClient, getEntityId } from '@/lib/ml-server'
 
 export const dynamic = 'force-dynamic'
-
-const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
 const ML_NAV = [
   { label: 'Overview', href: '/console/ml/overview' },
@@ -24,31 +22,12 @@ const ML_NAV = [
   { label: 'Stripe Transactions', href: '/console/ml/stripe/transactions' },
 ]
 
-async function getModels(entityId: string) {
-  return db
-    .select({
-      id: mlModels.id,
-      modelKey: mlModels.modelKey,
-      algorithm: mlModels.algorithm,
-      version: mlModels.version,
-      status: mlModels.status,
-      approvedBy: mlModels.approvedBy,
-      approvedAt: mlModels.approvedAt,
-      createdAt: mlModels.createdAt,
-      hyperparamsJson: mlModels.hyperparamsJson,
-      trainingDatasetId: mlModels.trainingDatasetId,
-    })
-    .from(mlModels)
-    .where(eq(mlModels.entityId, entityId))
-    .orderBy(desc(mlModels.createdAt))
-}
-
 export default async function MlModelsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = DEFAULT_ENTITY_ID
-  const models = await getModels(entityId)
+  const entityId = getEntityId()
+  const models = await mlClient().getAllModels(entityId)
 
   const byKey: Record<string, typeof models> = {}
   for (const m of models) {
@@ -111,10 +90,10 @@ export default async function MlModelsPage() {
                         <StatusPill status={m.status} />
                       </td>
                       <td className="px-4 py-2 font-mono text-xs text-gray-500">
-                        {m.approvedBy ?? '—'}
+                        {m.meta.approvedBy ?? '—'}
                       </td>
                       <td className="px-4 py-2 text-xs text-gray-500">
-                        {m.approvedAt ? new Date(m.approvedAt).toLocaleDateString() : '—'}
+                        {m.meta.approvedAt ? new Date(m.meta.approvedAt).toLocaleDateString() : '—'}
                       </td>
                       <td className="px-4 py-2 text-xs text-gray-400">
                         {new Date(m.createdAt).toLocaleDateString()}

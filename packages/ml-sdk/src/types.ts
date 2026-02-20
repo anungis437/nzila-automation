@@ -9,6 +9,25 @@ export type { MlModelStatus, MlRunStatus, MlModelKey, MlDatasetKey, FeatureSpec 
 
 // ── API response types ───────────────────────────────────────────────────────
 
+export interface MlModelResponse {
+  id: string
+  entityId: string
+  modelKey: string
+  algorithm: string
+  version: number
+  status: string
+  hyperparamsJson: Record<string, unknown> | null
+  meta: {
+    trainingDatasetId: string | null
+    artifactDocumentId: string | null
+    metricsDocumentId: string | null
+    approvedBy: string | null
+    approvedAt: string | null
+  }
+  createdAt: string
+  updatedAt: string
+}
+
 export interface MlActiveModelResponse {
   id: string
   entityId: string
@@ -43,6 +62,7 @@ export interface MlInferenceRunResponse {
   id: string
   entityId: string
   modelId: string
+  modelKey: string
   status: string
   startedAt: string
   finishedAt: string | null
@@ -60,6 +80,7 @@ export interface StripeDailyScoreResponse {
   isAnomaly: boolean
   threshold: string
   modelId: string
+  modelKey: string
   inferenceRunId: string | null
   /** Only present when includeFeatures=true and caller has permission */
   features?: Record<string, unknown>
@@ -74,6 +95,7 @@ export interface StripeTxnScoreResponse {
   isAnomaly: boolean
   threshold: string
   modelId: string
+  modelKey: string
   inferenceRunId: string | null
   stripePaymentIntentId: string | null
   stripeChargeId: string | null

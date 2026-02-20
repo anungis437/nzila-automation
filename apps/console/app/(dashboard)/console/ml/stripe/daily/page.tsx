@@ -2,18 +2,16 @@
  * /console/ml/stripe/daily — Stripe Daily Anomaly Scores
  *
  * Shows the last 90 days of daily IsolationForest scores, highlighting
- * anomalous days. Fetches directly from DB (RSC).
+ * anomalous days.
+ *
+ * Dogfoods @nzila/ml-sdk — zero direct DB access.
  */
-import { db } from '@nzila/db'
-import { mlScoresStripeDaily, mlModels } from '@nzila/db/schema'
-import { eq, and, desc, gte } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { mlClient, getEntityId } from '@/lib/ml-server'
 
 export const dynamic = 'force-dynamic'
-
-const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
 const ML_NAV = [
   { label: 'Overview', href: '/console/ml/overview' },
@@ -27,34 +25,16 @@ async function getDailyScores(entityId: string) {
   const ninetyDaysAgo = new Date()
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
   const startDate = ninetyDaysAgo.toISOString().slice(0, 10)
+  const endDate = new Date().toISOString().slice(0, 10)
 
-  return db
-    .select({
-      id: mlScoresStripeDaily.id,
-      date: mlScoresStripeDaily.date,
-      score: mlScoresStripeDaily.score,
-      isAnomaly: mlScoresStripeDaily.isAnomaly,
-      threshold: mlScoresStripeDaily.threshold,
-      modelKey: mlModels.modelKey,
-      modelId: mlScoresStripeDaily.modelId,
-      inferenceRunId: mlScoresStripeDaily.inferenceRunId,
-    })
-    .from(mlScoresStripeDaily)
-    .innerJoin(mlModels, eq(mlScoresStripeDaily.modelId, mlModels.id))
-    .where(
-      and(
-        eq(mlScoresStripeDaily.entityId, entityId),
-        gte(mlScoresStripeDaily.date, startDate),
-      ),
-    )
-    .orderBy(desc(mlScoresStripeDaily.date))
+  return mlClient().getStripeDailyScores({ entityId, startDate, endDate })
 }
 
 export default async function MlStripeDailyPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = DEFAULT_ENTITY_ID
+  const entityId = getEntityId()
   const scores = await getDailyScores(entityId)
 
   const anomalyCount = scores.filter((s) => s.isAnomaly).length
@@ -130,7 +110,7 @@ export default async function MlStripeDailyPage() {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-500">{s.modelKey}</td>
+                  <td className="px-4 py-2 font-mono text-xs text-gray-500">{s.modelKey ?? s.modelId}</td>
                   <td className="px-4 py-2 font-mono text-xs text-gray-400 truncate max-w-[8rem]">
                     {s.inferenceRunId ?? '—'}
                   </td>

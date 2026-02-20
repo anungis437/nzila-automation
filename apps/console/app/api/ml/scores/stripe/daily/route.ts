@@ -64,8 +64,19 @@ export async function GET(req: NextRequest) {
     }
 
     const rows = await db
-      .select()
+      .select({
+        id: mlScoresStripeDaily.id,
+        date: mlScoresStripeDaily.date,
+        score: mlScoresStripeDaily.score,
+        isAnomaly: mlScoresStripeDaily.isAnomaly,
+        threshold: mlScoresStripeDaily.threshold,
+        modelId: mlScoresStripeDaily.modelId,
+        modelKey: mlModels.modelKey,
+        inferenceRunId: mlScoresStripeDaily.inferenceRunId,
+        featuresJson: mlScoresStripeDaily.featuresJson,
+      })
       .from(mlScoresStripeDaily)
+      .innerJoin(mlModels, eq(mlScoresStripeDaily.modelId, mlModels.id))
       .where(
         and(
           eq(mlScoresStripeDaily.entityId, entityId),
@@ -87,6 +98,7 @@ export async function GET(req: NextRequest) {
         isAnomaly: r.isAnomaly,
         threshold: r.threshold,
         modelId: r.modelId,
+        modelKey: r.modelKey,
         inferenceRunId: r.inferenceRunId,
         ...(includeFeatures ? { features: r.featuresJson } : {}),
       })),

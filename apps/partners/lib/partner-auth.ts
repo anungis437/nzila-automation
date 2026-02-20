@@ -7,6 +7,9 @@
  *   - enterprise:admin, enterprise:user
  */
 import { auth } from '@clerk/nextjs/server'
+import { db } from '@nzila/db'
+import { partners, partnerUsers, partnerEntities } from '@nzila/db/schema'
+import { eq, and } from 'drizzle-orm'
 
 export type PartnerType = 'channel' | 'isv' | 'enterprise'
 
@@ -56,4 +59,59 @@ export async function hasAnyRole(roles: PartnerRole[]): Promise<boolean> {
     if (await hasRole(role)) return true
   }
   return false
+}
+
+/**
+ * Look up the partner record for the current Clerk org, then verify the
+ * partner has an entitlement row granting access to `entityId + view`.
+ *
+ * Returns the partner row + entityId on success.
+ * Returns `{ ok: false, error }` when the check fails.
+ */
+export async function requirePartnerEntityAccess(
+  entityId: string,
+  requiredView: string,
+): Promise<
+  | { ok: true; partner: { id: string; tier: string }; entityId: string }
+  | { ok: false; error: string; status: number }
+> {
+  const session = await auth()
+  if (!session.userId || !session.orgId) {
+    return { ok: false, error: 'Unauthenticated', status: 401 }
+  }
+
+  // Resolve partner from Clerk org
+  const [partner] = await db
+    .select({ id: partners.id, tier: partners.tier })
+    .from(partners)
+    .where(eq(partners.clerkOrgId, session.orgId))
+    .limit(1)
+
+  if (!partner) {
+    return { ok: false, error: 'No partner record for this org', status: 403 }
+  }
+
+  // Check entity entitlement
+  const [entitlement] = await db
+    .select({ id: partnerEntities.id, allowedViews: partnerEntities.allowedViews })
+    .from(partnerEntities)
+    .where(
+      and(
+        eq(partnerEntities.partnerId, partner.id),
+        eq(partnerEntities.entityId, entityId),
+      ),
+    )
+    .limit(1)
+
+  if (!entitlement) {
+    return { ok: false, error: 'No access to this entity', status: 403 }
+  }
+
+  // Check that the required view is in allowedViews
+  const views = entitlement.allowedViews ?? []
+  if (!views.includes(requiredView)) {
+    return { ok: false, error: `View "${requiredView}" not entitled`, status: 403 }
+  }
+
+  return { ok: true, partner, entityId }
 }

@@ -20,8 +20,8 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@nzila/db'
-import { mlScoresStripeTxn } from '@nzila/db/schema'
-import { eq, and, gte, lte, lt } from 'drizzle-orm'
+import { mlScoresStripeTxn, mlModels } from '@nzila/db/schema'
+import { eq, and, gte, lte, lt, count } from 'drizzle-orm'
 import { requireEntityAccess } from '@/lib/api-guards'
 
 export const runtime = 'nodejs'
@@ -70,12 +70,44 @@ export async function GET(req: NextRequest) {
       ...(cursorTs ? [lt(mlScoresStripeTxn.occurredAt, cursorTs)] : []),
     ]
 
-    const rows = await db
-      .select()
-      .from(mlScoresStripeTxn)
-      .where(and(...conditions))
-      .orderBy(mlScoresStripeTxn.occurredAt)
-      .limit(limit + 1) // fetch one extra to determine nextCursor
+    // Period counts for summary header (runs against full period, ignoring cursor/limit)
+    const periodConditions = [
+      eq(mlScoresStripeTxn.entityId, entityId),
+      gte(mlScoresStripeTxn.occurredAt, startTs),
+      lte(mlScoresStripeTxn.occurredAt, endTs),
+    ]
+
+    const [rows, [totalRow], [anomalyRow]] = await Promise.all([
+      db
+        .select({
+          id: mlScoresStripeTxn.id,
+          occurredAt: mlScoresStripeTxn.occurredAt,
+          amount: mlScoresStripeTxn.amount,
+          currency: mlScoresStripeTxn.currency,
+          score: mlScoresStripeTxn.score,
+          isAnomaly: mlScoresStripeTxn.isAnomaly,
+          threshold: mlScoresStripeTxn.threshold,
+          modelId: mlScoresStripeTxn.modelId,
+          modelKey: mlModels.modelKey,
+          inferenceRunId: mlScoresStripeTxn.inferenceRunId,
+          stripePaymentIntentId: mlScoresStripeTxn.stripePaymentIntentId,
+          stripeChargeId: mlScoresStripeTxn.stripeChargeId,
+          featuresJson: mlScoresStripeTxn.featuresJson,
+        })
+        .from(mlScoresStripeTxn)
+        .innerJoin(mlModels, eq(mlScoresStripeTxn.modelId, mlModels.id))
+        .where(and(...conditions))
+        .orderBy(mlScoresStripeTxn.occurredAt)
+        .limit(limit + 1),
+      db
+        .select({ count: count() })
+        .from(mlScoresStripeTxn)
+        .where(and(...periodConditions)),
+      db
+        .select({ count: count() })
+        .from(mlScoresStripeTxn)
+        .where(and(...periodConditions, eq(mlScoresStripeTxn.isAnomaly, true))),
+    ])
 
     const hasMore = rows.length > limit
     const items = hasMore ? rows.slice(0, limit) : rows
@@ -96,12 +128,15 @@ export async function GET(req: NextRequest) {
         isAnomaly: r.isAnomaly,
         threshold: r.threshold,
         modelId: r.modelId,
+        modelKey: r.modelKey,
         inferenceRunId: r.inferenceRunId,
         stripePaymentIntentId: r.stripePaymentIntentId,
         stripeChargeId: r.stripeChargeId,
         ...(includeFeatures ? { features: r.featuresJson } : {}),
       })),
       nextCursor,
+      totalInPeriod: totalRow?.count ?? 0,
+      anomalyInPeriod: anomalyRow?.count ?? 0,
     })
   } catch (err) {
     console.error('[ML /scores/stripe/transactions]', err)

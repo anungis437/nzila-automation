@@ -114,6 +114,17 @@ export const partnerUsers = pgTable('partner_users', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
+// ── 2b) partner_entities (bridge – ML / data entitlements) ──────────────────
+
+export const partnerEntities = pgTable('partner_entities', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  partnerId: uuid('partner_id').notNull().references(() => partners.id),
+  entityId: varchar('entity_id', { length: 255 }).notNull(),
+  /** Which views/data sets the partner may access for this entity, e.g. ["ml:summary"] */
+  allowedViews: jsonb('allowed_views').$type<string[]>().default([]).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
 // ── 3) deals ────────────────────────────────────────────────────────────────
 
 export const deals = pgTable('deals', {

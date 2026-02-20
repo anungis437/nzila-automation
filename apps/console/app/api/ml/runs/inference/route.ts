@@ -11,7 +11,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@nzila/db'
-import { mlInferenceRuns } from '@nzila/db/schema'
+import { mlInferenceRuns, mlModels } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
 import { requireEntityAccess } from '@/lib/api-guards'
 
@@ -33,8 +33,22 @@ export async function GET(req: NextRequest) {
     if (!access.ok) return access.response
 
     const rows = await db
-      .select()
+      .select({
+        id: mlInferenceRuns.id,
+        entityId: mlInferenceRuns.entityId,
+        modelId: mlInferenceRuns.modelId,
+        modelKey: mlModels.modelKey,
+        status: mlInferenceRuns.status,
+        startedAt: mlInferenceRuns.startedAt,
+        finishedAt: mlInferenceRuns.finishedAt,
+        inputPeriodStart: mlInferenceRuns.inputPeriodStart,
+        inputPeriodEnd: mlInferenceRuns.inputPeriodEnd,
+        summaryJson: mlInferenceRuns.summaryJson,
+        error: mlInferenceRuns.error,
+        createdAt: mlInferenceRuns.createdAt,
+      })
       .from(mlInferenceRuns)
+      .innerJoin(mlModels, eq(mlInferenceRuns.modelId, mlModels.id))
       .where(
         and(
           eq(mlInferenceRuns.entityId, entityId),
@@ -49,6 +63,7 @@ export async function GET(req: NextRequest) {
         id: r.id,
         entityId: r.entityId,
         modelId: r.modelId,
+        modelKey: r.modelKey,
         status: r.status,
         startedAt: r.startedAt.toISOString(),
         finishedAt: r.finishedAt?.toISOString() ?? null,

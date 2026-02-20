@@ -6,78 +6,114 @@
  * no raw feature vectors, no model internals.
  *
  * Auth: session checked by parent portal layout.
+ * Entitlement: partner must have `ml:summary` view for the entity
+ *              (enforced by /portal/api/ml/summary).
+ *
+ * Zero direct DB access — fetches from the partner ML API route.
  */
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import { db } from '@nzila/db'
-import { mlScoresStripeDaily, mlScoresStripeTxn, mlModels } from '@nzila/db/schema'
-import { eq, and, desc, gte, count } from 'drizzle-orm'
+import { partners, partnerUsers, partnerEntities } from '@nzila/db/schema'
+import { eq, and } from 'drizzle-orm'
 import Link from 'next/link'
 import { ChartBarIcon, ShieldCheckIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 export const dynamic = 'force-dynamic'
 
-const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
+/**
+ * Resolve the entityId the current partner org is entitled to view.
+ * Returns null if not entitled.
+ */
+async function resolveEntitledEntityId(): Promise<string | null> {
+  const session = await auth()
+  if (!session.userId || !session.orgId) return null
 
-async function getMlSummary(entityId: string) {
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const [partner] = await db
+    .select({ id: partners.id })
+    .from(partners)
+    .where(eq(partners.clerkOrgId, session.orgId))
+    .limit(1)
 
-  const [recentDailyScores, totalTxnAnomalies, totalDailyAnomalies] = await Promise.all([
-    db
-      .select({
-        date: mlScoresStripeDaily.date,
-        isAnomaly: mlScoresStripeDaily.isAnomaly,
-        score: mlScoresStripeDaily.score,
-        modelKey: mlModels.modelKey,
-      })
-      .from(mlScoresStripeDaily)
-      .innerJoin(mlModels, eq(mlScoresStripeDaily.modelId, mlModels.id))
-      .where(
-        and(
-          eq(mlScoresStripeDaily.entityId, entityId),
-          gte(mlScoresStripeDaily.date, thirtyDaysAgo),
-        ),
-      )
-      .orderBy(desc(mlScoresStripeDaily.date))
-      .limit(30),
+  if (!partner) return null
 
-    db
-      .select({ count: count() })
-      .from(mlScoresStripeTxn)
-      .where(
-        and(
-          eq(mlScoresStripeTxn.entityId, entityId),
-          eq(mlScoresStripeTxn.isAnomaly, true),
-        ),
-      )
-      .then((r) => r[0]?.count ?? 0),
+  const [entitlement] = await db
+    .select({ entityId: partnerEntities.entityId, allowedViews: partnerEntities.allowedViews })
+    .from(partnerEntities)
+    .where(eq(partnerEntities.partnerId, partner.id))
+    .limit(1)
 
-    db
-      .select({ count: count() })
-      .from(mlScoresStripeDaily)
-      .where(
-        and(
-          eq(mlScoresStripeDaily.entityId, entityId),
-          eq(mlScoresStripeDaily.isAnomaly, true),
-        ),
-      )
-      .then((r) => r[0]?.count ?? 0),
-  ])
+  if (!entitlement) return null
 
-  const daysScored = recentDailyScores.length
-  const recentAnomalyDays = recentDailyScores.filter((s) => s.isAnomaly).length
+  const views = entitlement.allowedViews ?? []
+  if (!views.includes('ml:summary')) return null
 
-  return {
-    recentDailyScores,
-    totalTxnAnomalies,
-    totalDailyAnomalies,
-    daysScored,
-    recentAnomalyDays,
-  }
+  return entitlement.entityId
+}
+
+interface MlSummaryResponse {
+  entityId: string
+  daysScored: number
+  recentAnomalyDays: number
+  totalDailyAnomalies: number
+  totalTxnAnomalies: number
+  recentDailyScores: {
+    date: string
+    isAnomaly: boolean
+    score: string
+    modelKey: string
+  }[]
+}
+
+async function fetchMlSummary(entityId: string): Promise<MlSummaryResponse | null> {
+  const session = await auth()
+  const token = await session.getToken()
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_PARTNERS_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3002')
+
+  const url = `${baseUrl}/portal/api/ml/summary?entityId=${encodeURIComponent(entityId)}`
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token ?? ''}`,
+      'Content-Type': 'application/json',
+    },
+  })
+
+  if (!res.ok) return null
+  return res.json() as Promise<MlSummaryResponse>
 }
 
 export default async function PartnerMlSummaryPage() {
-  const entityId = DEFAULT_ENTITY_ID
-  const { recentDailyScores, totalTxnAnomalies, totalDailyAnomalies, daysScored, recentAnomalyDays } =
-    await getMlSummary(entityId)
+  const entityId = await resolveEntitledEntityId()
+
+  if (!entityId) {
+    return (
+      <div className="max-w-5xl space-y-4">
+        <h1 className="text-2xl font-bold text-slate-900">ML Anomaly Summary</h1>
+        <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-400">
+          Your organisation does not have ML summary access for any entity.
+          Please contact your Nzila account manager to request access.
+        </div>
+      </div>
+    )
+  }
+
+  const summary = await fetchMlSummary(entityId)
+
+  if (!summary) {
+    return (
+      <div className="max-w-5xl space-y-4">
+        <h1 className="text-2xl font-bold text-slate-900">ML Anomaly Summary</h1>
+        <div className="rounded-xl border border-dashed border-red-200 p-8 text-center text-sm text-red-400">
+          Unable to load ML summary. Please try again later.
+        </div>
+      </div>
+    )
+  }
+
+  const { recentDailyScores, totalTxnAnomalies, totalDailyAnomalies, daysScored, recentAnomalyDays } = summary
 
   return (
     <div className="max-w-5xl space-y-8">

@@ -60,6 +60,9 @@ export const featureGates: Record<string, PartnerTier> = {
   'gtm:co-sell-request': 'select',
   'gtm:joint-business-plan': 'premier',
   'gtm:dedicated-partner-manager': 'elite',
+
+  // ML
+  'ml:summary': 'registered',
 }
 
 /**
