@@ -115,3 +115,38 @@ export async function requirePartnerEntityAccess(
 
   return { ok: true, partner, entityId }
 }
+
+/**
+ * Resolve the first entityId the current Clerk org is entitled to access
+ * for the given view permission. Returns null if not entitled.
+ *
+ * Used by API routes that self-resolve entityId so that pages do not need
+ * direct DB access just to discover which entity to fetch.
+ */
+export async function resolvePartnerEntityIdForView(
+  requiredView: string,
+): Promise<string | null> {
+  const session = await auth()
+  if (!session.userId || !session.orgId) return null
+
+  const [partner] = await db
+    .select({ id: partners.id })
+    .from(partners)
+    .where(eq(partners.clerkOrgId, session.orgId))
+    .limit(1)
+
+  if (!partner) return null
+
+  const [entitlement] = await db
+    .select({ entityId: partnerEntities.entityId, allowedViews: partnerEntities.allowedViews })
+    .from(partnerEntities)
+    .where(eq(partnerEntities.partnerId, partner.id))
+    .limit(1)
+
+  if (!entitlement) return null
+
+  const views = entitlement.allowedViews ?? []
+  if (!views.includes(requiredView)) return null
+
+  return entitlement.entityId
+}

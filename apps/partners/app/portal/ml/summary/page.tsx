@@ -6,50 +6,15 @@
  * no raw feature vectors, no model internals.
  *
  * Auth: session checked by parent portal layout.
- * Entitlement: partner must have `ml:summary` view for the entity
- *              (enforced by /portal/api/ml/summary).
- *
- * Zero direct DB access — fetches from the partner ML API route.
+ * Entitlement: partner must have `ml:summary` view for the entity.
+ *              Resolved and enforced entirely by /portal/api/ml/summary —
+ *              this page has zero direct DB access.
  */
 import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { db } from '@nzila/db'
-import { partners, partnerUsers, partnerEntities } from '@nzila/db/schema'
-import { eq, and } from 'drizzle-orm'
 import Link from 'next/link'
 import { ChartBarIcon, ShieldCheckIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 export const dynamic = 'force-dynamic'
-
-/**
- * Resolve the entityId the current partner org is entitled to view.
- * Returns null if not entitled.
- */
-async function resolveEntitledEntityId(): Promise<string | null> {
-  const session = await auth()
-  if (!session.userId || !session.orgId) return null
-
-  const [partner] = await db
-    .select({ id: partners.id })
-    .from(partners)
-    .where(eq(partners.clerkOrgId, session.orgId))
-    .limit(1)
-
-  if (!partner) return null
-
-  const [entitlement] = await db
-    .select({ entityId: partnerEntities.entityId, allowedViews: partnerEntities.allowedViews })
-    .from(partnerEntities)
-    .where(eq(partnerEntities.partnerId, partner.id))
-    .limit(1)
-
-  if (!entitlement) return null
-
-  const views = entitlement.allowedViews ?? []
-  if (!views.includes('ml:summary')) return null
-
-  return entitlement.entityId
-}
 
 interface MlSummaryResponse {
   entityId: string
@@ -65,7 +30,11 @@ interface MlSummaryResponse {
   }[]
 }
 
-async function fetchMlSummary(entityId: string): Promise<MlSummaryResponse | null> {
+type FetchResult =
+  | { ok: true; data: MlSummaryResponse }
+  | { ok: false; notEntitled: boolean }
+
+async function fetchMlSummary(): Promise<FetchResult> {
   const session = await auth()
   const token = await session.getToken()
 
@@ -73,36 +42,34 @@ async function fetchMlSummary(entityId: string): Promise<MlSummaryResponse | nul
     process.env.NEXT_PUBLIC_PARTNERS_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3002')
 
-  const url = `${baseUrl}/portal/api/ml/summary?entityId=${encodeURIComponent(entityId)}`
-  const res = await fetch(url, {
+  // No entityId — route self-resolves from the partner session.
+  const res = await fetch(`${baseUrl}/portal/api/ml/summary`, {
     headers: {
       Authorization: `Bearer ${token ?? ''}`,
       'Content-Type': 'application/json',
     },
   })
 
-  if (!res.ok) return null
-  return res.json() as Promise<MlSummaryResponse>
+  if (res.status === 403) return { ok: false, notEntitled: true }
+  if (!res.ok) return { ok: false, notEntitled: false }
+  return { ok: true, data: await res.json() as MlSummaryResponse }
 }
 
 export default async function PartnerMlSummaryPage() {
-  const entityId = await resolveEntitledEntityId()
+  const result = await fetchMlSummary()
 
-  if (!entityId) {
-    return (
-      <div className="max-w-5xl space-y-4">
-        <h1 className="text-2xl font-bold text-slate-900">ML Anomaly Summary</h1>
-        <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-400">
-          Your organisation does not have ML summary access for any entity.
-          Please contact your Nzila account manager to request access.
+  if (!result.ok) {
+    if (result.notEntitled) {
+      return (
+        <div className="max-w-5xl space-y-4">
+          <h1 className="text-2xl font-bold text-slate-900">ML Anomaly Summary</h1>
+          <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-400">
+            Your organisation does not have ML summary access for any entity.
+            Please contact your Nzila account manager to request access.
+          </div>
         </div>
-      </div>
-    )
-  }
-
-  const summary = await fetchMlSummary(entityId)
-
-  if (!summary) {
+      )
+    }
     return (
       <div className="max-w-5xl space-y-4">
         <h1 className="text-2xl font-bold text-slate-900">ML Anomaly Summary</h1>
@@ -112,6 +79,8 @@ export default async function PartnerMlSummaryPage() {
       </div>
     )
   }
+
+  const summary = result.data
 
   const { recentDailyScores, totalTxnAnomalies, totalDailyAnomalies, daysScored, recentAnomalyDays } = summary
 
