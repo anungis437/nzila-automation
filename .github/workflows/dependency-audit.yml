@@ -59,6 +59,10 @@ jobs:
             exit 1
           fi
 
+      - name: Enforce vulnerability waiver policy
+        run: |
+          pnpm tsx tooling/security/supply-chain-policy.ts check-vulns audit-report.json
+
       - name: Upload audit report as artifact
         uses: actions/upload-artifact@v4
         if: always()

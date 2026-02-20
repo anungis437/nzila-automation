@@ -51,3 +51,35 @@ jobs:
           cp sbom.json evidence-artifacts/sbom/sbom-${{ github.sha }}.json
           echo '{"type":"sbom","ref":"${{ github.sha }}","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","runId":"${{ github.run_id }}"}' \
             > evidence-artifacts/sbom/metadata.json
+
+  # ── License policy validation ──────────────────────────────────────────
+  validate-licenses:
+    name: Validate License Policy
+    needs: generate-sbom
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download SBOM
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom-${{ github.run_id }}
+          path: .
+
+      - name: Validate licenses against policy
+        run: pnpm tsx tooling/security/supply-chain-policy.ts check-licenses sbom.json

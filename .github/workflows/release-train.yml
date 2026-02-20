@@ -54,6 +54,14 @@ jobs:
       - name: Verify schema snapshot (no drift)
         run: pnpm tsx tooling/db/schema-snapshot.ts verify
 
+      - name: AI eval gate check (if report exists)
+        run: |
+          if [ -f tooling/ai-evals/report.json ]; then
+            pnpm tsx tooling/ai-evals/eval-gate.ts tooling/ai-evals/report.json
+          else
+            echo "No eval report found — run evals before release for full gate enforcement"
+          fi
+
   # ─── Gate 2: Security scans ───────────────────────────────────────────────
   security-gate:
     name: Security Gate

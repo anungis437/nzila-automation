@@ -20,4 +20,21 @@ export {
   collectStripeEvidenceArtifacts,
   buildStripeEvidencePackRequest,
 } from './evidence'
+export {
+  matchPayoutsToDeposits,
+  generateExceptions,
+  computeCloseReadiness,
+  DEFAULT_RECON_CONFIG,
+} from './reconciliation'
+export type {
+  ReconciliationConfig,
+  ReconciliationException,
+  ReconciliationType,
+  ExceptionSeverity,
+  ExceptionStatus,
+  StripePayout,
+  QboDeposit,
+  MatchResult,
+  CloseReadinessReport,
+} from './reconciliation'
 export * from './types'

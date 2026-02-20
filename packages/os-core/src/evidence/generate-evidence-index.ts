@@ -30,6 +30,7 @@ import {
 } from '@nzila/db/schema'
 import { computeEntryHash } from '../hash'
 import { eq, desc } from 'drizzle-orm'
+import { generateSeal, type SealEnvelope } from './seal'
 import type {
   EvidencePackRequest,
   EvidencePackResult,
@@ -74,6 +75,8 @@ export interface LocalEvidencePackIndex {
     retentionClass: string
     classification: string
   }>
+  /** Cryptographic seal — SHA-256 digest + Merkle root + optional HMAC */
+  seal: SealEnvelope
 }
 
 /**
@@ -109,7 +112,7 @@ export function buildLocalEvidencePackIndex(
     }
   })
 
-  return {
+  const unsealedIndex = {
     $schema: 'Evidence-Pack-Index.schema.json',
     packId: request.packId,
     runId,
@@ -124,6 +127,11 @@ export function buildLocalEvidencePackIndex(
     basePath,
     artifacts,
   }
+
+  // Cryptographically seal the pack index
+  const seal = generateSeal(unsealedIndex)
+
+  return { ...unsealedIndex, seal }
 }
 
 
@@ -264,7 +272,7 @@ export async function processEvidencePack(
 
   // ── Generate Evidence-Pack-Index.json ─────────────────────────────────────
 
-  const indexPayload = {
+  const unsealedPayload = {
     $schema: 'Evidence-Pack-Index.schema.json',
     packId: request.packId,
     runId,
@@ -288,6 +296,10 @@ export async function processEvidencePack(
       classification: a.classification,
     })),
   }
+
+  // Cryptographically seal the evidence pack index
+  const seal = generateSeal(unsealedPayload)
+  const indexPayload = { ...unsealedPayload, seal }
 
   const indexBuffer = Buffer.from(JSON.stringify(indexPayload, null, 2))
   const indexBlobPath = `${basePath}/evidence-pack-index.json`

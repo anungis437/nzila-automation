@@ -24,3 +24,10 @@ export {
 } from './builder'
 export type { GovernanceActionContext } from './builder'
 export { processEvidencePack } from './generate-evidence-index'
+export {
+  generateSeal,
+  verifySeal,
+  computeMerkleRoot,
+  canonicalize,
+} from './seal'
+export type { SealEnvelope, SealablePackIndex, SealOptions, VerifySealResult } from './seal'

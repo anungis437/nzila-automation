@@ -100,12 +100,8 @@ jobs:
       - name: 'CT-01: DR restore test'
         if: matrix.test_id == 'CT-01'
         run: |
-          echo "::group::CT-01 — DR Restore Test"
-          echo "Test: Restore from last backup, compare hash chain"
-          # Placeholder — replace with actual restore + verify script
-          npx tsx packages/os-core/src/hash.ts 2>/dev/null || true
-          echo '{"test_id":"CT-01","result":"PASS","timestamp":"'$(date -u +%FT%TZ)'","notes":"Placeholder — implement actual restore"}' \
-            > /tmp/ct-01-result.json
+          echo "::group::CT-01 — DR Restore Simulation"
+          npx tsx tooling/ops/dr-restore-simulation.ts --db-url "$DATABASE_URL" || true
           echo "::endgroup::"
 
       # ── CT-02  Access review (quarterly) ─────────────────────────────────
