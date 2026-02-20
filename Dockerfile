@@ -29,7 +29,6 @@ COPY packages/payments-stripe/package.json ./packages/payments-stripe/
 COPY packages/tax/package.json ./packages/tax/
 COPY packages/ai-core/package.json ./packages/ai-core/
 COPY packages/ai-sdk/package.json ./packages/ai-sdk/
-COPY packages/analytics/package.json ./packages/analytics/
 COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
@@ -164,7 +163,6 @@ COPY packages/payments-stripe/package.json ./packages/payments-stripe/
 COPY packages/tax/package.json ./packages/tax/
 COPY packages/ai-core/package.json ./packages/ai-core/
 COPY packages/ai-sdk/package.json ./packages/ai-sdk/
-COPY packages/analytics/package.json ./packages/analytics/
 COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4

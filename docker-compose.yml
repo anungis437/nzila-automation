@@ -19,7 +19,6 @@ services:
       - /app/packages/scripts-book/node_modules
       - /app/packages/ai-core/node_modules
       - /app/packages/ai-sdk/node_modules
-      - /app/packages/analytics/node_modules
       - /app/packages/tools-runtime/node_modules
     ports:
       - "3000:3000"
