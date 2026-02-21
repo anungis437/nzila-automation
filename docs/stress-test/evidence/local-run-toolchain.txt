@@ -1,0 +1,11 @@
+=== TOOLCHAIN CHECK (2026-02-20) ===
+node: v24.13.1
+pnpm: 10.11.0
+
+=== CURRENT BRANCH ===
+main (HEAD -> main, origin/main, origin/HEAD)
+
+=== LAST 3 COMMITS ===
+a505446 feat: complete security hardening pass (PRs 2-18) (#52)
+e5ac930 feat: pre-commit guardrails with Lefthook and Gitleaks monorepo config (#51)
+597d920 docs: add hardening baseline report (Phase 0) (#50)

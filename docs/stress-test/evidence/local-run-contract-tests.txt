@@ -1,0 +1,45 @@
+
+> nzila-os@0.1.0 contract-tests C:\APPS\nzila-automation
+> vitest run --config tooling/contract-tests/vitest.config.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/APPS/nzila-automation[39m
+
+ [32mΓ£ô[39m tooling/contract-tests/telemetry-coverage.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/authz-regression.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/env-contract.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/org-isolation.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 170[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/audit-immutability.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/migration-policy.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/api-schema-contracts.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 98[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/api-authz-coverage.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/alerting-integrity.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m packages/payments-stripe/src/__tests__/env.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 197[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/precommit-guardrails.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m packages/tools-runtime/src/integration.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 270[2mms[22m[39m
+ [32mΓ£ô[39m packages/tools-runtime/src/sanitize.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/evidence-seal.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m packages/ai-core/src/schemas.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m packages/payments-stripe/src/__tests__/primitives.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m apps/console/lib/__tests__/audit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/coverage-gates.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/sdk-contracts.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m apps/console/lib/audit.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/api-contracts.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m packages/payments-stripe/src/__tests__/types.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m packages/tools-runtime/src/chunker.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/no-duplicate-evidence-generator.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m packages/payments-stripe/src/__tests__/webhooks.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m packages/tools-runtime/src/blobTool.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m packages/payments-stripe/src/__tests__/reports.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m packages/ai-core/src/actions/attestation.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m apps/web/lib/docs.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+ [32mΓ£ô[39m tooling/contract-tests/invariants.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 1058[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m no app file directly imports provider AI SDK (static imports) [33m 588[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m no app file directly imports ML tables from @nzila/db/schema [33m 430[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m30 passed[39m[22m[90m (30)[39m
+[2m      Tests [22m [1m[32m271 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (272)[39m
+[2m   Start at [22m 19:09:39
+[2m   Duration [22m 1.71s[2m (transform 3.99s, setup 0ms, import 6.00s, tests 2.55s, environment 8ms)[22m
+
