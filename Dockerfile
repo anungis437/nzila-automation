@@ -6,7 +6,7 @@
 FROM node:22.13.1-alpine3.21 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+RUN npm install -g pnpm@10.11.0 --ignore-scripts
 
 # ============================================
 # Dependencies stage
@@ -34,8 +34,8 @@ COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
-# Install dependencies (no --frozen-lockfile in case lockfile is stale)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # ============================================
 # Builder stage
@@ -177,8 +177,8 @@ COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
-# Install dependencies
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
 
 EXPOSE 3000 3001 3002

@@ -4,7 +4,7 @@
 FROM node:22.13.1-alpine3.21 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+RUN npm install -g pnpm@10.11.0 --ignore-scripts
 
 WORKDIR /app
 
@@ -16,8 +16,8 @@ COPY apps/orchestrator-api/package.json ./apps/orchestrator-api/
 COPY packages/db/package.json ./packages/db/
 COPY packages/config/package.json ./packages/config/
 
-# Install dependencies
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy source
 COPY apps/orchestrator-api/ ./apps/orchestrator-api/
