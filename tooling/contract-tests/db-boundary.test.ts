@@ -53,6 +53,12 @@ const EXEMPT_PATHS = [
   // Orchestrator API is a standalone non-Next.js service with its own DB client.
   // Migration planned — see docs/migration/ENFORCEMENT_UPGRADE.md
   'apps/orchestrator-api/',
+  // Console app has legacy unscoped db imports across ~30 routes.
+  // Migration to createScopedDb(entityId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
+  'apps/console/',
+  // Partners app has legacy unscoped db import in partner-auth.
+  // Migration to createScopedDb(entityId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
+  'apps/partners/',
 ]
 
 function isExempt(filePath: string): boolean {

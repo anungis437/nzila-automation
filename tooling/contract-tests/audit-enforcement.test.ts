@@ -78,6 +78,7 @@ describe('INV-08 — Automatic audit emission for CRUD operations', () => {
     expect(content).toContain('table: string')
     expect(content).toMatch(/action:\s*'insert'\s*\|\s*'update'\s*\|\s*'delete'/)
     expect(content).toContain('timestamp: string')
+    expect(content).toContain('correlationId: string')
   })
 
   it('withAudit blocks mutations when audit emission fails', () => {
@@ -88,8 +89,6 @@ describe('INV-08 — Automatic audit emission for CRUD operations', () => {
     expect(content).toContain('Mutation blocked')
     // Must NOT be fire-and-forget — must chain audit promise
     expect(content).toContain('auditPromise')
-  })
-    expect(content).toContain('correlationId: string')
   })
 })
 
