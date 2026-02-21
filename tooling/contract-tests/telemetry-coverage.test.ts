@@ -155,3 +155,54 @@ describe('Telemetry Coverage Enforcement', () => {
     }
   })
 })
+
+// ── REM-13: orgId in RequestContext and LogEntry ───────────────────────────
+
+describe('REM-13: Org ID in telemetry context', () => {
+  it('RequestContext interface declares orgId field', () => {
+    const ctxPath = resolve(ROOT, 'packages/os-core/src/telemetry/requestContext.ts')
+    const content = readContent(ctxPath)
+    expect(content).toContain('orgId')
+    expect(
+      content.includes('orgId?: string') || content.includes('orgId: string'),
+      'RequestContext must have orgId field for per-org incident tracing',
+    ).toBe(true)
+  })
+
+  it('createRequestContext accepts orgId in opts', () => {
+    const ctxPath = resolve(ROOT, 'packages/os-core/src/telemetry/requestContext.ts')
+    const content = readContent(ctxPath)
+    expect(
+      content.includes('orgId?: string') &&
+      content.includes('orgId: opts.orgId'),
+      'createRequestContext must accept and propagate orgId',
+    ).toBe(true)
+  })
+
+  it('LogEntry interface declares orgId field', () => {
+    const loggerPath = resolve(ROOT, 'packages/os-core/src/telemetry/logger.ts')
+    const content = readContent(loggerPath)
+    expect(
+      content.includes('orgId?: string') || content.includes('orgId: string'),
+      'LogEntry must include orgId so every structured log line carries org context',
+    ).toBe(true)
+  })
+
+  it('buildEntry propagates orgId from RequestContext into log entry', () => {
+    const loggerPath = resolve(ROOT, 'packages/os-core/src/telemetry/logger.ts')
+    const content = readContent(loggerPath)
+    expect(
+      content.includes('orgId: ctx?.orgId') || content.includes('orgId: ctx.orgId'),
+      'buildEntry must propagate orgId from RequestContext',
+    ).toBe(true)
+  })
+
+  it('contextToHeaders includes x-org-id for downstream propagation', () => {
+    const ctxPath = resolve(ROOT, 'packages/os-core/src/telemetry/requestContext.ts')
+    const content = readContent(ctxPath)
+    expect(
+      content.includes('x-org-id'),
+      'contextToHeaders should forward orgId as x-org-id header for distributed tracing',
+    ).toBe(true)
+  })
+})

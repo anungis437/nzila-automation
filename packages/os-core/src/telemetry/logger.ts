@@ -19,6 +19,7 @@ export interface LogEntry {
   requestId?: string
   traceId?: string
   userId?: string
+  orgId?: string
   appName?: string
   [key: string]: unknown
 }
@@ -59,6 +60,7 @@ function buildEntry(
     requestId: ctx?.requestId,
     traceId: ctx?.traceId,
     userId: ctx?.userId,
+    orgId: ctx?.orgId,
     appName: ctx?.appName,
     ...errorFields,
     ...(meta ?? {}),

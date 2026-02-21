@@ -18,6 +18,12 @@ export interface RequestContext {
   spanId?: string
   /** The authenticated user ID (Clerk) */
   userId?: string
+  /**
+   * The Org (entity) ID this request is scoped to.
+   * Populated from AuthContext after authorize() resolves.
+   * Injected automatically into every log entry for incident tracing.
+   */
+  orgId?: string
   /** Start time of the request (for duration tracking) */
   startedAt: number
   /** App name (e.g. 'console', 'partners') */
@@ -51,7 +57,7 @@ export function runWithContext<T>(ctx: RequestContext, fn: () => T): T {
  */
 export function createRequestContext(
   req: Request | { headers: Headers | { get(k: string): string | null } },
-  opts: { appName?: string; userId?: string } = {},
+  opts: { appName?: string; userId?: string; orgId?: string } = {},
 ): RequestContext {
   const headers = req.headers
   const getHeader = (k: string) =>
@@ -77,6 +83,7 @@ export function createRequestContext(
     traceId,
     spanId,
     userId: opts.userId,
+    orgId: opts.orgId,
     startedAt: Date.now(),
     appName: opts.appName,
   }
@@ -94,6 +101,9 @@ export function contextToHeaders(ctx: RequestContext): Record<string, string> {
   }
   if (ctx.userId) {
     headers['x-user-id'] = ctx.userId
+  }
+  if (ctx.orgId) {
+    headers['x-org-id'] = ctx.orgId
   }
   return headers
 }

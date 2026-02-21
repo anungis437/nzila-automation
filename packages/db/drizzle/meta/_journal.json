@@ -29,6 +29,13 @@
       "when": 1771626456982,
       "tag": "0003_redundant_starfox",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740088800000,
+      "tag": "0004_audit_events_immutable",
+      "breakpoints": true
     }
   ]
 }

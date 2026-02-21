@@ -129,3 +129,55 @@ describe('PR10: Audit immutability — migrations do not destroy audit data', ()
     }
   })
 })
+
+// ── 5. DB-level immutability constraint must be present (REM-11) ──────────
+
+describe('REM-11: Audit immutability — DB-level trigger enforcement', () => {
+  it('a migration defines an immutability trigger or RLS policy on audit_events', () => {
+    const migrationsDir = resolve(ROOT, 'packages/db/drizzle')
+    if (!existsSync(migrationsDir)) return
+
+    const entries = readdirSync(migrationsDir, { withFileTypes: true })
+    const allSql = entries
+      .filter((e) => e.isFile() && e.name.endsWith('.sql'))
+      .map((e) => readContent(join(migrationsDir, e.name)))
+      .join('\n')
+
+    const hasTrigger =
+      allSql.includes('prevent_audit_mutation') ||
+      allSql.includes('audit_events_no_update') ||
+      allSql.includes('audit_events_no_delete')
+
+    const hasRLS =
+      allSql.includes('ROW LEVEL SECURITY') &&
+      allSql.toLowerCase().includes('audit')
+
+    expect(
+      hasTrigger || hasRLS,
+      'A migration must define a DB-level trigger or RLS policy preventing ' +
+      'UPDATE/DELETE on audit_events (REM-11). ' +
+      'Application-layer hash chains alone are insufficient for enterprise compliance.',
+    ).toBe(true)
+  })
+
+  it('the immutability trigger function is named prevent_audit_mutation', () => {
+    const migrationsDir = resolve(ROOT, 'packages/db/drizzle')
+    if (!existsSync(migrationsDir)) return
+
+    const entries = readdirSync(migrationsDir, { withFileTypes: true })
+    const triggerFile = entries.find(
+      (e) => e.isFile() && e.name.endsWith('.sql') &&
+      readContent(join(migrationsDir, e.name)).includes('prevent_audit_mutation'),
+    )
+
+    if (!triggerFile) {
+      // If trigger isn't present yet, skip (this test drives the implementation)
+      return
+    }
+
+    const content = readContent(join(migrationsDir, triggerFile.name))
+    expect(content).toContain('BEFORE UPDATE')
+    expect(content).toContain('BEFORE DELETE')
+    expect(content).toContain('audit_events')
+  })
+})
