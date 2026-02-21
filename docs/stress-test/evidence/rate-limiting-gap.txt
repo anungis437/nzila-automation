@@ -1,0 +1,26 @@
+=== RATE LIMITING EVIDENCE (2026-02-20) ===
+
+--- ORCHESTRATOR API (PASS) ---
+apps/orchestrator-api/src/index.ts L3:  import rateLimit from '@fastify/rate-limit'
+apps/orchestrator-api/src/index.ts L34: await app.register(rateLimit, {
+   global: true,
+   max: 200,
+   timeWindow: '1 minute',
+   errorResponseBuilder: () => ({ statusCode: 429, ... })
+})
+
+--- NEXT.JS APPS (FAIL) ---
+Command run: Get-ChildItem apps/console/,apps/partners/,apps/web/ -Recurse -Filter "*.ts" | 
+  Where-Object { .FullName -notmatch "node_modules" } | 
+  Select-String -Pattern "rateLimit|rate-limit|Arcjet|upstash"
+
+Result: 0 matches
+
+No rate limiting found in:
+  - apps/console/middleware.ts
+  - apps/partners/middleware.ts  
+  - apps/web/middleware.ts (no file)
+  - Any API route handlers
+
+--- REMEDIATION ---
+See: docs/stress-test/REMEDIATION_PLAN.md#REM-01

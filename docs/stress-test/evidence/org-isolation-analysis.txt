@@ -1,0 +1,38 @@
+=== ORG ISOLATION EVIDENCE (2026-02-20) ===
+
+--- CANONICAL ORG CONTEXT RESOLVER ---
+File: packages/os-core/src/policy/authorize.ts
+
+Key functions:
+  authorize(req, options) — reads Clerk session via auth()
+    - session.userId (mandatory)
+    - session.orgId (Clerk org ID)
+    - resolveRole(session) — reads session.sessionClaims['nzila_role']
+    - resolvePartnerId(session) — reads session.sessionClaims['nzila_partner_id']
+
+  authorizeEntityAccess(ctx, entityId) — DB-backed entity membership check
+    - Partner context: db.select().from(partnerEntities).where(eq(partnerId)&&eq(entityId))
+    - Console context: entity validated elsewhere (trust from session)
+
+--- entity_members TABLE ---
+packages/db/src/schema/entities.ts:
+  pgTable('entity_members', { entityId: uuid.references(entities.id), ... })
+
+--- org-isolation.test.ts CONTRACT TESTS (9/9 PASS) ---
+Test 1: console — every route.ts calls an auth function
+Test 2: partners — every route.ts calls an auth function
+Test 3: console — no route takes entityId directly from request body
+Test 4: partners — no route takes entityId directly from request body
+Test 5: console — route files with DB queries include an entity scope
+Test 6: partners — route files with DB queries include an entity scope
+Test 7: os-core/hash.ts exports computeEntryHash and verifyChain
+Test 8: entity_members table exists in DB schema
+Test 9: os-core package.json must export policy endpoint
+
+--- GAPS ---
+! No runtime HTTP-level cross-org breach tests
+! No supertest/Playwright test seeding OrgA + OrgB and verifying cross-access blocked
+! No enumeration safety test (error message contains org ID leak test)
+
+--- REMEDIATION ---
+See: docs/stress-test/REMEDIATION_PLAN.md#REM-02

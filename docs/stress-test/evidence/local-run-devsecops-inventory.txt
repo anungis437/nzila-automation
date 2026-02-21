@@ -1,0 +1,24 @@
+=== DEVSECOPS WORKFLOWS INVENTORY (2026-02-20) ===
+
+.github/workflows/:
+  ci.yml                — lint, typecheck, test, build, ml-gates, ai-eval-gate, contract-tests, ops-pack-validation, schema-drift
+  codeql.yml            — CodeQL SAST (javascript-typescript + python), weekly + PR + push to main
+  control-tests.yml     — [present]
+  dependency-audit.yml  — pnpm audit (daily), fail on CRITICAL, waiver policy check
+  deploy-console.yml    — [present]
+  deploy-partners.yml   — [present]
+  deploy-web.yml        — [present]
+  nzila-playbook-runner.yml — [present]
+  ops-pack.yml          — [present]
+  release-train.yml     — tag/dispatch triggered, CHANGELOG + deploy gates
+  sbom.yml              — CycloneDX SBOM on push/release, license validation
+  secret-scan.yml       — TruffleHog OSS (full history) + Gitleaks (gitleaks.toml)
+  trivy.yml             — Container (CRITICAL exit 1) + filesystem SARIF
+
+Other files:
+  .gitleaks.toml        — custom rules for Clerk/Stripe/QBO secrets + allowlist
+  lefthook.yml          — pre-commit: gitleaks, lint-staged, typecheck-staged; pre-push: contract-tests
+  .github/dependabot.yml — npm (weekly), github-actions (weekly), pip (weekly)
+  .changeset/config.json — changeset workflow with access: restricted
+  SECURITY.md           — [present]
+  docs/hardening/       — BASELINE.md, build-reproducibility.md, logging.md, observability.md, secrets.md
