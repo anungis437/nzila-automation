@@ -19,6 +19,8 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/console/package.json ./apps/console/
 COPY apps/partners/package.json ./apps/partners/
+COPY apps/union-eyes/package.json ./apps/union-eyes/
+COPY apps/orchestrator-api/package.json ./apps/orchestrator-api/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/config/package.json ./packages/config/
 COPY packages/scripts-book/package.json ./packages/scripts-book/
@@ -29,6 +31,10 @@ COPY packages/payments-stripe/package.json ./packages/payments-stripe/
 COPY packages/tax/package.json ./packages/tax/
 COPY packages/ai-core/package.json ./packages/ai-core/
 COPY packages/ai-sdk/package.json ./packages/ai-sdk/
+COPY packages/ml-core/package.json ./packages/ml-core/
+COPY packages/ml-sdk/package.json ./packages/ml-sdk/
+COPY packages/qbo/package.json ./packages/qbo/
+COPY packages/cli/package.json ./packages/cli/
 COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
@@ -162,6 +168,8 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/console/package.json ./apps/console/
 COPY apps/partners/package.json ./apps/partners/
+COPY apps/union-eyes/package.json ./apps/union-eyes/
+COPY apps/orchestrator-api/package.json ./apps/orchestrator-api/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/config/package.json ./packages/config/
 COPY packages/scripts-book/package.json ./packages/scripts-book/
@@ -172,6 +180,10 @@ COPY packages/payments-stripe/package.json ./packages/payments-stripe/
 COPY packages/tax/package.json ./packages/tax/
 COPY packages/ai-core/package.json ./packages/ai-core/
 COPY packages/ai-sdk/package.json ./packages/ai-sdk/
+COPY packages/ml-core/package.json ./packages/ml-core/
+COPY packages/ml-sdk/package.json ./packages/ml-sdk/
+COPY packages/qbo/package.json ./packages/qbo/
+COPY packages/cli/package.json ./packages/cli/
 COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
