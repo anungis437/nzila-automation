@@ -16,9 +16,8 @@ COPY apps/orchestrator-api/package.json ./apps/orchestrator-api/
 COPY packages/db/package.json ./packages/db/
 COPY packages/config/package.json ./packages/config/
 
-# Install dependencies — LEFTHOOK=0 skips `prepare` script (no git in build env)
-ENV LEFTHOOK=0
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy source
 COPY apps/orchestrator-api/ ./apps/orchestrator-api/

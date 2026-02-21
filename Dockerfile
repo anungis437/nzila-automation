@@ -34,9 +34,8 @@ COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
-# Install dependencies — LEFTHOOK=0 skips `prepare` script (no git in build env)
-ENV LEFTHOOK=0
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # ============================================
 # Builder stage
@@ -178,9 +177,8 @@ COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
-# Install dependencies — LEFTHOOK=0 skips `prepare` script (no git in build env)
-ENV LEFTHOOK=0
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
 
 EXPOSE 3000 3001 3002
