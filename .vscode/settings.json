@@ -33,9 +33,14 @@
   },
 
   // ── SQL ─────────────────────────────────────────────────
-  // Drizzle migrations are PostgreSQL — prevent MSSQL linter false positives
+  // Drizzle migrations are PostgreSQL.
+  // Associate with "pgsql" so the MSSQL extension does not lint them —
+  // MSSQL syntax like REPLACE/RAISE/BEFORE TRIGGER is invalid TSQL
+  // but perfectly valid PostgreSQL, causing false-positive errors.
   "files.associations": {
-    "packages/db/drizzle/**/*.sql": "sql"
+    "packages/db/drizzle/**/*.sql": "pgsql"
   },
+  // Disable MSSQL linting workspace-wide: this repo targets PostgreSQL only.
+  "mssql.linting.enable": false,
   "vitest.disableWorkspaceWarning": true
 }
