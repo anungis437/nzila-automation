@@ -51,7 +51,8 @@ export async function initOtel(config: OtelConfig): Promise<void> {
         'deployment.environment': process.env.NODE_ENV ?? 'development',
         ...config.attributes,
       }),
-      traceExporter: new OTLPTraceExporter({ url: `${endpoint}/v1/traces` }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      traceExporter: new OTLPTraceExporter({ url: `${endpoint}/v1/traces` }) as any,
       instrumentations: [
         getNodeAutoInstrumentations({
           '@opentelemetry/instrumentation-http': { enabled: true },
