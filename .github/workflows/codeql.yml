@@ -40,8 +40,6 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:${{ matrix.language }}
-          upload: never
-          output: codeql-results/${{ matrix.language }}
 
       - name: Collect CodeQL results as evidence
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
