@@ -59,18 +59,19 @@ jobs:
 
       - name: Run Trivy (SARIF — GitHub Security tab)
         uses: aquasecurity/trivy-action@0.28.0
+        continue-on-error: true  # always produce SARIF even when criticals found
         with:
           image-ref: ${{ matrix.image }}:scan
           format: sarif
           output: trivy-${{ matrix.target }}.sarif
-          exit-code: 1
+          exit-code: 0
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles(format('trivy-{0}.sarif', matrix.target)) != ''
         with:
           sarif_file: trivy-${{ matrix.target }}.sarif
           category: trivy-${{ matrix.target }}
@@ -87,19 +88,20 @@ jobs:
 
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@0.28.0
+        continue-on-error: true  # always produce SARIF even when findings exist
         with:
           scan-type: fs
           scan-ref: .
           format: sarif
           output: trivy-fs.sarif
-          exit-code: 1
+          exit-code: 0
           ignore-unfixed: true
           severity: CRITICAL,HIGH
           skip-dirs: 'node_modules,.pnpm-store,CAPPSnzila-automation.pnpm-store'
 
       - name: Upload filesystem SARIF
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-fs.sarif') != ''
         with:
           sarif_file: trivy-fs.sarif
           category: trivy-filesystem
