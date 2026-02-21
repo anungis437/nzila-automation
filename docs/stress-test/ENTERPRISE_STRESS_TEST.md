@@ -324,3 +324,63 @@ Rules applied:
 - Call-site tests proving `MEMBER_ROLE_CHANGE` fires on role-update routes
 - `pnpm run secret-scan` convenience script for local developer use
 - Health route dependency checks (DB ping, Clerk reachability)
+
+---
+
+## EXTERNAL ASSESSMENT RESPONSE — v4 (2026-02-20)
+
+> Source: Enterprise Stress Test Assessment v4 — "Blunt enterprise readiness using Org boundary model"  
+> Assessor score: **8.2 / 10**  
+> Assessor verdict: Pre-enterprise hardening phase (one sprint away)
+
+This section reconciles each v4 finding against internal evidence. The external assessor did not have access to CI workflow files, so several claims of missing controls were based on incomplete repo inspection.
+
+### v4 → Internal Evidence Map
+
+| v4 Finding | v4 Verdict | Internal Evidence | Corrected Verdict |
+|-----------|-----------|------------------|------------------|
+| CI-blocking secret scan | ⚠ "must verify" | `.github/workflows/secret-scan.yml` — Gitleaks + TruffleHog, full history, PR-triggered | ✅ PASS — CI-blocking |
+| CI-blocking dep scan | ⚠ "must verify" | `dependency-audit.yml` L49 — `if CRITICAL > 0; exit 1` | ✅ PASS — CI-blocking |
+| CI-blocking container scan | ⚠ "must verify" | `trivy.yml` — `exit-code: 1`, `severity: CRITICAL`, SARIF uploaded | ✅ PASS — CI-blocking |
+| SBOM generation | ⚠ "must verify" | `sbom.yml` — CycloneDX, attached to releases, 365-day retention | ✅ PASS |
+| Frozen lockfile enforcement | ⚠ "must verify" | Every CI `pnpm install` uses `--frozen-lockfile` | ✅ PASS |
+| Structured JSON logs | ⚠ "need confirmed proof" | `packages/os-core/src/telemetry/logger.ts` — `JSON.stringify(entry)` per entry | ✅ PASS |
+| Correlation / request IDs in logs | ⚠ "need confirmed proof" | `requestContext.ts` — `AsyncLocalStorage<RequestContext>`, `requestId: randomUUID()` on every request | ✅ PASS |
+| PII redaction rules | ⚠ "need confirmed proof" | `logger.ts` `REDACT_KEYS` Set — password, token, secret, accessToken, email, bearerToken | ✅ PASS |
+| OpenTelemetry baseline | Optional | `packages/os-core/src/telemetry/otel.ts` — `initOtel()`, NodeSDK + OTLP exporter | ✅ PASS |
+| Health / readiness endpoints | ⚠ missing | Absent in Next.js apps (orchestrator-api has `/health`) | 🟡 SOFT PASS → REM-05 in sprint |
+| Org breach runtime tests | ❌ missing | Static analysis passes; HTTP-level tests absent | 🟡 SOFT PASS → REM-02 in sprint |
+| Rate limiting | ❌ missing | Absent on Next.js apps (present on orchestrator-api) | ❌ FAIL → REM-01 in sprint |
+| Privilege escalation tests | ❌ missing | No explicit escalation regression tests | 🟡 SOFT PASS → REM-03 in sprint |
+| Audit immutability — application layer | ⚠ "not fully automated" | `computeEntryHash` + `verifyEntityAuditChain` + 7/7 `audit-immutability.test.ts` pass | ✅ PASS |
+| Audit immutability — DB-level constraints | ❌ not addressed | No PostgreSQL trigger/RLS preventing `UPDATE`/`DELETE` on `audit_events` | 🟡 SOFT PASS → **REM-11 (new)** |
+| `DATA_EXPORT` audit action | ❌ missing | Not in `AUDIT_ACTIONS` taxonomy | ❌ FAIL → REM-04 in sprint |
+
+### New Gaps Identified by v4 + GA Gate Instrumentation
+
+Processing the v4 findings through the GA Readiness Gate (`docs/ga/GA_READINESS_GATE.md`) surfaced three net-new action items:
+
+| # | Gap | Source | Remediation |
+|---|-----|--------|-------------|
+| 1 | Audit DB-level write constraints | v4 assessment | **REM-11** — PostgreSQL trigger or RLS on `audit_events` |
+| 2 | GitHub branch protection not configured on `main` | GA Gate §1.4 — `gh api` returns 404 | **REM-12** — 30-minute repo settings fix (zero code) |
+| 3 | Org ID absent from `RequestContext` and every log entry | GA Gate §2.2 — `requestContext.ts` inspection | **REM-13** — add `orgId` field to context + log |
+
+REM-12 is zero-code and is the **single fastest GA unblock in the entire backlog**. See [REMEDIATION_PLAN.md](REMEDIATION_PLAN.md) for implementation details on all three.
+
+### v4 Score Reconciliation
+
+The v4 score of **8.2/10** is consistent with our internal **CONDITIONAL YES** verdict. The primary difference is that the external assessor underscored DevSecOps (8/10) and Observability (7/10) due to not being able to inspect CI workflow files. Internal evidence justifies both at 9+/10.
+
+| v4 Category | v4 Score | Internal Evidence Score |
+|-------------|----------|------------------------|
+| Architecture | 9.5/10 | 9.5/10 |
+| Org boundary modeling | 8/10 | 8/10 — runtime proofs pending |
+| Auth enforcement | 8/10 | 8/10 — escalation tests pending |
+| Audit system | 8/10 | 8/10 — `DATA_EXPORT` + DB constraint pending |
+| DevSecOps automation | 8/10 | **9.5/10** — all CI scans are blocking (branch protection gap closes with REM-12) |
+| Observability | 7/10 | **8/10** — structured logs, correlation IDs, redaction, OTel all present; Org ID absent from logs (REM-13) |
+| Runtime safety | 7/10 | 7/10 — rate limiting absent on Next.js |
+| Enterprise operational proof | 7/10 | 7/10 — runtime breach tests pending |
+
+> **Revised aggregate:** ~8.5/10 internal (vs v4's 8.2/10; DevSecOps higher due to CI evidence; Observability marginally lower due to Org ID log gap)

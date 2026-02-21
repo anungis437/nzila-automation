@@ -20,6 +20,23 @@ Promote the repo from **CONDITIONAL YES** to **UNCONDITIONAL YES** by closing:
 
 ## Day-by-Day Plan
 
+### Pre-Sprint — Branch Protection (REM-12) — 30 minutes, do before Monday
+
+**Owner:** Platform Owner / Repo Admin  
+**Goal:** Enable GitHub branch protection on `main` before any sprint PR is merged
+
+| # | Task | How | DoD |
+|---|------|-----|-----|
+| P1 | Enable branch protection on `main` | GitHub Settings → Branches → Add rule OR `gh api` CLI (see REM-12 in REMEDIATION_PLAN.md) | `gh api .../branches/main/protection` returns 200 |
+| P2 | Set required status checks: `lint-and-typecheck`, `test`, `build`, `contract-tests` | Same rule | All four appear as required checks |
+| P3 | Enable "Dismiss stale reviews" + "Include administrators" | Same rule | Enforcement applies to all committers |
+
+**Acceptance:** `gh api /repos/{owner}/{repo}/branches/main/protection --jq '.required_status_checks.contexts'` returns the four required checks.
+
+> **Why first:** Without branch protection, every PR merged during the sprint could bypass CI. This is a 30-minute configuration task, not a code change.
+
+---
+
 ### Monday 2026-02-23 — Rate Limiting (REM-01)
 
 **Owner:** Backend / Platform  
@@ -102,6 +119,7 @@ Promote the repo from **CONDITIONAL YES** to **UNCONDITIONAL YES** by closing:
 | F4 | PR, CI green, merge | — | `privilege-escalation.test.ts` passes |
 | F5 | **Sprint review** — re-run full stress test checklist | `docs/stress-test/ENTERPRISE_STRESS_TEST.md` | Update all ❌/🟡 items to ✅ for closed items |
 | F6 | Update `ENTERPRISE_STRESS_TEST.md` final verdict | `docs/stress-test/ENTERPRISE_STRESS_TEST.md` | Verdict upgraded from CONDITIONAL YES → UNCONDITIONAL YES |
+| F7 | Fill in `GA_CERTIFICATION_REPORT.md` §5.1–5.6 (red team simulation) | `docs/ga/GA_CERTIFICATION_REPORT.md` | All 6 sections completed and signed |
 
 ---
 
@@ -110,6 +128,7 @@ Promote the repo from **CONDITIONAL YES** to **UNCONDITIONAL YES** by closing:
 | Item | Target |
 |------|--------|
 | `pnpm contract-tests` | All tests pass (≥ 280 tests) |
+| Branch protection (REM-12) | `main` has required checks; direct push blocked |
 | Rate limiting | `apps/console/middleware.ts` and `apps/partners/middleware.ts` invoke limiter |
 | Org isolation runtime | 5 HTTP-level breach tests passing |
 | `DATA_EXPORT` in `AUDIT_ACTIONS` | Present + wired to export routes |
@@ -129,10 +148,15 @@ Promote the repo from **CONDITIONAL YES** to **UNCONDITIONAL YES** by closing:
 | Call-site audit coverage tests | REM-09 | 0.5 day |
 | `AUTH_CONFIG_CHANGE` audit action | REM-10 | 0.5 day |
 | `/verify-chain` API endpoint | REM-07 | 1 day |
+| Audit DB-level write constraints (trigger/RLS) | REM-11 | 0.5 day |
+| Org ID in `RequestContext` + logs | REM-13 | 0.5 day |
+| Migration rollback runbook | (new) | 0.5 day |
 
 ---
 
 ## Gating Rule
 
 > **No enterprise customer contracts may be signed until Day 5 sign-off is complete.**  
-> Rate limiting (REM-01) and Org isolation runtime proofs (REM-02) are the highest-risk items and must be merged first.
+> Branch protection (REM-12) must be configured **before** the sprint starts — it's a 30-minute prerequisite.  
+> Rate limiting (REM-01) and Org isolation runtime proofs (REM-02) are the highest-risk items and must be merged first.  
+> The full GA certification sequence is documented in [`docs/ga/GA_READINESS_GATE.md`](../ga/GA_READINESS_GATE.md).

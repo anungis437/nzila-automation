@@ -15,6 +15,9 @@
 | REM-03 | Privilege escalation regression tests | 🟡 Critical SOFT PASS | Yes |
 | REM-04 | `DATA_EXPORT` audit action + route wiring | 🟡 Critical SOFT PASS | Yes |
 | REM-05 | Health/readiness routes in Next.js apps | 🟡 HIGH SOFT PASS | No (pre-GA) |
+| REM-11 | Audit DB-level write constraints (trigger/RLS) | 🟡 SOFT PASS | No (post-sprint) |
+| REM-12 | GitHub branch protection on `main` | ❌ CRITICAL FAIL | Yes (30-min fix) |
+| REM-13 | Org ID injected into `RequestContext` + every log | 🟡 HIGH SOFT PASS | No (pre-GA target) |
 
 PRs 6–10 (post-launch hardening) follow below.
 
@@ -364,3 +367,222 @@ describe('Health routes', () => {
 
 **Severity:** 🟡 SOFT PASS  
 **Fix:** Add `AUTH_CONFIG_CHANGE: 'auth.config_change'` to `AUDIT_ACTIONS`. Wire to any routes that change MFA preferences, SSO config, or Clerk org settings.
+
+---
+
+## REM-12 — GitHub Branch Protection on `main`
+
+**Severity:** ❌ CRITICAL FAIL (Zero-code, 30-minute fix)  
+**Discovered by:** GA Readiness Gate — confirmed via `gh api .../branches/main/protection` → HTTP 404  
+**Current state:** `main` has no branch protection rules. CODEOWNERS exists but is **not enforced** without a branch protection rule requiring PR reviews. Any developer with write access can push directly to `main`, merge without CI passing, and bypass all security workflows.
+
+### Steps to Fix
+
+1. Navigate to: `https://github.com/<org>/<repo>/settings/branches`
+2. Click **Add branch protection rule**
+3. Branch name pattern: `main`
+4. Configure:
+
+| Setting | Value |
+|---------|-------|
+| Require a pull request before merging | ✅ ON |
+| Required approving reviews | 1 (minimum) |
+| Dismiss stale pull request approvals when new commits are pushed | ✅ ON |
+| Require status checks to pass before merging | ✅ ON |
+| Required status checks | `lint-and-typecheck`, `test`, `build`, `contract-tests` |
+| Require branches to be up to date before merging | ✅ ON |
+| Include administrators | ✅ ON |
+| Restrict who can push to matching branches | `@nzila/platform` only |
+
+### Alternatively via CLI
+
+```bash
+gh api --method PUT /repos/{owner}/{repo}/branches/main/protection \
+  --input - << 'EOF'
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["lint-and-typecheck", "test", "build", "contract-tests"]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": true,
+    "required_approving_review_count": 1
+  },
+  "restrictions": null
+}
+EOF
+```
+
+### Why This Is CRITICAL (Not Just Bureaucratic)
+
+Without branch protection:
+- A developer with a compromised GitHub token can push malicious code directly to `main`
+- A bad merge (ignoring CI failures) can ship broken security checks
+- CODEOWNERS file exists but is only advisory without enforcement
+- Every CI security workflow (secret-scan, trivy, dependency-audit) can be bypassed
+
+This is the **single fastest GA fix in the entire backlog**.
+
+---
+
+## REM-13 — Org ID in `RequestContext` and Log Entries
+
+**Severity:** 🟡 HIGH SOFT PASS (GA target)  
+**Discovered by:** GA Readiness Gate §2.2 — `RequestContext` interface has `userId`, `requestId`, `traceId` but no `orgId` / `entityId`.
+
+### Current State
+
+`packages/os-core/src/telemetry/requestContext.ts` — `RequestContext` interface:
+
+```ts
+export interface RequestContext {
+  requestId: string
+  traceId?: string
+  spanId?: string
+  userId?: string      // ✅ present
+  startedAt: number
+  appName?: string
+  // orgId / entityId → MISSING ❌
+}
+```
+
+### Fix
+
+**Step 1 — Add `orgId` to `RequestContext`:**
+
+```ts
+// packages/os-core/src/telemetry/requestContext.ts
+export interface RequestContext {
+  requestId: string
+  traceId?: string
+  spanId?: string
+  userId?: string
+  orgId?: string        // ← ADD: entityId from AuthContext
+  startedAt: number
+  appName?: string
+}
+```
+
+**Step 2 — Populate from `AuthContext` after `authorize()` resolves:**
+
+```ts
+// In each app's request handler wrapper or middleware
+import { runWithContext, createRequestContext } from '@nzila/os-core/telemetry/requestContext'
+
+const ctx = createRequestContext(req, { userId: auth.userId, orgId: auth.orgId })
+return runWithContext(ctx, () => handler(req))
+```
+
+**Step 3 — Wire in `createRequestContext`:**
+
+```ts
+export function createRequestContext(
+  req: ...,
+  opts: { appName?: string; userId?: string; orgId?: string } = {},
+): RequestContext {
+  // ... existing ...
+  return {
+    requestId,
+    traceId,
+    spanId,
+    userId: opts.userId,
+    orgId: opts.orgId,    // ← ADD
+    startedAt: Date.now(),
+    appName: opts.appName,
+  }
+}
+```
+
+`logger.ts` `buildEntry()` already spreads `ctx` fields — once `orgId` is in `RequestContext`, it automatically appears on every log line. No logger changes needed.
+
+### Files to Change
+
+| File | Change |
+|------|--------|
+| `packages/os-core/src/telemetry/requestContext.ts` | Add `orgId?: string` to interface + `createRequestContext` opts |
+| `apps/console/app/api/` handler wrapper (or middleware) | Pass `auth.orgId` when creating request context |
+| `apps/partners/app/api/` handler wrapper | Same |
+| `tooling/contract-tests/telemetry-coverage.test.ts` | Extend: assert `orgId` present in log output for authenticated routes |
+
+### Why This Matters
+
+During a cross-org incident at 3 AM, every log line must identify which Org the request belongs to without requiring a cross-join against audit records. Without `orgId` in logs, incident response requires:
+
+1. Find `requestId` in logs
+2. Cross-reference `audit_events` to find `entityId`
+3. Map `entityId` → org name
+
+With `orgId` in logs:
+1. `grep orgId=<suspect-org>` in log stream — done in 30 seconds.
+
+---
+
+## REM-11 — Audit DB-Level Write Constraints (Post-Launch)
+
+**Severity:** 🟡 SOFT PASS  
+**Source:** External v4 stress test — "DB-level constraints preventing audit updates/deletes"  
+**Current state:** Hash chain integrity is enforced at the application layer (`computeEntryHash`, `verifyEntityAuditChain`). Migration content is tested (no `DROP`/`TRUNCATE`/`CASCADE DELETE` on `audit_events`). However, no PostgreSQL-level mechanism physically blocks `UPDATE` or `DELETE` on the `audit_events` table at the DB engine layer.
+
+### Options (choose one)
+
+**Option A — PostgreSQL trigger (recommended for strict append-only enforcement):**
+
+```sql
+-- packages/db/migrations/XXXX_audit_events_immutable.sql
+CREATE OR REPLACE FUNCTION prevent_audit_mutation()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  RAISE EXCEPTION 'audit_events rows are immutable (UPDATE/DELETE not permitted)';
+END;
+$$;
+
+CREATE TRIGGER audit_events_no_update
+  BEFORE UPDATE ON audit_events
+  FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation();
+
+CREATE TRIGGER audit_events_no_delete
+  BEFORE DELETE ON audit_events
+  FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation();
+```
+
+**Option B — Row Level Security (alternative for multi-role DB setups):**
+
+```sql
+ALTER TABLE audit_events ENABLE ROW LEVEL SECURITY;
+-- Grant INSERT only to the app role; deny UPDATE/DELETE
+CREATE POLICY audit_insert_only ON audit_events FOR INSERT TO app_role WITH CHECK (true);
+```
+
+### Contract Test to Add
+
+```ts
+// tooling/contract-tests/audit-immutability.test.ts (extend)
+it('audit DB migration adds immutability trigger or RLS policy', () => {
+  const migrations = getMigrationFiles()
+  const hasTrigger = migrations.some(f => {
+    const c = readContent(f)
+    return c.includes('prevent_audit_mutation') || c.includes('audit_events_no_update')
+  })
+  const hasRLS = migrations.some(f => readContent(f).includes('ROW LEVEL SECURITY'))
+  expect(hasTrigger || hasRLS).toBe(true)
+})
+```
+
+### Files to Change / Create
+
+| File | Change |
+|------|--------|
+| `packages/db/migrations/XXXX_audit_events_immutable.sql` | New — trigger or RLS policy |
+| `tooling/contract-tests/audit-immutability.test.ts` | Extend — assert trigger/RLS migration exists |
+| `docs/hardening/BASELINE.md` | Note DB-level audit immutability as closed |
+
+### Why This Matters for Enterprise
+
+Application-layer hash chains can be bypassed by a DB admin with direct access. The trigger/RLS approach means even a compromised DB credential cannot silently alter audit records — the mutation is rejected by the DB engine and would require DDL changes to circumvent (which themselves produce audit trails at the DB level).
+
+Enterprise compliance frameworks (SOC 2 Type II, ISO 27001) will ask:
+
+> "Can your DBAs silently delete audit records?"
+
+Without this, the answer is technically yes.
