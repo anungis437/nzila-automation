@@ -34,7 +34,8 @@ COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
-# Install dependencies (no --frozen-lockfile in case lockfile is stale)
+# Install dependencies — LEFTHOOK=0 skips `prepare` script (no git in build env)
+ENV LEFTHOOK=0
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ============================================
@@ -177,7 +178,8 @@ COPY packages/tools-runtime/package.json ./packages/tools-runtime/
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
 
-# Install dependencies
+# Install dependencies — LEFTHOOK=0 skips `prepare` script (no git in build env)
+ENV LEFTHOOK=0
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
 
