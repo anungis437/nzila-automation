@@ -203,6 +203,14 @@ export function createScopedDb(
   optsOrEntityId: ScopedDbOptions | string,
   txClient?: any,
 ): ReadOnlyScopedDb | ScopedDb {
+  // ── Guard: null/undefined always throws ScopedDbError ─────────────────
+  if (optsOrEntityId === null || optsOrEntityId === undefined) {
+    throw new ScopedDbError(
+      'createScopedDb() requires a non-empty entityId or ScopedDbOptions. ' +
+        'Org isolation cannot be guaranteed without a valid Org scope.',
+    )
+  }
+
   // ── Backward compat: string form returns full ScopedDb (deprecated) ────
   if (typeof optsOrEntityId === 'string') {
     return createFullScopedDb(optsOrEntityId, txClient)
@@ -278,7 +286,7 @@ export function createScopedDb(
 export function createFullScopedDb(orgId: string, txClient?: any): ScopedDb {
   if (!orgId || typeof orgId !== 'string') {
     throw new ScopedDbError(
-      'createScopedDb() requires a non-empty orgId string. ' +
+      'createScopedDb() requires a non-empty entityId string. ' +
         'Org isolation cannot be guaranteed without a valid Org scope.',
     )
   }
