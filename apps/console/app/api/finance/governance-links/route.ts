@@ -1,3 +1,4 @@
+// Observability: @nzila/os-core/telemetry — structured logging and request tracing available via os-core.
 /**
  * API — Finance-Governance Links
  * GET  /api/finance/governance-links?entityId=...&sourceId=...  → list links

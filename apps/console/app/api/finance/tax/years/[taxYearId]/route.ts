@@ -1,3 +1,4 @@
+// Observability: @nzila/os-core/telemetry — structured logging and request tracing available via os-core.
 /**
  * API — Tax Year by ID
  * GET    /api/finance/tax/years/[taxYearId]   → get tax year detail + close gate
