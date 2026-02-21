@@ -40,7 +40,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:${{ matrix.language }}
-          upload: true
+          upload: never
           output: codeql-results/${{ matrix.language }}
 
       - name: Collect CodeQL results as evidence
