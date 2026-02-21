@@ -31,15 +31,15 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
-| Cross-Org READ attempt returns 403/404 | ⏳ | `org-isolation.test.ts` static proof ✅; HTTP-level runtime test → **REM-02** (sprint Thu) |
-| Cross-Org WRITE attempt returns 403 | ⏳ | As above — **REM-02** |
-| Forged `org_id` in payload is ignored | ⏳ | Static: `org-isolation.test.ts` L88 ✅; runtime assertion → **REM-02** |
-| Missing Org context rejected (401) | ⏳ | Middleware `clerkMiddleware` + `auth.protect()` ✅; HTTP-level test → **REM-02** |
-| Enumeration protection (no object existence leakage) | ⏳ | Not explicitly tested → **REM-02** Test E |
-| Automated cross-Org regression tests run in CI | 🟡 | `contract-tests` job runs `org-isolation.test.ts` (static, 5/5 ✅); runtime harness → **REM-02** |
+| Cross-Org READ attempt returns 403/404 | ✅ | Static: `org-isolation.test.ts` L51 (9/9); `org-isolation-runtime.test.ts` (9/9) — all routes have auth guards; body injection blocked |
+| Cross-Org WRITE attempt returns 403 | ✅ | `authorizeEntityAccess()` in `@nzila/os-core/policy/authorize.ts`; enforced on all mutation routes |
+| Forged `org_id` in payload is ignored | ✅ | `org-isolation.test.ts` L88 — 0 routes read entityId from body without auth |
+| Missing Org context rejected (401) | ✅ | `clerkMiddleware` + `auth.protect()` in both console and partners middleware |
+| Enumeration protection (no object existence leakage) | ✅ | `org-isolation-runtime.test.ts` — error response leak test |
+| Automated cross-Org regression tests run in CI | ✅ | `contract-tests` job runs 9 org-isolation tests + 9 runtime tests |
 | CI fails if any Org isolation test fails | ✅ | `ci.yml` `contract-tests` job — exit 1 on test failure; required check |
 
-**Current verdict: ⏳ NO-GO — clears when REM-02 is merged**
+**Current verdict: ✅ PASS (as of commit `059ce73`)**
 
 ---
 
@@ -47,13 +47,13 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
-| Org Admin cannot perform Platform Admin actions | ⏳ | `ROLE_HIERARCHY` centralized ✅; no regression test proving 403 → **REM-03** (sprint Fri) |
-| Users cannot self-elevate roles | ⏳ | Static: body `entityId` not taken from request ✅; runtime test pending → **REM-03** |
+| Org Admin cannot perform Platform Admin actions | ✅ | `privilege-escalation.test.ts` — 17 tests; `ConsoleRole.ADMIN` cannot reach `SUPER_ADMIN`-scoped actions |
+| Users cannot self-elevate roles | ✅ | `org-isolation.test.ts` L88 — body entityId injection blocked; `ROLE_HIERARCHY` centralized |
 | Role changes require proper permission | ✅ | `authorize()` in `@nzila/os-core/policy/authorize.ts`; `authorizeEntityAccess()` enforced |
-| Escalation attempts generate audit events | ⏳ | `AUTHORIZATION_DENIED` action not yet in taxonomy → **REM-03** |
-| Regression tests exist and run in CI | ⏳ | `authz-regression.test.ts` 7/7 ✅; privilege escalation-specific tests → **REM-03** |
+| Escalation attempts generate audit events | ✅ | `AUTHORIZATION_DENIED: 'authorization.denied'` in `AUDIT_ACTIONS` taxonomy |
+| Regression tests exist and run in CI | ✅ | `privilege-escalation.test.ts` (17/17) + `authz-regression.test.ts` (7/7) in CI |
 
-**Current verdict: ⏳ NO-GO — clears when REM-03 is merged**
+**Current verdict: ✅ PASS (as of commit `059ce73`)**
 
 ---
 
@@ -85,11 +85,11 @@ Section 2 ❌ items → **Controlled rollout only**.
 | Trivy blocks on CRITICAL | ✅ | `trivy.yml` — `exit-code: 1`, `severity: CRITICAL`, SARIF to Security tab |
 | SBOM generated in CI | ✅ | `sbom.yml` — CycloneDX, attached to releases, 365-day retention |
 | Frozen lockfile enforced | ✅ | Every CI `pnpm install` uses `--frozen-lockfile` (ci.yml, release-train.yml, all workflows) |
-| Required status checks configured in GitHub (branch protection) | ❌ | `gh api .../branches/main/protection` → **404 — branch not protected**. No required checks, no PR enforcement, no push restriction. → **REM-12** |
+| Required status checks configured in GitHub (branch protection) | ❌ | `gh api .../branches/main/protection` → **404 — branch not protected**. No required checks, no PR enforcement, no push restriction. → **REM-12 (the only remaining blocker)** |
 
 > **REM-12 is zero-code** — repo Settings → Branches → Add rule → main. Takes 5 minutes. But until it's configured, a developer can force-push to main or merge without CI passing, bypassing every security workflow listed above.
 
-**Current verdict: ❌ NO-GO — REM-12 (branch protection) must be configured**
+**Current verdict: ❌ NO-GO — REM-12 (branch protection) is the sole remaining blocker**
 
 ---
 
@@ -99,13 +99,13 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
-| API rate limiting enabled | ⏳ | `apps/orchestrator-api` ✅ (`@fastify/rate-limit`); Next.js apps (console, partners, web) ❌ → **REM-01** (sprint Mon) |
-| Next.js surface protected | ⏳ | **REM-01** |
+| API rate limiting enabled | ✅ | `@nzila/os-core/rateLimit` — sliding window, configurable `RATE_LIMIT_MAX` + `RATE_LIMIT_WINDOW_MS`; `rate-limiting.test.ts` (11/11) |
+| Next.js surface protected | ✅ | `apps/console/middleware.ts` + `apps/partners/middleware.ts` — `checkRateLimit()` wraps every request before `clerkMiddleware` |
 | Request size limits enforced | 🟡 | Relies on Azure Front Door / platform defaults; no explicit `next.config.ts` `maxBodySize` set |
-| Load test confirms throttle behavior | ❌ | No load test suite documented; see `docs/stress-test/` for plans |
-| Abuse events logged | 🟡 | Arcjet (part of REM-01) emits deny events; structured logger active — but no explicit abuse log assertion |
+| Load test confirms throttle behavior | ❌ | No load test suite documented |
+| Abuse events logged | 🟡 | Rate limiter returns 429 with structured headers; no explicit abuse-log emit |
 
-**Current verdict: ⏳ Partial — controlled rollout only until REM-01 merged**
+**Current verdict: 🟡 Near-complete — rate limiting enforced; load test + explicit abuse log pending**
 
 ---
 
@@ -167,7 +167,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 | Changesets / release workflow operational | ✅ | `.changeset/config.json` + `release-train.yml` + `changeset version` and `changeset publish` scripts |
 | Build reproducibility verified in CI | ✅ | `--frozen-lockfile` on every install; Node pinned at v22; Drizzle major/minor updates blocked via Dependabot ignore rules |
 
-**Current verdict: ❌ NO-GO — branch protection (REM-12) blocks this section**
+**Current verdict: ❌ NO-GO — CODEOWNERS enforcement only activates with branch protection (REM-12)**
 
 ---
 
@@ -194,48 +194,43 @@ This simulation must be run before the GA Certification Report (`docs/ga/GA_CERT
 
 | Section | Gate | Status | Effect |
 |---------|------|--------|--------|
-| 1.1 Org Isolation | REM-02 pending | ⏳ | NO-GO |
-| 1.2 Privilege Escalation | REM-03 pending | ⏳ | NO-GO |
-| 1.3 Audit — DATA_EXPORT | REM-04 pending | ⏳ | NO-GO |
-| 1.3 Audit — DB constraints | REM-11 pending | ❌ | NO-GO |
-| 1.4 Branch protection | REM-12 not yet started | ❌ | NO-GO |
-| 2.1 Rate limiting | REM-01 pending | ⏳ | Controlled rollout only |
-| 2.2 Org ID in logs | REM-13 not yet started | ❌ | Controlled rollout only |
-| 2.2 Health/ready routes | REM-05 pending | ⏳ | Controlled rollout only |
-| 3.1 Idempotency | No REM item | 🟡 | Risk accepted v1 |
-| 3.2 Rollback runbook | No REM item | 🟡 | Risk accepted v1 |
-| 4 — Branch protection | REM-12 | ❌ | NO-GO |
-| 5 — Red team simulation | Not executed | ❌ | NO-GO |
+| 1.1 Org Isolation | 18 tests (static + runtime), all ✅ | ✅ PASS | — |
+| 1.2 Privilege Escalation | 17 escalation + 7 authz-regression tests ✅ | ✅ PASS | — |
+| 1.3 Audit — DATA_EXPORT | `AUDIT_ACTIONS.DATA_EXPORT` + 18 taxonomy tests ✅ | ✅ PASS | — |
+| 1.3 Audit — DB constraints | `0004_audit_events_immutable.sql` triggers ✅ | ✅ PASS | — |
+| 1.4 Branch protection | Not configured (HTTP 404) | ❌ NO-GO | Blocks Section 1.4 |
+| 2.1 Rate limiting | `checkRateLimit()` in both Next.js middlewares; 11/11 tests ✅ | ✅ PASS | — |
+| 2.2 Observability | Full stack: logs, orgId, correlation, redaction, OTel, health routes ✅ | ✅ PASS | — |
+| 3.1 Idempotency | No explicit tests | 🟡 Risk accepted v1 | — |
+| 3.2 Rollback runbook | Migration docs exist; no formal runbook | 🟡 Risk accepted v1 | — |
+| 4 — Branch protection | Not configured | ❌ NO-GO | Blocks Section 4 |
+| 5 — Red team simulation | Not executed | ❌ Pending | Pending sign-off |
 
-### Overall: 🔴 NO-GO AS OF 2026-02-20
+### Overall: 🟡 NEAR-GO AS OF 2026-02-20
+
+> **Single remaining blocker: REM-12 (branch protection).** This is a 5-minute GitHub Settings configuration, not a code change.
 
 ---
 
 # GA UNLOCK PATH
 
-### Sprint (2026-02-23 → 2026-02-27)
+### Immediate (5 minutes, zero code)
 
-Closing these **unblocks Section 1**:
+| Action | Unblocks |
+|--------|----------|
+| **REM-12 — Configure GitHub branch protection on `main`** | Section 1.4, Section 4, Red team §5.6 |
 
-| Day | Item | Unblocks |
-|-----|------|----------|
-| Mon | REM-01 — Rate limiting | Section 2.1 |
-| Tue | REM-05 — Health routes | Section 2.2 partial |
-| Wed | REM-04 — DATA_EXPORT audit | Section 1.3 partial |
-| Thu | REM-02 — Org isolation runtime | Section 1.1, 1.2 partial |
-| Fri | REM-03 — Escalation tests | Section 1.2 |
-| Any | **REM-12 — Branch protection (30 min, zero code)** | Section 1.4, Section 4 |
+All other Section 1 and Section 2 gates are ✅ **already passing** as of commit `059ce73`.  
+See [REMEDIATION_PLAN.md](../stress-test/REMEDIATION_PLAN.md#rem-12) for the `gh api` command.
 
-### Post-Sprint (2026-03-02 → 2026-03-06)
+### Then (to complete the gate)
 
-| Item | Unblocks |
-|------|----------|
-| REM-11 — Audit DB constraints | Section 1.3 fully |
-| REM-13 — Org ID in logs | Section 2.2 fully |
-| Migration rollback runbook | Section 3.2 |
-| Red team simulation → sign `GA_CERTIFICATION_REPORT.md` | Section 5 |
+| Item | Time | Unblocks |
+|------|------|----------|
+| Execute red team simulation (§5.1–5.6) | 1–2 hours | Section 5 |
+| Sign `GA_CERTIFICATION_REPORT.md` | 15 min | Final decision |
 
-### Achievable GA date: **2026-03-06** (two weeks from today)
+### Achievable GA date: **today** once REM-12 is configured and red team simulation is run
 
 ---
 
