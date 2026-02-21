@@ -49,28 +49,28 @@ function walkSync(
 // ── RED-TEAM-001: Cross-Org Data Access ─────────────────────────────────────
 
 describe('RED-TEAM-001 — Cross-org data access must be structurally impossible', () => {
-  it('createScopedDb enforces entity isolation — cannot be constructed without entityId', () => {
+  it('createScopedDb enforces entity isolation — cannot be constructed without orgId', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
-    // Must throw on empty entityId
-    expect(content).toContain('requires a non-empty entityId string')
+    // Must throw on empty orgId
+    expect(content).toContain('non-empty orgId string')
     expect(content).toContain('throw new ScopedDbError')
   })
 
-  it('ScopedDb injects entityId on every SELECT query', () => {
+  it('ScopedDb injects orgId on every SELECT query', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
     // SELECT must include entityFilter
-    expect(content).toContain('eq(entityCol, entityId)')
+    expect(content).toContain('eq(entityCol, orgId)')
     expect(content).toContain('select(table, extraWhere)')
   })
 
-  it('ScopedDb injects entityId on every INSERT', () => {
+  it('ScopedDb injects orgId on every INSERT', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
-    expect(content).toContain('entityId, // force entityId on every row')
+    expect(content).toContain('orgId, // force orgId on every row')
   })
 
   it('no app code bypasses entity scoping via raw DB imports', () => {
@@ -165,10 +165,11 @@ describe('RED-TEAM-004 — Direct DB import bypass detection', () => {
 
     for (const file of appFiles) {
       // Skip orchestrator-api (documented exemption)
-      if (relative(ROOT, file).startsWith('apps/orchestrator-api/')) continue
+      const rel = relative(ROOT, file).replace(/\\/g, '/')
+      if (rel.startsWith('apps/orchestrator-api/')) continue
       const content = readFileSync(file, 'utf-8')
       if (drizzlePattern.test(content)) {
-        violations.push(relative(ROOT, file))
+        violations.push(rel)
       }
     }
 
@@ -183,10 +184,11 @@ describe('RED-TEAM-004 — Direct DB import bypass detection', () => {
     const driverPattern = /import\s+.*from\s+['"](postgres|pg|@neondatabase\/serverless)['"]/
 
     for (const file of appFiles) {
-      if (relative(ROOT, file).startsWith('apps/orchestrator-api/')) continue
+      const rel = relative(ROOT, file).replace(/\\/g, '/')
+      if (rel.startsWith('apps/orchestrator-api/')) continue
       const content = readFileSync(file, 'utf-8')
       if (driverPattern.test(content)) {
-        violations.push(relative(ROOT, file))
+        violations.push(rel)
       }
     }
 

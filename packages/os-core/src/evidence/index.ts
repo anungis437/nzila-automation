@@ -23,7 +23,8 @@ export {
   getEvidenceMapping,
 } from './builder'
 export type { GovernanceActionContext } from './builder'
-export { processEvidencePack } from './generate-evidence-index'
+export { processEvidencePack, buildLocalEvidencePackIndex } from './generate-evidence-index'
+export type { LocalEvidencePackIndex } from './generate-evidence-index'
 export {
   generateSeal,
   verifySeal,
@@ -31,3 +32,26 @@ export {
   canonicalize,
 } from './seal'
 export type { SealEnvelope, SealablePackIndex, SealOptions, VerifySealResult } from './seal'
+export {
+  createEvidencePackDraft,
+  assertValidTransition,
+  assertSealed,
+  isSealedEvidencePack,
+  LifecycleTransitionError,
+  SealOnceViolationError,
+  DraftMutationError,
+} from './lifecycle'
+export type {
+  EvidencePackStatus,
+  EvidencePackDraft,
+  SealedEvidencePack,
+  EvidencePackDraftOptions,
+} from './lifecycle'
+export {
+  redactArtifact,
+  redactArtifacts,
+  redactAndReseal,
+  PARTNER_RESTRICTED_ARTIFACT_TYPES,
+} from './redaction'
+export type { RedactionMode, RedactedPackIndex } from './redaction'
+export { verifyPackIndex } from './verify-pack'

@@ -12,28 +12,42 @@ function computeEntryHash(payload: unknown, previousHash: string | null): string
 /**
  * Nzila OS — Audited Scoped Database Access Layer
  *
- * Wraps a ScopedDb so that every mutating operation (insert, update, delete)
- * automatically emits an audit event. This makes audit logging impossible
- * to forget for CRUD operations.
+ * Two modes of use:
+ *
+ *   1. createAuditedScopedDb({ orgId, actorId }) — the recommended factory.
+ *      Returns a write-enabled, Org-scoped, auto-audited DB.
+ *
+ *   2. withAudit(scopedDb, ctx) — wraps an existing ScopedDb (backward compat).
+ *
+ * Every mutating operation (insert, update, delete) automatically emits
+ * a hash-chained audit event. Writes are impossible without audit context.
  *
  * Usage:
- *   import { createScopedDb } from '@nzila/db/scoped'
- *   import { withAudit } from '@nzila/db/audit'
+ *   import { createAuditedScopedDb } from '@nzila/db/audit'
  *
- *   const scopedDb = createScopedDb(entityId)
- *   const auditedDb = withAudit(scopedDb, { actorId, entityId })
- *
- *   // Every insert/update/delete now auto-emits audit events
- *   await auditedDb.insert(meetings, { kind: 'board', ... })
+ *   const db = createAuditedScopedDb({ orgId, actorId })
+ *   await db.insert(meetings, { kind: 'board', ... })
+ *   // → audit event auto-emitted in same scope
  *
  * @module @nzila/db/audit
  */
-import type { ScopedDb } from './scoped'
+import { createFullScopedDb, type ScopedDb, type ScopedDbOptions, ScopedDbError, ReadOnlyViolationError } from './scoped'
 import type { PgTable, TableConfig } from 'drizzle-orm/pg-core'
 import type { SQL } from 'drizzle-orm'
 import { randomUUID } from 'node:crypto'
 
 // ── Types ─────────────────────────────────────────────────────────────────
+
+export interface AuditedScopedDbOptions {
+  /** The Org (entity) identifier to scope all queries to. */
+  orgId: string
+  /** Clerk user ID or system actor performing the operation. */
+  actorId: string
+  /** Optional correlation ID for tracing across operations. */
+  correlationId?: string
+  /** Optional actor role for audit record enrichment. */
+  actorRole?: string
+}
 
 export interface AuditContext {
   /** Clerk user ID or system actor performing the operation */
@@ -199,6 +213,8 @@ export function withAudit(
 
   const auditedDb: AuditedScopedDb = {
     entityId: scopedDb.entityId,
+    orgId: scopedDb.orgId,
+    correlationId,
     auditContext: context,
 
     // SELECT — pass through, no audit (reads are not audited by default)
@@ -276,4 +292,53 @@ export function withAudit(
   }
 
   return auditedDb
+}
+
+// ── Factory: createAuditedScopedDb ─────────────────────────────────────────
+
+/**
+ * Create a write-enabled, Org-scoped, auto-audited database.
+ *
+ * This is the ONLY sanctioned way for app code to perform writes.
+ * Every insert/update/delete automatically emits a hash-chained audit event.
+ * If audit emission fails, the mutation is blocked.
+ *
+ * @param opts — orgId (required), actorId (required), correlationId and actorRole (optional).
+ * @returns An AuditedScopedDb that enforces both Org isolation and audit on every write.
+ *
+ * @example
+ * ```ts
+ * const db = createAuditedScopedDb({ orgId: ctx.orgId, actorId: ctx.userId })
+ * await db.insert(meetings, { kind: 'board', ... })
+ * // → audit event auto-emitted
+ * ```
+ */
+export function createAuditedScopedDb(opts: AuditedScopedDbOptions): AuditedScopedDb {
+  const { orgId, actorId, correlationId, actorRole } = opts
+
+  if (!orgId || typeof orgId !== 'string') {
+    throw new ScopedDbError(
+      'createAuditedScopedDb() requires a non-empty orgId. ' +
+        'Org isolation cannot be guaranteed without a valid Org scope.',
+    )
+  }
+  if (!actorId || typeof actorId !== 'string') {
+    throw new ScopedDbError(
+      'createAuditedScopedDb() requires a non-empty actorId. ' +
+        'Audit context cannot be established without a valid actor.',
+    )
+  }
+
+  // Create underlying full-CRUD scoped db
+  const scopedDb = createFullScopedDb(orgId)
+
+  // Wrap with audit middleware
+  const context: AuditContext = {
+    actorId,
+    entityId: orgId,
+    correlationId,
+    actorRole,
+  }
+
+  return withAudit(scopedDb, context)
 }

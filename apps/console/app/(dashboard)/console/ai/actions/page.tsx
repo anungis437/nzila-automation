@@ -108,7 +108,7 @@ export default async function AiActionsPage() {
                   <td className="px-4 py-3 text-xs">
                     {action.appKey} / {action.profileKey}
                   </td>
-                  <td className="px-4 py-3 text-xs truncate max-w-[120px]">
+                  <td className="px-4 py-3 text-xs truncate max-w-30">
                     {action.requestedBy}
                   </td>
                   <td className="px-4 py-3 text-xs">

@@ -127,6 +127,8 @@ export interface EvidencePackResult {
   indexDocumentId: string
   evidencePackDbId: string
   createdAt: string
+  /** Cryptographic seal envelope — always present on sealed packs */
+  seal: import('./seal').SealEnvelope
 }
 
 // ── Governance action → evidence mapping ────────────────────────────────────

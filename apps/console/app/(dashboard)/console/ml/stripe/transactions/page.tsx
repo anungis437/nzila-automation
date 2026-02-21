@@ -176,10 +176,10 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
                     )}
                   </td>
                   <td className="px-4 py-2 font-mono text-xs text-gray-500">{s.modelKey ?? s.modelId}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-400 truncate max-w-[8rem]">
+                  <td className="px-4 py-2 font-mono text-xs text-gray-400 truncate max-w-32">
                     {s.stripePaymentIntentId ?? '—'}
                   </td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-400 truncate max-w-[8rem]">
+                  <td className="px-4 py-2 font-mono text-xs text-gray-400 truncate max-w-32">
                     {s.stripeChargeId ?? '—'}
                   </td>
                 </tr>

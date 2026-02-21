@@ -23,6 +23,7 @@ const ACTOR_ID = 'user_2abc123'
 
 function createMockScopedDb(entityId: string): ScopedDb {
   return {
+    orgId: entityId,
     entityId,
     select: vi.fn().mockReturnValue(Promise.resolve([])),
     insert: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([]) }),

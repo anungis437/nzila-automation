@@ -52,6 +52,8 @@ export interface ProcessEvidencePackOptions {
 
 /** Local-only (no upload) representation of an evidence pack index. */
 export interface LocalEvidencePackIndex {
+  /** Allow arbitrary extra fields so LocalEvidencePackIndex satisfies SealablePackIndex */
+  [key: string]: unknown
   $schema: string
   packId: string
   runId: string
@@ -408,6 +410,7 @@ export async function processEvidencePack(
     indexDocumentId,
     evidencePackDbId,
     createdAt: now.toISOString(),
+    seal,
   }
 }
 

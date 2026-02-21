@@ -182,15 +182,15 @@ describe('INV-07 — Entity isolation enforced via Scoped DAL', () => {
 
     const content = readFileSync(scopedPath, 'utf-8')
     expect(content).toContain('export function createScopedDb')
-    expect(content).toContain('entityId')
+    expect(content).toContain('orgId')
   })
 
-  it('createScopedDb throws on missing entityId', () => {
+  it('createScopedDb throws on missing orgId', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
-    // Must validate entityId and throw
+    // Must validate orgId and throw
     expect(content).toMatch(/throw\s+new\s+ScopedDbError/)
-    expect(content).toContain('requires a non-empty entityId')
+    expect(content).toContain('requires a non-empty orgId')
   })
 
   it('createScopedDb validates entity_id column on tables', () => {
@@ -210,11 +210,28 @@ describe('INV-07 — Entity isolation enforced via Scoped DAL', () => {
     expect(content).toContain('export const rawDb')
   })
 
-  it('ScopedDb auto-injects entityId on insert operations', () => {
+  it('ScopedDb auto-injects orgId on insert operations', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
-    // The insert method must spread entityId into inserted values
-    expect(content).toMatch(/entityId.*force entityId/s)
+    // The insert method must spread orgId into inserted values
+    expect(content).toMatch(/entityId:\s*orgId/)
+  })
+
+  it('createAuditedScopedDb exists for write-enabled audited access', () => {
+    const auditPath = join(ROOT, 'packages', 'db', 'src', 'audit.ts')
+    expect(existsSync(auditPath), '@nzila/db/audit module must exist').toBe(true)
+    const content = readFileSync(auditPath, 'utf-8')
+    expect(content).toContain('export function createAuditedScopedDb')
+    expect(content).toContain('orgId')
+    expect(content).toContain('actorId')
+  })
+
+  it('Org-scoped table registry is exported from @nzila/db', () => {
+    const regPath = join(ROOT, 'packages', 'db', 'src', 'org-registry.ts')
+    expect(existsSync(regPath), 'org-registry.ts must exist').toBe(true)
+    const content = readFileSync(regPath, 'utf-8')
+    expect(content).toContain('export const ORG_SCOPED_TABLES')
+    expect(content).toContain('export const NON_ORG_SCOPED_TABLES')
   })
 
   it('@nzila/db package.json exports scoped and raw modules', () => {
