@@ -2,8 +2,9 @@
 
 # ============================================
 # Base stage - pnpm setup
+# Pin to Alpine 3.22 for OpenSSL 3.3.6+ (CVE-2025-15467 fix)
 # ============================================
-FROM node:22.13.1-alpine3.21 AS base
+FROM node:22-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g pnpm@10.11.0 --ignore-scripts

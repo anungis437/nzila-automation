@@ -1,9 +1,9 @@
-import { defineConfig } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
-export default defineConfig({
+export default defineProject({
   test: {
+    name: 'partners',
     environment: 'node',
     include: ['lib/**/*.test.ts'],
-    passWithNoTests: true,
   },
 })
