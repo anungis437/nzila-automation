@@ -64,7 +64,7 @@ export default function DealsPage() {
       {/* Kanban board */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
         {stages.filter((s) => s.id !== 'lost').map((stage) => (
-          <div key={stage.id} className="bg-white rounded-xl border border-slate-200 p-4 min-h-[320px]">
+          <div key={stage.id} className="bg-white rounded-xl border border-slate-200 p-4 min-h-80">
             <div className="flex items-center justify-between mb-4">
               <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${stage.color}`}>
                 {stage.label}

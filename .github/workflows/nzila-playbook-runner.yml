@@ -37,6 +37,10 @@ env:
   CORRELATION_ID: ${{ inputs.correlation_id }}
   PLAYBOOK: ${{ inputs.playbook }}
   DRY_RUN: ${{ inputs.dry_run }}
+  CONTRACT_TESTS_FAILED: 'false'
+  LINT_FAILED: 'false'
+  TYPECHECK_FAILED: 'false'
+  UNIT_TESTS_FAILED: 'false'
 
 jobs:
   run-playbook:

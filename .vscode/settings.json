@@ -8,7 +8,12 @@
   // tooling/ml scripts use their own venv (requirements.txt) — suppress
   // "could not be resolved" errors for packages not in the workspace venv.
   "python.analysis.ignore": [
-    "tooling/ml/**"
+    "tooling/ml/**",
+    // Satellite repos have their own venv + pyrightconfig.json.
+    // Suppress Pylance analysis from the automation workspace context
+    // to avoid false "could not be resolved" Django/pytest errors.
+    "../nzila-abr-insights/backend/**",
+    "../nzila-union-eyes/backend/**"
   ],
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": [
@@ -28,9 +33,14 @@
   },
 
   // ── SQL ─────────────────────────────────────────────────
-  // Drizzle migrations are PostgreSQL — prevent MSSQL linter false positives
+  // Drizzle migrations are PostgreSQL.
+  // Associate with "pgsql" so the MSSQL extension does not lint them —
+  // MSSQL syntax like REPLACE/RAISE/BEFORE TRIGGER is invalid TSQL
+  // but perfectly valid PostgreSQL, causing false-positive errors.
   "files.associations": {
-    "packages/db/drizzle/**/*.sql": "sql"
+    "packages/db/drizzle/**/*.sql": "pgsql"
   },
+  // Disable MSSQL linting workspace-wide: this repo targets PostgreSQL only.
+  "mssql.linting.enable": false,
   "vitest.disableWorkspaceWarning": true
 }

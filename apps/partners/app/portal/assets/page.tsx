@@ -89,7 +89,7 @@ export default function AssetsPage() {
       </div>
 
       {/* White-label generator teaser */}
-      <div className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
+      <div className="mt-6 p-5 bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
         <p className="text-sm font-semibold text-blue-900">White-Label Asset Generator</p>
         <p className="text-xs text-blue-700 mt-1 leading-relaxed">
           Upload your logo and enter your company details to generate instantly branded one-pagers,

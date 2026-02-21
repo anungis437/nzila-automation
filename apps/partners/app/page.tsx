@@ -44,7 +44,7 @@ const features = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50">
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-5 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">

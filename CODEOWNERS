@@ -11,6 +11,13 @@
 /packages/db/src/schema/** @nzila/platform @nzila/eng
 /packages/db/drizzle/**    @nzila/platform @nzila/eng
 
+# DB scoped DAL & Org registry — structural enforcement requires platform + security
+/packages/db/src/scoped.ts       @nzila/platform @nzila/security
+/packages/db/src/audit.ts        @nzila/platform @nzila/security
+/packages/db/src/org-registry.ts @nzila/platform @nzila/security
+/packages/db/src/raw.ts          @nzila/platform @nzila/security
+/packages/db/eslint-no-shadow-db.mjs @nzila/platform @nzila/security
+
 # Security-sensitive packages
 /packages/payments-stripe/** @nzila/platform @nzila/security
 /packages/qbo/**             @nzila/platform @nzila/security
@@ -19,6 +26,10 @@
 # Auth & policy — any change to authorization logic requires security review
 /packages/os-core/src/policy/**  @nzila/security @nzila/platform
 /packages/os-core/src/policy.ts  @nzila/security @nzila/platform
+/packages/os-core/src/evidence/lifecycle.ts  @nzila/platform @nzila/security
+/packages/os-core/src/evidence/seal.ts       @nzila/platform @nzila/security
+/packages/os-core/src/evidence/verify-pack.ts @nzila/platform @nzila/security
+/packages/os-core/src/evidence/redaction.ts  @nzila/platform @nzila/security
 /apps/console/middleware.ts      @nzila/security @nzila/platform
 /apps/partners/middleware.ts     @nzila/security @nzila/platform
 /apps/union-eyes/middleware.ts   @nzila/security @nzila/platform
