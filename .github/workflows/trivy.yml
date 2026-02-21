@@ -47,15 +47,15 @@ jobs:
             --target base \
             .
 
-      - name: Run Trivy (table output)
+      - name: Run Trivy (table output — blocks on CRITICAL)
         uses: aquasecurity/trivy-action@0.34.1
         with:
           image-ref: ${{ matrix.image }}:scan
           format: table
-          exit-code: 0
+          exit-code: 1
           ignore-unfixed: true
           vuln-type: os,library
-          severity: CRITICAL,HIGH
+          severity: CRITICAL
 
       - name: Run Trivy (SARIF — GitHub Security tab)
         uses: aquasecurity/trivy-action@0.34.1

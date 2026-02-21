@@ -5,6 +5,5 @@ export default defineProject({
     name: 'partners',
     environment: 'node',
     include: ['lib/**/*.test.ts'],
-    passWithNoTests: true,
   },
 })
