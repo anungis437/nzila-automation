@@ -31,5 +31,6 @@
   // Drizzle migrations are PostgreSQL — prevent MSSQL linter false positives
   "files.associations": {
     "packages/db/drizzle/**/*.sql": "sql"
-  }
+  },
+  "vitest.disableWorkspaceWarning": true
 }
