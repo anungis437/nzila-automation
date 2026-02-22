@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/compliance/validate
  * Migrated to withApi() framework

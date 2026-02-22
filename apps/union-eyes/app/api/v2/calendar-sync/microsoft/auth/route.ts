@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET /api/calendar-sync/microsoft/auth
  * Migrated to withApi() framework

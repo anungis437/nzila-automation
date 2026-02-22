@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/reports/execute
  * Migrated to withApi() framework

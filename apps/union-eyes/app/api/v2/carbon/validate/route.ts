@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET POST /api/carbon/validate
  * Migrated to withApi() framework

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET POST /api/emergency/recovery
  * Migrated to withApi() framework

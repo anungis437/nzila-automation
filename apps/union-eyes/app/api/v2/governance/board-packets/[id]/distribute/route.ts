@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * POST /api/governance/board-packets/[id]/distribute
  * Migrated to withApi() framework
@@ -29,7 +30,7 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
         const packetId = params.id;
-        const body = await req.json();
+        const body = await request.json();
         // Validate input
         const { recipients } = distributePacketSchema.parse(body);
         // Distribute packet

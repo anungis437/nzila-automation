@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET /api/portal/dues/balance
  * Migrated to withApi() framework
@@ -21,8 +22,8 @@ export const GET = withApi(
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
         // Get the organizationId from query params or header
-        const orgId = req.nextUrl.searchParams.get('organizationId')
-          || req.headers.get('x-organization-id');
+        const orgId = request.nextUrl.searchParams.get('organizationId')
+          || request.headers.get('x-organization-id');
         if (!orgId) {
           return NextResponse.json(
             { error: 'Missing organizationId query parameter or x-organization-id header' },

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/onboarding/smart-defaults
  * Migrated to withApi() framework

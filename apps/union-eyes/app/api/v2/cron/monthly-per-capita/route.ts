@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/cron/monthly-per-capita
  * Migrated to withApi() framework

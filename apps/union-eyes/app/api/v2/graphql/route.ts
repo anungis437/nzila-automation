@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/graphql
  * Migrated to withApi() framework

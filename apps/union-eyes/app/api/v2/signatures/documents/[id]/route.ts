@@ -61,7 +61,7 @@ export const PATCH = withApi(
           throw ApiError.forbidden('Access denied'
         );
         }
-        const body = await req.json();
+        const body = await request.json();
         const { action, reason } = body;
         if (action === "void") {
           if (!reason) {

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * POST /api/whop/unauthenticated-checkout
  * Migrated to withApi() framework
@@ -18,7 +19,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        const { planId, redirectUrl, email } = await req.json();
+        const { planId, redirectUrl, email } = await request.json();
         // Validate required parameters
         if (!planId) {
           return NextResponse.json(

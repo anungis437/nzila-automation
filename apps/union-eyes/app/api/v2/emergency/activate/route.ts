@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/emergency/activate
  * Migrated to withApi() framework

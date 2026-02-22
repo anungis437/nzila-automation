@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/gdpr/data-export
  * Migrated to withApi() framework

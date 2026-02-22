@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/dues/send-reminders
  * Migrated to withApi() framework

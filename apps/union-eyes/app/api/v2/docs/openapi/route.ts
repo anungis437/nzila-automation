@@ -1,4 +1,4 @@
-// @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET /api/docs/openapi
  * Migrated to withApi() framework

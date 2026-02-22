@@ -32,13 +32,13 @@ export const POST = withApi(
 
         // Authentication guard
         const { userId } = await requireApiAuth();
-        const body = await req.json();
+        const body = await request.json();
         // Validate request body
         // Get IP and user agent
-        const ipAddress = req.headers.get("x-forwarded-for") || 
-                          req.headers.get("x-real-ip") || 
+        const ipAddress = request.headers.get("x-forwarded-for") || 
+                          request.headers.get("x-real-ip") || 
                           "unknown";
-        const userAgent = req.headers.get("user-agent") || "unknown";
+        const userAgent = request.headers.get("user-agent") || "unknown";
         const signer = await SignatureService.recordSignature({
           signerId,
           signatureImageUrl,

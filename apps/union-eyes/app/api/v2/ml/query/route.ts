@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * POST /api/ml/query
  * Migrated to withApi() framework

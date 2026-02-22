@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/onboarding/peer-benchmarks
  * Migrated to withApi() framework

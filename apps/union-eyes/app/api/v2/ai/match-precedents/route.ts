@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * POST /api/ai/match-precedents
  * Migrated to withApi() framework

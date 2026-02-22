@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/health/liveness
  * Migrated to withApi() framework

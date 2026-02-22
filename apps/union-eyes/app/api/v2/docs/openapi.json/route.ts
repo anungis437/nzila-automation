@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/docs/openapi.json
  * Migrated to withApi() framework

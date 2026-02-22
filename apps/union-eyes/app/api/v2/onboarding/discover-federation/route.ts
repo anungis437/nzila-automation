@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/onboarding/discover-federation
  * Migrated to withApi() framework

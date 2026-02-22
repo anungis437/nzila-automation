@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET POST /api/precedents
  * Migrated to withApi() framework

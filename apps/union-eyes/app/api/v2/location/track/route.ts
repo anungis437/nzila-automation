@@ -30,7 +30,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const body = await req.json();
+        const body = await request.json();
         // Validate request body
         // Track location (service will verify consent)
         const location = await GeofencePrivacyService.trackLocation({

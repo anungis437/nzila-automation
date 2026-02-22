@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/reports/datasources
  * Migrated to withApi() framework

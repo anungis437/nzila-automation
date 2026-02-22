@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET POST /api/location/geofence
  * Migrated to withApi() framework
@@ -27,7 +28,7 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
         const geofenceId = searchParams.get("geofenceId");
         const latitude = searchParams.get("latitude");
@@ -65,7 +66,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const body = await req.json();
+        const body = await request.json();
         const { name, description, geofenceType, centerLatitude, centerLongitude, radiusMeters, strikeId, unionLocalId } = body;
         if (!name || !geofenceType || centerLatitude === undefined || centerLongitude === undefined || !radiusMeters) {
           throw ApiError.badRequest('Missing required fields: name, geofenceType, centerLatitude, centerLongitude, radiusMeters'

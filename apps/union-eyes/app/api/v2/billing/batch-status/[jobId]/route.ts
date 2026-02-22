@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET /api/billing/batch-status/[jobId]
  * Migrated to withApi() framework

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/jurisdiction-rules
  * Migrated to withApi() framework

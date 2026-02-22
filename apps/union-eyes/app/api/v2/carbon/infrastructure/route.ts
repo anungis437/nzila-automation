@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/carbon/infrastructure
  * Migrated to withApi() framework

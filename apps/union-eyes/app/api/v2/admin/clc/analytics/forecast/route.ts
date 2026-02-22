@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET /api/admin/clc/analytics/forecast
  * Migrated to withApi() framework

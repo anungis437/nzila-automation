@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/emergency/dashboard
  * Migrated to withApi() framework

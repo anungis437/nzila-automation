@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * POST /api/governance/policies/evaluate
  * Migrated to withApi() framework
@@ -28,7 +29,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        const body = await req.json();
+        const body = await request.json();
         // Validate input
         const validatedData = evaluateSchema.parse(body);
         // Evaluate policy

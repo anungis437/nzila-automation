@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET PATCH DELETE /api/clauses/[id]
  * Migrated to withApi() framework

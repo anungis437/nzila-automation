@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET POST DELETE /api/privacy/consent
  * Migrated to withApi() framework

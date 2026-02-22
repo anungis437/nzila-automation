@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * POST /api/payments/webhooks/paypal
  * Migrated to withApi() framework

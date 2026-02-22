@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/onboarding/suggest-clauses
  * Migrated to withApi() framework

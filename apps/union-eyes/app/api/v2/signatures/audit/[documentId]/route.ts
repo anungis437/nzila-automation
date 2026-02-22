@@ -1,4 +1,4 @@
-// @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET /api/signatures/audit/[documentId]
  * Migrated to withApi() framework
@@ -23,7 +23,7 @@ export const GET = withApi(
         }
         const documentId = params.documentId;
         // Get query params
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(request.url);
         const format = searchParams.get("format"); // 'json' or 'report'
         if (format === "report") {
           // Generate comprehensive audit report

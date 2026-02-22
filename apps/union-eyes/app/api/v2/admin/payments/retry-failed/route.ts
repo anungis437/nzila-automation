@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/payments/retry-failed
  * Migrated to withApi() framework

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { NextResponse } from 'next/server';
 /**
  * GET POST DELETE /api/location/consent
  * Migrated to withApi() framework
@@ -25,7 +26,7 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
         const context = searchParams.get("context") as "strike" | "event" | undefined;
         if (!userId) {
@@ -53,15 +54,15 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const body = await req.json();
+        const body = await request.json();
         const { userId, purpose, purposeDescription, consentText, allowedDuringStrike, allowedDuringEvents } = body;
         if (!userId || !purpose || !purposeDescription || !consentText) {
           throw ApiError.badRequest('Missing required fields: userId, purpose, purposeDescription, consentText'
         );
         }
         // Get IP and User-Agent for audit
-        const ipAddress = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-        const userAgent = req.headers.get("user-agent") || "unknown";
+        const ipAddress = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+        const userAgent = request.headers.get("user-agent") || "unknown";
         const consent = await GeofencePrivacyService.requestLocationConsent({
           userId,
           purpose,
@@ -88,7 +89,7 @@ export const DELETE = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
         const reason = searchParams.get("reason");
         if (!userId) {
