@@ -179,6 +179,7 @@ Return a JSON array of extracted clauses.`;
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CLAUSE_EXTRACTION,
+      promptKey: UE_PROFILES.CLAUSE_EXTRACTION,
       input: `${systemPrompt}\n\nExtract and classify all clauses from this ${context.jurisdiction} ${context.sector} collective bargaining agreement:\n\n${text}`,
       dataClass: 'internal',
     });
@@ -271,6 +272,7 @@ export async function reExtractClause(
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CLAUSE_EXTRACTION,
+      promptKey: UE_PROFILES.CLAUSE_EXTRACTION,
       input: `Re-analyze this clause with additional context and provide an improved classification and extraction.\n\nContext: ${context.surroundingClauses.join('\n\n')}\n\nFull Agreement Available: ${context.fullAgreementText.substring(0, 2000)}...\n\nProvide the best possible extraction for this clause.`,
       dataClass: 'internal',
     });
@@ -324,6 +326,7 @@ export async function analyzeClauseQuality(
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CLAUSE_QUALITY,
+      promptKey: UE_PROFILES.CLAUSE_QUALITY,
       input: `You are a labour law expert analyzing collective bargaining agreement clauses for clarity, enforceability, and best practices in ${context.jurisdiction}.\n\nAnalyze this ${context.clauseType} clause and provide:\n1. Overall quality rating (excellent/good/fair/poor)\n2. List of potential issues or ambiguities\n3. Suggestions for improvement\n\nClause: ${clause}`,
       dataClass: 'internal',
     });

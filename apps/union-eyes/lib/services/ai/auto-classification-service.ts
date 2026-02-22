@@ -111,6 +111,7 @@ ${clauseContent}`
       entityId: context?.jurisdiction || 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CLAUSE_CLASSIFICATION,
+      promptKey: UE_PROFILES.CLAUSE_CLASSIFICATION,
       input: `${systemPrompt}\n\n${userContent}`,
       dataClass: 'internal',
     });
@@ -118,10 +119,10 @@ ${clauseContent}`
     const result = response.data as Record<string, unknown>;
     
     return {
-      clauseType: result.clauseType || 'other',
-      confidence: result.confidence || 0.5,
-      alternativeTypes: result.alternativeTypes || [],
-      reasoning: result.reasoning || 'Classification based on content analysis',
+      clauseType: (result.clauseType as ClauseType) || 'other',
+      confidence: (result.confidence as number) || 0.5,
+      alternativeTypes: (result.alternativeTypes as { type: ClauseType; confidence: number }[]) || [],
+      reasoning: (result.reasoning as string) || 'Classification based on content analysis',
     };
   } catch (error) {
     logger.error('Error classifying clause', { error });
@@ -160,6 +161,7 @@ Return JSON with:
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.TAG_GENERATION,
+      promptKey: UE_PROFILES.TAG_GENERATION,
       input: `${systemPrompt}\n\nClause Type: ${clauseType}\n\nContent: ${clauseContent}`,
       dataClass: 'internal',
     });
@@ -167,8 +169,8 @@ Return JSON with:
     const result = response.data as Record<string, unknown>;
     
     return {
-      tags: result.tags || [],
-      confidence: result.confidence || 0.5,
+      tags: (result.tags as string[]) || [],
+      confidence: (result.confidence as number) || 0.5,
     };
   } catch (error) {
     logger.error('Error generating tags', { error });
@@ -202,6 +204,7 @@ Return JSON with:
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CROSS_REFERENCE,
+      promptKey: UE_PROFILES.CROSS_REFERENCE,
       input: `${systemPrompt}\n\n${clauseContent}`,
       dataClass: 'internal',
     });
@@ -209,8 +212,8 @@ Return JSON with:
     const result = response.data as Record<string, unknown>;
     
     return {
-      references: result.references || [],
-      confidence: result.confidence || 0.5,
+      references: (result.references as string[]) || [],
+      confidence: (result.confidence as number) || 0.5,
     };
   } catch (error) {
     logger.error('Error detecting cross-references', { error });
@@ -269,6 +272,7 @@ Return JSON with:
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.PRECEDENT_CLASSIFICATION,
+      promptKey: UE_PROFILES.PRECEDENT_CLASSIFICATION,
       input: `${systemPrompt}\n\nCase: ${caseTitle}\n\nFacts: ${facts}\n\nReasoning: ${reasoning}\n\nDecision: ${decision}`,
       dataClass: 'internal',
     });
@@ -276,11 +280,11 @@ Return JSON with:
     const result = response.data as Record<string, unknown>;
     
     return {
-      precedentValue: (result.precedentValue || 'medium') as PrecedentValueEnum,
-      outcome: (result.outcome || 'split') as OutcomeEnum,
-      issueType: result.issueType || 'other',
-      confidence: result.confidence || 0.5,
-      reasoning: result.reasoning || 'Classification based on case analysis',
+      precedentValue: (result.precedentValue as PrecedentValueEnum) || ('medium' as PrecedentValueEnum),
+      outcome: (result.outcome as OutcomeEnum) || ('split' as OutcomeEnum),
+      issueType: (result.issueType as string) || 'other',
+      confidence: (result.confidence as number) || 0.5,
+      reasoning: (result.reasoning as string) || 'Classification based on case analysis',
     };
   } catch (error) {
     logger.error('Error classifying precedent', { error });

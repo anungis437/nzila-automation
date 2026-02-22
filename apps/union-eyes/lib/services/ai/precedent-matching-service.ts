@@ -195,6 +195,7 @@ async function extractClaimKeywords(claimText: string): Promise<string[]> {
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.PRECEDENT_KEYWORDS,
+      promptKey: UE_PROFILES.PRECEDENT_KEYWORDS,
       input: `Extract 10-15 key legal terms and concepts from this grievance/claim:\n\n${claimText}`,
       dataClass: 'internal',
     });
@@ -282,6 +283,7 @@ async function analyzePrecedentApplicability(
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.PRECEDENT_APPLICABILITY,
+      promptKey: UE_PROFILES.PRECEDENT_APPLICABILITY,
       input: `Compare a grievance claim to an arbitration precedent. Identify:
 1. Why the precedent is applicable (similar facts, legal principles)
 2. How the cases differ (distinguishing features)
@@ -298,8 +300,8 @@ Outcome: ${precedent.outcome}`,
     const result = response.data as Record<string, unknown>;
     
     return {
-      applicableReasons: result.applicableReasons || [],
-      distinctions: result.distinctions || [],
+      applicableReasons: (result.applicableReasons as string[]) || [],
+      distinctions: (result.distinctions as string[]) || [],
     };
   } catch (error) {
     logger.error('Error analyzing applicability', { error });
@@ -391,6 +393,7 @@ async function generateClaimAnalysis(
       entityId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CLAIM_ANALYSIS,
+      promptKey: UE_PROFILES.CLAIM_ANALYSIS,
       input: `You are a labour arbitration expert. Analyze the claim and precedents to provide:
 1. Detailed reasoning for predicted outcome
 2. Strengths in the union's case
@@ -412,11 +415,11 @@ Provide analysis.`,
     const result = response.data as Record<string, unknown>;
 
     return {
-      outcomeReasoning: result.outcomeReasoning || 'Analysis unavailable',
-      strengths: result.strengths || [],
-      weaknesses: result.weaknesses || [],
-      criticalFactors: result.criticalFactors || [],
-      suggestedArguments: result.suggestedArguments || [],
+      outcomeReasoning: (result.outcomeReasoning as string) || 'Analysis unavailable',
+      strengths: (result.strengths as string[]) || [],
+      weaknesses: (result.weaknesses as string[]) || [],
+      criticalFactors: (result.criticalFactors as string[]) || [],
+      suggestedArguments: (result.suggestedArguments as string[]) || [],
     };
   } catch (error) {
     logger.error('Error generating analysis', { error });
