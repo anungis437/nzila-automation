@@ -22,7 +22,9 @@
       "@nzila/os-core/secrets": ["../../packages/os-core/src/secrets/keyvault.ts"],
       "@nzila/os-core/rateLimit": ["../../packages/os-core/src/rateLimit.ts"],
       "@nzila/os-core/telemetry": ["../../packages/os-core/src/telemetry/index.ts"],
-      "@nzila/blob": ["../../packages/blob/src/index.ts"]
+      "@nzila/blob": ["../../packages/blob/src/index.ts"],
+      "@nzila/ai-sdk": ["../../packages/ai-sdk/src/index.ts"],
+      "@nzila/ai-sdk/types": ["../../packages/ai-sdk/src/types.ts"]
     }
   },
   "include": [

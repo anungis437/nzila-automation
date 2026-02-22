@@ -35,7 +35,7 @@ import {
   AuthorizationError,
 } from '@nzila/os-core/policy'
 import { UERole } from '@nzila/os-core/policy'
-import type { NzilaRole, Scope } from '@nzila/os-core/policy'
+import type { NzilaRole } from '@nzila/os-core/policy'
 import { UserRole } from './roles'
 
 // ---------------------------------------------------------------------------
