@@ -1,0 +1,522 @@
+{
+  "common": {
+    "appName": "UnionEyes",
+    "welcome": "Bienvenue",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Avertissement",
+    "info": "Information",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "submit": "Soumettre",
+    "back": "Retour",
+    "next": "Suivant",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "refresh": "Actualiser",
+    "viewDetails": "Voir les détails",
+    "noResults": "Aucun résultat trouvé",
+    "selectLanguage": "Sélectionner la langue",
+    "english": "English",
+    "french": "Français",
+    "voiceToText": "Voix vers texte",
+    "useVoiceRecorder": "Utiliser l'enregistreur vocal",
+    "hideVoiceRecorder": "Masquer l'enregistreur vocal",
+    "voiceDescription": "Préférez-vous parler de votre réclamation? Utilisez l'enregistrement vocal pour transcrire automatiquement votre description."
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "claims": "Réclamations",
+    "myClaims": "Mes réclamations",
+    "submitClaim": "Soumettre une réclamation",
+    "members": "Membres",
+    "admin": "Administration",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "signOut": "Se déconnecter",
+    "help": "Aide",
+    "documentation": "Documentation",
+    "support": "Soutien"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "signOut": "Se déconnecter",
+    "email": "Courriel",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "createAccount": "Créer un compte",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "dontHaveAccount": "Vous n'avez pas de compte?",
+    "enterEmail": "Entrez votre courriel",
+    "enterPassword": "Entrez votre mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "invalidCredentials": "Courriel ou mot de passe invalide",
+    "accountCreated": "Compte créé avec succès",
+    "passwordReset": "Courriel de réinitialisation envoyé"
+  },
+  "claims": {
+    "title": "Réclamations",
+    "newClaim": "Nouvelle réclamation",
+    "submitClaim": "Soumettre une réclamation",
+    "reviewMessage": "Veuillez fournir des informations détaillées sur votre réclamation. Votre soumission sera examinée par un agent des relations de travail.",
+    "claimDetails": "Détails de la réclamation",
+    "claimNumber": "Numéro de réclamation",
+    "claimType": "Type de réclamation",
+    "claimStatus": "Statut",
+    "claimDate": "Date de réclamation",
+    "incidentDate": "Date de l'incident",
+    "dateOfIncident": "Date de l'incident",
+    "locationDepartment": "Emplacement/Département",
+    "locationPlaceholder": "p. ex., Plancher de fabrication, Bureau RH, etc.",
+    "description": "Description",
+    "detailedDescription": "Description détaillée",
+    "descriptionPlaceholder": "Saisissez votre description détaillée ici (minimum 50 caractères)...",
+    "descriptionInfo": "Fournissez le plus de détails possible incluant : ce qui s'est passé, qui était impliqué (sans vous identifier si anonyme), quand cela s'est produit, et tout contexte pertinent.",
+    "descriptionMinChars": "minimum",
+    "location": "Emplacement",
+    "witnesses": "Témoins",
+    "witnessesPresent": "Y avait-il des témoins présents?",
+    "witnessDetails": "Détails des témoins",
+    "witnessDetailsPlaceholder": "Fournissez les noms, rôles ou descriptions des témoins (si connus)...",
+    "previouslyReported": "Cela a-t-il été signalé auparavant?",
+    "previousReportDetails": "Détails du signalement précédent",
+    "previousReportPlaceholder": "Décrivez quand et comment cela a été signalé précédemment...",
+    "desiredOutcome": "Résultat souhaité",
+    "desiredOutcomePlaceholder": "Quelle résolution ou action recherchez-vous?...",
+    "attachments": "Pièces jointes",
+    "addAttachment": "Ajouter une pièce jointe",
+    "removeAttachment": "Retirer la pièce jointe",
+    "uploadFiles": "Télécharger des documents justificatifs",
+    "uploadFilesDescription": "Téléchargez tous documents, photos ou preuves pertinents (max 10 Mo par fichier)",
+    "fileSelected": "fichier sélectionné",
+    "filesSelected": "fichiers sélectionnés",
+    "privacyTitle": "Confidentialité et anonymat",
+    "privacyDescription": "Votre identité est protégée tout au long du processus de réclamation. Un numéro de membre anonyme vous sera attribué. Seuls les agents des relations de travail autorisés peuvent consulter les détails de la réclamation. Toutes les communications sont chiffrées et sécurisées.",
+    "submitAnonymously": "Soumettre anonymement (recommandé)",
+    "submitButton": "Soumettre la réclamation",
+    "submitting": "Soumission en cours...",
+    "cancel": "Annuler",
+    "selectClaimType": "Sélectionnez un type de réclamation...",
+    "required": "*",
+    "status": {
+      "pending": "En attente",
+      "under_review": "En cours d'examen",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "closed": "Fermé"
+    },
+    "types": {
+      "grievance": "Grief",
+      "discipline": "Discipline",
+      "grievanceDiscipline": "Grief - Mesure disciplinaire",
+      "grievanceSchedule": "Grief - Horaire de travail",
+      "grievancePay": "Grief - Paie/Rémunération",
+      "workplaceSafety": "Sécurité au travail",
+      "discriminationAge": "Discrimination - Âge",
+      "discriminationGender": "Discrimination - Genre",
+      "discriminationRace": "Discrimination - Race",
+      "discriminationDisability": "Discrimination - Handicap",
+      "harassmentVerbal": "Harcèlement - Verbal",
+      "harassmentPhysical": "Harcèlement - Physique",
+      "harassmentSexual": "Harcèlement - Sexuel",
+      "contractDispute": "Litige contractuel",
+      "retaliation": "Représailles",
+      "harassment": "Harcèlement",
+      "safety": "Préoccupation de sécurité",
+      "wage": "Litige salarial",
+      "hours": "Heures/Horaire",
+      "termination": "Résiliation",
+      "other": "Autre"
+    },
+    "validation": {
+      "typeRequired": "Le type de réclamation est requis",
+      "dateRequired": "La date de l'incident est requise",
+      "descriptionRequired": "La description est requise",
+      "descriptionMinLength": "La description doit contenir au moins 20 caractères",
+      "locationRequired": "Le lieu est requis"
+    },
+    "messages": {
+      "submitSuccess": "Réclamation soumise avec succès",
+      "submitError": "Échec de la soumission de la réclamation. Veuillez réessayer.",
+      "updateSuccess": "Réclamation mise à jour avec succès",
+      "deleteSuccess": "Réclamation supprimée avec succès",
+      "loadError": "Échec du chargement des réclamations"
+    }
+  },
+  "voice": {
+    "title": "Voix vers texte",
+    "useVoiceRecorder": "Utiliser l'enregistreur vocal",
+    "hideVoiceRecorder": "Masquer l'enregistreur vocal",
+    "startRecording": "Commencer l'enregistrement",
+    "stopRecording": "Arrêter l'enregistrement",
+    "pauseRecording": "Mettre en pause",
+    "resumeRecording": "Reprendre l'enregistrement",
+    "playback": "Lire l'enregistrement",
+    "deleteRecording": "Supprimer l'enregistrement",
+    "transcribe": "Transcrire l'audio",
+    "transcribing": "Transcription en cours...",
+    "recording": "Enregistrement en cours...",
+    "paused": "En pause",
+    "transcription": "Transcription",
+    "clickToStart": "Cliquez sur le microphone pour commencer l'enregistrement",
+    "minutes": "minutes",
+    "transcriptionComplete": "Transcription terminée",
+    "transcriptionSuccess": "Votre voix a été convertie en texte",
+    "transcriptionFailed": "La transcription a échoué",
+    "unknownError": "Erreur inconnue",
+    "recordingTime": "Temps d'enregistrement",
+    "maxDuration": "Durée maximale",
+    "description": "Préférez-vous parler de votre réclamation? Utilisez l'enregistrement vocal pour transcrire automatiquement votre description.",
+    "tips": {
+      "title": "Conseils d'enregistrement",
+      "speakClearly": "Parlez clairement et à un rythme normal",
+      "minimizeNoise": "Minimisez le bruit de fond",
+      "stayClose": "Restez à 15-30 cm du microphone",
+      "usePause": "Utilisez le bouton pause pour les longues pauses",
+      "reviewText": "Révisez et modifiez la transcription"
+    },
+    "messages": {
+      "recordingStarted": "Enregistrement commencé",
+      "recordingStopped": "Enregistrement arrêté",
+      "speakClearly": "Parlez clairement dans votre microphone",
+      "duration": "Durée",
+      "transcriptionComplete": "Transcription terminée",
+      "transcriptionConverted": "Votre voix a été convertie en texte",
+      "transcriptionFailed": "Échec de la transcription audio",
+      "permissionDenied": "Permission du microphone refusée",
+      "permissionRequired": "Veuillez autoriser l'accès au microphone pour enregistrer",
+      "noSpeechDetected": "Aucune parole détectée dans l'enregistrement",
+      "recordingFailed": "Échec du démarrage de l'enregistrement"
+    }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "overview": "Aperçu",
+    "recentClaims": "Réclamations récentes",
+    "pendingClaims": "Réclamations en attente",
+    "activeClaims": "Réclamations actives",
+    "resolvedClaims": "Réclamations résolues",
+    "totalClaims": "Total des réclamations",
+    "thisMonth": "Ce mois-ci",
+    "thisYear": "Cette année",
+    "statistics": "Statistiques",
+    "quickActions": "Actions rapides",
+    "viewAll": "Voir tout"
+  },
+  "members": {
+    "title": "Membres",
+    "memberList": "Liste des membres",
+    "memberDetails": "Détails du membre",
+    "memberNumber": "Numéro de membre",
+    "name": "Nom",
+    "email": "Courriel",
+    "phone": "Téléphone",
+    "status": "Statut",
+    "joinDate": "Date d'adhésion",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "suspended": "Suspendu"
+  },
+  "admin": {
+    "title": "Panneau d'administration",
+    "users": "Utilisateurs",
+    "roles": "Rôles",
+    "permissions": "Permissions",
+    "settings": "Paramètres",
+    "reports": "Rapports",
+    "analytics": "Analytique",
+    "systemHealth": "Santé du système",
+    "logs": "Journaux"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite. Veuillez réessayer.",
+    "network": "Erreur réseau. Vérifiez votre connexion.",
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action.",
+    "notFound": "La ressource demandée est introuvable.",
+    "validation": "Veuillez vérifier votre saisie et réessayer.",
+    "serverError": "Erreur du serveur. Veuillez réessayer plus tard.",
+    "timeout": "Délai d'attente dépassé. Veuillez réessayer."
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": "Veuillez entrer une adresse courriel valide",
+    "phone": "Veuillez entrer un numéro de téléphone valide",
+    "minLength": "La longueur minimale est de {min} caractères",
+    "maxLength": "La longueur maximale est de {max} caractères",
+    "invalidFormat": "Format invalide",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "fileSize": "La taille du fichier doit être inférieure à {size}Mo",
+    "fileType": "Type de fichier invalide"
+  },
+  "rewards": {
+    "wallet": {
+      "title": "Mon Portefeuille de Récompenses",
+      "description": "Consultez vos crédits de récompense et échangez-les contre des produits et services",
+      "redeemButton": "Échanger des Crédits",
+      "balance": {
+        "title": "Crédits Disponibles",
+        "subtitle": "crédits prêts à échanger",
+        "info": "Information sur les crédits",
+        "tooltip": "Les crédits sont gagnés grâce aux prix de reconnaissance et peuvent être échangés contre des produits et services via Shop Moi Ça."
+      },
+      "stats": {
+        "totalEarned": "Total Gagné",
+        "totalRedeemed": "Total Échangé",
+        "lastActivity": "Dernière Activité",
+        "allTime": "Tout le temps",
+        "mostRecent": "Transaction la plus récente"
+      },
+      "ledger": {
+        "title": "Historique des Transactions",
+        "description": "Enregistrement complet de toutes les transactions de crédits",
+        "empty": "Aucune transaction pour le moment",
+        "columns": {
+          "date": "Date",
+          "description": "Description",
+          "type": "Type",
+          "amount": "Montant",
+          "balance": "Solde"
+        },
+        "types": {
+          "earned": "Prix Reçu",
+          "redeemed": "Crédits Échangés",
+          "refund": "Remboursement Traité",
+          "adjustment": "Ajustement du Solde",
+          "revoked": "Prix Révoqué"
+        },
+        "badges": {
+          "earned": "Gagné",
+          "redeemed": "Échangé",
+          "refund": "Remboursement",
+          "adjustment": "Ajustement",
+          "revoked": "Révoqué"
+        }
+      }
+    },
+    "redeem": {
+      "title": "Échangez Vos Crédits",
+      "description": "Convertissez vos crédits de récompense en produits et services",
+      "balanceTitle": "Solde Disponible",
+      "balanceMessage": "Vous avez {balance} crédits disponibles à échanger",
+      "shopify": {
+        "title": "Boutique Shop Moi Ça",
+        "description": "Parcourez notre collection organisée de produits et échangez vos crédits"
+      },
+      "manual": {
+        "title": "Demander un Échange",
+        "description": "Soumettez une demande d'échange et notre équipe la traitera"
+      },
+      "howItWorks": {
+        "title": "Comment Ça Marche",
+        "step1": "Sélectionnez le montant de crédits que vous souhaitez échanger",
+        "step2": "Les crédits sont déduits de votre solde immédiatement",
+        "step3": "Complétez le paiement dans la boutique Shop Moi Ça",
+        "step4": "Suivez l'état de votre commande dans votre historique de transactions"
+      },
+      "form": {
+        "creditsLabel": "Crédits à Échanger",
+        "creditsHelper": "Maximum : {balance} crédits",
+        "notesLabel": "Notes (Optionnel)",
+        "notesPlaceholder": "Ajoutez des demandes ou notes spéciales...",
+        "submitShopify": "Continuer vers Shop Moi Ça",
+        "submitManual": "Soumettre la Demande d'Échange",
+        "noBalance": "Vous avez besoin de crédits pour échanger",
+        "errors": {
+          "invalidAmount": "Veuillez entrer un montant valide",
+          "insufficientBalance": "Vous n'avez pas assez de crédits",
+          "failed": "Échec de l'initiation de l'échange",
+          "unknown": "Une erreur s'est produite"
+        }
+      }
+    },
+    "admin": {
+      "overview": {
+        "title": "Administration Reconnaissance et Récompenses",
+        "description": "Gérer les programmes de reconnaissance, approuver les prix et suivre les allocations budgétaires",
+        "metrics": {
+          "activePrograms": "Programmes Actifs",
+          "programsSubtext": "Programmes de reconnaissance",
+          "pendingApprovals": "Approbations en Attente",
+          "approvalsSubtext": "Prix en attente de révision",
+          "totalIssued": "Total Émis",
+          "issuedSubtext": "Crédits émis",
+          "totalRedeemed": "Total Échangé",
+          "redeemedSubtext": "Crédits échangés"
+        },
+        "quickActions": {
+          "title": "Actions Rapides",
+          "programs": {
+            "title": "Gérer les Programmes",
+            "description": "Créer et configurer des programmes de reconnaissance"
+          },
+          "awards": {
+            "title": "Réviser les Prix",
+            "description": "Approuver et émettre des prix de reconnaissance"
+          },
+          "budgets": {
+            "title": "Gérer les Budgets",
+            "description": "Allouer et suivre les enveloppes budgétaires"
+          },
+          "shopify": {
+            "title": "Config Shopify",
+            "description": "Configurer l'intégration Shop Moi Ça"
+          },
+          "reports": {
+            "title": "Voir les Rapports",
+            "description": "Tableau de bord analytique et insights"
+          },
+          "members": {
+            "title": "Portefeuilles Membres",
+            "description": "Voir les soldes et l'historique des membres"
+          }
+        },
+        "recentActivity": {
+          "title": "Activité Récente",
+          "description": "Derniers prix et échanges dans l'organisation",
+          "placeholder": "Flux d'activité à venir"
+        }
+      },
+      "programs": {
+        "title": "Programmes de Reconnaissance",
+        "description": "Créer et gérer des programmes de reconnaissance et leurs types de prix",
+        "backToAdmin": "Retour à l'Administration",
+        "list": {
+          "title": "Tous les Programmes",
+          "description": "Configurer les programmes, types de prix et flux d'approbation",
+          "empty": "Aucun programme créé pour le moment",
+          "columns": {
+            "name": "Nom du Programme",
+            "status": "Statut",
+            "created": "Créé",
+            "actions": "Actions"
+          },
+          "actions": {
+            "open": "Ouvrir le menu",
+            "edit": "Modifier",
+            "archive": "Archiver",
+            "activate": "Activer"
+          }
+        },
+        "create": {
+          "button": "Créer un Programme",
+          "title": "Créer un Programme de Reconnaissance",
+          "description": "Configurer un nouveau programme de reconnaissance pour votre organisation",
+          "fields": {
+            "name": "Nom du Programme",
+            "namePlaceholder": "ex., Employé du Mois",
+            "description": "Description",
+            "descriptionPlaceholder": "Décrivez l'objectif et les critères de ce programme...",
+            "status": "Statut",
+            "statusDraft": "Brouillon",
+            "statusActive": "Actif"
+          },
+          "cancel": "Annuler",
+          "submit": "Créer le Programme",
+          "error": "Échec de la création du programme",
+          "errorUnknown": "Une erreur s'est produite"
+        }
+      },
+      "awards": {
+        "title": "Gestion des Prix",
+        "description": "Réviser, approuver et émettre des prix de reconnaissance aux membres",
+        "backToAdmin": "Retour à l'Administration",
+        "tabs": {
+          "pending": "En Attente d'Approbation",
+          "approved": "Approuvés",
+          "issued": "Émis"
+        },
+        "pending": {
+          "title": "Approbations en Attente",
+          "description": "Prix en attente d'approbation de la direction"
+        },
+        "approved": {
+          "title": "Prix Approuvés",
+          "description": "Prix approuvés et prêts à être émis"
+        },
+        "issued": {
+          "title": "Prix Émis",
+          "description": "Prix qui ont été émis aux membres"
+        },
+        "queue": {
+          "empty": "Aucun prix dans ce statut",
+          "columns": {
+            "recipient": "Destinataire",
+            "award": "Type de Prix",
+            "credits": "Crédits",
+            "date": "Date",
+            "actions": "Actions"
+          },
+          "actions": {
+            "approve": "Approuver",
+            "reject": "Rejeter",
+            "issue": "Émettre"
+          }
+        },
+        "create": {
+          "button": "Créer un Prix"
+        }
+      },
+      "budgets": {
+        "title": "Gestion des Budgets",
+        "description": "Allouer des budgets et suivre les dépenses dans les programmes",
+        "backToAdmin": "Retour à l'Administration",
+        "usage": {
+          "ongoing": "En cours",
+          "used": "Utilisé",
+          "utilized": "utilisé",
+          "remaining": "restant"
+        },
+        "list": {
+          "title": "Toutes les Enveloppes Budgétaires",
+          "description": "Configurer les allocations budgétaires pour les programmes de reconnaissance",
+          "empty": "Aucune enveloppe budgétaire créée pour le moment",
+          "ongoing": "En cours",
+          "columns": {
+            "name": "Nom",
+            "allocated": "Alloué",
+            "used": "Utilisé",
+            "remaining": "Restant",
+            "period": "Période"
+          }
+        },
+        "create": {
+          "button": "Créer un Budget"
+        }
+      },
+      "shopify": {
+        "title": "Configuration Shopify",
+        "description": "Configurer l'intégration Shop Moi Ça pour les échanges de membres",
+        "backToAdmin": "Retour à l'Administration",
+        "status": {
+          "title": "État de la Connexion",
+          "description": "État actuel de l'intégration Shopify",
+          "connected": "Connecté",
+          "error": "Erreur de Connexion",
+          "notConfigured": "Non Configuré",
+          "checklist": "Liste de Vérification de Configuration",
+          "configured": "Configuré",
+          "missing": "Manquant",
+          "test": "Tester la Connexion"
+        },
+        "webhooks": {
+          "title": "Configuration des Webhooks",
+          "description": "Configurer les webhooks dans votre admin Shopify pour recevoir les mises à jour de commandes",
+          "instructionsTitle": "Instructions de Configuration",
+          "step1": "1. Allez dans Admin Shopify → Paramètres → Notifications",
+          "step2": "2. Faites défiler jusqu'à la section Webhooks et ajoutez ce qui suit:",
+          "copy": "Copier"
+        },
+        "setup": {
+          "title": "Guide de Configuration",
+          "description": "Ajoutez ces variables d'environnement à votre fichier .env"
+        }
+      }
+    }
+  }
+}

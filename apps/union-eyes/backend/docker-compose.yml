@@ -1,0 +1,152 @@
+# Nzila Vertical App - Docker Compose
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: {{project_name}}
+      POSTGRES_USER: nzilaadmin
+      POSTGRES_PASSWORD: devpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://nzilaadmin:devpassword@db:5432/{{project_name}}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  # -----------------------------------------------------------------
+  # Celery workers — one service per queue group for independent scaling
+  # -----------------------------------------------------------------
+  celery-worker-messaging:
+    build: .
+    command: >
+      celery -A config worker
+        --queues=email,sms
+        --concurrency=5
+        --loglevel=info
+        --hostname=messaging@%h
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://nzilaadmin:devpassword@db:5432/{{project_name}}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - web
+
+  celery-worker-notifications:
+    build: .
+    command: >
+      celery -A config worker
+        --queues=notifications
+        --concurrency=10
+        --loglevel=info
+        --hostname=notifications@%h
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://nzilaadmin:devpassword@db:5432/{{project_name}}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - web
+
+  celery-worker-reports:
+    build: .
+    command: >
+      celery -A config worker
+        --queues=reports
+        --concurrency=2
+        --loglevel=info
+        --hostname=reports@%h
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://nzilaadmin:devpassword@db:5432/{{project_name}}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - web
+
+  celery-worker-ops:
+    build: .
+    command: >
+      celery -A config worker
+        --queues=cleanup,billing
+        --concurrency=2
+        --loglevel=info
+        --hostname=ops@%h
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://nzilaadmin:devpassword@db:5432/{{project_name}}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - web
+
+  celery-beat:
+    build: .
+    command: >
+      celery -A config beat
+        --loglevel=info
+        --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://nzilaadmin:devpassword@db:5432/{{project_name}}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - web
+
+  # -----------------------------------------------------------------
+  # Frontend
+  # -----------------------------------------------------------------
+  frontend:
+    build: ../frontend
+    command: pnpm dev
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - DJANGO_API_URL=http://web:8000   # used by lib/job-queue.ts HTTP client
+
+volumes:
+  postgres_data:
+  redis_data:

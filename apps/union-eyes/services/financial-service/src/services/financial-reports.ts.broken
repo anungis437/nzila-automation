@@ -1,0 +1,426 @@
+import { db } from '../db';
+import { schema } from '../db/schema';
+import { sql, and, eq, gte, lte, desc } from 'drizzle-orm';
+
+export interface DateRange {
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface CollectionMetrics {
+  totalDuesCharged: number;
+  totalCollected: number;
+  collectionRate: number;
+  outstandingAmount: number;
+  membersPaying: number;
+  totalMembers: number;
+  paymentRate: number;
+  averagePaymentTime: number; // days
+}
+
+export interface ArrearsStatistics {
+  totalCases: number;
+  totalOwed: number;
+  casesByStatus: Record<string, number>;
+  casesByEscalationLevel: Record<number, number>;
+  averageDaysOverdue: number;
+  oldestCase: {
+    id: string;
+    memberId: string;
+    daysOverdue: number;
+    totalOwed: number;
+  } | null;
+}
+
+export interface RevenueAnalysis {
+  totalRevenue: number;
+  revenueByMonth: Array<{
+    month: string;
+    amount: number;
+    transactionCount: number;
+  }>;
+  revenueByType: Record<string, number>;
+  growthRate: number; // percentage
+}
+
+export interface MemberPaymentPattern {
+  memberId: string;
+  totalTransactions: number;
+  totalPaid: number;
+  averagePaymentAmount: number;
+  onTimePayments: number;
+  latePayments: number;
+  missedPayments: number;
+  paymentReliabilityScore: number; // 0-100
+  lastPaymentDate: Date | null;
+}
+
+/**
+ * Calculate collection metrics for a given date range
+ */
+export async function getCollectionMetrics(
+  tenantId: string,
+  dateRange: DateRange
+): Promise<CollectionMetrics> {
+  try {
+    const { startDate, endDate } = dateRange;
+// Total dues charged in period
+    const chargedResult = await db.execute<{ total: string; count: string }>(sql`
+      SELECT 
+        COALESCE(SUM(amount), 0) as total,
+        COUNT(DISTINCT member_id) as count
+      FROM dues_transactions
+      WHERE tenant_id = ${tenantId}
+        AND transaction_type = 'charge'
+        AND due_date >= ${startDate.toISOString()}
+        AND due_date <= ${endDate.toISOString()}
+    `);
+
+    const totalDuesCharged = Number(chargedResult.rows[0]?.total || 0);
+    const totalMembers = Number(chargedResult.rows[0]?.count || 0);
+
+  // Total collected in period (payments)
+  const collectedResult = await db.execute<{ total: string; count: string }>(sql`
+    SELECT 
+      COALESCE(SUM(amount), 0) as total,
+      COUNT(DISTINCT member_id) as count
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND transaction_type = 'payment'
+      AND payment_date >= ${startDate.toISOString()}
+      AND payment_date <= ${endDate.toISOString()}
+  `);
+
+  const totalCollected = Number(collectedResult.rows[0]?.total || 0);
+  const membersPaying = Number(collectedResult.rows[0]?.count || 0);
+
+  // Outstanding (pending) transactions
+  const outstandingResult = await db.execute<{ total: string }>(sql`
+    SELECT COALESCE(SUM(amount), 0) as total
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND status = 'pending'
+      AND due_date <= ${endDate.toISOString()}
+  `);
+
+  const outstandingAmount = Number(outstandingResult.rows[0]?.total || 0);
+
+  // Average payment time (days from due date to payment date)
+  const paymentTimeResult = await db.execute<{ avg_days: string }>(sql`
+    SELECT AVG(EXTRACT(DAY FROM (payment_date - due_date))) as avg_days
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND transaction_type = 'charge'
+      AND status = 'paid'
+      AND payment_date IS NOT NULL
+      AND due_date >= ${startDate.toISOString()}
+      AND due_date <= ${endDate.toISOString()}
+  `);
+
+  const averagePaymentTime = Number(paymentTimeResult.rows[0]?.avg_days || 0);
+
+  const collectionRate = totalDuesCharged > 0 
+    ? (totalCollected / totalDuesCharged) * 100 
+    : 0;
+
+  const paymentRate = totalMembers > 0 
+    ? (membersPaying / totalMembers) * 100 
+    : 0;
+
+    return {
+      totalDuesCharged,
+      totalCollected,
+      collectionRate: Math.round(collectionRate * 100) / 100,
+      outstandingAmount,
+      membersPaying,
+      totalMembers,
+      paymentRate: Math.round(paymentRate * 100) / 100,
+      averagePaymentTime: Math.round(averagePaymentTime * 10) / 10,
+    };
+  } catch (error) {
+throw error;
+  }
+}
+
+/**
+ * Get arrears statistics
+ */
+export async function getArrearsStatistics(
+  tenantId: string
+): Promise<ArrearsStatistics> {
+  try {
+// Total cases and amount
+    const totalResult = await db.execute<{ count: string; total: string }>(sql`
+    SELECT 
+      COUNT(*) as count,
+      COALESCE(SUM(CAST(total_owed AS DECIMAL)), 0) as total
+    FROM arrears_cases
+    WHERE tenant_id = ${tenantId}
+      AND status NOT IN ('resolved', 'written_off')
+  `);
+
+  const totalCases = Number(totalResult.rows[0]?.count || 0);
+  const totalOwed = Number(totalResult.rows[0]?.total || 0);
+
+  // Cases by status
+  const statusResult = await db.execute<{ status: string; count: string }>(sql`
+    SELECT status, COUNT(*) as count
+    FROM arrears_cases
+    WHERE tenant_id = ${tenantId}
+      AND status NOT IN ('resolved', 'written_off')
+    GROUP BY status
+  `);
+
+  const casesByStatus: Record<string, number> = {};
+  for (const row of statusResult.rows) {
+    casesByStatus[row.status] = Number(row.count);
+  }
+
+  // Cases by escalation level
+  const escalationResult = await db.execute<{ level: string; count: string }>(sql`
+    SELECT 
+      COALESCE(CAST(escalation_level AS INTEGER), 0) as level,
+      COUNT(*) as count
+    FROM arrears_cases
+    WHERE tenant_id = ${tenantId}
+      AND status NOT IN ('resolved', 'written_off')
+    GROUP BY escalation_level
+  `);
+
+  const casesByEscalationLevel: Record<number, number> = {};
+  for (const row of escalationResult.rows) {
+    casesByEscalationLevel[Number(row.level)] = Number(row.count);
+  }
+
+  // Average days overdue
+  const avgDaysResult = await db.execute<{ avg_days: string }>(sql`
+    SELECT AVG(CAST(days_overdue AS DECIMAL)) as avg_days
+    FROM arrears_cases
+    WHERE tenant_id = ${tenantId}
+      AND status NOT IN ('resolved', 'written_off')
+      AND days_overdue IS NOT NULL
+  `);
+
+  const averageDaysOverdue = Number(avgDaysResult.rows[0]?.avg_days || 0);
+
+  // Oldest case
+  const oldestResult = await db.execute<{
+    id: string;
+    member_id: string;
+    days_overdue: string;
+    total_owed: string;
+  }>(sql`
+    SELECT id, member_id, days_overdue, total_owed
+    FROM arrears_cases
+    WHERE tenant_id = ${tenantId}
+      AND status NOT IN ('resolved', 'written_off')
+      AND days_overdue IS NOT NULL
+    ORDER BY CAST(days_overdue AS INTEGER) DESC
+    LIMIT 1
+  `);
+
+  const oldestCase = oldestResult.rows.length > 0
+    ? {
+        id: oldestResult.rows[0].id,
+        memberId: oldestResult.rows[0].member_id,
+        daysOverdue: Number(oldestResult.rows[0].days_overdue),
+        totalOwed: Number(oldestResult.rows[0].total_owed),
+      }
+    : null;
+
+    return {
+      totalCases,
+      totalOwed: Math.round(totalOwed * 100) / 100,
+      casesByStatus,
+      casesByEscalationLevel,
+      averageDaysOverdue: Math.round(averageDaysOverdue * 10) / 10,
+      oldestCase,
+    };
+  } catch (error) {
+throw error;
+  }
+}
+
+/**
+ * Analyze revenue trends over time
+ */
+export async function getRevenueAnalysis(
+  tenantId: string,
+  dateRange: DateRange
+): Promise<RevenueAnalysis> {
+  try {
+    const { startDate, endDate } = dateRange;
+const { startDate, endDate } = dateRange;
+// Total revenue from payments
+    const totalResult = await db.execute<{ total: string }>(sql`
+    SELECT COALESCE(SUM(amount), 0) as total
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND transaction_type = 'payment'
+      AND payment_date >= ${startDate.toISOString()}
+      AND payment_date <= ${endDate.toISOString()}
+  `);
+
+  const totalRevenue = Number(totalResult.rows[0]?.total || 0);
+
+  // Revenue by month
+  const monthlyResult = await db.execute<{
+    month: string;
+    amount: string;
+    count: string;
+  }>(sql`
+    SELECT 
+      TO_CHAR(payment_date, 'YYYY-MM') as month,
+      SUM(amount) as amount,
+      COUNT(*) as count
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND transaction_type = 'payment'
+      AND payment_date >= ${startDate.toISOString()}
+      AND payment_date <= ${endDate.toISOString()}
+    GROUP BY TO_CHAR(payment_date, 'YYYY-MM')
+    ORDER BY month ASC
+  `);
+
+  const revenueByMonth = monthlyResult.rows.map(row => ({
+    month: row.month,
+    amount: Number(row.amount),
+    transactionCount: Number(row.count),
+  }));
+
+  // Revenue by transaction type
+  const typeResult = await db.execute<{ type: string; amount: string }>(sql`
+    SELECT 
+      transaction_type as type,
+      SUM(amount) as amount
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND payment_date >= ${startDate.toISOString()}
+      AND payment_date <= ${endDate.toISOString()}
+    GROUP BY transaction_type
+  `);
+
+  const revenueByType: Record<string, number> = {};
+  for (const row of typeResult.rows) {
+    revenueByType[row.type] = Number(row.amount);
+  }
+
+    // Calculate growth rate (compare first month to last month)
+    let growthRate = 0;
+    if (revenueByMonth.length >= 2) {
+      const firstMonth = revenueByMonth[0].amount;
+      const lastMonth = revenueByMonth[revenueByMonth.length - 1].amount;
+      if (firstMonth > 0) {
+        growthRate = ((lastMonth - firstMonth) / firstMonth) * 100;
+      }
+    }
+
+    return {
+      totalRevenue: Math.round(totalRevenue * 100) / 100,
+      revenueByMonth,
+      revenueByType,
+      growthRate: Math.round(growthRate * 100) / 100,
+    };
+  } catch (error) {
+throw error;
+  }
+}
+
+/**
+ * Analyze payment patterns for members
+ */
+export async function getMemberPaymentPatterns(
+  tenantId: string,
+  dateRange: DateRange,
+  limit: number = 100
+): Promise<MemberPaymentPattern[]> {
+  try {
+    const { startDate, endDate } = dateRange;
+const result = await db.execute<{
+    member_id: string;
+    total_transactions: string;
+    total_paid: string;
+    avg_payment: string;
+    on_time: string;
+    late: string;
+    missed: string;
+    last_payment: Date | null;
+  }>(sql`
+    SELECT 
+      member_id,
+      COUNT(*) as total_transactions,
+      COALESCE(SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END), 0) as total_paid,
+      COALESCE(AVG(CASE WHEN status = 'paid' THEN amount END), 0) as avg_payment,
+      COUNT(CASE WHEN status = 'paid' AND payment_date <= due_date THEN 1 END) as on_time,
+      COUNT(CASE WHEN status = 'paid' AND payment_date > due_date THEN 1 END) as late,
+      COUNT(CASE WHEN status = 'pending' AND due_date < CURRENT_DATE THEN 1 END) as missed,
+      MAX(payment_date) as last_payment
+    FROM dues_transactions
+    WHERE tenant_id = ${tenantId}
+      AND transaction_type = 'charge'
+      AND due_date >= ${startDate.toISOString()}
+      AND due_date <= ${endDate.toISOString()}
+    GROUP BY member_id
+    ORDER BY total_paid DESC
+    LIMIT ${limit}
+  `);
+
+  return result.rows.map(row => {
+    const totalTransactions = Number(row.total_transactions);
+    const onTime = Number(row.on_time);
+    const late = Number(row.late);
+    const missed = Number(row.missed);
+
+    // Calculate reliability score (on-time payments weighted higher)
+    const paymentReliabilityScore = totalTransactions > 0
+      ? Math.round(((onTime * 1.0 + late * 0.5) / totalTransactions) * 100)
+      : 0;
+
+      return {
+        memberId: row.member_id,
+        totalTransactions,
+        totalPaid: Math.round(Number(row.total_paid) * 100) / 100,
+        averagePaymentAmount: Math.round(Number(row.avg_payment) * 100) / 100,
+        onTimePayments: onTime,
+        latePayments: late,
+        missedPayments: missed,
+        paymentReliabilityScore,
+        lastPaymentDate: row.last_payment,
+      };
+    });
+  } catch (error) {
+throw error;
+  }
+}
+
+/**
+ * Get top-level financial dashboard summary
+ */
+export async function getFinancialDashboard(
+  tenantId: string,
+  dateRange: DateRange
+) {
+  try {
+const [
+    collectionMetrics,
+    arrearsStats,
+    revenueAnalysis,
+    topPayers
+  ] = await Promise.all([
+    getCollectionMetrics(tenantId, dateRange),
+    getArrearsStatistics(tenantId),
+    getRevenueAnalysis(tenantId, dateRange),
+    getMemberPaymentPatterns(tenantId, dateRange, 10),
+  ]);
+
+    return {
+      collectionMetrics,
+      arrearsStats,
+      revenueAnalysis,
+      topPayers,
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+throw error;
+  }
+}

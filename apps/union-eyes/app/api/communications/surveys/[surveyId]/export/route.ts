@@ -1,0 +1,18 @@
+/**
+ * GET /api/communications/surveys/[surveyId]/export
+ * -> Django notifications: /api/notifications/campaigns/
+ * NOTE: auto-resolved from communications/surveys/[surveyId]/export
+ * Auto-migrated by scripts/migrate_routes.py
+ */
+import { NextRequest, NextResponse } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+
+export const dynamic = 'force-dynamic';
+
+type Params = { params: Promise<{ surveyId: string }> };
+
+export async function GET(req: NextRequest, { params }: Params) {
+  const { surveyId } = await params;
+  return djangoProxy(req, '/api/notifications/campaigns/' + surveyId + '/');
+}
+

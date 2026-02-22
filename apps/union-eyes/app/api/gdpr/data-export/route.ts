@@ -1,0 +1,232 @@
+﻿// @ts-nocheck
+/**
+ * GDPR Data Export API (Article 15)
+ * POST /api/gdpr/data-export - Request data export
+ * GET /api/gdpr/data-export - Download exported data
+ */
+
+import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { withApiAuth, getCurrentUser } from '@/lib/api-auth-guard';
+import { GdprRequestManager } from "@/lib/gdpr/consent-manager";
+import { getReportQueue } from "@/lib/job-queue";
+import { logger } from "@/lib/logger";
+import fs from "fs";
+import path from "path";
+
+import {
+  ErrorCode,
+  standardErrorResponse,
+  standardSuccessResponse,
+} from '@/lib/api/standardized-responses';
+/**
+ * Request data export
+ */
+
+const gdprDataExportSchema = z.object({
+  organizationId: z.string().uuid('Invalid organizationId'),
+  preferredFormat: z.unknown().optional(),
+  requestDetails: z.unknown().optional(),
+});
+
+export const POST = withApiAuth(async (request: NextRequest) => {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.id) {
+      return standardErrorResponse(
+      ErrorCode.AUTH_REQUIRED,
+      'Unauthorized'
+    );
+    }
+    
+    const userId = user.id;
+    const body = await request.json();
+    // Validate request body
+    const validation = gdprDataExportSchema.safeParse(body);
+    if (!validation.success) {
+      return standardErrorResponse(
+        ErrorCode.VALIDATION_ERROR,
+        'Invalid request data',
+        validation.error.errors
+      );
+    }
+    
+    const { organizationId, preferredFormat, requestDetails } = validation.data;
+    const format = preferredFormat || "json";
+
+    if (!organizationId) {
+      return standardErrorResponse(
+      ErrorCode.MISSING_REQUIRED_FIELD,
+      'Organization ID required'
+    );
+    }
+
+    if (!['json', 'csv', 'xml'].includes(format)) {
+      return NextResponse.json(
+        { error: "Unsupported export format" },
+        { status: 400 }
+      );
+    }
+
+    // Create data access request
+    const request = await GdprRequestManager.requestDataAccess({
+      userId: userId,
+      organizationId,
+      requestDetails: {
+        preferredFormat: format,
+        ...requestDetails,
+      },
+      verificationMethod: "email",
+    });
+
+    await GdprRequestManager.updateRequestStatus(request.id, "in_progress", {
+      processedBy: "system",
+    });
+
+    try {
+      const queue = getReportQueue();
+      if (!queue) {
+        throw new Error("Report queue not available");
+      }
+
+      await queue.add(
+        "gdpr-export",
+        {
+          reportType: "gdpr_export",
+          organizationId,
+          userId,
+          parameters: {
+            requestId: request.id,
+            format,
+          },
+        },
+        {
+          attempts: 3,
+          backoff: { type: "exponential", delay: 5000 },
+          removeOnComplete: { count: 1000 },
+          removeOnFail: { count: 2000 },
+        }
+      );
+    } catch (queueError) {
+      logger.error("Failed to queue GDPR export job", queueError as Error);
+    }
+
+    return NextResponse.json({
+      success: true,
+      requestId: request.id,
+      status: "processing",
+      message: "Your data export request has been received and is being processed",
+      estimatedCompletion: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+  } catch (error) {
+return standardErrorResponse(
+      ErrorCode.INTERNAL_ERROR,
+      'Failed to process data export request',
+      error
+    );
+  }
+});
+
+/**
+ * Download exported data
+ */
+export const GET = withApiAuth(async (request: NextRequest) => {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.id) {
+      return standardErrorResponse(
+      ErrorCode.AUTH_REQUIRED,
+      'Unauthorized'
+    );
+    }
+    
+    const userId = user.id;
+    const { searchParams } = new URL(request.url);
+    const requestId = searchParams.get("requestId");
+    const organizationIdFromQuery = searchParams.get("organizationId") ?? searchParams.get("orgId") ?? searchParams.get("organization_id") ?? searchParams.get("org_id");
+
+    if (!requestId || !organizationIdFromQuery) {
+      return standardErrorResponse(
+      ErrorCode.MISSING_REQUIRED_FIELD,
+      'Request ID and Organization ID required'
+    );
+    }
+
+    // Get request status
+    const requests = await GdprRequestManager.getUserRequests(userId, organizationIdFromQuery);
+    const request = requests.find((r) => r.id === requestId);
+
+    if (!request) {
+      return standardErrorResponse(
+      ErrorCode.RESOURCE_NOT_FOUND,
+      'Request not found'
+    );
+    }
+
+    if (request.status !== "completed") {
+      return standardSuccessResponse(
+      { 
+          status: request.status,
+          message: "Export is still being processed",
+         },
+      undefined,
+      202
+    );
+    }
+
+    const responseData = request.responseData as Record<string, unknown>;
+    const fileName = responseData?.fileName as string | undefined;
+    const expiresAt = responseData?.expiresAt ? new Date(responseData.expiresAt as string | number) : null;
+
+    if (expiresAt && expiresAt.getTime() < Date.now()) {
+      return NextResponse.json(
+        { error: "Export link has expired" },
+        { status: 410 }
+      );
+    }
+
+    if (!fileName) {
+      return NextResponse.json(
+        { error: "Export file not available" },
+        { status: 404 }
+      );
+    }
+
+    const reportsDir = process.env.REPORTS_DIR || "./reports";
+    const filePath = path.join(reportsDir, fileName);
+
+    const stat = await fs.promises.stat(filePath).catch(() => null);
+    if (!stat) {
+      return standardErrorResponse(
+      ErrorCode.RESOURCE_NOT_FOUND,
+      'Export file not found'
+    );
+    }
+
+    const format = request.requestDetails?.preferredFormat || "json";
+    const contentType = format === "csv"
+      ? "text/csv"
+      : format === "xml"
+      ? "application/xml"
+      : "application/json";
+
+    const stream = fs.createReadStream(filePath);
+
+    return new NextResponse(stream as unknown as ReadableStream, {
+      status: 200,
+      headers: {
+        "Content-Type": contentType,
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Length": stat.size.toString(),
+      },
+    });
+  } catch (error) {
+    logger.error('Data export request error', error as Error);
+    return standardErrorResponse(
+      ErrorCode.INTERNAL_ERROR,
+      'Failed to download data export',
+      error
+    );
+  }
+});
+

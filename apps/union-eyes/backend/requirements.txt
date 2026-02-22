@@ -1,0 +1,40 @@
+# Django
+Django>=5.1.0,<5.2.0
+djangorestframework>=3.15.0
+django-cors-headers>=4.3.0
+django-filter>=23.5
+psycopg2-binary>=2.9.9
+
+# Celery (for background tasks)
+celery[redis]>=5.3.4
+redis>=5.0.1
+django-redis>=5.4.0
+django-celery-beat>=2.6.0
+django-celery-results>=2.5.1
+
+# Azure integrations
+azure-identity>=1.15.0
+azure-storage-blob>=12.19.0
+azure-keyvault-secrets>=4.7.0
+
+# SMS
+twilio>=8.0.0
+
+# Clerk authentication
+pyjwt>=2.8.0
+cryptography>=41.0.7
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Development
+pytest>=7.4.3
+pytest-django>=4.7.0
+black>=23.12.1
+flake8>=7.0.0
+
+# Union Eyes specific
+scikit-learn>=1.4.0
+pandas>=2.2.0
+numpy>=1.26.3

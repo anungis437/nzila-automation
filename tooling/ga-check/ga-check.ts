@@ -396,7 +396,7 @@ const checkVerticalEvidenceJobsWired = runGate('VERTICAL-EVIDENCE-WIRED', 'Evide
   }
 })
 
-
+const checkGovernanceWorkflow = runGate('CI-GOVERNANCE-WF', 'CI gates: Governance workflow exists', 'ci-gates', () => {
   const govPath = join(ROOT, '.github/workflows/nzila-governance.yml')
   const ciPath = join(ROOT, '.github/workflows/ci.yml')
 

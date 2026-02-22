@@ -1,0 +1,417 @@
+import { Resend } from "resend";
+import RegistrationConfirmationEmail from "@/emails/training/registration-confirmation";
+import SessionReminderEmail from "@/emails/training/session-reminder";
+import CompletionCertificateEmail from "@/emails/training/completion-certificate";
+import CertificationExpiryWarningEmail from "@/emails/training/certification-expiry-warning";
+import ProgramMilestoneEmail from "@/emails/training/program-milestone";
+
+// Lazy initialization to avoid build-time errors
+let resend: Resend | null = null;
+function getResend() {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
+
+const fromEmail = process.env.RESEND_FROM_EMAIL || "training@union.org";
+const unionName = process.env.NEXT_PUBLIC_UNION_NAME || "Union";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+interface SendEmailResult {
+  success: boolean;
+  error?: string;
+  messageId?: string;
+}
+
+/**
+ * Send course registration confirmation email
+ */
+export async function sendRegistrationConfirmation({
+  toEmail,
+  memberName,
+  courseName,
+  courseCode,
+  registrationDate,
+  startDate,
+  endDate,
+  instructorName,
+  location,
+  totalHours,
+}: {
+  toEmail: string;
+  memberName: string;
+  courseName: string;
+  courseCode: string;
+  registrationDate: string;
+  startDate?: string;
+  endDate?: string;
+  instructorName?: string;
+  location?: string;
+  totalHours?: number;
+}): Promise<SendEmailResult> {
+  try {
+    const { data, error } = await getResend().emails.send({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `Registration Confirmed: ${courseName}`,
+      react: RegistrationConfirmationEmail({
+        memberName,
+        courseName,
+        courseCode,
+        registrationDate,
+        startDate,
+        endDate,
+        instructorName,
+        location,
+        totalHours,
+        dashboardUrl: `${baseUrl}/education`,
+        unionName,
+      }),
+    });
+
+    if (error) {
+return { success: false, error: error.message };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Send session reminder email (7, 3, or 1 day before)
+ */
+export async function sendSessionReminder({
+  toEmail,
+  memberName,
+  courseName,
+  sessionDate,
+  sessionTime,
+  daysUntilSession,
+  location,
+  instructorName,
+  sessionDuration,
+  materialsNeeded,
+  specialInstructions,
+}: {
+  toEmail: string;
+  memberName: string;
+  courseName: string;
+  sessionDate: string;
+  sessionTime: string;
+  daysUntilSession: number;
+  location?: string;
+  instructorName?: string;
+  sessionDuration?: number;
+  materialsNeeded?: string[];
+  specialInstructions?: string;
+}): Promise<SendEmailResult> {
+  try {
+    const reminderType =
+      daysUntilSession === 1 ? "Tomorrow" : `${daysUntilSession} Days`;
+    
+    const { data, error } = await getResend().emails.send({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `Reminder: Training Session in ${reminderType} - ${courseName}`,
+      react: SessionReminderEmail({
+        memberName,
+        courseName,
+        sessionDate,
+        sessionTime,
+        daysUntilSession,
+        location,
+        instructorName,
+        sessionDuration,
+        materialsNeeded,
+        specialInstructions,
+        dashboardUrl: `${baseUrl}/education`,
+        unionName,
+      }),
+    });
+
+    if (error) {
+return { success: false, error: error.message };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Send course completion certificate email
+ */
+export async function sendCompletionCertificate({
+  toEmail,
+  memberName,
+  courseName,
+  courseCode,
+  completionDate,
+  finalGrade,
+  totalHours,
+  certificateNumber,
+  certificateUrl,
+  continuingEducationHours,
+  clcApproved,
+}: {
+  toEmail: string;
+  memberName: string;
+  courseName: string;
+  courseCode: string;
+  completionDate: string;
+  finalGrade?: number;
+  totalHours?: number;
+  certificateNumber: string;
+  certificateUrl: string;
+  continuingEducationHours?: number;
+  clcApproved?: boolean;
+}): Promise<SendEmailResult> {
+  try {
+    const { data, error } = await getResend().emails.send({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `Congratulations! Course Completed: ${courseName}`,
+      react: CompletionCertificateEmail({
+        memberName,
+        courseName,
+        courseCode,
+        completionDate,
+        finalGrade,
+        totalHours,
+        certificateNumber,
+        certificateUrl,
+        continuingEducationHours,
+        clcApproved,
+        dashboardUrl: `${baseUrl}/education`,
+        unionName,
+      }),
+    });
+
+    if (error) {
+return { success: false, error: error.message };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Send certification expiry warning email (90 or 30 days before)
+ */
+export async function sendCertificationExpiryWarning({
+  toEmail,
+  memberName,
+  certificationName,
+  certificateNumber,
+  expiryDate,
+  daysUntilExpiry,
+  continuingEducationHours,
+  renewalRequirements,
+  renewalCourseUrl,
+}: {
+  toEmail: string;
+  memberName: string;
+  certificationName: string;
+  certificateNumber: string;
+  expiryDate: string;
+  daysUntilExpiry: number;
+  continuingEducationHours?: number;
+  renewalRequirements?: string[];
+  renewalCourseUrl?: string;
+}): Promise<SendEmailResult> {
+  try {
+    const urgencyLevel = daysUntilExpiry <= 30 ? "URGENT" : "Important";
+    
+    const { data, error } = await getResend().emails.send({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `${urgencyLevel}: Certification Expires in ${daysUntilExpiry} Days - ${certificationName}`,
+      react: CertificationExpiryWarningEmail({
+        memberName,
+        certificationName,
+        certificateNumber,
+        expiryDate,
+        daysUntilExpiry,
+        continuingEducationHours,
+        renewalRequirements,
+        renewalCourseUrl,
+        dashboardUrl: `${baseUrl}/education`,
+        unionName,
+      }),
+    });
+
+    if (error) {
+return { success: false, error: error.message };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Send program milestone achievement email
+ */
+export async function sendProgramMilestone({
+  toEmail,
+  memberName,
+  programName,
+  milestoneTitle,
+  completionPercentage,
+  coursesCompleted,
+  coursesRequired,
+  hoursCompleted,
+  hoursRequired,
+  currentLevel,
+  nextLevel,
+  mentorName,
+  achievementDate,
+  nextMilestone,
+}: {
+  toEmail: string;
+  memberName: string;
+  programName: string;
+  milestoneTitle: string;
+  completionPercentage: number;
+  coursesCompleted: number;
+  coursesRequired: number;
+  hoursCompleted: number;
+  hoursRequired: number;
+  currentLevel?: string;
+  nextLevel?: string;
+  mentorName?: string;
+  achievementDate: string;
+  nextMilestone?: string;
+}): Promise<SendEmailResult> {
+  try {
+    const { data, error } = await getResend().emails.send({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `Milestone Achieved: ${milestoneTitle} - ${programName}`,
+      react: ProgramMilestoneEmail({
+        memberName,
+        programName,
+        milestoneTitle,
+        completionPercentage,
+        coursesCompleted,
+        coursesRequired,
+        hoursCompleted,
+        hoursRequired,
+        currentLevel,
+        nextLevel,
+        mentorName,
+        achievementDate,
+        nextMilestone,
+        dashboardUrl: `${baseUrl}/education`,
+        unionName,
+      }),
+    });
+
+    if (error) {
+return { success: false, error: error.message };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Batch send session reminders (for cron jobs)
+ */
+export async function batchSendSessionReminders(
+  reminders: Array<{
+    toEmail: string;
+    memberName: string;
+    courseName: string;
+    sessionDate: string;
+    sessionTime: string;
+    daysUntilSession: number;
+    location?: string;
+    instructorName?: string;
+    sessionDuration?: number;
+  }>
+): Promise<{ sent: number; failed: number; errors: string[] }> {
+  const results = {
+    sent: 0,
+    failed: 0,
+    errors: [] as string[],
+  };
+
+  for (const reminder of reminders) {
+    const result = await sendSessionReminder(reminder);
+    if (result.success) {
+      results.sent++;
+    } else {
+      results.failed++;
+      if (result.error) {
+        results.errors.push(`${reminder.toEmail}: ${result.error}`);
+      }
+    }
+    // Rate limiting: wait 100ms between sends
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return results;
+}
+
+/**
+ * Batch send certification expiry warnings (for cron jobs)
+ */
+export async function batchSendExpiryWarnings(
+  warnings: Array<{
+    toEmail: string;
+    memberName: string;
+    certificationName: string;
+    certificateNumber: string;
+    expiryDate: string;
+    daysUntilExpiry: number;
+  }>
+): Promise<{ sent: number; failed: number; errors: string[] }> {
+  const results = {
+    sent: 0,
+    failed: 0,
+    errors: [] as string[],
+  };
+
+  for (const warning of warnings) {
+    const result = await sendCertificationExpiryWarning(warning);
+    if (result.success) {
+      results.sent++;
+    } else {
+      results.failed++;
+      if (result.error) {
+        results.errors.push(`${warning.toEmail}: ${result.error}`);
+      }
+    }
+    // Rate limiting: wait 100ms between sends
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return results;
+}
+
+

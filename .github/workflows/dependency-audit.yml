@@ -51,7 +51,7 @@ jobs:
       - name: Capture high-severity audit report
         if: always()
         run: |
-          pnpm audit --audit-level=high --json > audit-report-high.json 2>/dev/null || true
+          set +e; pnpm audit --audit-level=high --json > audit-report-high.json 2>/dev/null; set -e
           echo "High/critical audit report written to audit-report-high.json"
 
       - name: Enforce vulnerability waiver policy

@@ -1,0 +1,19 @@
+/**
+ * GET POST /api/financial/reports/balance-sheet
+ * -> Django billing: /api/billing/per-capita-remittances/
+ * NOTE: auto-resolved from financial/reports/balance-sheet
+ * Auto-migrated by scripts/migrate_routes.py
+ */
+import { NextRequest } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+
+export const dynamic = 'force-dynamic';
+
+export function GET(req: NextRequest) {
+  return djangoProxy(req, '/api/billing/per-capita-remittances/');
+}
+
+export function POST(req: NextRequest) {
+  return djangoProxy(req, '/api/billing/per-capita-remittances/', { method: 'POST' });
+}
+

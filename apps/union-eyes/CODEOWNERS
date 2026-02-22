@@ -1,0 +1,24 @@
+# CODEOWNERS — Union Eyes
+#
+# Protect governance-critical paths.
+
+# Evidence & compliance scripts
+/frontend/scripts/evidence/       @nzila-os/security
+/evidence/                        @nzila-os/security
+
+# CI / CD workflows
+/.github/workflows/               @nzila-os/platform @nzila-os/security
+
+# Auth & Org boundary
+/frontend/lib/db-adapter.ts       @nzila-os/platform
+/backend/auth_core/               @nzila-os/platform
+
+# Compliance backend
+/backend/compliance/              @nzila-os/security
+
+# Infrastructure
+/infra/                           @nzila-os/platform
+
+# Governance docs
+/frontend/docs/governance/        @nzila-os/platform
+/frontend/docs/compliance/        @nzila-os/platform

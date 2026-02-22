@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.unioneyes.app",
+      "sha256_cert_fingerprints": [
+        "SHA256_FINGERPRINT_1",
+        "SHA256_FINGERPRINT_2"
+      ]
+    }
+  }
+]

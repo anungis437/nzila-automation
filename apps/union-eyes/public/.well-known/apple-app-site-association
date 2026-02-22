@@ -1,0 +1,37 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appID": "TEAM_ID.com.unioneyes.app",
+        "paths": [
+          "/claim/*",
+          "/member/*",
+          "/message/*",
+          "/document/*",
+          "/union/*",
+          "/employer/*"
+        ]
+      }
+    ],
+    "appclip": {
+      "default": {
+        "url": "https://unioneyes.app/clip",
+        "components": [
+          {
+            "#": "claim_id",
+            "path": "/claim/*"
+          },
+          {
+            "#": "member_id", 
+            "path": "/member/*"
+          }
+        ]
+      }
+    }
+  },
+  "webcredentials": {
+    "apps": [
+      "TEAM_ID.com.unioneyes.app"
+    ]
+  }
+}

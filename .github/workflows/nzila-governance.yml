@@ -285,9 +285,9 @@ jobs:
         working-directory: tech-repo-scaffold/django-backbone
         run: |
           mkdir -p ci-outputs
-          [ -f abr-audit-report.json ] && cp abr-audit-report.json ci-outputs/audit-report.json || true
-          [ -f abr-audit-report-full.json ] && cp abr-audit-report-full.json ci-outputs/audit-report-full.json || true
-          [ -f abr-trivy-results.sarif ] && cp abr-trivy-results.sarif ci-outputs/trivy-results.sarif || true
+          if [ -f abr-audit-report.json ]; then cp abr-audit-report.json ci-outputs/audit-report.json; fi
+          if [ -f abr-audit-report-full.json ]; then cp abr-audit-report-full.json ci-outputs/audit-report-full.json; fi
+          if [ -f abr-trivy-results.sarif ]; then cp abr-trivy-results.sarif ci-outputs/trivy-results.sarif; fi
 
       - name: Collect ABR evidence artifacts
         working-directory: tech-repo-scaffold/django-backbone

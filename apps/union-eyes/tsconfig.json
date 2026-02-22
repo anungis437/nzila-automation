@@ -1,20 +1,68 @@
 {
-  "extends": "../../packages/config/tsconfig.nextjs.json",
+  "extends": "@nzila/config/tsconfig/nextjs",
   "compilerOptions": {
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "jsx": "preserve",
     "paths": {
       "@/*": ["./*"],
       "@nzila/ui": ["../../packages/ui/src"],
+      "@nzila/db": ["../../packages/db/src/index.ts"],
+      "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
+      "@nzila/db/client": ["../../packages/db/src/client.ts"],
+      "@nzila/db/raw": ["../../packages/db/src/raw.ts"],
+      "@nzila/db/scoped": ["../../packages/db/src/scoped.ts"],
+      "@nzila/db/audit": ["../../packages/db/src/audit.ts"],
+      "@nzila/db/platform": ["../../packages/db/src/platform.ts"],
       "@nzila/ml-sdk": ["../../packages/ml-sdk/src/index.ts"],
-      "@nzila/ml-sdk/client": ["../../packages/ml-sdk/src/client.ts"],
-      "@nzila/ml-sdk/types": ["../../packages/ml-sdk/src/types.ts"]
+      "@nzila/os-core": ["../../packages/os-core/src/index.ts"],
+      "@nzila/os-core/policy": ["../../packages/os-core/src/policy/index.ts"],
+      "@nzila/os-core/evidence": ["../../packages/os-core/src/evidence/index.ts"],
+      "@nzila/os-core/config": ["../../packages/os-core/src/config/env.ts"],
+      "@nzila/os-core/secrets": ["../../packages/os-core/src/secrets/keyvault.ts"],
+      "@nzila/os-core/rateLimit": ["../../packages/os-core/src/rateLimit.ts"],
+      "@nzila/os-core/telemetry": ["../../packages/os-core/src/telemetry/index.ts"],
+      "@nzila/blob": ["../../packages/blob/src/index.ts"]
     }
   },
   "include": [
     "next-env.d.ts",
+    "global.d.ts",
+    "i18n.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", ".turbo", "dist"]
+  "exclude": [
+    "node_modules",
+    ".next",
+    ".turbo",
+    "dist",
+    "archive",
+    "backups",
+    "lib/workflow-automation-engine.ts",
+    "lib/workflow-engine.ts",
+    "lib/services/transfer-pricing-service.ts",
+    "lib/workers/**",
+    "lib/graphql/**",
+    "lib/gdpr/**",
+    "lib/social-media/**",
+    "lib/settlement-recommendation-engine.ts",
+    "lib/analytics/advanced-metrics.ts",
+    "lib/utils/pdf-generator.ts",
+    "lib/chart-utils.ts",
+    "nzila-scripts-book-template/**",
+    "app/api/social-media/**",
+    "mobile/**",
+    "db/schema/**",
+    "db/migrations/**",
+    "db/queries/**",
+    "services/**",
+    "backend/**",
+    "infra/**",
+    "lib/external-calendar-sync/**",
+    "lib/integrations/**"
+  ]
 }
