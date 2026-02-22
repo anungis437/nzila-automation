@@ -78,7 +78,7 @@ jobs:
           category: trivy-${{ matrix.target }}
 
   trivy-fs:
-    name: Trivy — filesystem (repo secrets + misconfig)
+    name: Trivy — filesystem (repo secrets + misconfig) [BLOCKING]
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -87,9 +87,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Trivy filesystem scan
+      # ── Step 1: Blocking table-output scan (exit 1 on CRITICAL) ──────────
+      - name: Run Trivy filesystem scan (blocking — CRITICAL)
         uses: aquasecurity/trivy-action@0.34.1
-        continue-on-error: true  # always produce SARIF even when findings exist
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL
+          skip-dirs: 'node_modules,.pnpm-store'
+
+      # ── Step 2: SARIF upload for GitHub Security tab (non-blocking) ──────
+      - name: Run Trivy filesystem scan (SARIF — for Security tab)
+        if: always()
+        uses: aquasecurity/trivy-action@0.34.1
+        continue-on-error: true  # non-blocking: only produces SARIF report
         with:
           scan-type: fs
           scan-ref: .
@@ -98,7 +112,7 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
           severity: CRITICAL,HIGH
-          skip-dirs: 'node_modules,.pnpm-store,CAPPSnzila-automation.pnpm-store'
+          skip-dirs: 'node_modules,.pnpm-store'
 
       - name: Upload filesystem SARIF
         uses: github/codeql-action/upload-sarif@v4

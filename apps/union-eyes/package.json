@@ -9,7 +9,11 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "clean": "rm -rf .next .turbo node_modules"
+    "clean": "rm -rf .next .turbo node_modules",
+    "evidence:collect": "tsx scripts/evidence/collect.mjs",
+    "evidence:seal": "tsx scripts/evidence/seal.mjs",
+    "evidence:verify": "tsx scripts/evidence/verify.mjs",
+    "evidence:all": "pnpm evidence:collect && pnpm evidence:seal && pnpm evidence:verify"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",

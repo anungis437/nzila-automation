@@ -12,11 +12,11 @@
 
 ## 1. System Overview
 
-Nzila OS is a multi-tenant SaaS platform comprising:
+Nzila OS is a multi-Org SaaS platform comprising:
 - **4 web applications**: Console, Partners, Web, Union Eyes
 - **Supporting packages**: AI Core/SDK, ML Core/SDK, Payments (Stripe), QBO, Database, Blob Storage
 - **Infrastructure**: Azure Container Apps, PostgreSQL (Flexible Server), Azure Blob Storage, Azure Key Vault
-- **Authentication**: Clerk (OIDC) with RBAC via entity membership model
+- **Authentication**: Clerk (OIDC) with RBAC via Org membership model
 
 ### Trust Boundaries
 

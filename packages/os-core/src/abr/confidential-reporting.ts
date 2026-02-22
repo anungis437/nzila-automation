@@ -104,7 +104,7 @@ export interface CaseAccessPolicy {
 
 const DEFAULT_ACCESS_POLICY: CaseAccessPolicy = {
   metadataAccess: ['case-manager', 'compliance-officer', 'admin'],
-  detailsAccess: ['case-manager', 'compliance-officer'],
+  detailsAccess: ['compliance-officer'],
   identityAccess: ['compliance-officer', 'admin'],
 }
 

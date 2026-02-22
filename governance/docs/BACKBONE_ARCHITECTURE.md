@@ -27,16 +27,16 @@ Based on business intelligence analysis, **Nzila is a PORTFOLIO company** (7 pro
 
 ---
 
-### 2. Multi-Tenant Foundation ⚡ CRITICAL
-**Why:** ClinicConnect is B2B SaaS. Need clinic data isolation from day 1.
+### 2. Multi-Org Foundation ⚡ CRITICAL
+**Why:** ClinicConnect is B2B SaaS. Need Org data isolation from day 1.
 
 **Components:**
-- Organization/Tenant Management
-- Multi-org User Membership
+- Org Management
+- Multi-Org User Membership
 - Role-Based Access Control (RBAC)
 - White-Label Branding
-- Feature Flags (per tenant)
-- Tenant-Scoped Analytics
+- Feature Flags (per Org)
+- Org-Scoped Analytics
 - Data Isolation Enforcement
 
 **Django App:** `tenants/`
@@ -151,7 +151,7 @@ Based on business intelligence analysis, **Nzila is a PORTFOLIO company** (7 pro
 - Base models, DRF API structure
 
 ### Phase 1: Core Backbone (Weeks 3-6) ⚡
-- Multi-Tenant Foundation
+- Multi-Org Foundation
 - Consent & Compliance Engine
 - Nzila AI Core Platform - MVP
   - Azure OpenAI integration

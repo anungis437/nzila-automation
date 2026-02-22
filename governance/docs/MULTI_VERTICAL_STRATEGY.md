@@ -48,7 +48,7 @@ analyze_legacy_codebase("agrotech/")
 
 | Pattern | Healthtech | Agrotech | Legaltech | Uniontech | Cybersecurity | Justice |
 |---------|-----------|----------|-----------|-----------|---------------|---------|
-| **Multi-tenancy** | Clinic isolation | Farm/coop | Law firm | Union/chapter | Client org | Coalition |
+| **Multi-Org** | Clinic isolation | Farm/coop | Law firm | Union/chapter | Client org | Coalition |
 | **AI/ML** | Cognitive analytics | Yield prediction | Legal research | Campaign effectiveness | Threat detection | Pattern analysis |
 | **Compliance** | PIPEDA, HIPAA | Data sovereignty | Attorney privilege | Worker privacy | SOC 2, ISO 27001 | Anonymity |
 | **Billing** | Freemium + SaaS | Cooperative subs | Firm licensing | Union dues | Client subs | Donor mgmt |
@@ -124,7 +124,7 @@ Time tracking      → legaltech/billing_time/ (domain-specific)
 
 ```
 Weeks 1-16:   Build Nzila Backbone (ALL verticals)
-              ✅ Multi-tenant, AI Core, compliance, billing, analytics
+              ✅ Multi-Org, AI Core, compliance, billing, analytics
 
 Weeks 17-24:  Healthtech Migration (Memora, ClinicConnect, CareAI)
               → Create healthtech/ Django apps
@@ -161,7 +161,7 @@ nzila-platform/
 ├── backend/
 │   ├── apps/
 │   │   # ========== BACKBONE (Shared) ==========
-│   │   ├── tenants/              # Multi-tenant foundation
+│   │   ├── orgs/                 # Multi-Org foundation (NzilaOS: Org-scoped isolation)
 │   │   ├── compliance/           # Consent & GDPR/PIPEDA
 │   │   ├── ai_core/              # AI/LLM for ALL verticals
 │   │   ├── billing/              # Revenue across all

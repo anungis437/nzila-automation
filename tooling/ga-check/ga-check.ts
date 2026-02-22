@@ -268,7 +268,135 @@ const checkCiGates = runGate('CI-GATES', 'CI gates: Required security checks pre
   }
 })
 
-const checkGovernanceWorkflow = runGate('CI-GOVERNANCE-WF', 'CI gates: Governance workflow exists', 'ci-gates', () => {
+const checkTrivyCriticalBlocking = runGate('TRIVY-BLOCKING', 'CI gates: Trivy FS scan is PR-blocking on CRITICAL', 'ci-gates', () => {
+  // Check trivy.yml contains a blocking FS scan step (exit-code: 1, no continue-on-error on that step)
+  const trivyFile = join(ROOT, '.github/workflows/trivy.yml')
+  const govFile = join(ROOT, '.github/workflows/nzila-governance.yml')
+
+  const violations: string[] = []
+
+  for (const wf of [trivyFile, govFile]) {
+    if (!existsSync(wf)) continue
+    const content = readFileSync(wf, 'utf-8')
+    const hasExitCode1 = /exit[-_]code:\s*['""]?1/.test(content) || content.includes("exit-code: '1'") || content.includes('exit-code: 1')
+    if (!hasExitCode1) {
+      violations.push(`${wf}: no trivy step with exit-code: 1`)
+    }
+  }
+
+  // Ensure the trivy-fs blocking step does NOT have continue-on-error on the non-SARIF scan
+  if (existsSync(trivyFile)) {
+    const content = readFileSync(trivyFile, 'utf-8')
+    // The blocking step comment should be present
+    const hasBlockingComment = content.includes('BLOCKING') || (content.includes('exit-code: 1') && content.includes('trivy-fs'))
+    if (!hasBlockingComment) {
+      violations.push('trivy.yml: trivy-fs blocking step not clearly marked')
+    }
+  }
+
+  return {
+    status: violations.length === 0 ? 'PASS' : 'FAIL',
+    details: violations.length === 0
+      ? 'Trivy FS blocking scan present (exit-code: 1) in CI workflows'
+      : `Trivy FS blocking issues: ${violations.join('; ')}`,
+    violations,
+  }
+})
+
+const checkNoOrTrueOnSecurityGates = runGate('NO-OR-TRUE-GATES', 'CI gates: No || true on security-gating commands', 'ci-gates', () => {
+  const workflowDir = join(ROOT, '.github/workflows')
+  if (!existsSync(workflowDir)) {
+    return { status: 'FAIL', details: '.github/workflows/ not found' }
+  }
+
+  const workflowFiles = readdirSync(workflowDir).filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'))
+  const violations: string[] = []
+
+  for (const f of workflowFiles) {
+    const content = readFileSync(join(workflowDir, f), 'utf-8')
+    const lines = content.split('\n')
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+      // Detect || true on lines that contain security commands
+      if (!line.trimStart().startsWith('#') && line.includes('|| true')) {
+        const securityPatterns = ['pnpm audit', 'npm audit', 'yarn audit', 'pip-audit', 'trufflehog', 'gitleaks', 'trivy']
+        const isSecurity = securityPatterns.some((p) => line.includes(p))
+        if (isSecurity) {
+          violations.push(`${f}:${i + 1}: security command has || true — ${line.trim().slice(0, 80)}`)
+        }
+      }
+    }
+  }
+
+  return {
+    status: violations.length === 0 ? 'PASS' : 'FAIL',
+    details: violations.length === 0
+      ? 'No || true on security-gating commands in CI workflows'
+      : `${violations.length} security command(s) softened with || true`,
+    violations,
+  }
+})
+
+const checkEvidenceArtifactsUploaded = runGate('EVIDENCE-ARTIFACTS', 'Evidence: pack.json + seal.json both uploaded as CI artifacts', 'evidence', () => {
+  const govWorkflow = join(ROOT, '.github/workflows/nzila-governance.yml')
+  if (!existsSync(govWorkflow)) {
+    return { status: 'FAIL', details: 'nzila-governance.yml not found' }
+  }
+
+  const content = readFileSync(govWorkflow, 'utf-8')
+  const hasPackUpload = content.includes('pack.json') && content.includes('upload-artifact')
+  const hasSealUpload = content.includes('seal.json') && content.includes('upload-artifact')
+  const hasSbomUpload = content.includes('sbom') && content.includes('upload-artifact')
+
+  const missing: string[] = []
+  if (!hasPackUpload) missing.push('pack.json not uploaded as artifact')
+  if (!hasSealUpload) missing.push('seal.json not uploaded as artifact')
+  if (!hasSbomUpload) missing.push('sbom artifact upload missing')
+
+  return {
+    status: missing.length === 0 ? 'PASS' : 'FAIL',
+    details: missing.length === 0
+      ? 'pack.json + seal.json + sbom all uploaded as CI artifacts'
+      : `Missing artifact uploads: ${missing.join('; ')}`,
+    violations: missing,
+  }
+})
+
+const checkVerticalEvidenceJobsWired = runGate('VERTICAL-EVIDENCE-WIRED', 'Evidence: UE and ABR evidence jobs wired into governance-gate', 'evidence', () => {
+  const govWorkflow = join(ROOT, '.github/workflows/nzila-governance.yml')
+  if (!existsSync(govWorkflow)) {
+    return { status: 'FAIL', details: 'nzila-governance.yml not found' }
+  }
+
+  const content = readFileSync(govWorkflow, 'utf-8')
+  const missing: string[] = []
+
+  // Each vertical's evidence job must exist as a top-level CI job
+  if (!content.includes('ue-evidence:')) missing.push('ue-evidence job missing')
+  if (!content.includes('abr-evidence:')) missing.push('abr-evidence job missing')
+
+  // Both must be listed in governance-gate's `needs:` array
+  // Find the governance-gate block by looking for the needs section that comes after it
+  const gateBlock = content.slice(content.indexOf('governance-gate:'))
+  if (!gateBlock.includes('ue-evidence'))  missing.push('ue-evidence not in governance-gate needs')
+  if (!gateBlock.includes('abr-evidence')) missing.push('abr-evidence not in governance-gate needs')
+
+  // Both must have blocking verify steps (exit-code 1 or python verify.py)
+  const hasUeBlocking = content.includes('pnpm evidence:verify') || content.includes('evidence:verify')
+  const hasAbrBlocking = content.includes('verify.py')
+  if (!hasUeBlocking) missing.push('UE evidence:verify (blocking) step missing')
+  if (!hasAbrBlocking) missing.push('ABR verify.py (blocking) step missing')
+
+  return {
+    status: missing.length === 0 ? 'PASS' : 'FAIL',
+    details: missing.length === 0
+      ? 'UE and ABR evidence jobs both present, wired into governance-gate, and have blocking verify steps'
+      : `Vertical evidence wiring issues: ${missing.join('; ')}`,
+    violations: missing,
+  }
+})
+
+
   const govPath = join(ROOT, '.github/workflows/nzila-governance.yml')
   const ciPath = join(ROOT, '.github/workflows/ci.yml')
 
@@ -453,9 +581,13 @@ const ALL_CHECKS: GateCheck[] = [
   // C) Evidence
   checkEvidenceSealing,
   checkEvidenceWorkflowSeal,
+  checkEvidenceArtifactsUploaded,
+  checkVerticalEvidenceJobsWired,
   // D) CI gates
   checkCiGates,
   checkGovernanceWorkflow,
+  checkTrivyCriticalBlocking,
+  checkNoOrTrueOnSecurityGates,
   checkEslintBoundaries,
   checkContractTests,
   checkCodeOwners,

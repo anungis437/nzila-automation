@@ -84,7 +84,7 @@ Build shared infrastructure once, deploy across all verticals:
 ┌─────────────────────────────────────────────────────────────┐
 │                     NZILA BACKBONE                          │
 ├─────────────────────────────────────────────────────────────┤
-│  Multi-Tenant Core  │  AI Engine  │  Compliance Layer     │
+│  Multi-Org Core     │  AI Engine  │  Compliance Layer     │
 │  (Django + pgVector)│ (Azure OpenAI)│ (PIPEDA/GDPR/HIPAA)│
 ├─────────────────────────────────────────────────────────────┤
 │  Auth (Clerk)  │  Billing (Stripe)  │  Notifications     │

@@ -230,7 +230,7 @@ Instead of duplicating functionality across 15 platforms, we build **8 core shar
 
 ---
 
-### **2. Multi-Tenant Foundation** (Weeks 3-6)
+### **2. Multi-Org Foundation** (Weeks 3-6)
 
 **Purpose:** Organization/tenant management, data isolation, RBAC, feature flags
 

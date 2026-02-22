@@ -38,35 +38,35 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run pnpm audit
+      # Audit at critical level — exits non-zero immediately if criticals found.
+      # No '|| true': this step gates the CI job.
+      - name: Run pnpm audit (fail on critical)
         id: audit
         run: |
-          pnpm audit --audit-level=high --json > audit-report.json || true
-          cat audit-report.json
+          # Write report to file; exit code propagates (non-zero = criticals found)
+          pnpm audit --audit-level=critical --json > audit-report.json
+          echo "Audit clean — no critical vulnerabilities found."
 
-      - name: Fail on critical vulnerabilities
+      # Also capture a high-severity JSON report for artifact upload (always runs)
+      - name: Capture high-severity audit report
+        if: always()
         run: |
-          CRITICAL=$(cat audit-report.json | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          vulns = data.get('vulnerabilities', {})
-          critical = sum(1 for v in vulns.values() if v.get('severity') in ('critical',))
-          print(critical)
-          " 2>/dev/null || echo 0)
-          echo "Critical vulnerabilities: $CRITICAL"
-          if [ "$CRITICAL" -gt "0" ]; then
-            echo "::error::$CRITICAL critical vulnerability(ies) found. Review audit-report.json."
-            exit 1
-          fi
+          pnpm audit --audit-level=high --json > audit-report-high.json 2>/dev/null || true
+          echo "High/critical audit report written to audit-report-high.json"
 
       - name: Enforce vulnerability waiver policy
+        if: always()
         run: |
-          pnpm tsx tooling/security/supply-chain-policy.ts check-vulns audit-report.json
+          REPORT=audit-report.json
+          [ -f "$REPORT" ] || REPORT=audit-report-high.json
+          pnpm tsx tooling/security/supply-chain-policy.ts check-vulns "$REPORT"
 
-      - name: Upload audit report as artifact
+      - name: Upload audit reports as artifacts
         uses: actions/upload-artifact@v6
         if: always()
         with:
           name: dependency-audit-${{ github.run_id }}
-          path: audit-report.json
+          path: |
+            audit-report.json
+            audit-report-high.json
           retention-days: 90
