@@ -7,6 +7,7 @@ import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth }
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { db } from '@/db';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 import {
   ErrorCode,
   standardErrorResponse,

@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { getSystemStatus } from '@/lib/monitoring';
+import { getSystemStatus } from '@/lib/monitoring/status-page';
 import {
   ErrorCode,
   standardErrorResponse,

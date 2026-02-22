@@ -340,4 +340,25 @@ html {
     right: 0;
     background: linear-gradient(to left, hsl(var(--background)), transparent);
   }
+  /* ── Sidebar transparent scrollbar ─────────────────────────── */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .sidebar-scroll:hover {
+    scrollbar-color: rgba(0,0,0,0.15) transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+  }
+  .sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+  }
 }

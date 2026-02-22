@@ -20,24 +20,10 @@ import { db } from '@/db';
 import { sql } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import { cache } from 'react';
+import type { ServiceHealth, ServiceStatus, SystemStatus } from './status-utils';
 
-export type ServiceStatus = 'healthy' | 'degraded' | 'down';
-
-export interface ServiceHealth {
-  name: string;
-  status: ServiceStatus;
-  responseTime?: number;
-  message?: string;
-  lastChecked: Date;
-}
-
-export interface SystemStatus {
-  status: ServiceStatus;
-  services: ServiceHealth[];
-  uptime: number;
-  version: string;
-  timestamp: Date;
-}
+// Re-export types so existing server-side imports still work
+export type { ServiceStatus, ServiceHealth, SystemStatus };
 
 /**
  * Get overall system status
@@ -268,61 +254,3 @@ function getFailedService(name: string, error: unknown): ServiceHealth {
     lastChecked: new Date(),
   };
 }
-
-/**
- * Get status color for UI
- */
-export function getStatusColor(status: ServiceStatus): string {
-  switch (status) {
-    case 'healthy':
-      return 'green';
-    case 'degraded':
-      return 'yellow';
-    case 'down':
-      return 'red';
-    default:
-      return 'gray';
-  }
-}
-
-/**
- * Get status emoji
- */
-export function getStatusEmoji(status: ServiceStatus): string {
-  switch (status) {
-    case 'healthy':
-      return '✅';
-    case 'degraded':
-      return '⚠️';
-    case 'down':
-      return '❌';
-    default:
-      return '❓';
-  }
-}
-
-/**
- * Format uptime for display
- */
-export function formatUptime(seconds: number): string {
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-
-  const parts: string[] = [];
-  
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-
-  return parts.join(' ') || '<1m';
-}
-
-/**
- * Server action for client components
- */
-export async function getStatusAction() {
-  'use server';
-  return getSystemStatus();
-}
-

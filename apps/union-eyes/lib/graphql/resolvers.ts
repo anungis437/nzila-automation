@@ -12,7 +12,7 @@ import {
   externalInsurancePolicies 
 } from '@/db/schema';
 import { eq, and, desc, gte, lte } from 'drizzle-orm';
-import { getSystemStatus } from '@/lib/monitoring';
+import { getSystemStatus } from '@/lib/monitoring/status-page';
 import type { YogaInitialContext } from 'graphql-yoga';
 import { PensionProcessorFactory } from '@/lib/pension-processor';
 import { 

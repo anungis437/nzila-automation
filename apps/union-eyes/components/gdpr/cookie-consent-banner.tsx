@@ -22,7 +22,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Cookie, Shield, Settings } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 
 interface CookiePreferences {
   essential: boolean;
@@ -120,7 +119,7 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
   };
 
   const saveConsent = async (prefs: CookiePreferences) => {
-    const consentId = localStorage.getItem("cookie_consent_id") || uuidv4();
+    const consentId = localStorage.getItem("cookie_consent_id") || crypto.randomUUID();
     const consentData = {
       consentId,
       preferences: prefs,

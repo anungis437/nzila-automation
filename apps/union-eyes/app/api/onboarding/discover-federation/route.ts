@@ -47,9 +47,10 @@ export const POST = withRoleAuth('officer', async (request, context) => {
       );
     }
 
-    const { province, sector, estimatedMemberCount } = await request.json();
+    const body = await request.json();
+
     // Validate request body
-    const validation = onboardingDiscover-federationSchema.safeParse(body);
+    const validation = onboardingDiscoverFederationSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,

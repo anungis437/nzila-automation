@@ -1,3 +1,9 @@
+/* eslint-disable no-restricted-imports -- Admin-only diagnostic script (information_schema only, no Org data) */
+/**
+ * NzilaOS-GATE: ADMIN-ONLY diagnostic script.
+ * This script inspects information_schema metadata and does NOT access Org-scoped data.
+ * Raw postgres is permitted here per PR-UE-01 allowlist.
+ */
 import postgres from 'postgres';
 import dotenv from 'dotenv';
 

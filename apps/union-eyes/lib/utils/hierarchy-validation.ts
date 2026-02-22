@@ -20,6 +20,7 @@ import { logger } from '@/lib/logger';
 
 export const MAX_HIERARCHY_DEPTH = 10;
 export const HIERARCHY_TYPES = {
+  platform: -1, // SaaS platform provider (above congress)
   congress: 0,
   federation: 1,
   union: 2,
@@ -235,9 +236,9 @@ export function validateTypeHierarchy(
 
   if (!parentType) {
     // Root organizations should be congress or federation
-    if (orgType !== 'congress' && orgType !== 'federation') {
+    if (orgType !== 'platform' && orgType !== 'congress' && orgType !== 'federation') {
       warnings.push(
-        `Root organization with type '${orgType}' is unusual. Typically congress or federation.`
+        `Root organization with type '${orgType}' is unusual. Typically platform, congress, or federation.`
       );
     }
     return { valid: true, errors, warnings };

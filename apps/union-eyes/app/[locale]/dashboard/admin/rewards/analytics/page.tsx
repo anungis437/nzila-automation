@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/db';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -126,14 +127,19 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
     LIMIT 10
   `;
 
-  const [overview, redemption, budgets, topTypes, trend, topReceivers] = await Promise.all([
-    db.execute(overviewQuery),
-    db.execute(redemptionQuery),
-    db.execute(budgetQuery),
-    db.execute(topAwardTypesQuery),
-    db.execute(awardTrendQuery),
-    db.execute(topReceiversQuery),
-  ]);
+  // NzilaOS: All DB queries wrapped in RLS context for org isolation (PR-UE-01)
+  const [overview, redemption, budgets, topTypes, trend, topReceivers] = await withRLSContext(
+    async (tx) => {
+      return Promise.all([
+        tx.execute(overviewQuery),
+        tx.execute(redemptionQuery),
+        tx.execute(budgetQuery),
+        tx.execute(topAwardTypesQuery),
+        tx.execute(awardTrendQuery),
+        tx.execute(topReceiversQuery),
+      ]);
+    },
+  );
 
   return {
     overview: (overview as Array<Record<string, unknown>>)[0] as Record<string, unknown>,

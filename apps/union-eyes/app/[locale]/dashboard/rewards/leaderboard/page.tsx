@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/db';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 import { getTranslations } from 'next-intl/server';
 import { Leaderboard } from '@/components/rewards/leaderboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,8 +71,12 @@ async function getLeaderboardData(orgId: string, period: 'all-time' | 'monthly' 
     LIMIT 20
   `;
 
-  const topReceivers = await db.execute(topReceiversQuery);
-  const topGivers = await db.execute(topGiversQuery);
+  // NzilaOS: All DB queries wrapped in RLS context for org isolation (PR-UE-01)
+  const { topReceivers, topGivers } = await withRLSContext(async (tx) => {
+    const topReceivers = await tx.execute(topReceiversQuery);
+    const topGivers = await tx.execute(topGiversQuery);
+    return { topReceivers, topGivers };
+  });
 
   return {
     topReceivers: (topReceivers as Array<Record<string, unknown>>).map((row) => ({

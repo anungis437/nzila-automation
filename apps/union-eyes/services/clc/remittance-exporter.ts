@@ -326,6 +326,7 @@ export async function generateStatCanExport(
  */
 function mapOrgTypeToStatCan(orgType: string): string {
   const mapping: Record<string, string> = {
+    'platform': 'PLATFORM', // SaaS platform provider
     'congress': 'NAT-FED', // National federation
     'federation': 'PROV-FED', // Provincial federation
     'union': 'NAT-UNION', // National union

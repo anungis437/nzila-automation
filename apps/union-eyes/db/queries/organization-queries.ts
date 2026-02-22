@@ -666,7 +666,7 @@ export async function searchOrganizations(
  * @returns Array of organizations of specified type
  */
 export async function getOrganizationsByType(
-  type: 'congress' | 'federation' | 'union' | 'local' | 'region' | 'district',
+  type: 'platform' | 'congress' | 'federation' | 'union' | 'local' | 'region' | 'district',
   parentId?: string,
   tx?: NodePgDatabase<any>
 ): Promise<SelectOrganization[]> {
@@ -1164,6 +1164,7 @@ function validateOrganizationHierarchy(
   childType: string
 ): void {
   const validHierarchies: Record<string, string[]> = {
+    platform: ["congress", "federation", "union"], // SaaS platform can host any org
     congress: ["federation", "union", "sector_council"],
     federation: ["union", "sector_council"],
     union: ["local", "sector_council"],

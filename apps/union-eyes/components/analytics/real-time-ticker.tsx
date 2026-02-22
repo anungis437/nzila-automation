@@ -349,7 +349,7 @@ function CompactMetricCard({ metric }: { metric: MetricData }) {
   };
 
   return (
-    <Card className="flex-shrink-0">
+    <Card className="shrink-0">
       <CardContent className="p-3">
         <div className="flex items-center gap-2">
           {metric.icon && <div className="text-muted-foreground">{metric.icon}</div>}

@@ -211,10 +211,38 @@ export async function userHasOrganizationAccess(
  * @param organizationId - The organization ID
  * @returns The user's role or null if not found
  */
+/** All recognised sidebar roles — keep in sync with SidebarProps */
+export type AppRole =
+  // Base Membership
+  | "member"
+  // Front-line Representatives
+  | "steward" | "bargaining_committee"
+  // Specialized Representatives
+  | "health_safety_rep"
+  // Senior Representatives
+  | "chief_steward" | "officer"
+  // Local Union Executives
+  | "president" | "vice_president" | "secretary_treasurer" | "admin"
+  // Union National Level
+  | "national_officer"
+  // System Administration
+  | "system_admin"
+  // Federation Level
+  | "fed_staff" | "fed_executive"
+  // CLC National Level
+  | "clc_staff" | "clc_executive"
+  // Legacy (backward compatibility)
+  | "congress_staff" | "federation_staff"
+  // App Operations (Nzila platform)
+  | "app_owner" | "coo" | "cto" | "platform_lead"
+  | "customer_success_director" | "support_manager"
+  | "data_analytics_manager" | "billing_manager"
+  | "support_agent" | "data_analyst" | "billing_specialist";
+
 export async function getUserRoleInOrganization(
   userId: string,
   organizationId: string
-): Promise<"member" | "steward" | "officer" | "admin" | "congress_staff" | "federation_staff" | null> {
+): Promise<AppRole | null> {
   try {
     const result = await db
       .select({ role: organizationMembers.role })
@@ -234,16 +262,42 @@ export async function getUserRoleInOrganization(
     
     // Map database roles to UI roles
     const dbRole = result[0].role;
-    const roleMap: { [key: string]: "member" | "steward" | "officer" | "admin" | "congress_staff" | "federation_staff" } = {
+    const roleMap: Record<string, AppRole> = {
+      // Union membership roles
       'member': 'member',
       'steward': 'steward',
       'union_steward': 'steward',
+      'chief_steward': 'chief_steward',
+      'bargaining_committee': 'bargaining_committee',
+      'health_safety_rep': 'health_safety_rep',
       'officer': 'officer',
       'union_officer': 'officer',
+      'president': 'president',
+      'vice_president': 'vice_president',
+      'secretary_treasurer': 'secretary_treasurer',
+      'national_officer': 'national_officer',
       'admin': 'admin',
       'super_admin': 'admin',
+      'system_admin': 'system_admin',
+      // Federation / CLC
       'congress_staff': 'congress_staff',
       'federation_staff': 'federation_staff',
+      'fed_staff': 'fed_staff',
+      'fed_executive': 'fed_executive',
+      'clc_staff': 'clc_staff',
+      'clc_executive': 'clc_executive',
+      // Nzila platform ops
+      'app_owner': 'app_owner',
+      'coo': 'coo',
+      'cto': 'cto',
+      'platform_lead': 'platform_lead',
+      'customer_success_director': 'customer_success_director',
+      'support_manager': 'support_manager',
+      'data_analytics_manager': 'data_analytics_manager',
+      'billing_manager': 'billing_manager',
+      'support_agent': 'support_agent',
+      'data_analyst': 'data_analyst',
+      'billing_specialist': 'billing_specialist',
     };
     
     return roleMap[dbRole] || 'member';

@@ -1,8 +1,8 @@
 /**
  * Seed Data Button - Development Helper
  * 
- * Temporary button to populate test data for dashboard testing
- * Add this to your dashboard page temporarily to seed data
+ * Seeds the CLC organizational hierarchy (CLC + 13 federations + 12 national affiliates).
+ * Calls /api/admin/seed-test-data — idempotent, safe to press multiple times.
  */
 
 "use client";
@@ -19,11 +19,6 @@ export function SeedDataButton() {
   const organizationId = useOrganizationId();
 
   const handleSeedData = async () => {
-    if (!organizationId) {
-      setResult({ success: false, message: "No organization selected" });
-      return;
-    }
-
     setLoading(true);
     setResult(null);
 
@@ -32,16 +27,15 @@ export function SeedDataButton() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(organizationId && { 'x-organization-id': organizationId }),
         },
         body: JSON.stringify({ organizationId }),
       });
 
       const data = await response.json();
       
-      if (response.ok) {
+      if (response.ok && data.success) {
         setResult({ success: true, message: data.message });
-        // Refresh page after 2 seconds to show new data
-        setTimeout(() => window.location.reload(), 2000);
       } else {
         setResult({ success: false, message: data.error || "Failed to seed data" });
       }
@@ -59,30 +53,22 @@ export function SeedDataButton() {
     <div className="space-y-4">
       <Button
         onClick={handleSeedData}
-        disabled={loading || !organizationId}
+        disabled={loading}
         variant="outline"
         className="w-full sm:w-auto"
       >
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating Test Data...
+            Seeding CLC hierarchy...
           </>
         ) : (
           <>
             <Database className="mr-2 h-4 w-4" />
-            Seed Test Data
+            Seed CLC Hierarchy
           </>
         )}
       </Button>
-
-      {!organizationId && (
-        <Alert>
-          <AlertDescription>
-            Please select an organization first
-          </AlertDescription>
-        </Alert>
-      )}
 
       {result && (
         <Alert variant={result.success ? "default" : "destructive"}>

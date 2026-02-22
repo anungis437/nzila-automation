@@ -271,7 +271,7 @@ setIsSubmitting(false);
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -289,7 +289,7 @@ setIsSubmitting(false);
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -330,7 +330,7 @@ setIsSubmitting(false);
                   className={`inline-flex items-center justify-center w-20 h-20 rounded-full shadow-lg transition-all ${
                     isRecording 
                       ? "bg-red-500 hover:bg-red-600 animate-pulse" 
-                      : "bg-gradient-to-br from-blue-600 to-blue-700 hover:shadow-xl"
+                      : "bg-linear-to-br from-blue-600 to-blue-700 hover:shadow-xl"
                   }`}
                 >
                   {isRecording ? (
@@ -560,7 +560,7 @@ setIsSubmitting(false);
                 {/* Help Box */}
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="flex items-start gap-3">
-                    <Info size={20} className="text-blue-600 mt-0.5 flex-shrink-0" />
+                    <Info size={20} className="text-blue-600 mt-0.5 shrink-0" />
                     <div>
                       <h4 className="font-semibold text-blue-900 mb-1">{t('forms.whatToInclude')}</h4>
                       <ul className="space-y-1 text-sm text-blue-800">
@@ -581,7 +581,7 @@ setIsSubmitting(false);
                     disabled={isSubmitting}
                     whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                     whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                    className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-4 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -596,7 +596,7 @@ setIsSubmitting(false);
                     )}
                   </motion.button>
 
-                  <Link href="/dashboard/claims" className="flex-shrink-0">
+                  <Link href="/dashboard/claims" className="shrink-0">
                     <button
                       type="button"
                       className="px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"

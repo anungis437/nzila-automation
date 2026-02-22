@@ -1597,6 +1597,27 @@ export async function getServerSession() {
 }
 
 /**
+ * Require that the current user has at least the given role (by hierarchy level).
+ *
+ * Uses `getRoleLevel()` from roles.ts so that e.g.
+ *   `await requireMinRole('platform_lead')` passes for app_owner, coo, cto, platform_lead
+ *   but rejects support_agent, member, etc.
+ */
+export async function requireMinRole(minRole: string): Promise<UnifiedUserContext> {
+  const user = await requireUser();
+  const { getRoleLevel  } = await import('./auth/roles');
+  const minLevel = getRoleLevel(minRole as any);
+  const userLevel = Math.max(
+    ...user.roles.map((r: string) => getRoleLevel(r as any)),
+    0,
+  );
+  if (userLevel < minLevel) {
+    throw new Error(`Forbidden: Requires at least ${minRole} role (level ${minLevel})`);
+  }
+  return user;
+}
+
+/**
  * @deprecated Use requireUser() instead
  */
 export async function requireAuth(): Promise<AuthUser> {

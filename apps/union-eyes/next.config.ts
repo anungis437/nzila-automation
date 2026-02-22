@@ -203,9 +203,8 @@ const nextConfig: NextConfig = {
   },
   
   // Output optimization
-  // Disable standalone mode for Docker to prevent trace collection hanging
-  // Docker already handles dependencies, no need for Next.js to trace them
-  output: process.env.DOCKER_BUILD === 'true' ? undefined : 'standalone',
+  // Standalone mode required for Docker production stage (node server.js)
+  output: 'standalone',
   
   // Skip API route static analysis during build (speeds up Docker builds)
   // API routes are inherently dynamic and don't need static generation

@@ -75,6 +75,7 @@ const jurisdictions: { value: CAJurisdiction; label: string }[] = [
 
 // Organization types
 const orgTypes: { value: OrganizationType; label: string; description: string }[] = [
+  { value: "platform", label: "Platform", description: "SaaS platform provider (Nzila Ventures)" },
   { value: "congress", label: "Congress", description: "National labour congress (e.g., CLC)" },
   { value: "federation", label: "Federation", description: "Provincial/territorial federation (e.g., OFL, BCFED)" },
   { value: "union", label: "Union", description: "National/international union (e.g., CUPE, Unifor)" },

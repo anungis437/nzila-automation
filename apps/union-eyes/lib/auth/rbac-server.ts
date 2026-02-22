@@ -11,68 +11,85 @@
 import { auth, currentUser } from '@/lib/api-auth-guard';
 import { db } from "@/db/db";
 import { organizationUsers } from "@/db/schema/domains/member";
-import { eq } from "drizzle-orm";
+import { organizationMembers } from "@/db/schema-organizations";
+import { eq, and } from "drizzle-orm";
 import { UserRole, Permission, hasPermission, hasAnyPermission, hasAllPermissions, canAccessRoute } from "./roles";
 import { mapToOsRole } from './policy-adapter';
 
+// ── Build a reverse-lookup from enum string values → UserRole ─────────────
+const USER_ROLE_VALUES = new Set(Object.values(UserRole) as string[]);
+
+function resolveUserRole(raw: string | null | undefined): UserRole | null {
+  if (!raw) return null;
+  const key = raw.toLowerCase();
+  if (USER_ROLE_VALUES.has(key)) return key as UserRole;
+  // Legacy aliases
+  const aliases: Record<string, UserRole> = {
+    'super_admin': UserRole.ADMIN,
+    'union_steward': UserRole.STEWARD,
+    'union_officer': UserRole.OFFICER,
+  };
+  return aliases[key] ?? null;
+}
+
 /**
- * Get user role from database
- * First checks organization_users table, falls back to Clerk metadata
+ * Get user role from database.
+ *
+ * Resolution order:
+ *   1. `organization_users` table (canonical RBAC source)
+ *   2. `organization_members` table (org-membership source, checked when
+ *      an organizationId is provided)
+ *   3. Clerk `publicMetadata.role`
+ *   4. Fail-closed: throws if none of the above resolve.
  */
-export async function getUserRole(userId: string): Promise<UserRole> {
+export async function getUserRole(
+  userId: string,
+  organizationId?: string | null,
+): Promise<UserRole> {
   try {
-    // Try to get role from database organization_users table
-    const OrganizationUser = await db
+    // 1. Try organization_users (canonical RBAC table)
+    console.log('[getUserRole] Step 1: querying organization_users for', userId);
+    const orgUser = await db
       .select({ role: organizationUsers.role })
       .from(organizationUsers)
       .where(eq(organizationUsers.userId, userId))
       .limit(1);
+    console.log('[getUserRole] Step 1 result:', JSON.stringify(orgUser));
 
-    if (OrganizationUser.length > 0 && OrganizationUser[0].role) {
-      const role = OrganizationUser[0].role.toLowerCase();
-      // Map database role to UserRole enum
-      switch (role) {
-        case "admin":
-          return UserRole.ADMIN;
-        case "union_rep":
-          return UserRole.UNION_REP;
-        case "staff_rep":
-          return UserRole.STAFF_REP;
-        case "member":
-          return UserRole.MEMBER;
-        case "guest":
-          return UserRole.GUEST;
-        default:
-          return UserRole.MEMBER; // Default to member
-      }
+    const fromOrgUsers = resolveUserRole(orgUser[0]?.role);
+    if (fromOrgUsers) return fromOrgUsers;
+
+    // 2. Try organization_members (org-scoped membership)
+    if (organizationId) {
+      const orgMember = await db
+        .select({ role: organizationMembers.role })
+        .from(organizationMembers)
+        .where(
+          and(
+            eq(organizationMembers.userId, userId),
+            eq(organizationMembers.organizationId, organizationId),
+            eq(organizationMembers.status, 'active'),
+          ),
+        )
+        .limit(1);
+
+      const fromOrgMembers = resolveUserRole(orgMember[0]?.role);
+      if (fromOrgMembers) return fromOrgMembers;
     }
 
-    // Fallback to Clerk metadata
+    // 3. Fallback to Clerk publicMetadata
     const user = await currentUser();
-    if (user?.publicMetadata?.role) {
-      const metadataRole = String(user.publicMetadata.role).toLowerCase();
-      switch (metadataRole) {
-        case "admin":
-          return UserRole.ADMIN;
-        case "union_rep":
-          return UserRole.UNION_REP;
-        case "staff_rep":
-          return UserRole.STAFF_REP;
-        case "member":
-          return UserRole.MEMBER;
-        case "guest":
-          return UserRole.GUEST;
-        default:
-          return UserRole.MEMBER;
-      }
-    }
+    const fromClerk = resolveUserRole(
+      user?.publicMetadata?.role as string | undefined,
+    );
+    if (fromClerk) return fromClerk;
 
     // Default role
     return UserRole.MEMBER;
   } catch (error) {
-    // SECURITY FIX: Fail closed - authorization system errors should not grant default access
-    // Log the error for monitoring and throw to prevent unauthorized access
-throw new Error('Authorization system unavailable');
+    // SECURITY FIX: Fail closed — authorization errors must not grant access
+    console.error('[getUserRole] FATAL:', error);
+    throw new Error('Authorization system unavailable');
   }
 }
 
