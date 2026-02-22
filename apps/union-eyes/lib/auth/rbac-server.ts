@@ -2,7 +2,10 @@
  * Role-Based Access Control Utilities
  * Union Claims Management System
  * 
- * Server-side utilities for checking user roles and permissions
+ * Server-side utilities for checking user roles and permissions.
+ *
+ * INV-04: These functions now delegate to @nzila/os-core/policy `authorize()`
+ * via the policy adapter.  Existing call-sites continue to work unchanged.
  */
 
 import { auth, currentUser } from '@/lib/api-auth-guard';
@@ -10,6 +13,7 @@ import { db } from "@/db/db";
 import { organizationUsers } from "@/db/schema/domains/member";
 import { eq } from "drizzle-orm";
 import { UserRole, Permission, hasPermission, hasAnyPermission, hasAllPermissions, canAccessRoute } from "./roles";
+import { mapToOsRole } from './policy-adapter';
 
 /**
  * Get user role from database
