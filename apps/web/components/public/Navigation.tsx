@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const CONSOLE_URL = process.env.NEXT_PUBLIC_CONSOLE_URL ?? 'http://localhost:3001';
+const PARTNERS_URL = process.env.NEXT_PUBLIC_PARTNERS_URL ?? 'http://localhost:3002';
 
 const navigation = [
   { name: 'About', href: '/about' },
@@ -13,6 +16,11 @@ const navigation = [
   { name: 'Verticals', href: '/verticals' },
   { name: 'Investors', href: '/investors' },
   { name: 'Resources', href: '/resources' },
+];
+
+const appLinks = [
+  { name: 'Console', href: CONSOLE_URL },
+  { name: 'Partner Portal', href: PARTNERS_URL },
 ];
 
 export default function Navigation() {
@@ -89,6 +97,22 @@ export default function Navigation() {
             >
               Request Demo
             </Link>
+            {/* App-switcher divider */}
+            <div className="w-px h-6 bg-gray-200" />
+            {appLinks.map((app) => (
+              <a
+                key={app.name}
+                href={app.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-1 text-sm font-medium transition-colors ${
+                  scrolled ? 'text-gray-500 hover:text-navy' : 'text-white/60 hover:text-white'
+                }`}
+              >
+                {app.name}
+                <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
+            ))}
           </div>
 
           {/* Mobile menu button */}
@@ -143,6 +167,22 @@ export default function Navigation() {
               >
                 Request Demo
               </Link>
+              <div className="pt-2 border-t border-gray-100 mt-2">
+                <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Apps</p>
+                {appLinks.map((app) => (
+                  <a
+                    key={app.name}
+                    href={app.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:bg-gray-50"
+                  >
+                    {app.name}
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}

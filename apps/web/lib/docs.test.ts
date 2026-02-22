@@ -25,6 +25,10 @@ beforeEach(() => {
     '---\ntitle: Getting Started\ndescription: How to begin\norder: 1\n---\nHello world\n',
   )
   fs.writeFileSync(
+    path.join(contentDir, 'dated-doc.md'),
+    '---\ntitle: Dated Doc\ndate: 2026-02-01\n---\nContent with a date\n',
+  )
+  fs.writeFileSync(
     path.join(contentDir, 'README.md'),
     '# Readme\nThis should be excluded\n',
   )
@@ -43,7 +47,7 @@ beforeEach(() => {
 describe('getAllDocs', () => {
   it('returns metadata for all markdown files', () => {
     const docs = getAllDocs('public')
-    expect(docs.length).toBe(2)
+    expect(docs.length).toBe(3)
   })
 
   it('excludes README.md', () => {
@@ -64,6 +68,16 @@ describe('getAllDocs', () => {
     expect(advanced).toBeDefined()
     expect(advanced?.title).toBe('Advanced Guide')
   })
+
+  it('coerces YAML date scalars to ISO string — not a Date object (regression: [object Date] React error)', () => {
+    // gray-matter parses `date: 2026-02-01` as a JS Date — must be coerced to string
+    const docs = getAllDocs('public')
+    const dated = docs.find((d) => d.slug === 'dated-doc')
+    expect(dated).toBeDefined()
+    expect(typeof dated?.date).toBe('string')
+    expect(dated?.date).toBe('2026-02-01')
+    expect(dated?.date instanceof Date).toBe(false)
+  })
 })
 
 describe('getDocBySlug', () => {
@@ -77,6 +91,14 @@ describe('getDocBySlug', () => {
   it('returns null for non-existent slug', async () => {
     const doc = await getDocBySlug('does-not-exist', 'public')
     expect(doc).toBeNull()
+  })
+
+  it('coerces YAML date scalar to ISO string in single-doc fetch (regression: [object Date] React error)', async () => {
+    const doc = await getDocBySlug('dated-doc', 'public')
+    expect(doc).not.toBeNull()
+    expect(typeof doc?.date).toBe('string')
+    expect(doc?.date).toBe('2026-02-01')
+    expect(doc?.date instanceof Date).toBe(false)
   })
 })
 

@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     projects: [
       // Apps
+      'apps/abr',
       'apps/console',
       'apps/orchestrator-api',
       'apps/partners',

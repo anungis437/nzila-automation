@@ -21,6 +21,7 @@ COPY apps/web/package.json ./apps/web/
 COPY apps/console/package.json ./apps/console/
 COPY apps/partners/package.json ./apps/partners/
 COPY apps/union-eyes/package.json ./apps/union-eyes/
+COPY apps/abr/package.json ./apps/abr/
 COPY apps/orchestrator-api/package.json ./apps/orchestrator-api/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/config/package.json ./packages/config/
@@ -37,6 +38,7 @@ COPY packages/ml-sdk/package.json ./packages/ml-sdk/
 COPY packages/qbo/package.json ./packages/qbo/
 COPY packages/cli/package.json ./packages/cli/
 COPY packages/tools-runtime/package.json ./packages/tools-runtime/
+COPY packages/evidence/package.json ./packages/evidence/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
@@ -159,14 +161,77 @@ EXPOSE 3002
 CMD ["node", "apps/partners/server.js"]
 
 # ============================================
+# Union Eyes production stage
+# ============================================
+FROM base AS union-eyes
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3003
+
+# Copy necessary files
+COPY --from=builder /app/apps/union-eyes/.next/standalone ./
+COPY --from=builder /app/apps/union-eyes/.next/static ./apps/union-eyes/.next/static
+COPY --from=builder /app/apps/union-eyes/public ./apps/union-eyes/public
+COPY --from=builder /app/content ./content
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3003/ || exit 1
+
+EXPOSE 3003
+
+CMD ["node", "apps/union-eyes/server.js"]
+
+# ============================================
+# ABR production stage
+# ============================================
+FROM base AS abr
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3004
+
+# Copy necessary files
+COPY --from=builder /app/apps/abr/.next/standalone ./
+COPY --from=builder /app/apps/abr/.next/static ./apps/abr/.next/static
+COPY --from=builder /app/content ./content
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3004/ || exit 1
+
+EXPOSE 3004
+
+CMD ["node", "apps/abr/server.js"]
+
+# ============================================
 # Dev stage - for development with hot reload
 # ============================================
 FROM base AS dev
 WORKDIR /app
 
+# Ensure root node_modules/.bin is always on PATH (needed for turbo, tsx, etc.)
+ENV PATH="/app/node_modules/.bin:$PATH"
+
 # Copy package files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/abr/package.json ./apps/abr/
 COPY apps/console/package.json ./apps/console/
 COPY apps/partners/package.json ./apps/partners/
 COPY apps/union-eyes/package.json ./apps/union-eyes/
@@ -186,6 +251,7 @@ COPY packages/ml-sdk/package.json ./packages/ml-sdk/
 COPY packages/qbo/package.json ./packages/qbo/
 COPY packages/cli/package.json ./packages/cli/
 COPY packages/tools-runtime/package.json ./packages/tools-runtime/
+COPY packages/evidence/package.json ./packages/evidence/
 
 # Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
 RUN echo '' > .npmrc
@@ -194,6 +260,7 @@ RUN echo '' > .npmrc
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
 
-EXPOSE 3000 3001 3002
+EXPOSE 3000 3001 3002 3003 3004
 
-CMD ["pnpm", "dev"]
+# Run only the web/app packages — cli and orchestrator-api are excluded from web dev
+CMD ["pnpm", "dev:docker"]

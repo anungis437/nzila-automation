@@ -105,14 +105,20 @@ class AbrCaseListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def _get_org_id(self, request: Request) -> uuid.UUID:
+        """Derive Org ID exclusively from authenticated session context.
+
+        SECURITY: Org ID MUST come from server-side auth context (Clerk JWT
+        via OrganizationIsolationMiddleware). Never from query params, request
+        body, or any client-controlled input.  This prevents cross-Org data
+        access via parameter injection.
+        """
         user = request.user
         if hasattr(user, "organization_id") and user.organization_id:
             return uuid.UUID(str(user.organization_id))
-        # Fallback for tests: accept ?org_id= query param
-        org_param = request.query_params.get("org_id")
-        if org_param:
-            return uuid.UUID(org_param)
-        raise PermissionDenied("Organization context is required.")
+        raise PermissionDenied(
+            "Organization context is required. "
+            "Ensure the request is authenticated via Clerk with an active Org."
+        )
 
     def get(self, request: Request) -> Response:
         org_id = self._get_org_id(request)

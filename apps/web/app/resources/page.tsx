@@ -16,6 +16,20 @@ export const metadata: Metadata = {
   alternates: { canonical: '/resources' },
 };
 
+const CATEGORY_META: Record<string, { icon: string; color: string }> = {
+  'Getting Started':   { icon: '🚀', color: 'from-emerald/10 to-emerald/5' },
+  'Technical':         { icon: '⚙️', color: 'from-electric/10 to-violet/5' },
+  'Security':          { icon: '🔐', color: 'from-coral/10 to-coral/5' },
+  'Integrations':      { icon: '🔗', color: 'from-violet/10 to-violet/5' },
+  'Platform':          { icon: '🏗️', color: 'from-gold/10 to-gold/5' },
+  'Developer Guide':   { icon: '💻', color: 'from-electric/10 to-electric/5' },
+  'General':           { icon: '📄', color: 'from-gray-100 to-gray-50' },
+};
+
+function categoryMeta(cat: string) {
+  return CATEGORY_META[cat] ?? { icon: '📄', color: 'from-gray-100 to-gray-50' };
+}
+
 export default function ResourcesPage() {
   const docs = getAllDocs('public');
 
@@ -28,6 +42,7 @@ export default function ResourcesPage() {
   }, {});
 
   const categories = Object.keys(grouped).sort();
+  const totalDocs = docs.length;
 
   const quickLinks = [
     { label: 'Platform Architecture', href: '/platform', icon: '🏗️', description: 'Our unified Backbone infrastructure' },
@@ -68,6 +83,24 @@ export default function ResourcesPage() {
               into the Nzila Ventures ecosystem.
             </p>
           </ScrollReveal>
+          {totalDocs > 0 && (
+            <ScrollReveal delay={0.3}>
+              <div className="flex items-center gap-6 mt-8 text-sm text-gray-400">
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-electric-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                  </svg>
+                  {totalDocs} article{totalDocs !== 1 ? 's' : ''}
+                </span>
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-electric-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                  </svg>
+                  {categories.length} categories
+                </span>
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </section>
 
@@ -110,56 +143,74 @@ export default function ResourcesPage() {
             </ScrollReveal>
           ) : (
             <div className="space-y-16">
-              {categories.map((category, catIdx) => (
-                <div key={category}>
-                  <ScrollReveal>
-                    <div className="flex items-center gap-4 mb-8">
-                      <h2 className="text-2xl font-bold text-navy">{category}</h2>
-                      <div className="flex-1 h-px bg-gradient-to-r from-electric/20 to-transparent" />
-                    </div>
-                  </ScrollReveal>
+              {categories.map((category, catIdx) => {
+                const meta = categoryMeta(category);
+                return (
+                  <div key={category}>
+                    <ScrollReveal>
+                      <div className="flex items-center gap-4 mb-8">
+                        <span className="text-2xl">{meta.icon}</span>
+                        <h2 className="text-2xl font-bold text-navy">{category}</h2>
+                        <div className="flex-1 h-px bg-gradient-to-r from-electric/20 to-transparent" />
+                        <span className="text-sm text-gray-400 tabular-nums">
+                          {grouped[category].length} article{grouped[category].length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </ScrollReveal>
 
-                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {grouped[category]
-                      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
-                      .map((doc, i) => (
-                        <ScrollReveal key={doc.slug} delay={i * 0.08}>
-                          <Link href={`/resources/${doc.slug}`}>
-                            <div className="group relative bg-white rounded-2xl border border-gray-200/80 p-6 hover:border-electric/30 hover:shadow-xl hover:shadow-electric/5 transition-all duration-300 hover-lift h-full">
-                              <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-electric/10 to-violet/10 flex items-center justify-center flex-shrink-0 group-hover:from-electric/20 group-hover:to-violet/20 transition-colors">
-                                  <span className="text-lg">📄</span>
+                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                      {grouped[category]
+                        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+                        .map((doc, i) => (
+                          <ScrollReveal key={doc.slug} delay={i * 0.08}>
+                            <Link href={`/resources/${doc.slug}`}>
+                              <div className="group relative bg-white rounded-2xl border border-gray-200/80 p-6 hover:border-electric/30 hover:shadow-xl hover:shadow-electric/5 transition-all duration-300 hover-lift h-full flex flex-col">
+                                {/* Icon */}
+                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center flex-shrink-0 mb-4 group-hover:scale-110 transition-transform`}>
+                                  <span className="text-lg">{meta.icon}</span>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="font-semibold text-navy text-base mb-1 group-hover:text-electric transition-colors">
-                                    {doc.title}
-                                  </h3>
-                                  {doc.description && (
-                                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">{doc.description}</p>
-                                  )}
+
+                                {/* Title + description */}
+                                <h3 className="font-semibold text-navy text-base mb-2 group-hover:text-electric transition-colors leading-snug">
+                                  {doc.title}
+                                </h3>
+                                {doc.description && (
+                                  <p className="text-sm text-gray-500 line-clamp-2 flex-1 mb-4">{doc.description}</p>
+                                )}
+
+                                {/* Meta row */}
+                                <div className="flex items-center gap-3 mt-auto">
                                   {doc.date && (
                                     <span className="text-xs text-gray-400">{doc.date}</span>
                                   )}
+                                  {doc.readingTime && (
+                                    <span className="flex items-center gap-1 text-xs text-gray-400">
+                                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                      </svg>
+                                      {doc.readingTime} min
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Hover arrow */}
+                                <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-electric" />
+                                  </svg>
                                 </div>
                               </div>
+                            </Link>
+                          </ScrollReveal>
+                        ))}
+                    </div>
 
-                              {/* Hover arrow */}
-                              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                  <path d="M3 13L13 3M13 3H5M13 3V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-electric" />
-                                </svg>
-                              </div>
-                            </div>
-                          </Link>
-                        </ScrollReveal>
-                      ))}
+                    {catIdx < categories.length - 1 && (
+                      <SectionDivider variant="dots" className="mt-12" />
+                    )}
                   </div>
-
-                  {catIdx < categories.length - 1 && (
-                    <SectionDivider variant="dots" className="mt-12" />
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -36,7 +36,7 @@ const verticals = [
 const flagships = [
   { name: 'Union Eyes', vertical: 'Uniontech', image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800', alt: 'Union Eyes — comprehensive union management platform for 4,773 entities', entities: '4,773', tam: '$50B', description: 'Union management, pension forecasting, grievance tracking' },
   { name: 'ABR Insights', vertical: 'EdTech', image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800', alt: 'ABR Insights — anti-racism learning management and AI coaching platform', entities: '132', tam: '$1.5B', description: 'Anti-racism LMS, tribunal case database, AI coach' },
-  { name: 'CORA', vertical: 'Agrotech', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800', alt: 'CORA — AI-powered farm management and supply chain intelligence', entities: '80+', tam: '$8.6B', description: 'Farm management, supply chain, market intelligence' },
+  { name: 'CORA', vertical: 'Agrotech', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800', alt: 'CORA — Canadian agricultural data platform with farm management and supply chain intelligence', entities: '80+', tam: '$8.6B', description: 'Farm management and supply-chain intelligence built on Canadian agricultural data — crop management, IoT integration, and market intelligence.' },
   { name: '3CUO / DiasporaCore', vertical: 'Fintech', image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800', alt: 'DiasporaCore — diaspora banking and international transfer infrastructure', entities: '485', tam: '$100B', description: 'Diaspora banking, KYC/AML, international transfers' },
 ];
 
@@ -67,6 +67,12 @@ export default function Home() {
           <ScrollReveal>
             <span className="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase rounded-full bg-gold/20 text-gold mb-6">
               The APEX of AI in Social Impact
+            </span>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.05}>
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase rounded-full bg-emerald/10 text-emerald mb-4 border border-emerald/20">
+              🌿 Pursuing B Corp Certification — People, Planet, Purpose
             </span>
           </ScrollReveal>
 
@@ -152,10 +158,11 @@ export default function Home() {
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                 We transform legacy platforms into modern, scalable AI solutions that serve 
                 communities across healthcare, legal systems, insurance, agriculture, and beyond. 
-                Our unified Backbone infrastructure powers innovation while maintaining ethical integrity.
+                Our unified Backbone infrastructure powers innovation while maintaining ethical integrity 
+                — built to meet the rigorous social, environmental, and governance standards of B Corp certification.
               </p>
               <div className="grid grid-cols-2 gap-4">
-                {['Data-Driven', 'Human-Centered', 'Ethical AI', 'Global Impact'].map((item) => (
+                {['Data-Driven', 'Human-Centered', 'Ethical AI', 'B Corp Aligned'].map((item) => (
                   <div key={item} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-electric" />
                     <span className="text-sm font-medium text-gray-700">{item}</span>
@@ -294,7 +301,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {verticals.map((vertical, i) => (
               <ScrollReveal key={vertical.name} delay={i * 0.05}>
-                <Link href="/verticals">
+                <Link href={`/verticals/${vertical.name.toLowerCase().replace('/', '')}`}>
                   <div className="group relative rounded-2xl overflow-hidden aspect-3/4 hover-lift cursor-pointer">
                     <Image
                       src={vertical.image}

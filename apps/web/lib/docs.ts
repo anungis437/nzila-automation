@@ -2,7 +2,12 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import { remark } from 'remark'
-import html from 'remark-html'
+import remarkGfm from 'remark-gfm'
+import remarkRehype from 'remark-rehype'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeHighlight from 'rehype-highlight'
+import rehypeStringify from 'rehype-stringify'
 
 export interface DocMeta {
   slug: string
@@ -11,12 +16,24 @@ export interface DocMeta {
   date?: string
   category?: string
   order?: number
+  readingTime?: number
   [key: string]: unknown
 }
 
 export interface Doc extends DocMeta {
   content: string
   htmlContent: string
+  readingTime: number // minutes
+}
+
+/**
+ * gray-matter parses YAML date scalars (e.g. 2026-02-01) into JS Date objects.
+ * Always coerce to an ISO date string so React can render it safely.
+ */
+function dateToString(value: unknown): string | undefined {
+  if (!value) return undefined
+  if (value instanceof Date) return value.toISOString().slice(0, 10)
+  return String(value)
 }
 
 /**
@@ -56,17 +73,20 @@ export function getAllDocs(scope: 'public' | 'internal' = 'public'): DocMeta[] {
   return files.map((file) => {
     const fullPath = path.join(contentDir, file)
     const raw = fs.readFileSync(fullPath, 'utf-8')
-    const { data } = matter(raw)
+    const { data, content } = matter(raw)
     const slug = file.replace(/\.md$/, '')
+    const wordCount = content.trim().split(/\s+/).length
+    const readingTime = Math.max(1, Math.round(wordCount / 200))
 
     return {
+      ...data,
       slug,
       title: (data.title as string) || slugToTitle(slug),
       description: data.description as string | undefined,
-      date: data.date as string | undefined,
+      date: dateToString(data.date),
       category: data.category as string | undefined,
       order: data.order as number | undefined,
-      ...data,
+      readingTime,
     }
   })
 }
@@ -86,18 +106,32 @@ export async function getDocBySlug(
   const raw = fs.readFileSync(filePath, 'utf-8')
   const { data, content } = matter(raw)
 
-  const result = await remark().use(html).process(content)
+  const result = await remark()
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings, {
+      behavior: 'wrap',
+      properties: { className: ['anchor-heading'] },
+    })
+    .use(rehypeHighlight, { detect: true })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(content)
+
+  const wordCount = content.trim().split(/\s+/).length
+  const readingTime = Math.max(1, Math.round(wordCount / 200))
 
   return {
+    ...data,
     slug,
     title: (data.title as string) || slugToTitle(slug),
     description: data.description as string | undefined,
-    date: data.date as string | undefined,
+    date: dateToString(data.date),
     category: data.category as string | undefined,
     order: data.order as number | undefined,
     content,
     htmlContent: result.toString(),
-    ...data,
+    readingTime,
   }
 }
 

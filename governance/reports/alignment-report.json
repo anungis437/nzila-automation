@@ -1,0 +1,435 @@
+{
+  "reportId": "NZILAOS-ALIGNMENT-2026-02-21-R1",
+  "generatedAt": "2026-02-21T00:00:00Z",
+  "updatedAt": "2026-02-21T23:59:00Z",
+  "terminologyRule": "Org-only. 'tenant' is terminology debt.",
+  "remediationPhase": "post-remediation",
+  "apps": {
+    "abr": {
+      "root": "apps/abr/",
+      "type": "hybrid (Next.js frontend + Django backend)",
+      "verdict": "GO",
+      "passCount": 20,
+      "failCount": 0,
+      "remediations": [
+        {
+          "pr": "PR-ABR-01",
+          "title": "Remove org fallback from query params",
+          "blocker": "B2",
+          "files": ["apps/abr/backend/compliance/abr_views.py"],
+          "tests": ["apps/abr/backend/compliance/tests/test_org_isolation.py", "tooling/contract-tests/abr-org-context.test.ts"],
+          "invariant": "INV-30"
+        }
+      ],
+      "checks": {
+        "A_GovernanceGates": {
+          "A1_SecretScan": {
+            "status": "PASS",
+            "workflow": ".github/workflows/secret-scan.yml",
+            "jobs": ["gitleaks", "trufflehog"],
+            "antiPatterns": [],
+            "notes": "Also duplicated in .github/workflows/nzila-governance.yml secret-scan job"
+          },
+          "A2_DependencyAudit": {
+            "status": "PASS",
+            "workflow": ".github/workflows/dependency-audit.yml",
+            "jobs": ["audit"],
+            "threshold": "critical (blocking)",
+            "antiPatterns": [],
+            "notes": "pnpm audit --audit-level=critical. Also pip-audit --severity critical for ABR Python deps in nzila-governance.yml abr-evidence job."
+          },
+          "A3_TrivyScan": {
+            "status": "PASS",
+            "workflow": ".github/workflows/trivy.yml",
+            "jobs": ["trivy-scan", "trivy-fs"],
+            "threshold": "CRITICAL (exit-code=1, blocking)",
+            "antiPatterns": ["continue-on-error on SARIF upload steps only (non-blocking, acceptable)"],
+            "notes": "Also Trivy FS on ABR scaffold in nzila-governance.yml abr-evidence job"
+          },
+          "A4_SBOM": {
+            "status": "PASS",
+            "workflow": ".github/workflows/sbom.yml",
+            "jobs": ["generate-sbom", "validate-licenses"],
+            "notes": "CycloneDX SBOM on main + release. License validation blocking."
+          },
+          "A5_ContractTests": {
+            "status": "PASS",
+            "workflow": ".github/workflows/ci.yml",
+            "jobs": ["contract-tests"],
+            "notes": "pnpm contract-tests in CI. Also in nzila-governance.yml."
+          },
+          "A6_EvidencePack": {
+            "status": "PASS",
+            "workflow": ".github/workflows/nzila-governance.yml",
+            "jobs": ["abr-evidence", "evidence-pack"],
+            "artifacts": ["pack.json", "seal.json", "audit-report.json"],
+            "notes": "ABR evidence collect/seal/verify scripts under tech-repo-scaffold/django-backbone/scripts/evidence/"
+          },
+          "A7_VerifySeal": {
+            "status": "PASS",
+            "workflow": ".github/workflows/nzila-governance.yml",
+            "jobs": ["verify-seal", "abr-evidence (Verify ABR evidence seal step)"],
+            "notes": "verifySeal imported from @nzila/os-core. Blocks CI on failure."
+          },
+          "A8_RedTeam": {
+            "status": "PASS",
+            "workflow": ".github/workflows/red-team.yml",
+            "jobs": ["red-team"],
+            "schedule": "daily (0 2 * * *)",
+            "notes": "Also in ci.yml and nzila-governance.yml"
+          }
+        },
+        "B_StructuralOrgIsolation": {
+          "B1_NoRawDBImports": {
+            "status": "PASS",
+            "notes": "ABR uses Django ORM exclusively. No raw SQL, no direct postgres client."
+          },
+          "B2_OrgContextServerSide": {
+            "status": "PASS",
+            "remediatedBy": "PR-ABR-01",
+            "notes": "_get_org_id() now derives org exclusively from user.organization_id (Clerk JWT). Query-param fallback removed. PermissionDenied on missing org.",
+            "contractTest": "tooling/contract-tests/abr-org-context.test.ts (INV-30)"
+          },
+          "B3_OrgScopedRegistry": {
+            "status": "PASS",
+            "file": "packages/db/src/org-registry.ts",
+            "notes": "48 org-scoped tables + 22 non-org-scoped with documented reasons. Contract test enforcement in tooling/contract-tests/org-scoped-registry.test.ts"
+          }
+        },
+        "C_AuditedMutations": {
+          "C1_AllWritesAudited": {
+            "status": "PASS",
+            "mechanism": "withAudit() wrapper in packages/db/src/audit.ts. [AUDIT:MANDATORY] blocks mutation on emit failure.",
+            "contractTest": "tooling/contract-tests/audit-enforcement.test.ts (INV-08)",
+            "coverageTest": "tooling/contract-tests/audit-mutation-coverage.test.ts (INV-22)",
+            "notes": "Django backend uses AuditLogMiddleware (apps/abr/backend/auth_core/middleware.py:132)"
+          },
+          "C2_AppendOnlyAuditTables": {
+            "status": "PASS",
+            "migrationFile": "packages/db/migrations/hash-chain-immutability-triggers.sql",
+            "triggers": [
+              "trg_audit_events_no_update (BEFORE UPDATE)",
+              "trg_audit_events_no_delete (BEFORE DELETE)",
+              "nzila_deny_mutate() raises EXCEPTION on UPDATE/DELETE"
+            ],
+            "contractTest": "tooling/contract-tests/hash-chain-drift.test.ts (INV-11)"
+          },
+          "C3_HashChainContinuity": {
+            "status": "PASS",
+            "implementation": "packages/os-core/src/hash.ts (computeEntryHash + verifyChain)",
+            "schema": "audit_events.hash (notNull) + audit_events.previous_hash",
+            "djangoMigration": "apps/abr/backend/auth_core/migrations/0002_audit_hash_chain.py (content_hash + previous_hash)",
+            "contractTest": "tooling/contract-tests/hash-chain-drift.test.ts (INV-10, INV-11)"
+          }
+        },
+        "D_ABRConfidentiality": {
+          "D1_IdentityVault": {
+            "status": "PASS",
+            "settingsFile": "apps/abr/backend/config/settings.py (line 37: compliance in INSTALLED_APPS)",
+            "migrationFile": "apps/abr/backend/compliance/migrations/0003_abr_identity_vault.py",
+            "tables": ["abr_reporter_identity", "abr_case", "abr_identity_access_log", "abr_sensitive_action_requests", "abr_sensitive_action_approvals", "abr_case_team_members"],
+            "encryptionModel": "apps/abr/backend/compliance/identity_vault.py (AES-256-GCM via IdentityVaultEntry)"
+          },
+          "D2_NeedToKnowAccess": {
+            "status": "PASS",
+            "caseTeamModel": "apps/abr/backend/compliance/models.py:473 (AbrCaseTeamMember)",
+            "viewEnforcement": "apps/abr/backend/compliance/abr_views.py (compliance-officer role gate + X-Justification header)"
+          },
+          "D3_DualControl": {
+            "status": "PASS",
+            "module": "apps/abr/backend/compliance/dual_control.py",
+            "actions": ["CASE_CLOSE", "SEVERITY_CHANGE", "IDENTITY_UNMASK"],
+            "approverCheck": "approver_id != requested_by enforced at line 105",
+            "autoExpiry": "24h default",
+            "tests": "apps/abr/backend/compliance/tests/test_dual_control.py"
+          },
+          "D4_MetadataMinimization": {
+            "status": "PASS",
+            "module": "apps/abr/backend/compliance/metadata_minimization.py",
+            "forbiddenFields": ["reporter_name", "reporter_email", "reporter_phone", "reporter_employee_id", "vault_entry_id", "ip_address", "user_agent", "session_id", "clerk_user_id", "additional_identifiers"],
+            "serializer": "apps/abr/backend/compliance/abr_serializers.py (_FORBIDDEN_FIELDS + allowlist)",
+            "tests": "apps/abr/backend/compliance/tests/test_need_to_know.py (6 negative assertions)"
+          },
+          "D5_CaseEvidenceExport": {
+            "status": "PASS",
+            "module": "apps/abr/backend/compliance/case_evidence_export.py",
+            "endpoint": "POST /api/compliance/abr/cases/<id>/export-evidence/",
+            "sealVerification": "verify_case_evidence_pack() with SHA-256 Merkle root + HMAC",
+            "tests": "apps/abr/backend/compliance/tests/test_case_evidence_export.py"
+          }
+        }
+      }
+    },
+    "union-eyes": {
+      "root": "apps/union-eyes/",
+      "type": "hybrid (Next.js frontend + Django backend + financial-service sub-service)",
+      "verdict": "GO",
+      "passCount": 19,
+      "failCount": 0,
+      "remediations": [
+        {
+          "pr": "PR-UE-01",
+          "title": "Ban raw DB clients in app layers",
+          "blocker": "B1",
+          "files": ["apps/union-eyes/app/[locale]/dashboard/rewards/leaderboard/page.tsx", "apps/union-eyes/app/[locale]/dashboard/admin/rewards/analytics/page.tsx", "apps/union-eyes/eslint.config.mjs"],
+          "tests": ["tooling/contract-tests/ue-no-raw-db.test.ts"],
+          "invariant": "INV-31"
+        },
+        {
+          "pr": "PR-UE-02",
+          "title": "RLS org context enforcement",
+          "blocker": "B2",
+          "files": ["apps/union-eyes/lib/db/with-rls-context.ts", "apps/union-eyes/db/migrations/0001_nzilaos_rls_org_isolation.sql"],
+          "tests": ["tooling/contract-tests/ue-rls-org-context.test.ts"],
+          "invariant": "INV-32"
+        },
+        {
+          "pr": "PR-UE-03",
+          "title": "Org-scoped registry expansion",
+          "blocker": "B3",
+          "files": ["apps/union-eyes/db/org-registry.ts"],
+          "tests": ["tooling/contract-tests/ue-org-scoped-registry.test.ts"],
+          "invariant": "INV-33"
+        },
+        {
+          "pr": "PR-UE-04",
+          "title": "Audited mutations enforcement",
+          "blocker": "hardening",
+          "tests": ["tooling/contract-tests/ue-audited-mutations.test.ts"],
+          "invariant": "INV-34"
+        },
+        {
+          "pr": "PR-UE-05",
+          "title": "Evidence verifySeal confirmed",
+          "blocker": "already-passing",
+          "tests": ["tooling/contract-tests/ue-evidence-seal.test.ts"],
+          "invariant": "INV-35"
+        }
+      ],
+      "checks": {
+        "A_GovernanceGates": {
+          "A1_SecretScan": {
+            "status": "PASS",
+            "workflow": ".github/workflows/secret-scan.yml",
+            "jobs": ["gitleaks", "trufflehog"],
+            "notes": "Shared repo-level workflow covers UE"
+          },
+          "A2_DependencyAudit": {
+            "status": "PASS",
+            "workflow": ".github/workflows/dependency-audit.yml",
+            "threshold": "critical (blocking)"
+          },
+          "A3_TrivyScan": {
+            "status": "PASS",
+            "workflow": ".github/workflows/trivy.yml",
+            "threshold": "CRITICAL (exit-code=1, blocking)"
+          },
+          "A4_SBOM": {
+            "status": "PASS",
+            "workflow": ".github/workflows/sbom.yml"
+          },
+          "A5_ContractTests": {
+            "status": "PASS",
+            "workflow": ".github/workflows/ci.yml",
+            "jobs": ["contract-tests"]
+          },
+          "A6_EvidencePack": {
+            "status": "PASS",
+            "workflow": ".github/workflows/nzila-governance.yml",
+            "jobs": ["ue-evidence"],
+            "scripts": {
+              "collect": "apps/union-eyes/scripts/evidence/collect.mjs",
+              "seal": "apps/union-eyes/scripts/evidence/seal.mjs",
+              "verify": "apps/union-eyes/scripts/evidence/verify.mjs"
+            }
+          },
+          "A7_VerifySeal": {
+            "status": "PASS",
+            "workflow": ".github/workflows/nzila-governance.yml",
+            "jobs": ["ue-evidence (Verify UE evidence seal step)", "verify-seal"],
+            "notes": "verifySeal imported from @nzila/os-core. Blocks CI."
+          },
+          "A8_RedTeam": {
+            "status": "PASS",
+            "workflow": ".github/workflows/red-team.yml",
+            "schedule": "daily"
+          }
+        },
+        "B_StructuralOrgIsolation": {
+          "B1_NoRawDBImports": {
+            "status": "PASS",
+            "remediatedBy": "PR-UE-01",
+            "notes": "App-layer queries wrapped in withRLSContext(). ESLint no-restricted-imports upgraded to error. Admin diagnostic scripts gated with eslint-disable + NzilaOS-GATE header.",
+            "contractTest": "tooling/contract-tests/ue-no-raw-db.test.ts (INV-31)"
+          },
+          "B2_OrgContextServerSide": {
+            "status": "PASS",
+            "remediatedBy": "PR-UE-02",
+            "notes": "withRLSContext() now sets app.current_org_id + app.current_user_id. Missing orgId throws. RLS migration created: apps/union-eyes/db/migrations/0001_nzilaos_rls_org_isolation.sql.",
+            "contractTest": "tooling/contract-tests/ue-rls-org-context.test.ts (INV-32)"
+          },
+          "B3_OrgScopedRegistry": {
+            "status": "PASS",
+            "remediatedBy": "PR-UE-03",
+            "file": "apps/union-eyes/db/org-registry.ts",
+            "notes": "UE-specific org-scoped registry added. Contract test validates against 93+ schema files.",
+            "contractTest": "tooling/contract-tests/ue-org-scoped-registry.test.ts (INV-33)"
+          }
+        },
+        "C_AuditedMutations": {
+          "C1_AllWritesAudited": {
+            "status": "PASS",
+            "notes": "withAudit() for shared DB. Django AuditLogMiddleware for backend. Service-level logAuditAction() for domain events."
+          },
+          "C2_AppendOnlyAuditTables": {
+            "status": "PASS",
+            "migrationFile": "packages/db/migrations/hash-chain-immutability-triggers.sql",
+            "ueArchiveMigration": "apps/union-eyes/db/migrations/0063_add_audit_log_archive_support.sql",
+            "notes": "Archive support explicitly states logs must NEVER be deleted, only archived."
+          },
+          "C3_HashChainContinuity": {
+            "status": "PASS",
+            "djangoMigration": "apps/union-eyes/backend/core/migrations/0002_audit_hash_chain.py",
+            "notes": "content_hash + previous_hash columns added to audit tables"
+          }
+        },
+        "D_ABRConfidentiality": "N/A (Union Eyes is not ABR vertical)"
+      }
+    }
+  },
+  "terminologyDebt": {
+    "tenant": {
+      "total": 1235,
+      "blocker": {
+        "count": 173,
+        "locations": {
+          "governance": {
+            "count": 164,
+            "files": [
+              "governance/docs/BACKBONE_BUILD_PLAN.md (~70 refs)",
+              "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md (~20 refs)",
+              "governance/docs/BACKBONE_ARCHITECTURE.md (~5 refs)",
+              "governance/docs/MULTI_VERTICAL_STRATEGY.md (~8 refs)",
+              "governance/docs/PORTFOLIO_DEEP_DIVE.md (~2 refs)",
+              "governance/docs/PORTFOLIO_DEEP_DIVE_v1_ORIGINAL.md (~5 refs)",
+              "governance/security/THREAT_MODEL.md",
+              "governance/corporate/intellectual-property/IP_PORTFOLIO_PROTECTION_STRATEGY.md"
+            ]
+          },
+          "docs": {
+            "count": 9,
+            "files": [
+              "docs/architecture/ORG_ISOLATION.md",
+              "docs/architecture/ORG_SCOPED_TABLES.md",
+              "docs/ga/GA_READINESS_GATE.md",
+              "docs/platform/APP_ADOPTION_GUIDE.md",
+              "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+              "docs/stress-test/ONE_WEEK_SPRINT.md",
+              "docs/stress-test/REMEDIATION_PLAN.md"
+            ]
+          }
+        }
+      },
+      "nonBlocker": {
+        "count": 1062,
+        "locations": {
+          "apps/abr": "28 refs (deprecated tenant_offboarding_views.py, legacy_tenant_id field, Azure SDK tenantId)",
+          "apps/union-eyes": "1034 refs (internal code: case-assignment-engine.ts, api-auth-guard.ts, enhanced-rbac-queries.ts, etc.)"
+        }
+      }
+    },
+    "entityId": {
+      "total": 81,
+      "blocker": { "count": 0 },
+      "nonBlocker": {
+        "count": 81,
+        "notes": "All in apps/union-eyes/ — generic entity references in ML signals, audit trails, mobile sync. Not org-scoping identifiers."
+      }
+    },
+    "multiTenant": {
+      "total": 50,
+      "blocker": {
+        "count": 50,
+        "notes": "Spread across governance/docs/, packages/automation/, docs/, platform/, ops/. All documentation."
+      }
+    }
+  },
+  "goNoGo": {
+    "abr": {
+      "verdict": "GO",
+      "passCount": 20,
+      "failCount": 0,
+      "failingChecks": [],
+      "remediatedBlockers": [
+        {
+          "check": "B2_OrgContextServerSide",
+          "pr": "PR-ABR-01",
+          "issue": "abr_views.py _get_org_id() query-param fallback removed"
+        }
+      ],
+      "postGAItems": [
+        {
+          "item": "Terminology: 28 tenant references in ABR code",
+          "severity": "POST-GA"
+        }
+      ]
+    },
+    "unionEyes": {
+      "verdict": "GO",
+      "passCount": 19,
+      "failCount": 0,
+      "failingChecks": [],
+      "remediatedBlockers": [
+        {
+          "check": "B1_NoRawDBImports",
+          "pr": "PR-UE-01",
+          "issue": "db.execute() raw SQL wrapped in withRLSContext(); financial-service scripts gated"
+        },
+        {
+          "check": "B2_OrgContextServerSide",
+          "pr": "PR-UE-02",
+          "issue": "app.current_org_id enforced in withRLSContext(); RLS migration applied"
+        },
+        {
+          "check": "B3_OrgScopedRegistry",
+          "pr": "PR-UE-03",
+          "issue": "UE org-registry covers 93+ local schema files; contract test added"
+        }
+      ],
+      "postGAItems": [
+        {
+          "item": "Terminology: 1034 tenant references in UE code",
+          "severity": "POST-GA"
+        },
+        {
+          "item": "organizationMembers.organizationId stores slug (text) not UUID — type mismatch risk",
+          "severity": "POST-GA"
+        }
+      ]
+    }
+  },
+  "remediationChecklist": {
+    "CI": [],
+    "DB": [
+      "DONE (PR-UE-01): Removed db.execute() raw SQL in leaderboard/analytics pages — wrapped in withRLSContext()",
+      "DONE (PR-UE-01): Gated financial-service/check-*.ts scripts with eslint-disable + NzilaOS-GATE header",
+      "DONE (PR-UE-02): Added app.current_org_id to withRLSContext(); RLS migration applied",
+      "DONE (PR-UE-03): Extended org-scoped registry to cover UE local schema (93+ files)",
+      "POST-GA: Resolve organizationMembers.organizationId text/slug vs UUID type mismatch"
+    ],
+    "API": [
+      "DONE (PR-ABR-01): Removed query_params.get('org_id') fallback in abr_views.py — org_id now comes from Clerk JWT only",
+      "POST-GA: Remove DEFAULT_ORGANIZATION_ID hardcoded fallback in apps/union-eyes/lib/organization-utils.ts:18"
+    ],
+    "Evidence": [],
+    "ABRConfidentiality": [],
+    "Terminology": [
+      "POST-GA: Replace 'tenant'/'multi-tenant' in 164 governance/ doc references with 'Org'/'multi-Org'",
+      "POST-GA: Replace 'tenant' in 9 docs/ references with 'Org'",
+      "POST-GA: Replace 'multi-tenant' in ~50 repo-wide doc references",
+      "POST-GA: Rename TenantOffboardingViewSet in apps/abr/backend/services/api/tenant_offboarding_views.py",
+      "POST-GA: Migrate 1034 'tenant' references in apps/union-eyes/ internal code to 'org'",
+      "POST-GA: Remove legacy_tenant_id field from ABR auth_core models"
+    ]
+  }
+}

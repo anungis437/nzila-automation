@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #ffffff;
@@ -246,3 +247,123 @@ body {
 .btn-press:active {
   transform: scale(0.97);
 }
+
+/* ─── Syntax highlighting (hljs — GitHub-style dark adapted to navy theme) ─── */
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1.25rem 1.5rem;
+  background: #0d1117;
+  color: #e6edf3;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  tab-size: 2;
+}
+.hljs-comment, .hljs-quote { color: #8b949e; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-addition { color: #ff7b72; }
+.hljs-number, .hljs-string, .hljs-meta .hljs-meta-string, .hljs-literal, .hljs-doctag { color: #a5d6ff; }
+.hljs-title, .hljs-section, .hljs-attribute, .hljs-name, .hljs-variable,
+.hljs-template-variable, .hljs-class .hljs-title, .hljs-type { color: #d2a8ff; }
+.hljs-symbol, .hljs-bullet, .hljs-subst, .hljs-meta, .hljs-meta .hljs-keyword,
+.hljs-selector-attr, .hljs-selector-pseudo, .hljs-link { color: #79c0ff; }
+.hljs-built_in, .hljs-deletion { color: #ffa657; }
+.hljs-formula { background: #161b22; }
+.hljs-strong { font-weight: bold; }
+.hljs-emphasis { font-style: italic; }
+
+/* ─── Custom prose overrides (on top of @tailwindcss/typography) ─── */
+.doc-prose {
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #0B1121;
+  --tw-prose-lead: #4b5563;
+  --tw-prose-links: #2563eb;
+  --tw-prose-bold: #111827;
+  --tw-prose-counters: #6b7280;
+  --tw-prose-bullets: #9ca3af;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #111827;
+  --tw-prose-quote-borders: #2563eb;
+  --tw-prose-captions: #6b7280;
+  --tw-prose-code: #1d273a;
+  --tw-prose-pre-code: #e6edf3;
+  --tw-prose-pre-bg: #0d1117;
+  --tw-prose-th-borders: #d1d5db;
+  --tw-prose-td-borders: #e5e7eb;
+}
+
+/* Anchor headings */
+.doc-prose .anchor-heading {
+  text-decoration: none;
+  color: inherit;
+}
+.doc-prose .anchor-heading:hover {
+  text-decoration: none;
+}
+
+/* Callout-style blockquotes */
+.doc-prose blockquote {
+  border-left-color: var(--electric);
+  background: rgba(37, 99, 235, 0.04);
+  border-radius: 0 0.75rem 0.75rem 0;
+  padding: 0.75rem 1.25rem;
+}
+
+/* Tables */
+.doc-prose table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.925rem;
+}
+.doc-prose thead {
+  background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(139,92,246,0.06));
+}
+.doc-prose thead th {
+  font-weight: 600;
+  color: var(--navy);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid rgba(37,99,235,0.2);
+}
+.doc-prose tbody td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+.doc-prose tbody tr:hover td {
+  background: rgba(37,99,235,0.02);
+}
+
+/* Inline code */
+.doc-prose :not(pre) > code {
+  background: rgba(37,99,235,0.08);
+  color: #1d4ed8;
+  padding: 0.15em 0.45em;
+  border-radius: 0.35rem;
+  font-size: 0.875em;
+  font-weight: 500;
+  border: 1px solid rgba(37,99,235,0.15);
+}
+
+/* Code block wrapper */
+.doc-prose pre {
+  padding: 0;
+  background: transparent;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  margin: 1.75rem 0;
+}
+.doc-prose pre code {
+  background: transparent !important;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* Heading anchor links */
+.doc-prose h2, .doc-prose h3, .doc-prose h4 {
+  scroll-margin-top: 5rem;
+}
+.doc-prose h2 { border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
+
