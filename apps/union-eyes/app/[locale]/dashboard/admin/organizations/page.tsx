@@ -1,10 +1,11 @@
-import React from 'react';
+"use client";
+
 /**
  * Organizations List Page
  * View and manage the organizational hierarchy
  */
-"use client";
 
+import React from 'react';
 import { useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
@@ -27,7 +28,8 @@ import {
   AlertCircle,
   GitBranch,
   Building,
-  Home
+  Home,
+  Layers
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -66,6 +68,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 // Organization type configurations
 const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactElement; color: string }> = {
+  platform: { label: "Platform", icon: <Layers className="w-4 h-4" />, color: "text-rose-700 bg-rose-100 border-rose-200" },
   congress: { label: "Congress", icon: <Globe className="w-4 h-4" />, color: "text-blue-700 bg-blue-100 border-blue-200" },
   federation: { label: "Federation", icon: <Network className="w-4 h-4" />, color: "text-purple-700 bg-purple-100 border-purple-200" },
   union: { label: "Union", icon: <Building2 className="w-4 h-4" />, color: "text-green-700 bg-green-100 border-green-200" },

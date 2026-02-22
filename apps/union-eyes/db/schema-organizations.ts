@@ -11,6 +11,7 @@ import { relations } from 'drizzle-orm';
 // =====================================================
 
 export const organizationTypeEnum = pgEnum('organization_type', [
+  'platform',
   'congress',
   'federation',
   'union',

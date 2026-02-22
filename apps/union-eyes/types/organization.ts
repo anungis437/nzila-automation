@@ -9,6 +9,7 @@ import type { CAJurisdiction } from '@/lib/jurisdiction-helpers-client';
  * Organization types in the CLC hierarchy
  */
 export type OrganizationType = 
+  | 'platform'     // SaaS platform provider (Nzila Ventures)
   | 'congress'      // CLC national level
   | 'federation'    // Provincial/territorial federations (OFL, BCFED)
   | 'union'         // National/international unions (CUPE, Unifor, UFCW)
@@ -365,6 +366,7 @@ export function formatHierarchyPath(path: string[]): string {
  */
 export function getOrganizationTypeLabel(type: OrganizationType): string {
   const labels: Record<OrganizationType, string> = {
+    platform: 'Platform',
     congress: 'Congress',
     federation: 'Federation',
     union: 'Union',

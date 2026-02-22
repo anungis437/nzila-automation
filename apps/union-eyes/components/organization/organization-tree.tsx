@@ -1,12 +1,13 @@
-import React from 'react';
+"use client";
+
 /**
  * Organization Tree Visualization Component
  * Interactive hierarchical tree view for CLC -> Federation -> Union -> Local structure
  */
-"use client";
 
+import React from 'react';
 import { useState, useEffect, useCallback } from "react";
-import { ChevronRight, ChevronDown, Building2, Globe, Users, MapPin, Network, GitBranch, Loader2, AlertCircle } from "lucide-react";
+import { ChevronRight, ChevronDown, Building2, Globe, Users, MapPin, Network, GitBranch, Loader2, AlertCircle, Layers } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ interface OrganizationTreeProps {
 }
 
 const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactElement; color: string }> = {
+  platform: { label: "Platform", icon: <Layers className="w-4 h-4" />, color: "text-rose-600" },
   congress: { label: "Congress", icon: <Globe className="w-4 h-4" />, color: "text-blue-600" },
   federation: { label: "Federation", icon: <Network className="w-4 h-4" />, color: "text-purple-600" },
   union: { label: "Union", icon: <Building2 className="w-4 h-4" />, color: "text-green-600" },
@@ -244,7 +246,7 @@ function TreeNode({ node, path, depth, maxDepth, onToggle, onSelect, selectedId,
           <div className="w-5" />
         )}
         
-        <div className={cn("flex-shrink-0", config.color)}>
+        <div className={cn("shrink-0", config.color)}>
           {config.icon}
         </div>
         
