@@ -41,8 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClerkProvider
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
-          afterSignInUrl="/en-CA/dashboard"
-          afterSignUpUrl="/en-CA/dashboard"
           signInFallbackRedirectUrl="/en-CA/dashboard"
           signUpFallbackRedirectUrl="/en-CA/dashboard"
         >

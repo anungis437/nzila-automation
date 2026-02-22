@@ -81,7 +81,14 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/login(.*)",
   "/:locale/signup(.*)",
   "/:locale/sign-in(.*)",
-  "/:locale/sign-up(.*)"
+  "/:locale/sign-up(.*)",
+  // Marketing pages (no locale prefix)
+  "/story(.*)",
+  "/pricing(.*)",
+  "/contact(.*)",
+  "/status(.*)",
+  "/case-studies(.*)",
+  "/pilot-request(.*)",
 ]);
 
 // Clerk's auth pages live at root (no locale prefix) — skip intl redirect for them
@@ -90,6 +97,18 @@ const isClerkAuthPath = createRouteMatcher([
   "/sign-up(.*)",
   "/login(.*)",
   "/signup(.*)",
+]);
+
+// Marketing / public pages live at root (no locale prefix).
+// They use (marketing)/layout.tsx with their own SiteNavigation + SiteFooter.
+const isMarketingPath = createRouteMatcher([
+  "/",
+  "/story(.*)",
+  "/pricing(.*)",
+  "/contact(.*)",
+  "/status(.*)",
+  "/case-studies(.*)",
+  "/pilot-request(.*)",
 ]);
 
 // PR #4: Removed duplicate API route lists (now imported from lib/api-auth-guard.ts)
@@ -231,6 +250,12 @@ export default clerkMiddleware(async (auth, req) => {
   // Clerk's NEXT_PUBLIC_CLERK_SIGN_IN_URL is configured without locale prefix,
   // so adding it would create a redirect loop (Clerk → /sign-in → intl → /en-CA/sign-in → Clerk → ...).
   if (isClerkAuthPath(req)) {
+    return withRequestId(NextResponse.next(), requestId);
+  }
+
+  // Marketing pages live at root without locale prefix (/, /story, /pricing, etc.)
+  // They use (marketing)/layout.tsx — skip intl redirect so visitors land directly.
+  if (isMarketingPath(req)) {
     return withRequestId(NextResponse.next(), requestId);
   }
 
