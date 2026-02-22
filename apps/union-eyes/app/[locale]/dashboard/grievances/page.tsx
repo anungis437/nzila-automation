@@ -248,7 +248,7 @@ export default function GrievancesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-red-50">
       <div className="p-6 md:p-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -257,7 +257,7 @@ export default function GrievancesPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg">
+            <div className="p-2 bg-linear-to-br from-red-500 to-orange-600 rounded-lg">
               <Scale className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">{t('grievances.title')}</h1>
@@ -370,7 +370,7 @@ export default function GrievancesPage() {
                 </div>
 
                 {/* File New Button */}
-                <button className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all shadow-md">
+                <button className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all shadow-md">
                   <Plus className="w-5 h-5" />
                   <span className="font-medium">{t('grievances.fileNew')}</span>
                 </button>
@@ -642,7 +642,7 @@ export default function GrievancesPage() {
           transition={{ delay: 0.6 }}
           className="mt-8"
         >
-          <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200 shadow-lg">
+          <Card className="bg-linear-to-br from-red-50 to-orange-50 border-red-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-red-100 rounded-lg">

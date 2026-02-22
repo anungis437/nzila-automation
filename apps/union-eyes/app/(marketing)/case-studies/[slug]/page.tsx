@@ -46,7 +46,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 px-4 sm:px-6 lg:px-8">
+      <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <span className="inline-block px-3 py-1 text-sm font-medium bg-white/20 rounded-full mb-4">
             {caseStudy.category}
@@ -165,7 +165,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Quote */}
         {caseStudy.quote && (
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg p-8 mb-8">
+          <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white rounded-lg p-8 mb-8">
             <blockquote className="text-2xl font-medium italic mb-4">
               "{caseStudy.quote.text}"
             </blockquote>

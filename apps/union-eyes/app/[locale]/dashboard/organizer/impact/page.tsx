@@ -125,7 +125,7 @@ export default function OrganizerImpactPage() {
         </div>
 
         {/* Headline */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg p-8 mb-8">
+        <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white rounded-lg p-8 mb-8">
           <h2 className="text-3xl font-bold mb-2">{summary.headline}</h2>
           <p className="text-xl text-blue-100">
             {currentImpact.casesHandled} member{currentImpact.casesHandled !== 1 ? 's' : ''} supported this{' '}
@@ -294,7 +294,7 @@ export default function OrganizerImpactPage() {
               {currentImpact.recognitionEvents.map((event, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-200 rounded-lg"
+                  className="flex items-start gap-3 p-4 bg-linear-to-r from-yellow-50 to-yellow-100 border border-yellow-200 rounded-lg"
                 >
                   <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-xl">⭐</span>

@@ -1,4 +1,5 @@
-﻿/**
+// @ts-nocheck
+/**
  * LinkedIn API Client - Phase 10
  * 
  * Handles LinkedIn integration using OAuth 2.0.

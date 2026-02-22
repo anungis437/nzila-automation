@@ -161,7 +161,7 @@ const getPlatformColor = (platform: SocialPlatform): string => {
   const colors = {
     facebook: 'bg-blue-600',
     twitter: 'bg-sky-500',
-    instagram: 'bg-gradient-to-tr from-purple-600 via-pink-600 to-orange-500',
+    instagram: 'bg-linear-to-tr from-purple-600 via-pink-600 to-orange-500',
     linkedin: 'bg-blue-700',
     youtube: 'bg-red-600',
     tiktok: 'bg-black'
@@ -342,7 +342,7 @@ export default function SocialMediaPostComposer() {
               </div>
 
               {/* AI Content Generation */}
-              <div className="flex items-center justify-between p-4 border rounded-lg bg-gradient-to-r from-purple-50 to-blue-50">
+              <div className="flex items-center justify-between p-4 border rounded-lg bg-linear-to-r from-purple-50 to-blue-50">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-purple-600" />
                   <div>

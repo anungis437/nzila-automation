@@ -86,7 +86,7 @@ export default function Header() {
       >
         {/* Enhanced glassmorphism glow effects */}
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none"
+          className="absolute inset-0 bg-linear-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none"
           animate={{ 
             opacity: [0.5, 0.7, 0.5],
             background: [
@@ -99,10 +99,10 @@ export default function Header() {
         />
         
         {/* Enhanced edge highlights for 3D effect */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-80" />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent" />
-        <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-80" />
-        <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-80" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white to-transparent opacity-80" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-gray-300/50 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-80" />
+        <div className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-80" />
         
         <div className="px-6 py-3 relative">
           <div className="flex items-center justify-between gap-8">
@@ -140,7 +140,7 @@ export default function Header() {
                   <path d="M4 12h16" />
                 </svg>
               </div>
-              <div className="text-lg font-bold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
+              <div className="text-lg font-bold bg-linear-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
                 UnionEyes
               </div>
             </motion.div>
@@ -178,7 +178,7 @@ export default function Header() {
                     >
                       {/* Enhanced button glow effect */}
                       <motion.span 
-                        className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0"
+                        className="absolute inset-0 w-full h-full bg-linear-to-r from-primary/0 via-primary/20 to-primary/0"
                         animate={{ 
                           x: ['-100%', '200%'],
                         }}
@@ -239,7 +239,7 @@ export default function Header() {
                   >
                     {/* Enhanced button glow effect */}
                     <motion.span 
-                      className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0"
+                      className="absolute inset-0 w-full h-full bg-linear-to-r from-primary/0 via-primary/20 to-primary/0"
                       animate={{ 
                         x: ['-100%', '200%'],
                       }}

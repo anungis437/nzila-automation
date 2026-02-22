@@ -406,7 +406,7 @@ export default function UnionDashboard() {
   // SSR Guard
   if (!mounted || !user) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+      <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
         <div className="animate-pulse space-y-6">
           <div className="h-24 bg-gray-200 rounded-lg"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -424,7 +424,7 @@ export default function UnionDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
       {/* Development Helper */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -504,7 +504,7 @@ export default function UnionDashboard() {
               <Link href={link.href}>
                 <Card className="border-white/50 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer group h-full">
                   <CardContent className="p-6">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${link.color} text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <div className={`inline-flex p-3 rounded-xl bg-linear-to-br ${link.color} text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
                       {link.icon}
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2 text-lg group-hover:text-blue-600 transition-colors">
@@ -717,7 +717,7 @@ export default function UnionDashboard() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-8"
         >
-          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-lg">
+          <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-white shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-blue-600 text-white">

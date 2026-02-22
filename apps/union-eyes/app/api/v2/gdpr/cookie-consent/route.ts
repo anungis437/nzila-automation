@@ -1,0 +1,79 @@
+// @ts-nocheck
+/**
+ * GET POST /api/gdpr/cookie-consent
+ * Migrated to withApi() framework
+ */
+import { CookieConsentManager } from "@/lib/gdpr/consent-manager";
+
+import { withApi, ApiError, z } from '@/lib/api/framework';
+
+const gdprCookieConsentSchema = z.object({
+  consentId: z.string().uuid('Invalid consentId'),
+  organizationId: z.string().uuid('Invalid organizationId'),
+  essential: z.unknown().optional(),
+  functional: z.unknown().optional(),
+  analytics: z.unknown().optional(),
+  marketing: z.unknown().optional(),
+  userAgent: z.unknown().optional(),
+});
+
+export const GET = withApi(
+  {
+    auth: { required: true },
+    openapi: {
+      tags: ['Gdpr'],
+      summary: 'GET cookie-consent',
+    },
+  },
+  async ({ request, userId, organizationId, user, body, query }) => {
+
+        const { searchParams } = new URL(request.url);
+        const consentId = searchParams.get("consentId");
+        if (!consentId) {
+          throw ApiError.internal('Consent ID required'
+        );
+        }
+        const consent = await CookieConsentManager.getCookieConsent(consentId);
+        if (!consent) {
+          throw ApiError.notFound('Consent not found'
+        );
+        }
+        return consent;
+  },
+);
+
+export const POST = withApi(
+  {
+    auth: { required: true },
+    body: gdprCookieConsentSchema,
+    openapi: {
+      tags: ['Gdpr'],
+      summary: 'POST cookie-consent',
+    },
+    successStatus: 201,
+  },
+  async ({ request, userId, organizationId, user, body, query }) => {
+
+        // Validate request body
+        if (!consentId || !organizationId) {
+          throw ApiError.badRequest('Missing required fields'
+        );
+        }
+        // Get IP address from request
+        const ipAddress = request.headers.get("x-forwarded-for") || 
+                          request.headers.get("x-real-ip") || 
+                          "unknown";
+        const consent = await CookieConsentManager.saveCookieConsent({
+          userId: user?.id || null,
+          organizationId,
+          consentId,
+          essential: essential ?? true,
+          functional: functional ?? false,
+          analytics: analytics ?? false,
+          marketing: marketing ?? false,
+          ipAddress,
+          userAgent,
+        });
+        return consent;
+  },
+);

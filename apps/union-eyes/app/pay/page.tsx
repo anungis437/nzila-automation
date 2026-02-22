@@ -161,7 +161,7 @@ setError('An unexpected error occurred. Please try again.');
               exit={{ opacity: 0, y: -10 }}
               className="absolute -top-0.5 right-6"
             >
-              <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white text-xs font-bold px-4 py-1.5 rounded-b-lg shadow-sm">
+              <div className="bg-linear-to-r from-purple-500 to-purple-700 text-white text-xs font-bold px-4 py-1.5 rounded-b-lg shadow-sm">
                 Save {currentPlan.savingsPercentage}% ({currentPlan.savingsAmount})
               </div>
             </motion.div>

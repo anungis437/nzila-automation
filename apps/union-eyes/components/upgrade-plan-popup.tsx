@@ -282,7 +282,7 @@ setError('An unexpected error occurred. Please try again later.');
             
             {/* Checkout button */}
             <Button 
-              className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+              className="w-full py-2.5 bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
               size="lg"
               onClick={handleCheckout}
               disabled={isLoading}

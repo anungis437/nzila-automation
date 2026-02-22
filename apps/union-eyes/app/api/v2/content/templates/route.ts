@@ -1,0 +1,40 @@
+/**
+ * GET POST /api/content/templates
+ * → Django: /api/content/cms-pages/
+ * Migrated to withApi() framework
+ */
+import { NextRequest } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+import { withApi } from '@/lib/api/framework';
+
+export const dynamic = 'force-dynamic';
+
+export const GET = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Content', 'Django Proxy'],
+      summary: 'GET templates',
+      description: 'Proxied to Django: /api/content/cms-pages/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/content/cms-pages/');
+    return response;
+  },
+);
+
+export const POST = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Content', 'Django Proxy'],
+      summary: 'POST templates',
+      description: 'Proxied to Django: /api/content/cms-pages/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/content/cms-pages/', { method: 'POST' });
+    return response;
+  },
+);

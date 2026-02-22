@@ -129,7 +129,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -150,7 +150,7 @@ export default function ProfilePage() {
                     onClick={() => setActiveSection(section.id as SettingsSection)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
                       activeSection === section.id
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                        ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                   <div className="space-y-6">
                     {/* Profile Picture */}
                     <div className="flex items-center gap-6">
-                      <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                      <div className="w-24 h-24 bg-linear-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
                         {settings.profile.name
                           .split(" ")
                           .map((n) => n[0])

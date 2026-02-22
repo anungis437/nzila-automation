@@ -66,7 +66,7 @@ export function CreditUsageDisplay() {
     : 'Free';
   
   // Custom progress bar colors using the purple from whop-pricing-card
-  const progressClasses = "h-2.5 rounded-full bg-gradient-to-r from-purple-500 to-purple-700";
+  const progressClasses = "h-2.5 rounded-full bg-linear-to-r from-purple-500 to-purple-700";
 
   return (
     <Card className="border-white/60 bg-white/80 shadow-sm overflow-hidden">

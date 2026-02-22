@@ -100,7 +100,7 @@ export default function DashboardPage() {
   // Loading skeleton while we resolve the user and their tier
   if (!mounted || !user || tier === null) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+      <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
         <div className="animate-pulse space-y-6">
           <div className="h-24 bg-gray-200 rounded-lg" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

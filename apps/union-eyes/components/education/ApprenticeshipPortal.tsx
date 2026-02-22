@@ -329,7 +329,7 @@ export default function ApprenticeshipPortal({
 
             return (
               <Card key={enrollment.id} className="overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardHeader className="bg-linear-to-r from-blue-50 to-purple-50">
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-xl mb-2">

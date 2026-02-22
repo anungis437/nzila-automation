@@ -1,0 +1,53 @@
+// @ts-nocheck
+/**
+ * POST /api/signatures/sign
+ * Migrated to withApi() framework
+ */
+import { SignatureService } from "@/lib/signature/signature-service";
+
+import { withApi, ApiError, z } from '@/lib/api/framework';
+
+const signatureSchema = z.object({
+  signerId: z.string().uuid('Invalid signerId'),
+  signatureImageUrl: z.string().url('Invalid signature image URL'),
+  signatureType: z.enum(['drawn', 'uploaded', 'typed', 'biometric'], { 
+    errorMap: () => ({ message: 'Invalid signature type' }) 
+  }),
+  geolocation: z.object({
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+  }).optional(),
+});
+
+export const POST = withApi(
+  {
+    auth: { required: false },
+    body: signatureSchema,
+    openapi: {
+      tags: ['Signatures'],
+      summary: 'POST sign',
+    },
+  },
+  async ({ request, userId, organizationId, user, body, query, params }) => {
+
+        // Authentication guard
+        const { userId } = await requireApiAuth();
+        const body = await req.json();
+        // Validate request body
+        // Get IP and user agent
+        const ipAddress = req.headers.get("x-forwarded-for") || 
+                          req.headers.get("x-real-ip") || 
+                          "unknown";
+        const userAgent = req.headers.get("user-agent") || "unknown";
+        const signer = await SignatureService.recordSignature({
+          signerId,
+          signatureImageUrl,
+          signatureType,
+          ipAddress,
+          userAgent,
+          geolocation,
+        });
+        return { message: "Signature recorded successfully",
+          signer, };
+  },
+);

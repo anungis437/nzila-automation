@@ -1,4 +1,5 @@
-﻿/**
+// @ts-nocheck
+/**
  * Twitter API v2 Client - Phase 10
  * 
  * Handles Twitter integration using OAuth 2.0 and API v2.

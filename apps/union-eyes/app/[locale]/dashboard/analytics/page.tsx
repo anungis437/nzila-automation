@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
   const maxCaseValue = Math.max(...chartData.map(d => d.cases));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50">
       <div className="p-6 md:p-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -156,7 +156,7 @@ export default function AnalyticsPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+            <div className="p-2 bg-linear-to-br from-indigo-500 to-purple-600 rounded-lg">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">{t('analytics.title')}</h1>
@@ -362,7 +362,7 @@ export default function AnalyticsPage() {
                 <div className="space-y-4">
                   {topStewards.map((steward, index) => (
                     <div key={steward.name} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full text-white font-bold text-sm">
+                      <div className="flex items-center justify-center w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full text-white font-bold text-sm">
                         #{index + 1}
                       </div>
                       <div className="flex-1">
@@ -440,7 +440,7 @@ export default function AnalyticsPage() {
           transition={{ delay: 1.2 }}
           className="mt-6"
         >
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200 shadow-lg">
+          <Card className="bg-linear-to-br from-indigo-50 to-purple-50 border-indigo-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-indigo-100 rounded-lg">

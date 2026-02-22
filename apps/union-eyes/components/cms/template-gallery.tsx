@@ -503,7 +503,7 @@ export function TemplateGallery({ onSelectTemplate, onCreateBlank }: TemplateGal
           className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group"
           onClick={onCreateBlank}
         >
-          <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+          <div className="aspect-video bg-linear-to-br from-muted to-muted/50 flex items-center justify-center">
             <Plus className="h-16 w-16 text-muted-foreground group-hover:scale-110 transition-transform" />
           </div>
           <div className="p-4">
@@ -524,7 +524,7 @@ export function TemplateGallery({ onSelectTemplate, onCreateBlank }: TemplateGal
             className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group"
             onClick={() => onSelectTemplate(template)}
           >
-            <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
+            <div className="aspect-video bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
               {template.thumbnail ? (
                 <img
                   src={template.thumbnail}

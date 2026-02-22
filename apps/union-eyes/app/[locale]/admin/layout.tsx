@@ -136,7 +136,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
             </nav>
 
             {/* Quick Stats Card */}
-            <div className="mt-4 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg shadow-sm border p-4 text-white">
+            <div className="mt-4 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg shadow-sm border p-4 text-white">
               <h3 className="text-sm font-semibold mb-2">Admin Access</h3>
               <p className="text-xs opacity-90">
                 You have full system access. All actions are logged for audit.

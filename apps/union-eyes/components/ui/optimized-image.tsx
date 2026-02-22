@@ -143,7 +143,7 @@ export function HeroImage({
       />
       {overlay && (
         <div 
-          className="absolute inset-0 bg-gradient-to-b from-background/80 to-background/40"
+          className="absolute inset-0 bg-linear-to-b from-background/80 to-background/40"
           data-overlay-opacity={overlayOpacity}
         />
       )}

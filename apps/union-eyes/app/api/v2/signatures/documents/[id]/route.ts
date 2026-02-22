@@ -1,0 +1,77 @@
+// @ts-nocheck
+/**
+ * GET PATCH /api/signatures/documents/[id]
+ * Migrated to withApi() framework
+ */
+import { SignatureService, AuditTrailService } from "@/lib/signature/signature-service";
+
+import { withApi, ApiError, z } from '@/lib/api/framework';
+
+const signaturesDocumentsSchema = z.object({
+  action: z.unknown().optional(),
+  reason: z.string().min(1, 'reason is required'),
+});
+
+export const GET = withApi(
+  {
+    auth: { required: true },
+    openapi: {
+      tags: ['Signatures'],
+      summary: 'GET [id]',
+    },
+  },
+  async ({ request, params, userId, organizationId, user, body, query }) => {
+
+        if (!user || !user.id) {
+          throw ApiError.unauthorized('Unauthorized'
+        );
+        }
+        const documentId = params.id;
+        // SECURITY FIX: Verify user has access to this document (prevent IDOR)
+        const hasAccess = await SignatureService.verifyDocumentAccess(documentId, user.id);
+        if (!hasAccess) {
+          throw ApiError.forbidden('Access denied'
+        );
+        }
+        const document = await SignatureService.getDocumentStatus(documentId);
+        return document;
+  },
+);
+
+export const PATCH = withApi(
+  {
+    auth: { required: true },
+    body: signaturesDocumentsSchema,
+    openapi: {
+      tags: ['Signatures'],
+      summary: 'PATCH [id]',
+    },
+  },
+  async ({ request, params, userId, organizationId, user, body, query }) => {
+
+        if (!user || !user.id) {
+          throw ApiError.unauthorized('Unauthorized'
+        );
+        }
+        const userId = user.id;
+        const documentId = params.id;
+        // SECURITY FIX: Verify user has access to this document (prevent IDOR)
+        const hasAccess = await SignatureService.verifyDocumentAccess(documentId, userId);
+        if (!hasAccess) {
+          throw ApiError.forbidden('Access denied'
+        );
+        }
+        const body = await req.json();
+        const { action, reason } = body;
+        if (action === "void") {
+          if (!reason) {
+            throw ApiError.internal('Void reason required'
+        );
+          }
+          await SignatureService.voidDocument(documentId, userId, reason);
+          return { message: "Document voided successfully", };
+        }
+        throw ApiError.badRequest('Invalid action'
+        );
+  },
+);

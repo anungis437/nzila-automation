@@ -151,7 +151,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claim');
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">{t('claims.loadingDetails')}</p>
@@ -162,7 +162,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claim');
 
   if (error || !claim) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="p-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
@@ -181,7 +181,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claim');
   const priorityInfo = priorityLabels[claim.priority] || { label: claim.priority, color: 'bg-gray-100 text-gray-700' };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.div

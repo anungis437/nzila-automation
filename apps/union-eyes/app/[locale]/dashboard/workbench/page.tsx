@@ -454,7 +454,7 @@ setError(err instanceof Error ? err.message : 'Failed to load assigned claims');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-orange-50 p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -985,7 +985,7 @@ setError(err instanceof Error ? err.message : 'Failed to load assigned claims');
           transition={{ delay: 0.6 }}
           className="mt-8"
         >
-          <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+          <Card className="bg-linear-to-r from-orange-50 to-yellow-50 border-orange-200">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">

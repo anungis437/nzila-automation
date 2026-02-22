@@ -97,7 +97,7 @@ function NavSection({
           }`}
         />
         {/* mobile divider */}
-        <div className="md:hidden h-px w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent my-2" />
+        <div className="md:hidden h-px w-full bg-linear-to-r from-transparent via-gray-300 to-transparent my-2" />
       </button>
 
       <AnimatePresence initial={false}>
@@ -284,9 +284,16 @@ export default function Sidebar({ profile, userEmail, whopMonthlyPlanId, whopYea
     },
   ];
 
+  // ── Section shape (broad enough for all tiers) ──────────────────────────────
+  type SidebarSection = {
+    title: string;
+    roles: string[];
+    items: { href: string; icon: React.ReactNode; label: string; roles: string[] }[];
+  };
+
   // ── Assemble final navigation list based on role tier ──────────────────────
   const buildSections = useCallback(() => {
-    let sections: typeof superOrgSections = [];
+    let sections: SidebarSection[] = [];
 
     if (isNzila) {
       // Nzila platform users: always show super-org nav
@@ -321,7 +328,7 @@ export default function Sidebar({ profile, userEmail, whopMonthlyPlanId, whopYea
       <motion.div
         className={`flex items-center py-2 px-3 rounded-lg cursor-pointer transition-all ${
           isActive(item.href)
-            ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30"
+            ? "bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30"
             : "text-gray-600 hover:bg-white/80 hover:shadow-sm"
         }`}
         whileHover={{ scale: 1.02, x: 2, transition: { duration: 0.2 } }}
@@ -335,10 +342,10 @@ export default function Sidebar({ profile, userEmail, whopMonthlyPlanId, whopYea
   );
 
   return (
-    <div className="h-screen w-[60px] md:w-[220px] bg-white/60 backdrop-blur-xl border-r border-white/40 flex flex-col justify-between py-5 relative overflow-hidden">
+    <div className="h-screen w-15 md:w-55 bg-white/60 backdrop-blur-xl border-r border-white/40 flex flex-col justify-between py-5 relative overflow-hidden">
       {/* Glassmorphism effects */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-primary/5 pointer-events-none"
+        className="absolute inset-0 bg-linear-to-b from-primary/5 via-transparent to-primary/5 pointer-events-none"
         animate={{
           opacity: [0.4, 0.6, 0.4],
           background: [
@@ -351,10 +358,10 @@ export default function Sidebar({ profile, userEmail, whopMonthlyPlanId, whopYea
       />
 
       {/* Enhanced edge highlights for 3D effect */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-80" />
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent" />
-      <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-80" />
-      <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-80" />
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white to-transparent opacity-80" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-gray-300/50 to-transparent" />
+      <div className="absolute inset-y-0 left-0 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-80" />
+      <div className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-80" />
 
       {/* Logo */}
       <div className="px-3 mb-6 relative z-10">
@@ -364,11 +371,11 @@ export default function Sidebar({ profile, userEmail, whopMonthlyPlanId, whopYea
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 shadow-lg">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-blue-800 shadow-lg">
               <Shield size={18} className="text-white" />
             </div>
             <div className="hidden md:block">
-              <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              <span className="font-bold text-lg bg-linear-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                 UnionEyes
               </span>
             </div>
@@ -399,7 +406,7 @@ export default function Sidebar({ profile, userEmail, whopMonthlyPlanId, whopYea
 
       {/* Bottom Section - User Profile */}
       <div className="mt-auto pt-4 relative z-10">
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-3" />
+        <div className="h-px bg-linear-to-r from-transparent via-gray-200 to-transparent mb-3" />
 
         <Link href="/dashboard/profile">
           <motion.div

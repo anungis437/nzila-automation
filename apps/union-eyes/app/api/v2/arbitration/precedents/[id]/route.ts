@@ -1,0 +1,55 @@
+/**
+ * GET PATCH DELETE /api/arbitration/precedents/[id]
+ * → Django: /api/bargaining/arbitration-decisions/
+ * Migrated to withApi() framework
+ */
+import { NextRequest } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+import { withApi } from '@/lib/api/framework';
+
+export const dynamic = 'force-dynamic';
+
+export const GET = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Arbitration', 'Django Proxy'],
+      summary: 'GET [id]',
+      description: 'Proxied to Django: /api/bargaining/arbitration-decisions/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/bargaining/arbitration-decisions/');
+    return response;
+  },
+);
+
+export const PATCH = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Arbitration', 'Django Proxy'],
+      summary: 'PATCH [id]',
+      description: 'Proxied to Django: /api/bargaining/arbitration-decisions/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/bargaining/arbitration-decisions/', { method: 'PATCH' });
+    return response;
+  },
+);
+
+export const DELETE = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Arbitration', 'Django Proxy'],
+      summary: 'DELETE [id]',
+      description: 'Proxied to Django: /api/bargaining/arbitration-decisions/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/bargaining/arbitration-decisions/', { method: 'DELETE' });
+    return response;
+  },
+);

@@ -178,7 +178,7 @@ export default function CancellationPopup({ profile }: CancellationPopupProps) {
             
             <div className="flex flex-col gap-3">
               <Button 
-                className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+                className="w-full bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
                 onClick={handleClose}
               >
                 Got it

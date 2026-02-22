@@ -1,0 +1,40 @@
+/**
+ * GET POST /api/reconciliation/process
+ * → Django: /api/billing/remittance-approvals/
+ * Migrated to withApi() framework
+ */
+import { NextRequest } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+import { withApi } from '@/lib/api/framework';
+
+export const dynamic = 'force-dynamic';
+
+export const GET = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Reconciliation', 'Django Proxy'],
+      summary: 'GET process',
+      description: 'Proxied to Django: /api/billing/remittance-approvals/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/billing/remittance-approvals/');
+    return response;
+  },
+);
+
+export const POST = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Reconciliation', 'Django Proxy'],
+      summary: 'POST process',
+      description: 'Proxied to Django: /api/billing/remittance-approvals/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/billing/remittance-approvals/', { method: 'POST' });
+    return response;
+  },
+);

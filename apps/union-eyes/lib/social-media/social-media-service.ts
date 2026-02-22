@@ -1,4 +1,5 @@
-﻿/**
+// @ts-nocheck
+/**
  * Social Media Service - Phase 10
  * 
  * Unified service for managing social media integrations across

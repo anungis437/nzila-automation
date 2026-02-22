@@ -426,7 +426,7 @@ toast.error("Failed to optimize database");
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-gray-50 to-zinc-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -448,7 +448,7 @@ toast.error("Failed to optimize database");
               onClick={() => setActiveSection(section.id as AdminSection)}
               className={`p-4 rounded-lg transition-all ${
                 activeSection === section.id
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                  ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
                   : "bg-white text-gray-700 hover:shadow-md border border-gray-200"
               }`}
             >
@@ -594,7 +594,7 @@ toast.error("Failed to optimize database");
                 <h2 className="text-2xl font-bold text-gray-900">
                   {t('admin.users.title')}
                 </h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
+                <button className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
                   <Plus className="w-4 h-4" />
                   {t('admin.users.addUser')}
                 </button>
@@ -730,7 +730,7 @@ toast.error("Failed to optimize database");
                 <h2 className="text-2xl font-bold text-gray-900">
                   {t('admin.locals.title')}
                 </h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
+                <button className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
                   <Plus className="w-4 h-4" />
                   {t('admin.locals.addLocal')}
                 </button>
@@ -764,7 +764,7 @@ toast.error("Failed to optimize database");
                   {organizations.map((local) => (
                   <Card
                     key={local.id}
-                    className="p-5 bg-gradient-to-br from-white to-gray-50 border-gray-200 hover:shadow-lg transition-all"
+                    className="p-5 bg-linear-to-br from-white to-gray-50 border-gray-200 hover:shadow-lg transition-all"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div>
@@ -1397,7 +1397,7 @@ toast.error("Failed to optimize database");
 
               {/* Report Categories */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <button className="p-6 border-2 border-blue-200 rounded-lg hover:border-blue-400 transition-all text-left bg-gradient-to-br from-blue-50 to-white">
+                <button className="p-6 border-2 border-blue-200 rounded-lg hover:border-blue-400 transition-all text-left bg-linear-to-br from-blue-50 to-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Users className="w-6 h-6 text-blue-600" />
@@ -1407,7 +1407,7 @@ toast.error("Failed to optimize database");
                   <p className="text-sm text-gray-600">Track membership statistics, demographics, and engagement</p>
                 </button>
 
-                <button className="p-6 border-2 border-green-200 rounded-lg hover:border-green-400 transition-all text-left bg-gradient-to-br from-green-50 to-white">
+                <button className="p-6 border-2 border-green-200 rounded-lg hover:border-green-400 transition-all text-left bg-linear-to-br from-green-50 to-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                       <BarChart3 className="w-6 h-6 text-green-600" />
@@ -1417,7 +1417,7 @@ toast.error("Failed to optimize database");
                   <p className="text-sm text-gray-600">User activity, system usage, and peak time analysis</p>
                 </button>
 
-                <button className="p-6 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-all text-left bg-gradient-to-br from-purple-50 to-white">
+                <button className="p-6 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-all text-left bg-linear-to-br from-purple-50 to-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                       <Shield className="w-6 h-6 text-purple-600" />

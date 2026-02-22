@@ -377,7 +377,7 @@ toast.error("Unable to record council election");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/70 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-stone-50 via-amber-50/70 to-slate-100">
       <div className="container mx-auto px-6 py-10 space-y-10 font-poppins">
         <motion.div
           initial={{ opacity: 0, y: 18 }}

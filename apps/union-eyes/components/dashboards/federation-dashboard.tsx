@@ -93,7 +93,7 @@ export default function FederationDashboard() {
 
   if (!mounted || !user) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 p-6 md:p-10">
+      <main className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 p-6 md:p-10">
         <div className="animate-pulse space-y-6">
           <div className="h-24 bg-gray-200 rounded-lg" />
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -105,7 +105,7 @@ export default function FederationDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 p-6 md:p-10">
+    <main className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 p-6 md:p-10">
       {/* Welcome */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -149,7 +149,7 @@ export default function FederationDashboard() {
               <Link href={action.href}>
                 <Card className="border-white/50 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer group h-full">
                   <CardContent className="p-6">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${action.color} text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <div className={`inline-flex p-3 rounded-xl bg-linear-to-br ${action.color} text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
                       {action.icon}
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2 text-lg group-hover:text-blue-600 transition-colors">{action.title}</h3>

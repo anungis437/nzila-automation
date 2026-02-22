@@ -1,0 +1,40 @@
+/**
+ * GET POST /api/clauses/search
+ * → Django: /api/bargaining/cba-clauses/
+ * Migrated to withApi() framework
+ */
+import { NextRequest } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+import { withApi } from '@/lib/api/framework';
+
+export const dynamic = 'force-dynamic';
+
+export const GET = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Clauses', 'Django Proxy'],
+      summary: 'GET search',
+      description: 'Proxied to Django: /api/bargaining/cba-clauses/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/bargaining/cba-clauses/');
+    return response;
+  },
+);
+
+export const POST = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Clauses', 'Django Proxy'],
+      summary: 'POST search',
+      description: 'Proxied to Django: /api/bargaining/cba-clauses/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/bargaining/cba-clauses/', { method: 'POST' });
+    return response;
+  },
+);

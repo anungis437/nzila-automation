@@ -221,7 +221,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claims');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -239,7 +239,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claims');
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                className="px-6 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
               >
                 <Plus size={20} />
                 {t('claims.newCase')}
@@ -500,7 +500,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claims');
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-8"
           >
-            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-lg">
+            <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-white shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-xl bg-blue-600 text-white">

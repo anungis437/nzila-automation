@@ -100,7 +100,7 @@ export function GrievanceTimeline({
           </div>
           <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500"
+              className="h-full bg-linear-to-r from-blue-500 to-blue-600 transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>

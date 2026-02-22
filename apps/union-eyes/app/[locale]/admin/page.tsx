@@ -184,7 +184,7 @@ export default function AdminPage({ params }: AdminPageProps) {
           </Card>
         </Link>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-linear-to-br from-blue-50 to-blue-100 border-blue-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-900">
               <FileText className="h-5 w-5" />

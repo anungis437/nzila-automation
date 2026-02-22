@@ -136,7 +136,7 @@ export default function DashboardNavbar({ profile, onMenuClick }: DashboardNavba
 
           {/* Logo */}
           <Link href={`/${locale}/dashboard`} className="flex items-center space-x-2">
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
               UnionEyes
             </span>
           </Link>

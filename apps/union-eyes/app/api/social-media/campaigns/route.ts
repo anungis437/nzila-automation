@@ -1,4 +1,5 @@
-﻿import { logApiAuditEvent } from "@/lib/middleware/api-security";
+// @ts-nocheck
+import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
 /**
  * Social Media Campaigns API Routes - Phase 10

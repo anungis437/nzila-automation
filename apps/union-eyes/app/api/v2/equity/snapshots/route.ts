@@ -1,0 +1,40 @@
+/**
+ * GET POST /api/equity/snapshots
+ * → Django: /api/unions/member-segments/
+ * Migrated to withApi() framework
+ */
+import { NextRequest } from 'next/server';
+import { djangoProxy } from '@/lib/django-proxy';
+import { withApi } from '@/lib/api/framework';
+
+export const dynamic = 'force-dynamic';
+
+export const GET = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Equity', 'Django Proxy'],
+      summary: 'GET snapshots',
+      description: 'Proxied to Django: /api/unions/member-segments/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/unions/member-segments/');
+    return response;
+  },
+);
+
+export const POST = withApi(
+  {
+    auth: { required: false },
+    openapi: {
+      tags: ['Equity', 'Django Proxy'],
+      summary: 'POST snapshots',
+      description: 'Proxied to Django: /api/unions/member-segments/',
+    },
+  },
+  async ({ request }) => {
+    const response = await djangoProxy(request, '/api/unions/member-segments/', { method: 'POST' });
+    return response;
+  },
+);

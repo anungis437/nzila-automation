@@ -317,7 +317,7 @@ toast({
             >
               {/* Thumbnail */}
               <div
-                className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden"
+                className="h-48 bg-linear-to-br from-gray-100 to-gray-200 relative overflow-hidden"
                 onClick={() => handleSelectTemplate(template)}
               >
                 {template.thumbnailUrl ? (
