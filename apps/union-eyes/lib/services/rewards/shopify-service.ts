@@ -109,10 +109,10 @@ export async function fetchCuratedCollections(
   try {
     // Check if org has specific Shopify config
     const orgConfig = await db.query.shopifyConfig.findFirst({
-      where: eq(shopifyConfig.org_id, orgId),
+      where: eq(shopifyConfig.orgId, orgId),
     });
 
-    const allowedCollections = orgConfig?.allowed_collections || ['rewards'];
+    const allowedCollections = (orgConfig?.allowedCollections as string[] | null) || ['rewards'];
 
     // Fetch collections via Storefront API
     const collections: ShopifyCollection[] = [];

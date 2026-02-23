@@ -196,9 +196,8 @@ export class TeamsClient {
           ? new Date(Date.now() + parseInt(retryAfter) * 1000)
           : new Date(Date.now() + 60000);
 
-        const error = new Error('Rate limit exceeded') as RateLimitError;
+        const error = new Error('Rate limit exceeded');
         error.name = 'RateLimitError';
-        error.resetAt = resetTime;
         throw error;
       }
 

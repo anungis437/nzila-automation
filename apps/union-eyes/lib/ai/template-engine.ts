@@ -53,7 +53,7 @@ import {
 import { eq, desc, sql, and, gt } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import { embeddingCache } from '@/lib/services/ai/embedding-cache';
-import { costTracker } from '@/lib/ai/services/cost-tracking-wrapper';
+import { costTrackingWrapper as costTracker } from '@/lib/ai/services/cost-tracking-wrapper';
 
 // ============================================================================
 // INTEGRATION WITH EXISTING ENGINES
@@ -80,7 +80,8 @@ import {
 import { 
   detectAllSignals, 
   type Signal, 
-  type SignalSeverity 
+  type SignalSeverity,
+  type CaseForSignals 
 } from '@/lib/services/lro-signals';
 
 import { claims, claimUpdates } from '@/db/schema/claims-schema';
@@ -974,6 +975,7 @@ class AttentionMechanismEngine {
     const ragResults = await this.retrieveAndScoreRAG(userMessage, context);
     scoredContexts.push(...ragResults.map(r => ({
       ...r,
+      source: 'rag' as const,
       attentionWeight: weights.contextDocs * r.relevanceScore
     })));
 
@@ -1044,8 +1046,9 @@ class AttentionMechanismEngine {
         ];
         
         for (const [target, reqs] of Object.entries(fsmState.requirements)) {
+          const r = reqs as any;
           fsmContext.push(
-            `→ ${target}: requires ${reqs.requiresRole?.join('/') || 'any'}, min ${reqs.minHours}h, docs: ${reqs.requiresDocumentation}`
+            `→ ${target}: requires ${r.requiresRole?.join('/') || 'any'}, min ${r.minHours}h, docs: ${r.requiresDocumentation}`
           );
         }
         
@@ -1171,7 +1174,7 @@ class AttentionMechanismEngine {
         updatedAt: claim.updatedAt || claim.createdAt || new Date(),
         assignedTo: claim.assignedTo,
         organizationId: claim.organizationId,
-      };
+      } as any as CaseForSignals;
 
       return await detectAllSignals([caseState]);
     } catch (error) {
@@ -1418,91 +1421,6 @@ class AttentionMechanismEngine {
   }
 
   /**
-   * Get active signals for a case
-   * INTEGRATION: Uses LRO Signals for priority attention
-   */
-  private async getCaseSignals(caseId: string): Promise<Signal[]> {
-    try {
-      const [claim] = await db
-        .select()
-        .from(claims)
-        .where(eq(claims.claimId, caseId))
-        .limit(1);
-
-      if (!claim) return [];
-
-      // Build case state for signal detection
-      const caseState = {
-        id: claim.claimId,
-        status: claim.status as ClaimStatus,
-        priority: claim.priority as unknown,
-        createdAt: claim.createdAt || new Date(),
-        updatedAt: claim.updatedAt || claim.createdAt || new Date(),
-        assignedTo: claim.assignedTo,
-        organizationId: claim.organizationId,
-      };
-
-      // Use LRO signals detection
-      const signals = await detectAllSignals([caseState]);
-      return signals;
-    } catch (error) {
-      logger.error('Case signals retrieval failed', { error, caseId });
-      return [];
-    }
-  }
-
-  /**
-   * Get FSM state information for a case
-   * INTEGRATION: Uses Claim Workflow FSM for state validation
-   */
-  private async getCaseFSMState(caseId: string, userRole: string = 'member'): Promise<{
-    currentStatus: ClaimStatus | null;
-    allowedTransitions: string[];
-    requirements: Record<string, unknown>;
-  }> {
-    try {
-      const [claim] = await db
-        .select()
-        .from(claims)
-        .where(eq(claims.claimId, caseId))
-        .limit(1);
-
-      if (!claim) {
-        return {
-          currentStatus: null,
-          allowedTransitions: [],
-          requirements: {}
-        };
-      }
-
-      const currentStatus = claim.status as ClaimStatus;
-      const fsmState = CLAIM_FSM[currentStatus];
-
-      // Get allowed transitions using FSM
-      const allowedTransitions = getAllowedClaimTransitions(currentStatus, userRole);
-
-      // Get requirements for common transitions
-      const requirements: Record<string, unknown> = {};
-      for (const target of allowedTransitions.slice(0, 3)) {
-        requirements[target] = getTransitionRequirements(currentStatus, target as ClaimStatus);
-      }
-
-      return {
-        currentStatus,
-        allowedTransitions,
-        requirements
-      };
-    } catch (error) {
-      logger.error('Case FSM state retrieval failed', { error, caseId });
-      return {
-        currentStatus: null,
-        allowedTransitions: [],
-        requirements: {}
-      };
-    }
-  }
-
-  /**
    * Build final context prompt from scored contexts
    */
   buildContextPrompt(scoredContexts: ScoredContext[]): string {
@@ -1581,7 +1499,7 @@ class GovernanceAuditLayer {
       logger.info('AI Request Audit', auditRecord);
 
       // Track costs
-      await this.costTracker?.trackCost({
+      await (this.costTracker as any)?.trackCost({
         organizationId: request.context.organizationId,
         tokensUsed: response.tokensUsed,
         model: response.model,
@@ -1644,6 +1562,16 @@ class GovernanceAuditLayer {
 // ============================================================================
 // MAIN LLM ORCHESTRATOR
 // ============================================================================
+
+/**
+ * AI Provider interface for LLM invocation
+ */
+interface AIProvider {
+  generateResponse(
+    messages: Array<{ role: string; content: string }>,
+    options?: { temperature?: number; maxTokens?: number; model?: string }
+  ): Promise<{ content: string; tokensUsed: number; model: string }>;
+}
 
 /**
  * UnionEyes AI Orchestrator
@@ -1801,6 +1729,22 @@ export class UnionEyesAIController {
 
 // Export singleton instance
 export const aiController = new UnionEyesAIController();
+
+// Alias for pipeline compatibility
+export const templateEngine = aiController;
+
+// Template context type for external use
+export interface TemplateContext {
+  query: string;
+  jurisdiction: string;
+  userRole: string;
+  intent: string;
+  entities: any[];
+  retrievedContext: string[];
+  sla: string;
+  organizationId: string;
+  [key: string]: unknown;
+}
 
 // Export types for external use
 export type {

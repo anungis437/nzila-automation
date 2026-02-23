@@ -82,6 +82,7 @@ export class WageEnrichmentService {
     const syncId = this.generateSyncId();
     
     await db.insert(externalDataSyncLog).values({
+      syncId,
       source,
       sourceType,
       status,

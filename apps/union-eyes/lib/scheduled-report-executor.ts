@@ -122,7 +122,7 @@ return {
 /**
  * Create an export job record
  */
-async function createExportJob(schedule: ScheduledReport): Promise<unknown> {
+async function createExportJob(schedule: ScheduledReport): Promise<any> {
   const result = await db.execute(sql`
     INSERT INTO export_jobs (
       report_id,
@@ -142,7 +142,7 @@ async function createExportJob(schedule: ScheduledReport): Promise<unknown> {
     RETURNING *
   `);
 
-  const rows = result as unknown[];
+  const rows = result as any[];
   return rows[0];
 }
 
@@ -187,7 +187,7 @@ async function fetchReportData(schedule: ScheduledReport): Promise<ReportData> {
     SELECT config FROM reports WHERE id = ${schedule.reportId}
   `);
   
-  const reportRows = reportResult as unknown[];
+  const reportRows = reportResult as any[];
   if (reportRows.length === 0) {
     throw new Error('Report not found');
   }
@@ -248,7 +248,7 @@ async function executeClaimsQuery(tenantId: string, config: unknown): Promise<un
 /**
  * Execute analytics report query
  */
-async function executeAnalyticsQuery(tenantId: string, config: unknown): Promise<unknown[]> {
+async function executeAnalyticsQuery(tenantId: string, config: any): Promise<unknown[]> {
   const groupBy = config.groupBy || 'status';
 
   // SECURITY FIX: Whitelist validation to prevent SQL injection via GROUP BY column
@@ -278,7 +278,7 @@ async function executeAnalyticsQuery(tenantId: string, config: unknown): Promise
 /**
  * Execute default query
  */
-async function executeDefaultQuery(tenantId: string, config: unknown): Promise<unknown[]> {
+async function executeDefaultQuery(tenantId: string, config: any): Promise<unknown[]> {
   const result = await db.execute(sql`
     SELECT 
       id,
@@ -303,7 +303,7 @@ async function executeDefaultQuery(tenantId: string, config: unknown): Promise<u
  * security risk. It should ONLY be used with pre-approved, validated SQL queries.
  * Implementation includes strict allowlist validation.
  */
-async function executeCustomQuery(tenantId: string, config: unknown): Promise<unknown[]> {
+async function executeCustomQuery(tenantId: string, config: any): Promise<unknown[]> {
   const customQuery = config.query || '';
   if (!customQuery) {
     return executeDefaultQuery(tenantId, config);
@@ -404,7 +404,7 @@ function generateCSV(data: ReportData): Buffer {
   // Data rows
   for (const row of data.rows) {
     const values = data.columns.map(col => {
-      const value = row[col];
+      const value = (row as any)[col];
       if (value === null || value === undefined) return '';
       const str = String(value);
       // Escape quotes and wrap in quotes if contains comma
@@ -631,7 +631,7 @@ async function generatePDF(data: ReportData): Promise<Buffer> {
         doc.rect(margin, currentY - 4, usableWidth, 6, 'F');
       }
 
-      const row = data.rows[i];
+      const row = data.rows[i] as any;
       doc.setFontSize(8);
       
       displayColumns.forEach((col, colIndex) => {
@@ -678,7 +678,7 @@ async function generatePDF(data: ReportData): Promise<Buffer> {
 
     data.rows.slice(0, 100).forEach(row => {
       const values = data.columns.map(col => {
-        const val = row[col];
+        const val = (row as any)[col];
         return val === null || val === undefined ? '-' : String(val).substring(0, 20);
       });
       lines.push(values.join(' | '));
@@ -783,7 +783,7 @@ async function deliverViaWebhook(
   schedule: ScheduledReport,
   fileUrl: string
 ): Promise<void> {
-  const webhookUrl = (schedule.scheduleConfig as unknown).webhookUrl;
+  const webhookUrl = (schedule.scheduleConfig as any).webhookUrl;
   
   if (!webhookUrl) {
     throw new Error('Webhook URL not configured');
@@ -823,12 +823,12 @@ export async function retryFailedExecution(
     SELECT * FROM report_schedules WHERE id = ${scheduleId}
   `);
   
-  const rows = result as unknown[];
+  const rows = result as any[];
   if (rows.length === 0) {
     throw new Error('Schedule not found');
   }
 
-  const schedule = rows[0];
+  const schedule = rows[0] as any;
 
   if (schedule.failure_count >= maxRetries) {
 return {
@@ -837,6 +837,6 @@ return {
       error: 'Max retries exceeded',
     };
   }
-return await executeScheduledReport(schedule);
+return await executeScheduledReport(schedule as ScheduledReport);
 }
 

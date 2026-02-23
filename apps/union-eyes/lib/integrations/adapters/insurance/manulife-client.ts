@@ -18,6 +18,7 @@ import {
   IntegrationError,
   RateLimitError,
   AuthenticationError,
+  IntegrationProvider,
 } from '../../types';
 import { logger } from '@/lib/logger';
 
@@ -135,7 +136,7 @@ export class ManulifeClient {
       logger.error('Manulife authentication failed', error instanceof Error ? error : new Error(String(error)));
       throw new AuthenticationError(
         'Failed to authenticate with Manulife',
-        error instanceof Error ? error : undefined
+        IntegrationProvider.MANULIFE
       );
     }
   }
@@ -148,7 +149,7 @@ export class ManulifeClient {
   }> {
     const token = this.refreshToken || this.config.refreshToken;
     if (!token) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.MANULIFE);
     }
 
     const response = await fetch(`${this.baseUrl}/oauth/token`, {
@@ -166,7 +167,7 @@ export class ManulifeClient {
 
     if (!response.ok) {
       const error = await response.text();
-      throw new AuthenticationError(`Token refresh failed: ${error}`);
+      throw new AuthenticationError(`Token refresh failed: ${error}`, IntegrationProvider.MANULIFE);
     }
 
     return response.json();
@@ -211,7 +212,7 @@ export class ManulifeClient {
     });
 
     if (response.status === 429) {
-      throw new RateLimitError('Manulife API rate limit exceeded');
+      throw new RateLimitError('Manulife API rate limit exceeded', IntegrationProvider.MANULIFE);
     }
 
     if (response.status === 401) {
@@ -228,7 +229,7 @@ export class ManulifeClient {
       });
 
       if (!retryResponse.ok) {
-        throw new AuthenticationError('Authentication failed after token refresh');
+        throw new AuthenticationError('Authentication failed after token refresh', IntegrationProvider.MANULIFE);
       }
 
       return retryResponse.json();
@@ -238,7 +239,7 @@ export class ManulifeClient {
       const error = await response.text();
       throw new IntegrationError(
         `Manulife API error: ${response.status} - ${error}`,
-        'MANULIFE',
+        IntegrationProvider.MANULIFE,
         'API_ERROR'
       );
     }

@@ -14,7 +14,7 @@
 import { getAiClient, UE_APP_KEY, UE_PROFILES } from '@/lib/ai/ai-client';
 import { db } from '@/db';
 import { cbaClause, arbitrationDecisions } from '@/db/schema';
-import { eq, sql, and, or } from 'drizzle-orm';
+import { eq, sql, and, or, SQL } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import { embeddingCache } from './embedding-cache';
 
@@ -110,7 +110,7 @@ export async function semanticClauseSearch(
     const embeddingString = `[${queryEmbedding.join(',')}]`;
 
     // Build WHERE clause based on filters
-    const whereConditions = [];
+    const whereConditions: (SQL<unknown> | undefined)[] = [];
     if (filters.clauseType && filters.clauseType.length > 0) {
       whereConditions.push(
         or(...filters.clauseType.map(type => eq(cbaClause.clauseType, type as any)))
@@ -245,7 +245,7 @@ export async function semanticPrecedentSearch(
     const queryEmbedding = await generateEmbedding(query);
     const embeddingString = `[${queryEmbedding.join(',')}]`;
 
-    const whereFilters = [];
+    const whereFilters: SQL<unknown>[] = [];
     if (issueType) {
       whereFilters.push(sql`issue_type = ${issueType}`);
     }

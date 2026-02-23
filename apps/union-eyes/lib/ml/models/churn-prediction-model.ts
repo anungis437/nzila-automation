@@ -145,8 +145,8 @@ export async function loadChurnModel(): Promise<tf.LayersModel> {
  */
 async function syntheticPreTrain(model: tf.LayersModel): Promise<void> {
   // Generate synthetic training examples based on known churn patterns
-  const syntheticExamples = [];
-  const syntheticLabels = [];
+  const syntheticExamples: number[][] = [];
+  const syntheticLabels: number[] = [];
 
   // High risk patterns
   for (let i = 0; i < 50; i++) {

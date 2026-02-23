@@ -277,9 +277,9 @@ export class MobileAnalytics {
    * Get device info
    */
   private getDeviceInfo(): DeviceInfo {
-    const connection = (navigator as unknown).connection || 
-                      (navigator as unknown).mozConnection || 
-                      (navigator as unknown).webkitConnection;
+    const connection = (navigator as any).connection || 
+                      (navigator as any).mozConnection || 
+                      (navigator as any).webkitConnection;
 
     return {
       platform: navigator.platform,

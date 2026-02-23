@@ -49,7 +49,7 @@ export async function requestLocationPermission(
     })
     .catch(() => null);
 
-  if (existingConsent && existingConsent.status === 'opted_in') {
+  if (existingConsent && existingConsent.consentStatus === 'opted_in') {
     return {
       consentId: existingConsent.id,
       requiresUserAction: false,
@@ -81,7 +81,7 @@ export async function trackLocation(
     })
     .catch(() => null);
 
-  if (!consent || consent.status !== 'opted_in') {
+  if (!consent || consent.consentStatus !== 'opted_in') {
     return {
       success: false,
       error: 'Location tracking requires explicit opt-in consent'
@@ -103,9 +103,9 @@ export async function trackLocation(
   try {
     await db.insert(locationTracking).values({
       userId,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      timestamp: new Date(),
+      latitude: String(location.latitude),
+      longitude: String(location.longitude),
+      recordedAt: new Date(),
       expiresAt,
       trackingType: 'foreground_only', // NEVER background
       purpose
@@ -154,7 +154,7 @@ export async function revokeLocationConsent(
   try {
     await db
       .update(memberLocationConsent)
-      .set({ status: 'opted_out' })
+      .set({ consentStatus: 'opted_out' })
       .where(eq(memberLocationConsent.userId, userId));
 
     return {
@@ -188,9 +188,9 @@ export async function getLocationConsentStatus(
     .catch(() => null);
 
   return {
-    status: consent?.status || 'never_asked',
+    status: (consent?.consentStatus as 'opted_in' | 'opted_out' | 'never_asked') || 'never_asked',
     canRevokeAnytime: true, // Always allow revocation
-    purpose: consent?.purpose || undefined,
+    purpose: consent?.consentPurpose || undefined,
     optedInAt: consent?.optedInAt || undefined,
     expiresAt: consent?.expiresAt || undefined
   };

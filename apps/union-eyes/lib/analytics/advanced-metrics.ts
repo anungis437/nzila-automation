@@ -115,7 +115,7 @@ export async function analyzePilotConversionFunnel(
 
   // Count by stage
   const submitted = applications.length;
-  const pending = applications.filter((a) => a.status === 'pending').length;
+  const pending = applications.filter((a) => a.status === 'review').length;
   const approved = applications.filter((a) => a.status === 'approved').length;
   const active = applications.filter((a) => a.status === 'active').length;
   const completed = applications.filter((a) => a.status === 'completed').length;
@@ -134,7 +134,7 @@ export async function analyzePilotConversionFunnel(
       count: pending,
       conversionRate: submitted > 0 ? (pending / submitted) * 100 : 0,
       dropOffRate: submitted > 0 ? ((submitted - pending) / submitted) * 100 : 0,
-      averageTimeInStage: calculateAverageTimeInStage(applications, 'pending'),
+      averageTimeInStage: calculateAverageTimeInStage(applications, 'review'),
     },
     {
       stage: 'Approved',
@@ -166,13 +166,13 @@ export async function analyzePilotConversionFunnel(
  * Calculate average time spent in a status
  */
 function calculateAverageTimeInStage(
-  applications: unknown[],
+  applications: Array<{ status: string; submittedAt: Date; reviewedAt: Date | null }>,
   status: string
 ): number {
   const inStatus = applications.filter((a) => a.status === status);
   if (inStatus.length === 0) return 0;
 
-  const totalHours = inStatus.reduce((sum, app) => {
+  const totalHours = inStatus.reduce((sum: number, app) => {
     const submittedAt = new Date(app.submittedAt).getTime();
     const reviewedAt = app.reviewedAt ? new Date(app.reviewedAt).getTime() : Date.now();
     const hoursInStage = (reviewedAt - submittedAt) / (1000 * 60 * 60);
@@ -231,7 +231,7 @@ export async function analyzePilotCohorts(): Promise<CohortAnalysis[]> {
 /**
  * Create cohort analysis from applications
  */
-function createCohortAnalysis(cohortName: string, applications: unknown[]): CohortAnalysis {
+function createCohortAnalysis(cohortName: string, applications: Array<{ status: string; readinessScore: string | null; submittedAt: Date; reviewedAt: Date | null; memberCount: number; sectors: string[]; jurisdictions: string[] }>): CohortAnalysis {
   const cohortSize = applications.length;
   if (cohortSize === 0) {
     return {
@@ -254,19 +254,19 @@ function createCohortAnalysis(cohortName: string, applications: unknown[]): Coho
   const successRate = (successfulApps.length / cohortSize) * 100;
 
   const avgReadiness =
-    applications.reduce((sum, a) => sum + (a.readinessScore ? parseFloat(a.readinessScore) : 0), 0) / cohortSize;
+    applications.reduce((sum: number, a) => sum + (a.readinessScore ? parseFloat(a.readinessScore) : 0), 0) / cohortSize;
 
   const approvedApps = applications.filter((a) => a.reviewedAt);
   const avgTimeToApproval =
     approvedApps.length > 0
-      ? approvedApps.reduce((sum, a) => {
+      ? approvedApps.reduce((sum: number, a) => {
           const submitted = new Date(a.submittedAt).getTime();
-          const reviewed = new Date(a.reviewedAt).getTime();
+          const reviewed = new Date(a.reviewedAt!).getTime();
           return sum + (reviewed - submitted) / (1000 * 60 * 60 * 24); // days
         }, 0) / approvedApps.length
       : 0;
 
-  const avgMemberCount = applications.reduce((sum, a) => sum + a.memberCount, 0) / cohortSize;
+  const avgMemberCount = applications.reduce((sum: number, a) => sum + a.memberCount, 0) / cohortSize;
 
   const allSectors = applications.flatMap((a) => a.sectors || []);
   const uniqueSectors = Array.from(new Set(allSectors));
@@ -327,15 +327,15 @@ export async function analyzeTrends(
   const currentTestimonials = await db
     .select()
     .from(testimonials)
-    .where(gte(testimonials.submittedAt, currentPeriodStart));
+    .where(gte(testimonials.createdAt, currentPeriodStart));
 
   const comparisonTestimonials = await db
     .select()
     .from(testimonials)
     .where(
       and(
-        gte(testimonials.submittedAt, comparisonPeriodStart),
-        lte(testimonials.submittedAt, comparisonPeriodEnd)
+        gte(testimonials.createdAt, comparisonPeriodStart),
+        lte(testimonials.createdAt, comparisonPeriodEnd)
       )
     );
 
@@ -419,7 +419,7 @@ function createTrendAnalysis(
   };
 }
 
-function calculateApprovalRate(applications: unknown[]): number {
+function calculateApprovalRate(applications: Array<{ status: string }>): number {
   if (applications.length === 0) return 0;
   const approved = applications.filter(
     (a) => a.status === 'approved' || a.status === 'active' || a.status === 'completed'
@@ -427,16 +427,16 @@ function calculateApprovalRate(applications: unknown[]): number {
   return (approved / applications.length) * 100;
 }
 
-function calculateAverageReadiness(applications: unknown[]): number {
+function calculateAverageReadiness(applications: Array<{ readinessScore: string | null }>): number {
   if (applications.length === 0) return 0;
-  const total = applications.reduce((sum, a) => sum + (a.readinessScore ? parseFloat(a.readinessScore) : 0), 0);
+  const total = applications.reduce((sum: number, a) => sum + (a.readinessScore ? parseFloat(a.readinessScore) : 0), 0);
   return total / applications.length;
 }
 
-function calculateTestimonialApprovalRate(testimonials: unknown[]): number {
-  if (testimonials.length === 0) return 0;
-  const approved = testimonials.filter((t) => t.status === 'approved').length;
-  return (approved / testimonials.length) * 100;
+function calculateTestimonialApprovalRate(items: Array<{ approvedAt: Date | null }>): number {
+  if (items.length === 0) return 0;
+  const approved = items.filter((t) => t.approvedAt !== null).length;
+  return (approved / items.length) * 100;
 }
 
 // ============================================================================
@@ -513,8 +513,8 @@ export async function getRealTimeDashboard(): Promise<RealTimeDashboard> {
   const recentTestimonials = await db
     .select()
     .from(testimonials)
-    .where(gte(testimonials.submittedAt, last24Hours))
-    .orderBy(desc(testimonials.submittedAt));
+    .where(gte(testimonials.createdAt, last24Hours))
+    .orderBy(desc(testimonials.createdAt));
 
   const recentCaseStudies = await db
     .select()
@@ -530,7 +530,7 @@ export async function getRealTimeDashboard(): Promise<RealTimeDashboard> {
   const pendingApplications = await db
     .select()
     .from(pilotApplications)
-    .where(eq(pilotApplications.status, 'pending'));
+    .where(eq(pilotApplications.status, 'review'));
 
   const approvals = recentApplications.filter((a) => a.status === 'approved');
 
@@ -553,7 +553,7 @@ export async function getRealTimeDashboard(): Promise<RealTimeDashboard> {
       {
         type: 'testimonial',
         count: recentTestimonials.length,
-        lastOccurrence: recentTestimonials.length > 0 ? recentTestimonials[0].submittedAt : null,
+        lastOccurrence: recentTestimonials.length > 0 ? recentTestimonials[0].createdAt : null,
       },
       {
         type: 'case-study',

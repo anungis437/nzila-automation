@@ -296,7 +296,7 @@ export class TwitterAPIClient {
       duration_minutes: number;
     };
   }): Promise<TwitterTweet> {
-    const body: unknown = {
+    const body: Record<string, any> = {
       text: content.text,
     };
 
@@ -485,7 +485,7 @@ export class TwitterAPIClient {
         },
       });
 
-      const status = await this.handleResponse<unknown>(response);
+      const status = await this.handleResponse<any>(response);
 
       if (status.processing_info?.state === 'succeeded') {
         return;
@@ -544,7 +544,7 @@ export class TwitterAPIClient {
     tweetId: string,
     includeMetrics: boolean = true
   ): Promise<TwitterTweet> {
-    const params: unknown = {
+    const params: Record<string, any> = {
       'tweet.fields': 'created_at,public_metrics,author_id,conversation_id',
     };
 
@@ -572,7 +572,7 @@ export class TwitterAPIClient {
     maxResults: number = 10,
     paginationToken?: string
   ): Promise<{ tweets: TwitterTweet[]; nextToken?: string }> {
-    const params: unknown = {
+    const params: Record<string, any> = {
       max_results: Math.min(maxResults, 100).toString(),
       'tweet.fields': 'created_at,public_metrics,attachments',
       'media.fields': 'url,preview_image_url,type',
@@ -695,7 +695,7 @@ export class TwitterAPIClient {
       throw new Error('Access token required');
     }
 
-    const queryParams = new URLSearchParams(params);
+    const queryParams = new URLSearchParams(params as Record<string, string>);
     const url = `${this.baseUrl}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
     const response = await fetch(url, {

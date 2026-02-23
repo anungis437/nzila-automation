@@ -527,7 +527,7 @@ export async function archiveOldTemplates(organizationId: string, olderThanDays 
         sql`${awardTemplates.createdAt} < ${cutoffDate}`
       ));
 
-    return { success: true, archivedCount: result.rowCount };
+    return { success: true, archivedCount: (result as any).rowCount };
   } catch (error) {
     logger.error('[Templates] Error archiving old templates', {
       error,

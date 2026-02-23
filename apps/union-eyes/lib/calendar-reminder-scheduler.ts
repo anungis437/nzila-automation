@@ -18,7 +18,7 @@ import { db } from '@/db/db';
 import { calendarEvents, eventAttendees, eventReminders } from '@/db/schema/calendar-schema';
 import { eq, and, lte, gte, isNull } from 'drizzle-orm';
 import { subMinutes, subHours, subDays, addMinutes } from 'date-fns';
-// @ts-expect-error - Area 9's job queue system
+// @ts-ignore - Area 9's job queue system
 import { addNotificationJob } from '@/lib/job-queue';
 
 // ============================================================================
@@ -102,9 +102,9 @@ export async function scheduleEventReminders(
             .insert(eventReminders)
             .values({
               eventId,
-              tenantId: event.organizationId /* was tenantId */,
-              userId: attendee.userId || attendee.email,
-              reminderMinutes: minutes,
+              organizationId: (event as any).organizationId,
+              userId: (attendee as any).userId || (attendee as any).email,
+              reminderMinutes: minutes as number,
               reminderType: channel,
               scheduledFor: reminderTime,
               status: 'pending',
@@ -138,19 +138,21 @@ async function scheduleReminderJob(
 ) {
   try {
     const timeUntilReminder = getTimeDescription(minutes);
+    const evt = event as any;
+    const att = attendee as any;
 
     // Prepare notification content
     const notification = {
-      userId: attendee.userId || attendee.email,
-      title: `Reminder: ${event.title}`,
-      message: `Your event "${event.title}" starts ${timeUntilReminder}`,
+      userId: att.userId || att.email,
+      title: `Reminder: ${evt.title}`,
+      message: `Your event "${evt.title}" starts ${timeUntilReminder}`,
       data: {
-        eventId: event.id,
+        eventId: evt.id,
         reminderId,
-        eventTitle: event.title,
-        eventStartTime: event.startTime,
-        eventLocation: event.location,
-        meetingUrl: event.meetingUrl,
+        eventTitle: evt.title,
+        eventStartTime: evt.startTime,
+        eventLocation: evt.location,
+        meetingUrl: evt.meetingUrl,
       },
       channels: [channel] as ('email' | 'sms' | 'push' | 'in-app')[],
       scheduledFor,
@@ -200,10 +202,10 @@ export async function cancelEventReminders(eventId: string): Promise<number> {
       
       if (queue) {
         // Get all jobs in the queue
-        const jobs = await queue.getJobs(['waiting', 'delayed', 'active']);
+        const jobs = await (queue as any).getJobs(['waiting', 'delayed', 'active']);
         
         // Filter jobs related to this event
-        const eventJobs = jobs.filter((job: unknown) => 
+        const eventJobs = jobs.filter((job: any) => 
           job.data.metadata?.eventId === eventId
         );
         

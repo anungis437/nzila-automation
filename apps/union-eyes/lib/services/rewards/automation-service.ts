@@ -174,11 +174,11 @@ export async function processMilestoneAwards(
 
         const award = await createAwardRequest({
           orgId,
-          programId: rule.programId || '',
+          programId: '',
           awardTypeId: rule.awardTypeId,
           recipientUserId: userId,
           issuerUserId: 'system',
-          reason: rule.message || `Congratulations on reaching ${currentValue} ${milestoneType}!`,
+          reason: rule.description || `Congratulations on reaching ${currentValue} ${milestoneType}!`,
           metadataJson: {
             automation_rule_id: rule.id,
             milestone_type: milestoneType,

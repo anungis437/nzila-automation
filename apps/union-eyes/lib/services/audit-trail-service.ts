@@ -57,7 +57,7 @@ export class AuditTrailService {
     userAgent?: string;
   }): Promise<AuditLogEntry> {
     const [entry] = await db.insert(financialAuditLog).values({
-      tenantId: params.organizationId,
+      organizationId: params.organizationId,
       entityType: params.entityType,
       entityId: params.entityId,
       action: params.action,
@@ -72,7 +72,7 @@ export class AuditTrailService {
 
     return {
       ...(entry as AuditLogEntry & { tenantId?: string }),
-      organizationId: (entry as { tenantId?: string }).organizationId /* was tenantId */ || params.organizationId,
+      organizationId: (entry as any).organizationId || params.organizationId,
     } as AuditLogEntry;
   }
 
@@ -278,7 +278,7 @@ export class AuditTrailService {
 
     return results.map((entry) => ({
       ...(entry as AuditLogEntry & { tenantId?: string }),
-      organizationId: (entry as { tenantId?: string }).organizationId /* was tenantId */ || options.organizationId,
+      organizationId: (entry as any).organizationId || options.organizationId,
     })) as AuditLogEntry[];
   }
 

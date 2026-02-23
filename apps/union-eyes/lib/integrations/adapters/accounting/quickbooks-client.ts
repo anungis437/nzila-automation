@@ -9,7 +9,7 @@
 
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { AuthenticationError, RateLimitError, IntegrationError } from '../../types';
+import { AuthenticationError, RateLimitError, IntegrationError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -55,7 +55,6 @@ export interface QuickBooksInvoice {
   }>;
   TotalAmt: number;
   Balance: number;
-  DueDate?: string;
   TxnStatus?: string;
 }
 
@@ -103,7 +102,8 @@ export interface QuickBooksAccount {
 
 export interface QuickBooksPaginatedResponse<T> {
   QueryResponse: {
-    [key: string]: T[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
     startPosition: number;
     maxResults: number;
     totalCount?: number;
@@ -140,7 +140,7 @@ export class QuickBooksClient {
     if (!this.refreshToken) {
       throw new AuthenticationError(
         'QuickBooks refresh token required',
-        'QUICKBOOKS'
+        IntegrationProvider.QUICKBOOKS
       );
     }
 
@@ -165,7 +165,7 @@ export class QuickBooksClient {
         const error = await response.text();
         throw new AuthenticationError(
           `QuickBooks authentication failed: ${error}`,
-          'QUICKBOOKS'
+          IntegrationProvider.QUICKBOOKS
         );
       }
 
@@ -183,7 +183,7 @@ export class QuickBooksClient {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
         `QuickBooks authentication error: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'QUICKBOOKS'
+        IntegrationProvider.QUICKBOOKS
       );
     }
   }
@@ -232,14 +232,14 @@ export class QuickBooksClient {
 
       // Handle rate limiting (QuickBooks uses 429)
       if (response.status === 429) {
-        throw new RateLimitError('QuickBooks', 60);
+        throw new RateLimitError('QuickBooks rate limit exceeded', IntegrationProvider.QUICKBOOKS, 60);
       }
 
       if (!response.ok) {
         const error = await response.text();
         throw new IntegrationError(
           `QuickBooks API error (${response.status}): ${error}`,
-          'QUICKBOOKS'
+          IntegrationProvider.QUICKBOOKS
         );
       }
 
@@ -250,7 +250,7 @@ export class QuickBooksClient {
       }
       throw new IntegrationError(
         `QuickBooks request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'QUICKBOOKS'
+        IntegrationProvider.QUICKBOOKS
       );
     }
   }

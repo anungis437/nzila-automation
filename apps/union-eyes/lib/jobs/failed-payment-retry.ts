@@ -38,6 +38,17 @@ export interface RetryResult {
   }>;
 }
 
+interface RetryTransactionRow {
+  id: string;
+  memberId: string;
+  organizationId: string;
+  totalAmount: string;
+  dueDate: string;
+  status: string;
+  metadata: unknown;
+  createdAt: Date | null;
+}
+
 // =============================================================================
 // FAILED PAYMENT RETRY SERVICE
 // =============================================================================
@@ -75,7 +86,7 @@ export class FailedPaymentRetryService {
           const metadata = (txn.metadata as Record<string, unknown>) || {};
           const failureCount = (metadata.failureCount as number) || 0;
           const lastFailureDate = metadata.lastFailure
-            ? new Date((metadata.lastFailure as unknown).date)
+            ? new Date((metadata.lastFailure as { date: string }).date)
             : null;
 
           // Determine if retry is needed based on failure count and time elapsed
@@ -157,7 +168,7 @@ export class FailedPaymentRetryService {
   /**
    * Get transactions that need retry
    */
-  private static async getTransactionsNeedingRetry(): Promise<unknown[]> {
+  private static async getTransactionsNeedingRetry(): Promise<RetryTransactionRow[]> {
     try {
       // Get pending transactions with failures
       const transactions = await db
@@ -186,7 +197,7 @@ export class FailedPaymentRetryService {
         const metadata = (txn.metadata as Record<string, unknown>) || {};
         const failureCount = (metadata.failureCount as number) || 0;
         const lastFailureDate = metadata.lastFailure
-          ? new Date((metadata.lastFailure as unknown).date)
+          ? new Date((metadata.lastFailure as { date: string }).date)
           : null;
 
         if (failureCount >= 4) {

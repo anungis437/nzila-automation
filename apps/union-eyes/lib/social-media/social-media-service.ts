@@ -293,7 +293,7 @@ export class SocialMediaService {
                 // Fetch and upload media
                 const mediaResponse = await fetch(url);
                 const mediaBuffer = Buffer.from(await mediaResponse.arrayBuffer());
-                const mediaType = mediaResponse.headers.get('content-type') as unknown;
+                const mediaType = mediaResponse.headers.get('content-type') as 'image/jpeg' | 'image/png' | 'image/gif' | 'video/mp4';
                 const media = await twitterClient.uploadMedia(mediaBuffer, mediaType);
                 mediaIds.push(media.media_id_string);
               }
@@ -399,7 +399,7 @@ export class SocialMediaService {
       throw new Error(`Post not found: ${postId}`);
     }
 
-    const typedPost = post as unknown;
+    const typedPost = post as any;
     const client = await this.getClient(typedPost.account_id);
 
     try {
@@ -407,7 +407,7 @@ export class SocialMediaService {
         case 'facebook':
         case 'instagram': {
           const metaClient = client as MetaAPIClient;
-          await metaClient.deletePost(typedPost.platform_post_id, (typedPost.account as unknown).access_token);
+          await metaClient.deletePost(typedPost.platform_post_id, typedPost.account.access_token);
           break;
         }
 

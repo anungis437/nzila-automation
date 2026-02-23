@@ -5,8 +5,9 @@
  * Integrates with notification system for multi-channel delivery
  */
 
-import { db } from "@/database";
-import { profiles } from "@/db/schema/organization-members-schema";
+import { db } from "@/db";
+import { profiles } from "@/db/schema/profiles-schema";
+import { users } from "@/db/schema/user-management-schema";
 import { claims } from "@/db/schema/domains/claims";
 import { getNotificationService } from "./notification-service";
 import { eq, and } from "drizzle-orm";
@@ -252,11 +253,11 @@ export async function sendGrievanceDeadlineReminder(
           // Get phone number from officer profile
           const [officer] = await db
             .select({
-              phone: profiles.phone,
-              name: profiles.name,
+              phone: users.phone,
+              name: users.displayName,
             })
-            .from(profiles)
-            .where(eq(profiles.email, context.assignedOfficerEmail))
+            .from(users)
+            .where(eq(users.email, context.assignedOfficerEmail))
             .limit(1);
 
           if (officer?.phone) {

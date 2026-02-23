@@ -19,9 +19,11 @@ import {
   ContributionPeriod, 
   PensionMember,
   IPensionProcessor,
+  EmploymentStatus,
 } from '@/lib/pension-processor/types';
 import { IntegrationFactory } from '@/lib/integrations/factory';
-import { IntegrationProvider } from '@/lib/integrations/types';
+import { IntegrationProvider, SyncType } from '@/lib/integrations/types';
+import type { SQL } from 'drizzle-orm';
 
 export const resolvers = {
   Query: {
@@ -33,7 +35,7 @@ export const resolvers = {
 
     claims: async (
       _parent: unknown,
-      { filters, pagination }: unknown,
+      { filters, pagination }: { filters?: { status?: string }; pagination?: { first?: number } },
       _context: YogaInitialContext
     ) => {
       const limit = pagination?.first || 20;
@@ -42,7 +44,7 @@ export const resolvers = {
       let query = db.select().from(claims);
 
       if (filters?.status) {
-        query = query.where(eq(claims.status, filters.status)) as typeof query;
+        query = query.where(eq(claims.status, filters.status as any)) as typeof query;
       }
 
       const results = await query.limit(limit).offset(offset).orderBy(desc(claims.createdAt));
@@ -70,7 +72,7 @@ export const resolvers = {
 
     members: async (
       _parent: unknown,
-      { status, pagination }: unknown,
+      { status, pagination }: { status?: string; pagination?: { first?: number } },
       _context: YogaInitialContext
     ) => {
       const limit = pagination?.first || 20;
@@ -200,13 +202,13 @@ export const resolvers = {
     // Insurance
     insuranceClaims: async (
       _parent: unknown,
-      { provider, status, startDate, endDate, pagination }: unknown
+      { provider, status, startDate, endDate, pagination }: { provider?: string; status?: string; startDate?: string; endDate?: string; pagination?: { first?: number } }
     ) => {
       const limit = pagination?.first || 50;
       
       let query = db.select().from(externalInsuranceClaims);
 
-      const conditions = [];
+      const conditions: SQL<unknown>[] = [];
       if (provider) {
         conditions.push(eq(externalInsuranceClaims.externalProvider, provider.toLowerCase()));
       }
@@ -214,10 +216,10 @@ export const resolvers = {
         conditions.push(eq(externalInsuranceClaims.status, status));
       }
       if (startDate) {
-        conditions.push(gte(externalInsuranceClaims.submissionDate, new Date(startDate)));
+        conditions.push(gte(externalInsuranceClaims.submissionDate, new Date(startDate).toISOString()));
       }
       if (endDate) {
-        conditions.push(lte(externalInsuranceClaims.submissionDate, new Date(endDate)));
+        conditions.push(lte(externalInsuranceClaims.submissionDate, new Date(endDate).toISOString()));
       }
 
       if (conditions.length > 0) {
@@ -246,11 +248,11 @@ export const resolvers = {
 
     insurancePolicies: async (
       _parent: unknown,
-      { provider, status }: unknown
+      { provider, status }: { provider?: string; status?: string }
     ) => {
       let query = db.select().from(externalInsurancePolicies);
 
-      const conditions = [];
+      const conditions: SQL<unknown>[] = [];
       if (provider) {
         conditions.push(eq(externalInsurancePolicies.externalProvider, provider.toLowerCase()));
       }
@@ -301,7 +303,7 @@ export const resolvers = {
     // Claims
     createClaim: async (
       _parent: unknown,
-      { input }: { input: unknown },
+      { input }: { input: Record<string, any> },
       _context: YogaInitialContext
     ) => {
       const result = await db.insert(claims).values({
@@ -324,13 +326,13 @@ export const resolvers = {
 
     updateClaim: async (
       _parent: unknown,
-      { id, input }: { id: string; input: unknown },
+      { id, input }: { id: string; input: Record<string, any> },
       _context: YogaInitialContext
     ) => {
       const result = await db
         .update(claims)
         .set({
-          ...input,
+          ...(input as Record<string, any>),
           updatedAt: new Date(),
         })
         .where(eq(claims.claimId, id))
@@ -361,7 +363,7 @@ export const resolvers = {
     // Pension Contributions
     calculatePensionContribution: async (
       _parent: unknown,
-      { input }: { input: unknown }
+      { input }: { input: Record<string, any> }
     ) => {
       const factory = PensionProcessorFactory.getInstance();
       const processor = factory.getProcessor(input.planType as PensionPlanType);
@@ -373,7 +375,7 @@ export const resolvers = {
         lastName: 'Unknown',
         dateOfBirth: new Date(input.dateOfBirth),
         hireDate: new Date(),
-        employmentStatus: 'FULL_TIME' as unknown,
+        employmentStatus: EmploymentStatus.FULL_TIME,
         province: input.province,
         annualSalary: input.yearToDateEarnings || 0,
       };
@@ -404,7 +406,7 @@ export const resolvers = {
 
     createRemittance: async (
       _parent: unknown,
-      { input }: { input: unknown }
+      { input }: { input: Record<string, any> }
     ) => {
       const factory = PensionProcessorFactory.getInstance();
       const processor = factory.getProcessor(input.planType as PensionPlanType);
@@ -413,7 +415,7 @@ export const resolvers = {
       const contributions = input.contributions.map((id: string) => ({
         memberId: id,
         planType: input.planType,
-        contributionPeriod: 'MONTHLY' as unknown,
+        contributionPeriod: 'MONTHLY' as ContributionPeriod,
         periodStartDate: new Date(input.periodStart),
         periodEndDate: new Date(input.periodEnd),
         grossEarnings: 100,
@@ -504,7 +506,7 @@ export const resolvers = {
 
         // Perform sync
         const syncResult = await adapter.sync({
-          fullSync: true,
+          type: SyncType.FULL,
           entities: ['claims', 'policies'],
         });
 
@@ -529,7 +531,7 @@ export const resolvers = {
 
   // Field Resolvers
   Claim: {
-    claimant: async (parent: unknown, _args: unknown, _context: YogaInitialContext) => {
+    claimant: async (parent: Record<string, any>, _args: unknown, _context: YogaInitialContext) => {
       if (!parent.memberId) return null;
       const result = await db
         .select()
@@ -539,7 +541,7 @@ export const resolvers = {
       return result[0] || null;
     },
 
-    assignee: async (parent: unknown, _args: unknown, _context: YogaInitialContext) => {
+    assignee: async (parent: Record<string, any>, _args: unknown, _context: YogaInitialContext) => {
       if (!parent.assignedTo) return null;
       const result = await db
         .select()
@@ -551,7 +553,7 @@ export const resolvers = {
   },
 
   Member: {
-    claims: async (parent: unknown, _args: unknown, _context: YogaInitialContext) => {
+    claims: async (parent: Record<string, any>, _args: unknown, _context: YogaInitialContext) => {
       const results = await db
         .select()
         .from(claims)

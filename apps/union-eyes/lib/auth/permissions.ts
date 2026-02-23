@@ -7,7 +7,7 @@ import { UserRole, Permission, ROLE_PERMISSIONS } from './roles';
 import type { PermissionCheckOptions, RoleCheckOptions } from './types';
 import { db } from '@/db';
 import { organizationMembers } from '@/db/schema/organization-members-schema';
-import { eq, and, isNull } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * Check if a role has a specific permission
@@ -65,8 +65,7 @@ return false;
       .where(
         and(
           eq(organizationMembers.organizationId, options.organizationId),
-          eq(organizationMembers.userId, options.userId),
-          isNull(organizationMembers.deletedAt)
+          eq(organizationMembers.userId, options.userId)
         )
       )
       .limit(1);
@@ -104,8 +103,7 @@ return false;
       .where(
         and(
           eq(organizationMembers.organizationId, options.organizationId),
-          eq(organizationMembers.userId, options.userId),
-          isNull(organizationMembers.deletedAt)
+          eq(organizationMembers.userId, options.userId)
         )
       )
       .limit(1);
@@ -136,7 +134,7 @@ function mapOrganizationRoleToUserRole(role: string): UserRole {
 }
 
 /**
- * Re-export permission system
+ * Re-export permission system (UserRole excluded - exported via unified-auth)
  */
-export { UserRole, Permission, ROLE_PERMISSIONS };
+export { Permission, ROLE_PERMISSIONS };
 

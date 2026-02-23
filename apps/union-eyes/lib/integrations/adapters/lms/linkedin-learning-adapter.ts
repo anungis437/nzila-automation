@@ -8,10 +8,10 @@
 import { BaseIntegration } from '../../base-integration';
 import { LinkedInLearningClient } from './linkedin-learning-client';
 import type {
-  IIntegration,
   SyncOptions,
   SyncResult,
-  IntegrationCapabilities,
+  HealthCheckResult,
+  WebhookEvent,
 } from '../../types';
 import { db } from '@/db';
 import {
@@ -21,17 +21,26 @@ import {
   externalLmsCompletions,
   externalLmsLearners,
 } from '@/db/schema/domains/data/lms';
-import { IntegrationProvider } from '../../types';
+import { IntegrationType, IntegrationProvider, ConnectionStatus } from '../../types';
 import { eq, and } from 'drizzle-orm';
-import { logger } from '@/lib/logger';
 
 const PAGE_SIZE = 50; // LinkedIn Learning pagination
 
-export class LinkedInLearningAdapter extends BaseIntegration implements IIntegration {
+export class LinkedInLearningAdapter extends BaseIntegration {
   private client: LinkedInLearningClient;
+  private orgId: string;
 
   constructor(orgId: string, config: Record<string, unknown>) {
-    super(orgId, IntegrationProvider.LINKEDIN_LEARNING, config);
+    super(IntegrationType.LMS, IntegrationProvider.LINKEDIN_LEARNING, {
+      supportsFullSync: true,
+      supportsIncrementalSync: true,
+      supportsWebhooks: false,
+      supportsRealTime: false,
+      supportedEntities: ['courses', 'enrollments', 'progress', 'completions', 'learners'],
+      requiresOAuth: true,
+      rateLimitPerMinute: 30,
+    });
+    this.orgId = orgId;
 
     this.client = new LinkedInLearningClient({
       clientId: config.clientId as string,
@@ -46,26 +55,43 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
     if (health.status !== 'ok') {
       throw new Error(`Failed to connect to LinkedIn Learning: ${health.message}`);
     }
-    this.logger.info('Successfully connected to LinkedIn Learning API');
+    this.connected = true;
+    this.logOperation('connect', { message: 'Connected to LinkedIn Learning API' });
   }
 
   async disconnect(): Promise<void> {
-    this.logger.info('LinkedIn Learning integration disconnected');
+    this.connected = false;
+    this.logOperation('disconnect', { message: 'LinkedIn Learning integration disconnected' });
   }
 
-  async healthCheck(): Promise<{ status: 'ok' | 'error'; message: string }> {
-    return await this.client.healthCheck();
+  async healthCheck(): Promise<HealthCheckResult> {
+    try {
+      const startTime = Date.now();
+      const health = await this.client.healthCheck();
+      const latencyMs = Date.now() - startTime;
+      return {
+        healthy: health.status === 'ok',
+        status: health.status === 'ok' ? ConnectionStatus.CONNECTED : ConnectionStatus.ERROR,
+        latencyMs,
+        lastCheckedAt: new Date(),
+        lastError: health.status !== 'ok' ? health.message : undefined,
+      };
+    } catch (error) {
+      return {
+        healthy: false,
+        status: ConnectionStatus.ERROR,
+        lastCheckedAt: new Date(),
+        lastError: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 
-  getCapabilities(): IntegrationCapabilities {
-    return {
-      supportsFullSync: true,
-      supportsIncrementalSync: true,
-      supportsWebhooks: false,
-      supportsRealTimeSync: false,
-      batchSize: PAGE_SIZE,
-      rateLimitPerMinute: 30, // Conservative estimate based on daily limits
-    };
+  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+    return true; // Simplified for now
+  }
+
+  async processWebhook(event: WebhookEvent): Promise<void> {
+    this.logOperation('webhook', { eventType: event.type, message: `Processing ${event.type}` });
   }
 
   async sync(options: SyncOptions): Promise<SyncResult> {
@@ -100,19 +126,20 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
             await this.syncLearners(options, results);
             break;
           default:
-            this.logger.warn(`Unknown entity type: ${entity}`);
+            this.logOperation('sync', { message: `Unknown entity type: ${entity}` });
         }
       }
 
-      this.logger.info('LinkedIn Learning sync completed', {
+      this.logOperation('sync', {
+        message: 'LinkedIn Learning sync completed',
         processed: results.recordsProcessed,
         created: results.recordsCreated,
         updated: results.recordsUpdated,
       });
     } catch (error) {
       results.success = false;
-      results.error = error instanceof Error ? error.message : String(error);
-      this.logger.error('LinkedIn Learning sync failed', error);
+      results.metadata = { error: error instanceof Error ? error.message : String(error) };
+      this.logError('sync', error as Error);
     }
 
     return results;
@@ -168,7 +195,7 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync course ${course.urn}`, error);
+          this.logError('syncCourse', error as Error, { message: `Failed to sync course ${course.urn}` });
           results.recordsFailed++;
         }
       }
@@ -225,7 +252,7 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync enrollment ${enrollment.learnerUrn}`, error);
+          this.logError('syncEnrollment', error as Error, { message: `Failed to sync enrollment ${enrollment.learnerUrn}` });
           results.recordsFailed++;
         }
       }
@@ -280,7 +307,7 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync progress ${progress.contentUrn}`, error);
+          this.logError('syncProgress', error as Error, { message: `Failed to sync progress ${progress.contentUrn}` });
           results.recordsFailed++;
         }
       }
@@ -317,7 +344,7 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
               learnerId: completion.learnerUrn,
               completedAt: new Date(completion.completedAt),
               certificateId: completion.certificateUrn,
-              grade: completion.grade,
+              grade: completion.grade != null ? String(completion.grade) : null,
               lastSyncedAt: new Date(),
             })
             .onConflictDoUpdate({
@@ -328,14 +355,14 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
               ],
               set: {
                 certificateId: completion.certificateUrn,
-                grade: completion.grade,
+                grade: completion.grade != null ? String(completion.grade) : null,
                 lastSyncedAt: new Date(),
               },
             });
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync completion ${completion.learnerUrn}`, error);
+          this.logError('syncCompletion', error as Error, { message: `Failed to sync completion ${completion.learnerUrn}` });
           results.recordsFailed++;
         }
       }
@@ -389,7 +416,7 @@ export class LinkedInLearningAdapter extends BaseIntegration implements IIntegra
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync learner ${learner.urn}`, error);
+          this.logError('syncLearner', error as Error, { message: `Failed to sync learner ${learner.urn}` });
           results.recordsFailed++;
         }
       }

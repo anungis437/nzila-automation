@@ -21,6 +21,7 @@ import {
   HealthCheckResult,
   WebhookEvent,
   SyncType,
+  ConnectionStatus,
 } from '../../types';
 import { SageIntacctClient, type SageIntacctConfig } from './sage-intacct-client';
 import { db } from '@/db';
@@ -62,7 +63,7 @@ export class SageIntacctAdapter extends BaseIntegration {
         senderId: (this.config!.credentials.metadata?.senderId as string) || '',
         senderPassword: (this.config!.credentials.metadata?.senderPassword as string) || '',
         entityId: (this.config!.settings?.entityId as string) || undefined,
-        environment: this.config!.settings?.environment || 'production',
+        environment: (this.config!.settings?.environment as SageIntacctConfig['environment']) || 'production',
       };
 
       this.client = new SageIntacctClient(intacctConfig);
@@ -166,7 +167,7 @@ export class SageIntacctAdapter extends BaseIntegration {
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
@@ -241,8 +242,8 @@ export class SageIntacctAdapter extends BaseIntegration {
             invoiceNumber: invoice.RECORDID,
             customerId: invoice.CUSTOMERID,
             customerName: invoice.CUSTOMERNAME,
-            invoiceDate: new Date(invoice.WHENCREATED),
-            dueDate: invoice.WHENDUE ? new Date(invoice.WHENDUE) : null,
+            invoiceDate: invoice.WHENCREATED,
+            dueDate: invoice.WHENDUE || null,
             totalAmount: (typeof invoice.TOTALENTERED === 'number' ? invoice.TOTALENTERED : parseFloat(invoice.TOTALENTERED)).toFixed(2),
             balanceAmount: (typeof invoice.TOTALDUE === 'number' ? invoice.TOTALDUE : parseFloat(invoice.TOTALDUE)).toFixed(2),
             status: invoice.STATE.toLowerCase(),
@@ -310,7 +311,7 @@ export class SageIntacctAdapter extends BaseIntegration {
           const paymentData = {
             customerId: payment.CUSTOMERID,
             customerName: payment.CUSTOMERNAME,
-            paymentDate: new Date(payment.WHENPAID),
+            paymentDate: payment.WHENPAID,
             amount: (typeof payment.AMOUNTPAID === 'number' ? payment.AMOUNTPAID : parseFloat(payment.AMOUNTPAID)).toFixed(2),
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -491,6 +492,6 @@ export class SageIntacctAdapter extends BaseIntegration {
   }
 
   async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', 'Sage Intacct does not support webhooks');
+    this.logOperation('webhook', { message: 'Sage Intacct does not support webhooks' });
   }
 }

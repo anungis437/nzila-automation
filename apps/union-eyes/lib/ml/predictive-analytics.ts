@@ -235,7 +235,7 @@ export function detectSeasonalPattern(
   const troughs: number[] = [];
   
   for (let i = 1; i < bestPeriod - 1; i++) {
-    const indices = [];
+    const indices: number[] = [];
     for (let j = i; j < values.length; j += bestPeriod) {
       indices.push(j);
     }

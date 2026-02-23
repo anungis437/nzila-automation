@@ -115,10 +115,10 @@ class AIPipeline {
       // 3. Build template context
       const templateContext: TemplateContext = {
         query,
-        jurisdiction: context.jurisdiction || 'federal',
+        jurisdiction: (context.jurisdiction || 'federal') as any,
         userRole: 'member',
         intent: this.classifyIntent(query),
-        entities: [],
+        entities: [] as any[],
         retrievedContext: sources.map(s => s.chunk.content),
         sla: 'standard',
         organizationId: context.organizationId,
@@ -228,7 +228,7 @@ class AIPipeline {
       content: document.content,
       metadata: {
         source: metadata.source,
-        type: extraction.documentType as unknown,
+        type: extraction.documentType as any,
         jurisdiction: metadata.jurisdiction,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -249,8 +249,8 @@ class AIPipeline {
    * Generate response using template engine
    */
   private async generateResponse(context: TemplateContext): Promise<string> {
-    const prompt = templateEngine.buildPrompt('general_query', context);
-    const response = await templateEngine.execute(prompt, context);
+    const prompt = (templateEngine as any).buildPrompt('general_query', context);
+    const response = await (templateEngine as any).execute(prompt, context);
     return response;
   }
 

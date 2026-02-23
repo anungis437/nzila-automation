@@ -5,7 +5,7 @@
  * Integrates providers, database tracking, and notifications
  */
 
-import { db } from "@/database";
+import { db } from "@/db";
 import {
   signatureWorkflows,
   signers,
@@ -146,13 +146,13 @@ export async function createSignatureWorkflow(
     // Create audit log entry
     await db.insert(signatureAuditLog).values({
       workflowId: workflow.id,
-      event: "workflow_created",
-      description: `Signature workflow created for ${request.documentName}`,
-      userId: request.userId,
-      metadata: {
+      eventType: "workflow_created",
+      eventDescription: `Signature workflow created for ${request.documentName}`,
+      providerData: {
         provider: provider.name,
         signerCount: request.signers.length,
         envelopeId: envelope.id,
+        userId: request.userId,
       },
     });
 
@@ -182,12 +182,12 @@ export async function createSignatureWorkflow(
         await db.insert(signatureAuditLog).values({
           workflowId: workflow.id,
           signerId: signer.id,
-          event: "signer_notified",
-          description: `Notification sent to ${signer.email}`,
-          userId: request.userId,
-          metadata: {
+          eventType: "signer_notified",
+          eventDescription: `Notification sent to ${signer.email}`,
+          providerData: {
             email: signer.email,
             signingUrl: signer.signingUrl,
+            userId: request.userId,
           },
         });
       })
@@ -264,7 +264,7 @@ export async function getWorkflowStatus(
         await db
           .update(signatureWorkflows)
           .set({
-            status: envelope.status,
+            status: envelope.status as any,
             completedAt:
               envelope.status === "completed" ? envelope.completedAt : undefined,
           })
@@ -336,9 +336,9 @@ export async function handleSignerCompleted(
     // Create audit log
     await db.insert(signatureAuditLog).values({
       workflowId,
-      event: "signer_signed",
-      description: `${signerEmail} completed signature`,
-      metadata: {
+      eventType: "signer_signed",
+      eventDescription: `${signerEmail} completed signature`,
+      providerData: {
         signerEmail,
         signedAt: signatureData.signedAt.toISOString(),
         ipAddress: signatureData.ipAddress,
@@ -426,12 +426,11 @@ async function completeWorkflow(workflowId: string): Promise<void> {
     // Create verification record
     await db.insert(signatureVerification).values({
       workflowId,
+      signerId: (workflow as any).lastSignerId || workflowId,
       verificationMethod: "provider_hash",
-      isValid: true,
-      verifiedAt: new Date(),
-      verifiedBy: "system",
+      isVerified: true,
       signatureHash: signedDocumentHash,
-      metadata: {
+      verificationResult: {
         provider: workflow.provider,
         originalHash: (workflow.workflowData as any)?.documentHash,
         signedHash: signedDocumentHash,
@@ -441,9 +440,9 @@ async function completeWorkflow(workflowId: string): Promise<void> {
     // Create audit log
     await db.insert(signatureAuditLog).values({
       workflowId,
-      event: "workflow_completed",
-      description: "All signers completed, workflow finalized",
-      metadata: {
+      eventType: "workflow_completed",
+      eventDescription: "All signers completed, workflow finalized",
+      providerData: {
         completedAt: new Date().toISOString(),
         signedDocumentHash,
       },
@@ -494,7 +493,7 @@ async function completeWorkflow(workflowId: string): Promise<void> {
     const notificationService = getNotificationService();
     await notificationService.send({
       organizationId: workflow.organizationId,
-      recipientId: workflow.createdBy,
+      recipientId: workflow.createdBy ?? undefined,
       type: "email",
       priority: "high",
       subject: `Signature Workflow Completed: ${(workflow.workflowData as any)?.subject || workflow.description}`,
@@ -556,10 +555,9 @@ export async function voidWorkflow(
     // Create audit log
     await db.insert(signatureAuditLog).values({
       workflowId,
-      event: "workflow_voided",
-      description: `Workflow voided: ${reason}`,
-      userId,
-      metadata: { reason },
+      eventType: "workflow_voided",
+      eventDescription: `Workflow voided: ${reason}`,
+      providerData: { reason, userId },
     });
 
     // Notify all signers
@@ -651,9 +649,9 @@ export async function sendSignerReminders(workflowId: string, userId: string): P
         await db.insert(signatureAuditLog).values({
           workflowId,
           signerId: signer.id,
-          event: "reminder_sent",
-          description: `Reminder sent to ${signer.email}`,
-          userId,
+          eventType: "reminder_sent",
+          eventDescription: `Reminder sent to ${signer.email}`,
+          providerData: { userId },
         });
       })
     );

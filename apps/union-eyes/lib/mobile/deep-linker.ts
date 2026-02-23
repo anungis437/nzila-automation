@@ -227,8 +227,8 @@ export async function handleDeepLink(url: string): Promise<boolean> {
   }
 
   // Navigate to the parsed route
-  if (typeof window !== 'undefined' && (window as unknown).navigate) {
-    (window as unknown).navigate(parsed.route, parsed.params, parsed.query);
+  if (typeof window !== 'undefined' && (window as any).navigate) {
+    (window as any).navigate(parsed.route, parsed.params, parsed.query);
     return true;
   }
 
@@ -243,9 +243,9 @@ export function registerDeepLinkHandlers(): void {
   if (typeof window === 'undefined') return;
 
   // Handle universal links (iOS)
-  if ((navigator as unknown).registerProtocolHandler) {
+  if ((navigator as any).registerProtocolHandler) {
     try {
-      (navigator as unknown).registerProtocolHandler(
+      (navigator as any).registerProtocolHandler(
         'unioneyes',
         `${window.location.origin}/deep-link?url=%s`,
         'Union Eyes'

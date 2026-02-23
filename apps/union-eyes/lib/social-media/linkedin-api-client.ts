@@ -237,9 +237,9 @@ export class LinkedInAPIClient {
     // Extract organizations from nested structure
     const orgs: LinkedInOrganization[] = [];
     for (const element of response.elements || []) {
-      const org = (element as unknown)['organization~'];
+      const org = (element as any)['organization~'];
       if (org) {
-        orgs.push(org);
+        orgs.push(org as LinkedInOrganization);
       }
     }
 
@@ -429,7 +429,7 @@ export class LinkedInAPIClient {
       },
     };
 
-    const response = await this.makeRequest<unknown>(
+    const response = await this.makeRequest<any>(
       '/assets?action=registerUpload',
       {},
       {
@@ -585,7 +585,7 @@ export class LinkedInAPIClient {
       throw new Error('Access token required');
     }
 
-    const queryParams = new URLSearchParams(params);
+    const queryParams = new URLSearchParams(params as Record<string, string>);
     const url = `${this.baseUrl}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
     const response = await fetch(url, {

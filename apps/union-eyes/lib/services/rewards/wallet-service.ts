@@ -10,12 +10,12 @@ import {
   rewardWalletLedger,
   type NewRewardWalletLedgerEntry,
   type RewardWalletLedgerEntry,
-} from '@/db/schema';
+} from '@/db/schema/domains/infrastructure/rewards';
 import { eq, and, desc, sql } from 'drizzle-orm';
 
 type DbTransaction = PgTransaction<
   PostgresJsQueryResultHKT,
-  Record<string, never>,
+  any,
   any
 >;
 
@@ -37,13 +37,15 @@ export async function getBalance(
   orgId: string,
   userId: string
 ): Promise<number> {
-  const latestEntry = await db.query.rewardWalletLedger.findFirst({
-    where: and(
+  const [latestEntry] = await db
+    .select()
+    .from(rewardWalletLedger)
+    .where(and(
       eq(rewardWalletLedger.orgId, orgId),
       eq(rewardWalletLedger.userId, userId)
-    ),
-    orderBy: [desc(rewardWalletLedger.createdAt)],
-  });
+    ))
+    .orderBy(desc(rewardWalletLedger.createdAt))
+    .limit(1);
 
   return latestEntry?.balanceAfter ?? 0;
 }
@@ -60,15 +62,16 @@ export async function listLedger(
   entries: RewardWalletLedgerEntry[];
   total: number;
 }> {
-  const entries = await db.query.rewardWalletLedger.findMany({
-    where: and(
+  const entries = await db
+    .select()
+    .from(rewardWalletLedger)
+    .where(and(
       eq(rewardWalletLedger.orgId, orgId),
       eq(rewardWalletLedger.userId, userId)
-    ),
-    orderBy: [desc(rewardWalletLedger.createdAt)],
-    limit,
-    offset,
-  });
+    ))
+    .orderBy(desc(rewardWalletLedger.createdAt))
+    .limit(limit)
+    .offset(offset);
 
   // Get total count
   const [{ count }] = await db
@@ -101,13 +104,15 @@ export async function applyLedgerEntry(
   const { orgId, userId, eventType, amountCredits, sourceType, sourceId, memo } = options;
 
   // Get current balance (lock row for update to prevent race conditions)
-  const latestEntry = await tx.query.rewardWalletLedger.findFirst({
-    where: and(
+  const [latestEntry] = await tx
+    .select()
+    .from(rewardWalletLedger)
+    .where(and(
       eq(rewardWalletLedger.orgId, orgId),
       eq(rewardWalletLedger.userId, userId)
-    ),
-    orderBy: [desc(rewardWalletLedger.createdAt)],
-  });
+    ))
+    .orderBy(desc(rewardWalletLedger.createdAt))
+    .limit(1);
 
   const currentBalance = latestEntry?.balanceAfter ?? 0;
   const newBalance = currentBalance + amountCredits;

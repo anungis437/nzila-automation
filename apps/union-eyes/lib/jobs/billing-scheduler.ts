@@ -80,7 +80,7 @@ export class BillingScheduler {
 
       logger.info(`Found ${orgs.length} organizations configured for ${frequency} billing`);
 
-      const results = [];
+      const results: BillingSchedulerResult['results'] = [];
       let successful = 0;
       let failed = 0;
       let skipped = 0;
@@ -250,7 +250,7 @@ export class BillingScheduler {
    */
   private static async notifyBillingCompleted(
     organizationId: string,
-    result: unknown
+    result: { transactionsCreated?: number; totalAmount?: number }
   ): Promise<void> {
     const recipients = await this.getBillingRecipients(organizationId);
     if (recipients.length === 0) {

@@ -12,7 +12,7 @@
  * - Support for invoices, customers, payments
  */
 
-import { IntegrationError, AuthenticationError, RateLimitError } from '../../types';
+import { IntegrationError, AuthenticationError, RateLimitError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -95,7 +95,7 @@ export class WaveClient {
 
   async authenticate(): Promise<void> {
     if (!this.refreshToken && !this.config.refreshToken) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.WAVE);
     }
 
     await this.refreshAccessToken();
@@ -104,7 +104,7 @@ export class WaveClient {
   private async refreshAccessToken(): Promise<void> {
     const token = this.refreshToken || this.config.refreshToken;
     if (!token) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.WAVE);
     }
 
     try {
@@ -123,7 +123,7 @@ export class WaveClient {
 
       if (!response.ok) {
         const error = await response.text();
-        throw new AuthenticationError(`Token refresh failed: ${error}`);
+        throw new AuthenticationError(`Token refresh failed: ${error}`, IntegrationProvider.WAVE);
       }
 
       const data: WaveTokenResponse = await response.json();
@@ -137,7 +137,8 @@ export class WaveClient {
     } catch (error) {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
-        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown'}`
+        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown'}`,
+        IntegrationProvider.WAVE
       );
     }
   }
@@ -172,7 +173,7 @@ export class WaveClient {
       });
 
       if (response.status === 429) {
-        throw new RateLimitError('Wave', 60);
+        throw new RateLimitError('Wave rate limit exceeded', IntegrationProvider.WAVE, 60);
       }
 
       if (response.status === 401) {
@@ -184,7 +185,7 @@ export class WaveClient {
         const errorText = await response.text();
         throw new IntegrationError(
           `Wave API error (${response.status}): ${errorText}`,
-          'WAVE'
+          IntegrationProvider.WAVE
         );
       }
 
@@ -193,7 +194,7 @@ export class WaveClient {
       if (result.errors) {
         throw new IntegrationError(
           `GraphQL errors: ${JSON.stringify(result.errors)}`,
-          'WAVE'
+          IntegrationProvider.WAVE
         );
       }
 
@@ -208,7 +209,7 @@ export class WaveClient {
       }
       throw new IntegrationError(
         `Request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'WAVE'
+        IntegrationProvider.WAVE
       );
     }
   }
@@ -252,13 +253,13 @@ export class WaveClient {
       }
     `;
 
-    const result = await this.graphql<unknown>(query, {
+    const result = await this.graphql<any>(query, {
       businessId: this.config.businessId,
       page,
       pageSize,
     });
 
-    const invoices = result.business.invoices.edges.map((edge: unknown) => edge.node);
+    const invoices = result.business.invoices.edges.map((edge: any) => edge.node);
     const hasMore = page < result.business.invoices.pageInfo.totalPages;
 
     return { invoices, hasMore };
@@ -299,13 +300,13 @@ export class WaveClient {
       }
     `;
 
-    const result = await this.graphql<unknown>(query, {
+    const result = await this.graphql<any>(query, {
       businessId: this.config.businessId,
       page,
       pageSize,
     });
 
-    const customers = result.business.customers.edges.map((edge: unknown) => ({
+    const customers = result.business.customers.edges.map((edge: any) => ({
       ...edge.node,
       currency: edge.node.currency?.code || 'USD',
     }));
@@ -354,15 +355,15 @@ export class WaveClient {
       }
     `;
 
-    const result = await this.graphql<unknown>(query, {
+    const result = await this.graphql<any>(query, {
       businessId: this.config.businessId,
       page,
       pageSize,
     });
 
     const payments = result.business.moneyTransactions.edges
-      .map((edge: unknown) => edge.node)
-      .filter((node: unknown) => node.invoice); // Only transactions linked to invoices
+      .map((edge: any) => edge.node)
+      .filter((node: any) => node.invoice); // Only transactions linked to invoices
 
     const hasMore = page < result.business.moneyTransactions.pageInfo.totalPages;
 

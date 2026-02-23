@@ -5,7 +5,7 @@
  * for Nzila Ventures operations team
  */
 
-import { db } from '@/database';
+import { db } from '@/db';
 import {
   supportTickets,
   ticketComments,
@@ -18,7 +18,7 @@ import {
   type NewTicketComment,
   type KnowledgeBaseArticle,
 } from '@/db/schema';
-import { eq, and, sql, desc, asc, or, gte, lte, count, avg, inArray } from 'drizzle-orm';
+import { eq, and, sql, desc, asc, or, gte, lte, count, avg, inArray, type SQL } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
 // ============================================================================
@@ -134,7 +134,7 @@ export async function createTicket(
 ): Promise<SupportTicket> {
   try {
     const ticketNumber = await generateTicketNumber();
-    const sla = await calculateSLADeadlines(data.priority, data.category);
+    const sla = await calculateSLADeadlines(data.priority ?? 'medium', data.category);
     
     const [ticket] = await db
       .insert(supportTickets)
@@ -183,7 +183,7 @@ export async function listTickets(
   limit: number = 50,
   offset: number = 0
 ): Promise<SupportTicket[]> {
-  const conditions = [];
+  const conditions: SQL[] = [];
   
   if (filters.status?.length) {
     conditions.push(inArray(supportTickets.status, filters.status as any));
@@ -450,7 +450,7 @@ export async function getTicketComments(
 export async function getTicketMetrics(
   filters: TicketFilters = {}
 ): Promise<TicketMetrics> {
-  const conditions = [];
+  const conditions: SQL[] = [];
   
   if (filters.organizationId) {
     conditions.push(eq(supportTickets.organizationId, filters.organizationId));
@@ -558,7 +558,7 @@ export async function getTicketMetrics(
 export async function getSLAMetrics(
   filters: TicketFilters = {}
 ): Promise<SLAMetrics> {
-  const conditions = [];
+  const conditions: SQL[] = [];
   
   if (filters.organizationId) {
     conditions.push(eq(supportTickets.organizationId, filters.organizationId));
@@ -650,7 +650,7 @@ export async function getKBArticleBySlug(
   if (article) {
     await db
       .update(knowledgeBaseArticles)
-      .set({ viewCount: article.viewCount + 1 })
+      .set({ viewCount: (article.viewCount ?? 0) + 1 })
       .where(eq(knowledgeBaseArticles.id, article.id));
   }
   

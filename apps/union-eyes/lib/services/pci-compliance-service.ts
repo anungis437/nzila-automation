@@ -14,7 +14,7 @@ import {
   pciDssEncryptionKeys
 } from '@/db/schema/domains/compliance/pci-dss';
 import { eq, and, desc } from 'drizzle-orm';
-import { getSupabaseClient } from '@unioneyes/supabase';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 
 export interface PCIAssessmentResult {
@@ -49,10 +49,13 @@ export interface QuarterlyScanResult {
 }
 
 export class PCIComplianceService {
-  private supabase: ReturnType<typeof getSupabaseClient>;
+  private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = getSupabaseClient();
+    this.supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
   }
 
   /**

@@ -57,7 +57,7 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
       const config: IndustrialAllianceConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        groupAccountId: this.config!.settings?.groupAccountId || '',
+        groupAccountId: (this.config!.settings?.groupAccountId as string) || '',
         refreshToken: this.config!.credentials.refreshToken,
         environment: 'production',
       };
@@ -71,7 +71,7 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
       }
       
       this.connected = true;
-      this.logOperation('connect', 'Connected to Industrial Alliance');
+      this.logOperation('connect', { message: 'Connected to Industrial Alliance' });
     } catch (error) {
       this.logError('connect', error);
       throw error;
@@ -81,7 +81,7 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
   async disconnect(): Promise<void> {
     this.connected = false;
     this.client = undefined;
-    this.logOperation('disconnect', 'Disconnected from Industrial Alliance');
+    this.logOperation('disconnect', { message: 'Disconnected from Industrial Alliance' });
   }
 
   async healthCheck(): Promise<HealthCheckResult> {
@@ -160,7 +160,7 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          errors.push({ entity, error: `Failed to sync ${entity}: ${errorMessage}` });
+          errors.push({ entity, error: `Failed to sync ${entity}: ${errorMessage}` } as any);
           this.logError('sync', error);
         }
       }
@@ -182,7 +182,7 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: [{ entity: 'sync', error: errorMessage }],
+        errors: [{ entity: 'sync', error: errorMessage }] as any,
       };
     }
   }
@@ -200,24 +200,24 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
           const existing = await db.select().from(externalInsurancePolicies).where(
             and(
               eq(externalInsurancePolicies.organizationId, this.config!.organizationId),
-              eq(externalInsurancePolicies.provider, 'industrial_alliance'),
+              eq(externalInsurancePolicies.externalProvider, 'industrial_alliance'),
               eq(externalInsurancePolicies.externalId, policy.external_id)
             )
           ).limit(1);
 
           const policyData = {
             organizationId: this.config!.organizationId,
-            provider: 'industrial_alliance' as const,
+            externalProvider: 'industrial_alliance' as const,
             externalId: policy.external_id,
             policyNumber: policy.policy_number,
             policyType: policy.policy_type,
-            policyHolder: policy.policy_holder,
+            employeeId: policy.policy_holder || '',
             coverageAmount: policy.coverage_amount.toString(),
             premium: policy.premium.toString(),
-            effectiveDate: new Date(policy.effective_date),
-            expiryDate: policy.expiry_date ? new Date(policy.expiry_date) : null,
+            effectiveDate: policy.effective_date,
+            terminationDate: policy.expiry_date || null,
             status: policy.status,
-            lastSyncAt: new Date(),
+            lastSyncedAt: new Date(),
           };
 
           if (existing.length > 0) {
@@ -254,28 +254,27 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
           const existing = await db.select().from(externalInsuranceClaims).where(
             and(
               eq(externalInsuranceClaims.organizationId, this.config!.organizationId),
-              eq(externalInsuranceClaims.provider, 'industrial_alliance'),
+              eq(externalInsuranceClaims.externalProvider, 'industrial_alliance'),
               eq(externalInsuranceClaims.externalId, claim.external_id)
             )
           ).limit(1);
 
           const claimData = {
             organizationId: this.config!.organizationId,
-            provider: 'industrial_alliance' as const,
+            externalProvider: 'industrial_alliance' as const,
             externalId: claim.external_id,
             claimNumber: claim.claim_number,
-            memberName: claim.member_name,
-            claimDate: new Date(claim.claim_date),
+            employeeId: (claim as any).employee_id || '',
+            employeeName: claim.member_name,
+            submissionDate: claim.claim_date,
             claimType: claim.claim_type,
             claimAmount: claim.claim_amount.toString(),
             approvedAmount: claim.approved_amount?.toString(),
             paidAmount: claim.paid_amount?.toString(),
             status: claim.status,
             providerName: claim.provider_name,
-            serviceDate: claim.service_date ? new Date(claim.service_date) : null,
-            diagnosisCode: claim.diagnosis_code,
-            treatmentType: claim.treatment_type,
-            lastSyncAt: new Date(),
+            serviceDate: claim.service_date || null,
+            lastSyncedAt: new Date(),
           };
 
           if (existing.length > 0) {
@@ -312,22 +311,24 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
           const existing = await db.select().from(externalInsuranceBeneficiaries).where(
             and(
               eq(externalInsuranceBeneficiaries.organizationId, this.config!.organizationId),
-              eq(externalInsuranceBeneficiaries.provider, 'industrial_alliance'),
+              eq(externalInsuranceBeneficiaries.externalProvider, 'industrial_alliance'),
               eq(externalInsuranceBeneficiaries.externalId, beneficiary.external_id)
             )
           ).limit(1);
 
           const beneficiaryData = {
             organizationId: this.config!.organizationId,
-            provider: 'industrial_alliance' as const,
+            externalProvider: 'industrial_alliance' as const,
             externalId: beneficiary.external_id,
             policyId: beneficiary.policy_id,
-            beneficiaryName: beneficiary.beneficiary_name,
+            employeeId: (beneficiary as any).employee_id || '',
+            firstName: beneficiary.beneficiary_name?.split(' ')[0] || '',
+            lastName: beneficiary.beneficiary_name?.split(' ').slice(1).join(' ') || '',
             relationship: beneficiary.relationship,
-            percentage: beneficiary.percentage.toString(),
-            dateOfBirth: beneficiary.date_of_birth ? new Date(beneficiary.date_of_birth) : null,
+            percentage: Math.round(beneficiary.percentage),
+            isPrimary: (beneficiary as any).is_primary ?? false,
             status: beneficiary.status,
-            lastSyncAt: new Date(),
+            lastSyncedAt: new Date(),
           };
 
           if (existing.length > 0) {
@@ -364,23 +365,23 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
           const existing = await db.select().from(externalBenefitUtilization).where(
             and(
               eq(externalBenefitUtilization.organizationId, this.config!.organizationId),
-              eq(externalBenefitUtilization.provider, 'industrial_alliance'),
+              eq(externalBenefitUtilization.externalProvider, 'industrial_alliance'),
               eq(externalBenefitUtilization.externalId, utilization.external_id)
             )
           ).limit(1);
 
           const utilizationData = {
             organizationId: this.config!.organizationId,
-            provider: 'industrial_alliance' as const,
+            externalProvider: 'industrial_alliance' as const,
             externalId: utilization.external_id,
-            memberId: utilization.member_id,
+            employeeId: utilization.member_id,
             benefitType: utilization.benefit_type,
+            periodStart: `${utilization.coverage_year}-01-01`,
+            periodEnd: `${utilization.coverage_year}-12-31`,
             maximumBenefit: utilization.maximum_benefit.toString(),
-            utilizedAmount: utilization.utilized_amount.toString(),
-            remainingAmount: utilization.remaining_amount.toString(),
-            coverageYear: utilization.coverage_year,
-            status: utilization.status,
-            lastSyncAt: new Date(),
+            utilized: utilization.utilized_amount.toString(),
+            remaining: utilization.remaining_amount.toString(),
+            lastSyncedAt: new Date(),
           };
 
           if (existing.length > 0) {
@@ -409,6 +410,6 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
   }
 
   async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', 'Industrial Alliance does not support webhooks');
+    this.logOperation('webhook', { message: 'Industrial Alliance does not support webhooks' });
   }
 }

@@ -375,17 +375,20 @@ export async function getAllMappings(
 
     const result = await db.execute(query);
 
-    return result.map((row: unknown) => ({
-      tenantId: row.tenant_id,
-      organizationId: row.organization_id,
-      migrationStatus: row.migration_status,
-      migratedAt: row.migrated_at,
-      migratedBy: row.migrated_by,
-      recordCount: Number(row.record_count || 0),
-      errorLog: row.error_log,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    }));
+    return result.map((_row: unknown) => {
+      const row = _row as Record<string, unknown>;
+      return {
+        tenantId: row.tenant_id as string,
+        organizationId: row.organization_id as string,
+        migrationStatus: row.migration_status as TenantOrgMapping['migrationStatus'],
+        migratedAt: row.migrated_at as Date | null,
+        migratedBy: row.migrated_by as string | null,
+        recordCount: Number(row.record_count || 0),
+        errorLog: row.error_log as string | null,
+        createdAt: row.created_at as Date,
+        updatedAt: row.updated_at as Date,
+      };
+    });
   } catch (error) {
 return [];
   }

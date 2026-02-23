@@ -31,7 +31,7 @@ export async function downloadMultiple(
   tenantId: string,
   userId: string
 ): Promise<{ stream: Readable; filename: string }> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
 
   // Fetch all documents using Drizzle ORM
   const docs = await db
@@ -137,7 +137,7 @@ export async function bulkTag(
   tenantId: string,
   userId: string
 ): Promise<BatchOperationResult> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
   const dbConfig = getDatabaseConfig();
 
   const progress: BatchOperationProgress = {
@@ -224,7 +224,7 @@ export async function bulkDelete(
   userId: string,
   userRole: string
 ): Promise<BatchOperationResult> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
 
   const progress: BatchOperationProgress = {
     total: documentIds.length,
@@ -322,7 +322,7 @@ export async function moveToFolder(
   tenantId: string,
   userId: string
 ): Promise<BatchOperationResult> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
 
   const progress: BatchOperationProgress = {
     total: documentIds.length,
@@ -419,7 +419,7 @@ export async function bulkCopy(
   tenantId: string,
   userId: string
 ): Promise<BatchOperationResult> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
 
   const progress: BatchOperationProgress = {
     total: documentIds.length,
@@ -538,7 +538,7 @@ export async function bulkUpdateMetadata(
   tenantId: string,
   userId: string
 ): Promise<BatchOperationResult> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
 
   const progress: BatchOperationProgress = {
     total: documentIds.length,
@@ -629,7 +629,7 @@ export async function validateDocumentPermissions(
   hasPermission: boolean;
   deniedDocuments: string[];
 }> {
-  const db = await getDatabase();
+  const db = await getDatabase() as any;
 
   // Admins and union leaders have access to all documents
   if (userRole === 'admin' || userRole === 'union_leader') {

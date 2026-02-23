@@ -12,6 +12,8 @@ import type {
   SyncOptions,
   SyncResult,
   IntegrationCapabilities,
+  HealthCheckResult,
+  WebhookEvent,
 } from '../../types';
 import { db } from '@/db';
 import {
@@ -20,17 +22,26 @@ import {
   externalDocumentFiles,
   externalDocumentPermissions,
 } from '@/db/schema/domains/data/documents';
-import { IntegrationProvider } from '../../types';
+import { IntegrationType, IntegrationProvider, ConnectionStatus } from '../../types';
 import { eq, and } from 'drizzle-orm';
-import { logger } from '@/lib/logger';
 
 const PAGE_SIZE = 50; // Microsoft Graph API default
 
 export class SharePointAdapter extends BaseIntegration implements IIntegration {
   private client: SharePointClient;
+  private readonly orgId: string;
 
   constructor(orgId: string, config: Record<string, unknown>) {
-    super(orgId, IntegrationProvider.SHAREPOINT, config);
+    super(IntegrationType.DOCUMENT_MANAGEMENT, IntegrationProvider.SHAREPOINT, {
+      supportsFullSync: true,
+      supportsIncrementalSync: true,
+      supportsWebhooks: true,
+      supportsRealTime: false,
+      supportedEntities: ['sites', 'libraries', 'files', 'permissions'],
+      requiresOAuth: false,
+      rateLimitPerMinute: 2000,
+    });
+    this.orgId = orgId;
 
     this.client = new SharePointClient({
       clientId: config.clientId as string,
@@ -46,25 +57,22 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
     if (health.status !== 'ok') {
       throw new Error(`Failed to connect to SharePoint: ${health.message}`);
     }
-    this.logger.info('Successfully connected to SharePoint API');
+    this.logOperation('connect', { message: 'Successfully connected to SharePoint API' });
   }
 
   async disconnect(): Promise<void> {
-    this.logger.info('SharePoint integration disconnected');
+    this.logOperation('disconnect', { message: 'SharePoint integration disconnected' });
   }
 
-  async healthCheck(): Promise<{ status: 'ok' | 'error'; message: string }> {
-    return await this.client.healthCheck();
-  }
-
-  getCapabilities(): IntegrationCapabilities {
+  async healthCheck(): Promise<HealthCheckResult> {
+    const startTime = Date.now();
+    const result = await this.client.healthCheck();
     return {
-      supportsFullSync: true,
-      supportsIncrementalSync: true,
-      supportsWebhooks: true, // SharePoint supports change notifications
-      supportsRealTimeSync: false,
-      batchSize: PAGE_SIZE,
-      rateLimitPerMinute: 2000,
+      healthy: result.status === 'ok',
+      status: result.status === 'ok' ? ConnectionStatus.CONNECTED : ConnectionStatus.ERROR,
+      latencyMs: Date.now() - startTime,
+      lastError: result.status !== 'ok' ? result.message : undefined,
+      lastCheckedAt: new Date(),
     };
   }
 
@@ -95,15 +103,16 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
         await this.syncPermissions(options, results);
       }
 
-      this.logger.info('SharePoint sync completed', {
+      this.logOperation('sync', {
+        message: 'SharePoint sync completed',
         processed: results.recordsProcessed,
         created: results.recordsCreated,
         updated: results.recordsUpdated,
       });
     } catch (error) {
       results.success = false;
-      results.error = error instanceof Error ? error.message : String(error);
-      this.logger.error('SharePoint sync failed', error);
+      results.errors = [{ entity: 'sync', error: error instanceof Error ? error.message : String(error) }] as any;
+      this.logError('sync', error instanceof Error ? error : new Error(String(error)));
     }
 
     return results;
@@ -157,7 +166,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
           // Now sync libraries for this site
           await this.syncSiteLibraries(site.id, results);
         } catch (error) {
-          this.logger.error(`Failed to sync site ${site.id}`, error);
+          this.logError('syncSites', error instanceof Error ? error : new Error(String(error)), { siteId: site.id });
           results.recordsFailed++;
         }
       }
@@ -212,7 +221,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync library ${library.id}`, error);
+          this.logError('syncLibraries', error instanceof Error ? error : new Error(String(error)), { libraryId: library.id });
           results.recordsFailed++;
         }
       }
@@ -297,7 +306,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
 
               results.recordsProcessed++;
             } catch (error) {
-              this.logger.error(`Failed to sync file ${file.id}`, error);
+              this.logError('syncFiles', error instanceof Error ? error : new Error(String(error)), { fileId: file.id });
               results.recordsFailed++;
             }
           }
@@ -305,7 +314,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
           hasMore = !!response.nextLink;
           nextLink = response.nextLink;
         } catch (error) {
-          this.logger.error(`Failed to fetch files for library ${library.externalId}`, error);
+          this.logError('syncFiles', error instanceof Error ? error : new Error(String(error)), { libraryId: library.externalId });
           break;
         }
       }
@@ -387,7 +396,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
 
               results.recordsProcessed++;
             } catch (error) {
-              this.logger.error(`Failed to sync permission ${permission.id}`, error);
+              this.logError('syncPermissions', error instanceof Error ? error : new Error(String(error)), { permissionId: permission.id });
               results.recordsFailed++;
             }
           }
@@ -395,10 +404,18 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
           hasMore = !!response.nextLink;
           nextLink = response.nextLink;
         } catch (error) {
-          this.logger.error(`Failed to fetch permissions for file ${file.externalId}`, error);
+          this.logError('syncPermissions', error instanceof Error ? error : new Error(String(error)), { fileId: file.externalId });
           break;
         }
       }
     }
+  }
+
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
+    return false;
+  }
+
+  async processWebhook(_event: WebhookEvent): Promise<void> {
+    this.logOperation('webhook', { message: 'SharePoint webhooks not implemented' });
   }
 }

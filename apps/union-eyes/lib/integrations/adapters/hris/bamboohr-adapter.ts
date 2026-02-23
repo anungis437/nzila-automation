@@ -22,8 +22,9 @@ import {
   HealthCheckResult,
   WebhookEvent,
   SyncType,
+  ConnectionStatus,
 } from '../../types';
-import { BambooHRClient, type BambooHRConfig } from './bamboohr-client';
+import { BambooHRClient, type BambooHRConfig, type BambooHREmployee } from './bamboohr-client';
 import { db } from '@/db';
 import { externalEmployees, externalDepartments } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -56,7 +57,7 @@ export class BambooHRAdapter extends BaseIntegration {
 
     try {
       const bambooConfig: BambooHRConfig = {
-        companyDomain: this.config!.settings?.companyDomain || '',
+        companyDomain: (this.config!.settings?.companyDomain as string) || '',
         apiKey: this.config!.credentials.apiKey!,
       };
 
@@ -69,7 +70,7 @@ export class BambooHRAdapter extends BaseIntegration {
       }
       
       this.connected = true;
-      this.logOperation('connect', 'Connected to BambooHR');
+      this.logOperation('connect', { message: 'Connected to BambooHR' });
     } catch (error) {
       this.logError('connect', error);
       throw error;
@@ -79,7 +80,7 @@ export class BambooHRAdapter extends BaseIntegration {
   async disconnect(): Promise<void> {
     this.connected = false;
     this.client = undefined;
-    this.logOperation('disconnect', 'Disconnected from BambooHR');
+    this.logOperation('disconnect', { message: 'Disconnected from BambooHR' });
   }
 
   // ==========================================================================
@@ -92,26 +93,21 @@ export class BambooHRAdapter extends BaseIntegration {
 
       const startTime = Date.now();
       const isHealthy = await this.client!.healthCheck();
-      const latency = Date.now() - startTime;
+      const latencyMs = Date.now() - startTime;
 
       return {
         healthy: isHealthy,
-        latency,
-        details: {
-          provider: 'BambooHR',
-          connected: this.connected,
-          timestamp: new Date().toISOString(),
-        },
+        status: ConnectionStatus.CONNECTED,
+        latencyMs,
+        lastCheckedAt: new Date(),
       };
     } catch (error) {
       return {
         healthy: false,
-        latency: 0,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        details: {
-          provider: 'BambooHR',
-          connected: false,
-        },
+        status: ConnectionStatus.ERROR,
+        latencyMs: 0,
+        lastError: error instanceof Error ? error.message : 'Unknown error',
+        lastCheckedAt: new Date(),
       };
     }
   }
@@ -135,7 +131,7 @@ export class BambooHRAdapter extends BaseIntegration {
 
       for (const entity of entities) {
         try {
-          this.logOperation('sync', `Syncing ${entity}`);
+          this.logOperation('sync', { entity, action: 'start' });
 
           switch (entity) {
             case 'employees':
@@ -156,11 +152,11 @@ export class BambooHRAdapter extends BaseIntegration {
 
             case 'time_off':
               // Time off tracking can be implemented based on needs
-              this.logOperation('sync', 'Time off sync not yet implemented');
+              this.logOperation('sync', { message: 'Time off sync not yet implemented' });
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
@@ -177,9 +173,8 @@ export class BambooHRAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        duration,
         cursor: undefined,
-        error: errors.length > 0 ? errors.join('; ') : undefined,
+        metadata: { duration, ...(errors.length > 0 && { syncErrors: errors }) },
       };
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -191,8 +186,7 @@ export class BambooHRAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        duration,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: { duration, syncErrors: [error instanceof Error ? error.message : 'Unknown error'] },
       };
     }
   }
@@ -219,13 +213,13 @@ export class BambooHRAdapter extends BaseIntegration {
     let failed = 0;
 
     try {
-      let employees: unknown[];
+      let employees: BambooHREmployee[];
 
       if (syncType === SyncType.INCREMENTAL && cursor) {
         // Use changed employees API for incremental sync
         const sinceDate = new Date(cursor);
         const changes = await this.client!.getChangedEmployees(sinceDate);
-        employees = changes.changes || [];
+        employees = (changes.changes || []) as BambooHREmployee[];
       } else {
         // Full sync - get all employees
         employees = await this.client!.getEmployees();
@@ -373,7 +367,7 @@ export class BambooHRAdapter extends BaseIntegration {
   /**
    * Map BambooHR employment status to our enum
    */
-  private mapEmploymentStatus(status?: string): unknown {
+  private mapEmploymentStatus(status?: string): 'active' | 'inactive' | 'on_leave' | 'terminated' | 'suspended' {
     if (!status) return 'active';
 
     const normalized = status.toLowerCase();
@@ -397,7 +391,7 @@ export class BambooHRAdapter extends BaseIntegration {
   }
 
   async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', `Processing ${event.eventType}`);
+    this.logOperation('webhook', { message: `Processing ${event.type}` });
 
     // BambooHR supports webhooks for:
     // - employee.created
@@ -406,13 +400,14 @@ export class BambooHRAdapter extends BaseIntegration {
     // - time_off.requested
     // - time_off.approved
 
-    const eventType = event.eventType;
+    const eventType = event.type;
 
     if (eventType.startsWith('employee.')) {
       // Re-sync the specific employee
-      const employeeId = event.payload.employee?.id;
+      const data = event.data as Record<string, any>;
+      const employeeId = data?.employee?.id;
       if (employeeId) {
-        this.logOperation('webhook', `Re-syncing employee ${employeeId}`);
+        this.logOperation('webhook', { message: `Re-syncing employee ${employeeId}` });
         // Could implement targeted employee refresh here
       }
     }

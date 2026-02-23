@@ -77,6 +77,7 @@ export class IndigenousDataService {
     bandName?: string;
     agreementId?: string;
     expiresAt?: Date;
+    reason?: string;
   }> {
     try {
       // Get member's indigenous data classification

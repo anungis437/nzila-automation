@@ -237,7 +237,7 @@ export class MetaAPIClient {
       published?: boolean;
     }
   ): Promise<MetaPostResponse> {
-    const params: unknown = {
+    const params: Record<string, any> = {
       message: content.message,
       access_token: pageAccessToken,
     };
@@ -350,7 +350,7 @@ export class MetaAPIClient {
     }
 
     // Step 1: Create media container
-    const containerParams: unknown = {
+    const containerParams: Record<string, any> = {
       access_token: this.accessToken,
     };
 
@@ -450,7 +450,7 @@ export class MetaAPIClient {
     since?: Date,
     until?: Date
   ): Promise<unknown[]> {
-    const params: unknown = {
+    const params: Record<string, any> = {
       metric: metrics.join(','),
       period,
       access_token: pageAccessToken,
@@ -519,7 +519,7 @@ export class MetaAPIClient {
       throw new Error('Access token required');
     }
 
-    const params: unknown = {
+    const params: Record<string, any> = {
       metric: metrics.join(','),
       period,
       access_token: this.accessToken,
@@ -594,7 +594,7 @@ export class MetaAPIClient {
 
     try {
       const parsed = JSON.parse(usage);
-      const appUsage = Object.values(parsed)[0] as unknown;
+      const appUsage = Object.values(parsed)[0] as any;
       
       this.rateLimitInfo = {
         call_count: appUsage.call_count || 0,
@@ -640,7 +640,7 @@ export class MetaAPIClient {
     const queryParams = new URLSearchParams({
       ...params,
       access_token: this.accessToken || params.access_token,
-    });
+    } as Record<string, string>);
 
     const url = `${this.baseUrl}${endpoint}?${queryParams.toString()}`;
     const response = await fetch(url);
@@ -721,7 +721,7 @@ export function createMetaClient(accessToken?: string): MetaAPIClient {
 /**
  * Helper to format Meta insights data
  */
-export function formatMetaInsights(insights: unknown[]): Record<string, number> {
+export function formatMetaInsights(insights: any[]): Record<string, number> {
   const formatted: Record<string, number> = {};
 
   for (const insight of insights) {

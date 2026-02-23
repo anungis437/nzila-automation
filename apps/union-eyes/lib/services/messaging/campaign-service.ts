@@ -133,7 +133,8 @@ export class CampaignService {
     let query = db
       .select()
       .from(campaigns)
-      .where(eq(campaigns.organizationId, organizationId));
+      .where(eq(campaigns.organizationId, organizationId))
+      .$dynamic();
 
     if (status) {
       query = query.where(eq(campaigns.status, status as any));
@@ -197,7 +198,8 @@ export class CampaignService {
       })
       .from(organizationMembers)
       .leftJoin(users, eq(organizationMembers.userId, users.userId))
-      .where(eq(organizationMembers.organizationId, organizationId));
+      .where(eq(organizationMembers.organizationId, organizationId))
+      .$dynamic();
 
     if (segmentFilters?.status?.length) {
       baseQuery = baseQuery.where(inArray(organizationMembers.status, segmentFilters.status));
@@ -552,11 +554,11 @@ export class CampaignService {
 
     switch (channel) {
       case 'email':
-        return preferences.emailEnabled;
+        return preferences.emailEnabled ?? false;
       case 'sms':
-        return preferences.smsEnabled;
+        return preferences.smsEnabled ?? false;
       case 'push':
-        return preferences.pushEnabled;
+        return preferences.pushEnabled ?? false;
       default:
         return false;
     }

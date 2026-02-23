@@ -123,12 +123,12 @@ export class BiometricAuth {
    */
   private async detectBiometricType(): Promise<BiometricType> {
     // Check for Touch ID (Safari)
-    if ((window as unknown).TouchID) {
+    if ((window as any).TouchID) {
       return 'fingerprint';
     }
 
     // Check for Face ID (Safari)
-    if ((window as unknown).FaceID) {
+    if ((window as any).FaceID) {
       return 'face';
     }
 

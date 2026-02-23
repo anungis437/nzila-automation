@@ -67,6 +67,7 @@ export interface ParsedData {
   structured?: Record<string, unknown>;
   tables?: TableData[];
   entities?: ExtractedEntity[];
+  metadata?: Record<string, unknown>;
 }
 
 export interface TableData {
@@ -200,7 +201,7 @@ class PDFParser implements FileParser {
 
     try {
       // Load the PDF document
-      const loadingTask = pdfjs.getDocument({ data: buffer });
+      const loadingTask = (pdfjs as any).getDocument({ data: buffer });
       const pdf = await loadingTask.promise;
 
       const textContent: string[] = [];
@@ -212,7 +213,7 @@ class PDFParser implements FileParser {
         const content = await page.getTextContent();
         
         const pageText = content.items
-          .map((item: unknown) => item.str)
+          .map((item: any) => item.str)
           .join(' ');
         
         textContent.push(pageText);
@@ -293,6 +294,7 @@ class DOCXParser implements FileParser {
   async parse(buffer: Buffer): Promise<ParsedData> {
     try {
       // Dynamic import mammoth
+      // @ts-ignore - mammoth types may not be available
       const mammoth = await import('mammoth');
       
       const result = await mammoth.extractRawText({ buffer: buffer });
@@ -309,6 +311,7 @@ class DOCXParser implements FileParser {
       
       // Try alternative: extract as HTML then strip tags
       try {
+        // @ts-ignore - mammoth types may not be available
         const mammoth = await import('mammoth');
         const result = await mammoth.convertToHtml({ buffer: buffer });
         

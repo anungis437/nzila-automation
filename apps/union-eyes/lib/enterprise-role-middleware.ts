@@ -120,11 +120,11 @@ export function withEnhancedRoleAuth<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, orgContext: unknown) => {
     const startTime = Date.now();
-    const { organizationId, userId } = orgContext;
+    const { organizationId, userId } = orgContext as any;
     
     try {
       // Get member from context (requires tenant middleware to populate this)
-      const memberId = (orgContext as unknown).memberId;
+      const memberId = (orgContext as any).memberId;
       if (!memberId) {
         await logAuditDenial(
           orgContext,
@@ -247,10 +247,10 @@ export function withPermission<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, orgContext: unknown) => {
     const startTime = Date.now();
-    const { organizationId, userId } = orgContext;
+    const { organizationId, userId } = orgContext as any;
     
     try {
-      const memberId = (orgContext as unknown).memberId;
+      const memberId = (orgContext as any).memberId;
       if (!memberId) {
         await logAuditDenial(
           { organizationId, userId, memberId: '' },
@@ -360,10 +360,10 @@ export function withScopedRoleAuth<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, orgContext: unknown) => {
     const startTime = Date.now();
-    const { organizationId, userId } = orgContext;
+    const { organizationId, userId } = orgContext as any;
     
     try {
-      const memberId = (orgContext as unknown).memberId;
+      const memberId = (orgContext as any).memberId;
       if (!memberId) {
         await logAuditDenial(
           { organizationId, userId, memberId: '' },
@@ -527,7 +527,7 @@ async function getPermissionExceptionId(
     query = sql`${query} LIMIT 1`;
     
     const result = await db.execute(query);
-    return result[0]?.id || null;
+    return (result as any[])[0]?.id || null;
   } catch (error) {
 return null;
   }
@@ -597,10 +597,10 @@ async function logAuditDenial(
   isSensitive?: boolean
 ): Promise<void> {
   await logPermissionCheck({
-    actorId: context.memberId || context.userId || 'unknown',
+    actorId: (context as any).memberId || (context as any).userId || 'unknown',
     action,
     resourceType,
-    organizationId: context.organizationId,
+    organizationId: (context as any).organizationId,
     granted: false,
     denialReason: reason,
     executionTimeMs,

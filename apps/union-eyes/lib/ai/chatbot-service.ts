@@ -100,9 +100,9 @@ export class ChatSessionManager {
       .insert(chatSessions)
       .values({
         userId: data.userId,
-        tenantId: data.organizationId,
+        organizationId: data.organizationId,
         title: data.title || "New conversation",
-        aiProvider: (data.aiProvider as unknown) || "openai",
+        aiProvider: (data.aiProvider as any) || "openai",
         model: data.model || "gpt-4",
         contextTags: data.contextTags,
         relatedEntityType: data.relatedEntityType,
@@ -137,26 +137,20 @@ export class ChatSessionManager {
       offset?: number;
     } = {}
   ): Promise<ChatSession[]> {
-    let query = db
+    const conditions = [eq(chatSessions.userId, userId)];
+    if (options.status) {
+      conditions.push(eq(chatSessions.status, options.status as any));
+    }
+
+    const results = await db
       .select()
       .from(chatSessions)
-      .where(eq(chatSessions.userId, userId));
-    
-    if (options.status) {
-      query = query.where(eq(chatSessions.status, options.status as unknown));
-    }
-    
-    query = query.orderBy(desc(chatSessions.lastMessageAt));
-    
-    if (options.limit) {
-      query = query.limit(options.limit);
-    }
-    
-    if (options.offset) {
-      query = query.offset(options.offset);
-    }
-    
-    return query;
+      .where(and(...conditions))
+      .orderBy(desc(chatSessions.lastMessageAt))
+      .limit(options.limit || 50)
+      .offset(options.offset || 0);
+
+    return results;
   }
   
   /**
@@ -217,9 +211,9 @@ export class RAGService {
     
     await db.insert(knowledgeBase).values({
       ...data,
-      tenantId: data.organizationId,
-      documentType: data.documentType as unknown,
-      embedding: JSON.stringify(embedding),
+      organizationId: data.organizationId,
+      documentType: data.documentType as any,
+      embedding: JSON.stringify(embedding) as any,
       embeddingModel: "text-embedding-ada-002",
     });
   }
@@ -266,7 +260,7 @@ export class RAGService {
     
     // Calculate cosine similarity (simplified)
     const scored = results.map((doc) => {
-      const docEmbedding = JSON.parse(doc.embedding as string);
+      const docEmbedding = JSON.parse(doc.embedding as unknown as string);
       const similarity = cosineSimilarity(queryEmbedding, docEmbedding);
       
       return {
@@ -348,10 +342,10 @@ export class ChatbotService {
     }));
     
     // Perform RAG if enabled
-    let retrievedDocs: unknown[] = [];
+    let retrievedDocs: Array<{ documentId: string; title: string; relevanceScore: number; excerpt: string }> = [];
     if (data.useRAG !== false) {
       retrievedDocs = await this.ragService.searchDocuments(data.content, {
-        organizationId: session.organizationId /* was tenantId */,
+        organizationId: session.organizationId,
         limit: 3,
       });
       
@@ -386,7 +380,7 @@ export class ChatbotService {
         modelUsed: response.model,
         tokensUsed: response.tokensUsed,
         responseTimeMs: responseTime,
-        retrievedDocuments: retrievedDocs.length > 0 ? retrievedDocs : undefined,
+        retrievedDocuments: retrievedDocs.length > 0 ? retrievedDocs as any : undefined,
       })
       .returning();
     
@@ -415,21 +409,14 @@ export class ChatbotService {
     sessionId: string,
     options: { limit?: number; offset?: number } = {}
   ): Promise<ChatMessage[]> {
-    let query = db
+    const messages = await db
       .select()
       .from(chatMessages)
       .where(eq(chatMessages.sessionId, sessionId))
-      .orderBy(desc(chatMessages.createdAt));
-    
-    if (options.limit) {
-      query = query.limit(options.limit);
-    }
-    
-    if (options.offset) {
-      query = query.offset(options.offset);
-    }
-    
-    const messages = await query;
+      .orderBy(desc(chatMessages.createdAt))
+      .limit(options.limit || 100)
+      .offset(options.offset || 0);
+
     return messages.reverse(); // Return in chronological order
   }
   
@@ -439,6 +426,7 @@ export class ChatbotService {
   private async checkContentSafety(content: string): Promise<{
     flagged: boolean;
     categories?: string[];
+    reason?: string;
   }> {
     // Implement content moderation using OpenAI Moderation API
     const apiKey = process.env.OPENAI_API_KEY;

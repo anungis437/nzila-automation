@@ -107,7 +107,7 @@ export async function findOrphanedOrganizations(): Promise<string[]> {
       )
   `);
 
-  return (result as unknown as { rows: unknown[] }).rows.map((row: unknown) => row.id);
+  return (result as unknown as { rows: unknown[] }).rows.map((row: any) => row.id);
 }
 
 /**

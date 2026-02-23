@@ -22,7 +22,7 @@ import {
   AuditLogMetric,
   SystemStatus,
 } from '@/types/marketing';
-import { governanceService } from '@/services/governance-service';
+import { GovernanceService } from '@/services/governance-service';
 import { logger } from '@/lib/logger';
 
 /**
@@ -79,7 +79,7 @@ export async function getImmutabilityMetrics(): Promise<ImmutabilityMetric> {
     ];
 
     // Verify each protected table has triggers
-    const triggersActive = triggers.rows.length >= tablesProtected.length * 2; // UPDATE + DELETE
+    const triggersActive = triggers.length >= tablesProtected.length * 2; // UPDATE + DELETE
 
     // Check for recent violation attempts (should always be 0)
     const violationAttempts = 0; // Would track in error logs if implemented
@@ -141,11 +141,11 @@ export async function getRLSMetrics(): Promise<RLSMetric> {
     const lastPolicyCheck = new Date();
 
     return {
-      status: policies.rows.length > 0 ? 'active' : 'degraded',
-      verification: policies.rows.length > 0,
+      status: policies.length > 0 ? 'active' : 'degraded',
+      verification: policies.length > 0,
       lastCheck: lastPolicyCheck,
       description: 'Row-Level Security ensures complete tenant data isolation',
-      policiesActive: policies.rows.length,
+      policiesActive: policies.length,
       tenantIsolation: '100%',
       lastPolicyCheck,
       tablesProtected: tablesWithRLS,
@@ -207,10 +207,11 @@ export async function getFSMMetrics(): Promise<FSMMetric> {
  */
 export async function getGovernanceMetrics(): Promise<GovernanceMetric> {
   try {
-    const goldenShareStatus = await governanceService.checkGoldenShareStatus();
+    const governance = new GovernanceService();
+    const goldenShareStatus = await governance.checkGoldenShareStatus();
 
     return {
-      status: goldenShareStatus.exists ? 'active' : 'inactive',
+      status: goldenShareStatus.exists ? 'active' : 'degraded',
       verification: goldenShareStatus.exists,
       lastCheck: new Date(),
       description: 'Democratic oversight with Class B voting rights',
@@ -246,7 +247,7 @@ export async function getAuditLogMetrics(): Promise<AuditLogMetric> {
       WHERE created_at > NOW() - INTERVAL '30 days';
     `);
 
-    const eventsLogged = Number(eventCount.rows[0]?.count || 0);
+    const eventsLogged = Number((eventCount[0] as Record<string, unknown>)?.count || 0);
 
     // Count archived events
     const archivedCount = await db.execute(sql`
@@ -254,7 +255,7 @@ export async function getAuditLogMetrics(): Promise<AuditLogMetric> {
       FROM audit_logs_archive;
     `);
 
-    const archivedEvents = Number(archivedCount.rows[0]?.count || 0);
+    const archivedEvents = Number((archivedCount[0] as Record<string, unknown>)?.count || 0);
 
     return {
       status: 'active',

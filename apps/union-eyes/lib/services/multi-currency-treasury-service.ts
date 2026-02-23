@@ -135,7 +135,7 @@ export class MultiCurrencyTreasuryService {
 
         // Save USD/CAD rate
         await db.insert(currencyExchangeRates).values({
-          tenantId: organizationId,
+          organizationId,
           baseCurrency: 'USD',
           targetCurrency: 'CAD',
           rate: rate.toString(),
@@ -145,7 +145,7 @@ export class MultiCurrencyTreasuryService {
 
         // Calculate and save CAD/USD rate (inverse)
         await db.insert(currencyExchangeRates).values({
-          tenantId: organizationId,
+          organizationId,
           baseCurrency: 'CAD',
           targetCurrency: 'USD',
           rate: new Decimal(1).dividedBy(rate).toString(),
@@ -262,7 +262,7 @@ export class MultiCurrencyTreasuryService {
           
           const originalAmount = new Decimal(tx.originalAmount);
           const historicalValue = new Decimal(tx.cadAmount);
-          const currentValue = originalAmount.times(currentRate.rate);
+          const currentValue = originalAmount.times(currentRate?.rate ?? new Decimal(1));
           const gainLoss = currentValue.minus(historicalValue);
           
           return {
@@ -450,7 +450,12 @@ export class MultiCurrencyTreasuryService {
     creditAmount: Decimal;
     description: string;
   }>> {
-    const entries = [];
+    const entries: Array<{
+      accountId: string;
+      debitAmount: Decimal;
+      creditAmount: Decimal;
+      description: string;
+    }> = [];
 
     for (const revaluation of revaluations) {
       if (revaluation.gainLoss.isPositive()) {

@@ -161,7 +161,7 @@ export const refreshFeatureFlags = cache(async () => {
         type: flag.type as FlagType,
         enabled: flag.enabled,
         percentage: flag.percentage || undefined,
-        allowedTenants: flag.allowedTenants as string[] | undefined,
+        allowedTenants: flag.allowedOrganizations as string[] | undefined,
         allowedUsers: flag.allowedUsers as string[] | undefined,
         description: flag.description || undefined,
       });

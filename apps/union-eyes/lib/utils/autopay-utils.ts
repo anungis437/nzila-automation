@@ -9,7 +9,7 @@ import { db } from '@/db/db';
 import { autoPaySettings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { stripe } from '@/lib/stripe';
-import type * as Stripe from 'stripe';
+import type Stripe from 'stripe';
 
 export interface AutoPaySettingsData {
   userId: string;

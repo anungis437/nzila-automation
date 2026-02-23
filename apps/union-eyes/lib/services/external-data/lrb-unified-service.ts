@@ -23,7 +23,7 @@ import {
   lrbSourceEnum,
   agreementStatusEnum
 } from '@/db/schema/lrb-agreements-schema';
-import { eq, and, desc, like, or, gte, sql } from 'drizzle-orm';
+import { eq, and, desc, like, or, gte, sql, type SQL } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
 // =============================================================================
@@ -58,10 +58,10 @@ export interface LRBSyncResult {
 export interface AgreementComparison {
   employerName: string;
   unionName: string;
-  sector: string;
+  sector: string | null;
   jurisdiction: string;
-  effectiveDate: string | null;
-  expiryDate: string | null;
+  effectiveDate: Date | null;
+  expiryDate: Date | null;
   hourlyWageRange: string | null;
   annualSalaryRange: string | null;
   source: string;
@@ -500,7 +500,7 @@ export class UnifiedLRBService {
     const limit = params.limit || 20;
     const offset = (page - 1) * limit;
 
-    const conditions = [];
+    const conditions: SQL[] = [];
     
     if (params.source) {
       conditions.push(eq(lrbAgreements.source, params.source));
@@ -563,7 +563,7 @@ export class UnifiedLRBService {
    * Get wage comparisons for an occupation
    */
   async getWageComparisons(nocCode: string, jurisdiction?: string): Promise<AgreementComparison[]> {
-    const conditions = [];
+    const conditions: SQL[] = [];
     
     if (jurisdiction) {
       conditions.push(eq(lrbAgreements.jurisdiction, jurisdiction));

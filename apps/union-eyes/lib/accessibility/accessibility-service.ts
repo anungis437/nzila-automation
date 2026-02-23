@@ -42,8 +42,7 @@ export class AccessibilityAuditManager {
       .insert(accessibilityAudits)
       .values({
         ...data,
-        tenantId: data.organizationId,
-        conformanceLevel: (data.conformanceLevel as unknown) || "AA",
+        conformanceLevel: data.conformanceLevel || "AA",
         status: "pending",
         startedAt: new Date(),
       })
@@ -74,11 +73,11 @@ export class AccessibilityAuditManager {
     
     try {
       // Run axe-core scan (this is a placeholder - actual implementation would use Playwright/Puppeteer)
-      const scanResults = await this.runAxeScan(audit[0].targetUrl);
+      const scanResults = await this.runAxeScan(audit[0].targetUrl) as any;
       
       // Process and save issues
       const issues: NewAccessibilityIssue[] = scanResults.violations.map(
-        (violation: unknown) => ({
+        (violation: any) => ({
           auditId,
           tenantId: audit[0].organizationId /* was tenantId */,
           issueTitle: violation.description,
@@ -211,11 +210,12 @@ export class AccessibilityAuditManager {
     let query = db
       .select()
       .from(accessibilityIssues)
-      .where(eq(accessibilityIssues.organizationId /* was tenantId */, organizationId));
+      .where(eq(accessibilityIssues.organizationId /* was tenantId */, organizationId))
+      .$dynamic();
     
     if (options.severity && options.severity.length > 0) {
       query = query.where(
-        inArray(accessibilityIssues.severity as unknown, options.severity)
+        inArray(accessibilityIssues.severity as any, options.severity)
       );
     }
     
@@ -227,7 +227,7 @@ export class AccessibilityAuditManager {
     
     if (options.status) {
       query = query.where(
-        eq(accessibilityIssues.status as unknown, options.status)
+        eq(accessibilityIssues.status as any, options.status)
       );
     }
     
@@ -266,7 +266,7 @@ export class AccessibilityAuditManager {
   private mapAxeSeverityToOurs(
     axeSeverity: string
   ): "critical" | "serious" | "moderate" | "minor" {
-    const mapping: Record<string, unknown> = {
+    const mapping: Record<string, "critical" | "serious" | "moderate" | "minor"> = {
       critical: "critical",
       serious: "serious",
       moderate: "moderate",

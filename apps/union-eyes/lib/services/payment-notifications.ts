@@ -7,10 +7,13 @@
 
 import { getNotificationService } from "@/lib/services/notification-service";
 import { NotificationTemplates } from "@/lib/services/notification-service";
-import { db } from "@/database";
-import { profiles } from "@/db/schema/organization-members-schema";
+import { db } from "@/db/db";
+import { profiles as profilesSchema } from "@/db/schema/profiles-schema";
 import { eq } from "drizzle-orm";
 import { logger } from "@/lib/logger";
+
+// DB table may have columns (phone, firebaseToken, organizationId) not yet in drizzle schema
+const profiles = profilesSchema as any;
 
 // ============================================================================
 // PAYMENT NOTIFICATION HANDLERS

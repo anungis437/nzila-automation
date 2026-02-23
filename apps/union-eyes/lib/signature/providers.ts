@@ -14,6 +14,18 @@ import { createHash } from "crypto";
 import { logger } from "@/lib/logger";
 
 /**
+ * Custom error class for signature provider errors
+ */
+export class SignatureError extends Error {
+  status: number;
+  constructor(message: string, status: number = 500) {
+    super(message);
+    this.name = 'SignatureError';
+    this.status = status;
+  }
+}
+
+/**
  * Base interface for all signature providers
  */
 export interface SignatureProvider {
@@ -209,7 +221,7 @@ export class DocuSignProvider implements SignatureProvider {
       return {
         envelopeId: data.envelopeId,
         status: data.status?.toLowerCase() || "sent",
-        signers: (data.recipients?.signers || []).map((signer: unknown) => ({
+        signers: (data.recipients?.signers || []).map((signer: any) => ({
           signerId: signer.recipientId,
           email: signer.email,
           status: signer.status?.toLowerCase() || "sent",
@@ -357,7 +369,7 @@ export class HelloSignProvider implements SignatureProvider {
     formData.append("message", request.message || "");
     
     // Add file
-    const blob = new Blob([request.document.content], {
+    const blob = new Blob([new Uint8Array(request.document.content)], {
       type: "application/pdf",
     });
    formData.append("file", blob, request.document.name);
@@ -392,7 +404,7 @@ export class HelloSignProvider implements SignatureProvider {
       return {
         envelopeId: signatureRequest.signature_request_id,
         status: this.mapHelloSignStatus(signatureRequest.is_complete, signatureRequest.is_declined),
-        signers: signatureRequest.signatures.map((sig: unknown) => ({
+        signers: signatureRequest.signatures.map((sig: any) => ({
           email: sig.signer_email_address,
           signerId: sig.signature_id,
           status: this.mapSignerStatus(sig.status_code),
@@ -448,7 +460,7 @@ export class HelloSignProvider implements SignatureProvider {
       return {
         envelopeId,
         status: this.mapHelloSignStatus(signatureRequest.is_complete, signatureRequest.is_declined),
-        signers: signatureRequest.signatures.map((sig: unknown) => ({
+        signers: signatureRequest.signatures.map((sig: any) => ({
           email: sig.signer_email_address,
           signerId: sig.signature_id,
           status: this.mapSignerStatus(sig.status_code),
@@ -669,7 +681,7 @@ SignatureProviderFactory.initialize({
     ? {
         apiKey: process.env.DOCUSIGN_API_KEY,
         accountId: (process.env.DOCUSIGN_API_ACCOUNT_ID || process.env.DOCUSIGN_ACCOUNT_ID)!,
-        environment: process.env.DOCUSIGN_ENVIRONMENT as unknown,
+        environment: process.env.DOCUSIGN_ENVIRONMENT as "production" | "sandbox" | undefined,
       }
     : undefined,
   hellosign: process.env.HELLOSIGN_API_KEY

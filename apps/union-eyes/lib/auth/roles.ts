@@ -857,6 +857,178 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_CBA,
     Permission.VIEW_ANALYTICS,
   ],
+
+  // ========================================================
+  // LOCAL UNION EXECUTIVES
+  // ========================================================
+
+  [UserRole.PRESIDENT]: [
+    // Union President - executive authority
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.INVITE_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.MANAGE_VOTING,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.EDIT_CBA,
+    Permission.CREATE_CBA,
+    Permission.SIGN_CBA,
+    Permission.VIEW_FINANCIAL,
+    Permission.APPROVE_FINANCIAL,
+    Permission.APPOINT_COMMITTEES,
+    Permission.MANAGE_ELECTIONS,
+    Permission.DELEGATE_AUTHORITY,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+    Permission.VIEW_ADMIN_PANEL,
+  ],
+
+  [UserRole.VICE_PRESIDENT]: [
+    // Vice President - supports president
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.INVITE_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.MANAGE_VOTING,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.EDIT_CBA,
+    Permission.VIEW_FINANCIAL,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+  ],
+
+  [UserRole.SECRETARY_TREASURER]: [
+    // Secretary-Treasurer - financial authority
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.VIEW_FINANCIAL,
+    Permission.EDIT_FINANCIAL,
+    Permission.APPROVE_FINANCIAL,
+    Permission.MANAGE_FINANCES,
+    Permission.AUDIT_FINANCES,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+  ],
+
+  // ========================================================
+  // SENIOR REPRESENTATIVES
+  // ========================================================
+
+  [UserRole.CHIEF_STEWARD]: [
+    // Chief Steward - claim oversight
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.ASSIGN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+  ],
+
+  [UserRole.OFFICER]: [
+    // Union Officer - general duties
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.INVITE_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.VIEW_ANALYTICS,
+  ],
+
+  // ========================================================
+  // FRONT-LINE REPRESENTATIVES
+  // ========================================================
+
+  [UserRole.STEWARD]: [
+    // Steward - front-line representation
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.ASSIGN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+    Permission.VIEW_ANALYTICS,
+  ],
+
+  [UserRole.BARGAINING_COMMITTEE]: [
+    // Bargaining Committee Member - CBA focused
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+    Permission.EDIT_CBA,
+    Permission.CONTRACT_ADMINISTRATION,
+    Permission.VIEW_ANALYTICS,
+  ],
+
+  // ========================================================
+  // SPECIALIZED REPRESENTATIVES
+  // ========================================================
+
+  [UserRole.HEALTH_SAFETY_REP]: [
+    // Health & Safety Representative
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.VIEW_HEALTH_SAFETY_CLAIMS,
+    Permission.CREATE_HEALTH_SAFETY_CLAIM,
+    Permission.MANAGE_HEALTH_SAFETY,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+  ],
   
   [UserRole.MEMBER]: [
     // Members have limited access to their own data

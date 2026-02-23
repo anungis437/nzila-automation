@@ -231,6 +231,8 @@ export class PaymentService {
 
   /**
    * Handle successful payment
+   */
+
   private static async generateReceiptPdfUrl(params: {
     receiptNumber: string;
     memberName: string;
@@ -266,11 +268,11 @@ export class PaymentService {
       )
     );
 
-    const buffer = await pdf(doc).toBuffer();
+    const buffer = await (pdf(doc) as any).toBuffer();
     const base64 = buffer.toString('base64');
     return `data:application/pdf;base64,${base64}`;
   }
-   */
+
   static async handlePaymentSuccess(
     params: PaymentSuccessParams
   ): Promise<void> {

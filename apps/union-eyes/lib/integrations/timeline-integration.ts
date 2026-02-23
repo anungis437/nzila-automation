@@ -76,8 +76,8 @@ export async function addTimelineEntry(
       return { success: false, error: 'Grievance not found (may not be a grievance case)' };
     }
 
-    // Get existing status history
-    const statusHistory: TimelineStatusEntry[] = (grievance.statusHistory as TimelineStatusEntry[]) || [];
+    // Get existing status history (stored in timeline jsonb column)
+    const statusHistory: TimelineStatusEntry[] = (grievance.timeline as unknown as TimelineStatusEntry[]) || [];
 
     // Add new entry
     const newEntry: TimelineStatusEntry = {
@@ -98,8 +98,8 @@ export async function addTimelineEntry(
     await db
       .update(grievances)
       .set({
-        status: newStatus,
-        statusHistory,
+        status: newStatus as string as (typeof grievances.status.enumValues)[number],
+        timeline: statusHistory as unknown as Array<{ date: string; action: string; actor: string; notes?: string }>,
         updatedAt: new Date(),
       })
       .where(eq(grievances.id, claimId));
@@ -130,7 +130,7 @@ export function generateTimelineMessage(
   priority?: string,
   assignedSteward?: string
 ): string {
-  return generateStatusUpdateMessage(currentStatus, daysInState, priority, assignedSteward);
+  return generateStatusUpdateMessage(currentStatus as string, String(daysInState), { priority: priority as 'low' | 'medium' | 'high' | 'urgent', assignedSteward: assignedSteward ? { id: '', name: assignedSteward } : undefined });
 }
 
 /**
@@ -158,7 +158,7 @@ export async function getEnrichedTimeline(
       return { success: false, error: 'Case not found' };
     }
 
-    const statusHistory: TimelineStatusEntry[] = (grievance.statusHistory as TimelineStatusEntry[]) || [];
+    const statusHistory: TimelineStatusEntry[] = (grievance.timeline as unknown as TimelineStatusEntry[]) || [];
 
     // Enrich each entry with human-readable message
     const enrichedTimeline = statusHistory.map((entry, index) => {
@@ -170,10 +170,9 @@ export async function getEnrichedTimeline(
         : 0;
 
       const message = generateStatusUpdateMessage(
-        entry.status as ClaimStatus,
-        daysInState,
-        grievance.priority,
-        grievance.assignedSteward?.name
+        entry.metadata?.previousStatus || '',
+        entry.status,
+        { priority: grievance.priority as 'low' | 'medium' | 'high' | 'urgent' }
       );
 
       return {

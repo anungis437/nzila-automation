@@ -54,7 +54,7 @@ async function sendViaResend(params: SendEmailParams): Promise<void> {
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const reportName = (schedule as unknown).report_name || 'Report';
+    const reportName = (schedule as unknown as Record<string, unknown>).report_name as string || 'Report';
     const fileName = `${reportName.replace(/\s+/g, '-')}.${schedule.exportFormat}`;
 
     await resend.emails.send({
@@ -85,9 +85,10 @@ async function sendViaSendGrid(params: SendEmailParams): Promise<void> {
   // SendGrid integration (install with: pnpm add @sendgrid/mail)
   try {
     // Check if SendGrid is available
-    let sgMail: unknown;
+    let sgMail: { default: { setApiKey: (key: string) => void; send: (msg: Record<string, unknown>) => Promise<unknown> } };
     try {
-      sgMail = await import('@sendgrid/mail');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      sgMail = await import('@sendgrid/mail') as typeof sgMail;
     } catch (importError) {
 throw new Error('SendGrid package not installed. Using Resend fallback.');
     }
@@ -98,7 +99,7 @@ throw new Error('SendGrid API key not configured. Using Resend fallback.');
 
     sgMail.default.setApiKey(process.env.SENDGRID_API_KEY);
 
-    const reportName = (schedule as unknown).report_name || 'Report';
+    const reportName = (schedule as unknown as Record<string, unknown>).report_name as string || 'Report';
     const fileName = `${reportName.replace(/\s+/g, '-')}.${schedule.exportFormat}`;
 
     await sgMail.default.send({
@@ -129,8 +130,8 @@ return;
  * Generate HTML email body
  */
 function generateEmailHTML(schedule: ScheduledReport, fileUrl: string): string {
-  const reportName = (schedule as unknown).report_name || 'Report';
-  const reportDescription = (schedule as unknown).report_description || '';
+  const reportName = (schedule as unknown as Record<string, unknown>).report_name as string || 'Report';
+  const reportDescription = (schedule as unknown as Record<string, unknown>).report_description as string || '';
   const scheduleType = schedule.scheduleType.charAt(0).toUpperCase() + schedule.scheduleType.slice(1);
 
   return `

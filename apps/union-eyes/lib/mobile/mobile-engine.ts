@@ -506,7 +506,7 @@ export class MobileOfflineSyncEngine {
    */
   async queueOperation(
     deviceId: string,
-    operation: Omit<OfflineSyncRecord, 'id' | 'timestamp' | 'status'>
+    operation: Omit<OfflineSyncRecord, 'id' | 'timestamp' | 'status' | 'deviceId'>
   ): Promise<string> {
     const [record] = await db
       .insert(mobileSyncQueue)

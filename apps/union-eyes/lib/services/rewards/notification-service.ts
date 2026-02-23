@@ -84,12 +84,12 @@ export async function notifyAwardIssued(awardId: string) {
       recipientName: recipient.email.split('@')[0] || 'Member',
       recipientEmail: recipient.email,
       issuerName: issuer?.email.split('@')[0] || 'A colleague',
-      awardTypeName: award.awardType?.name || 'Award',
+      awardTypeName: (award.awardType as any)?.name || 'Award',
       awardTypeIcon: undefined,
       message: award.reason || 'Great work!',
-      creditsAwarded: award.awardType?.defaultCreditAmount || 0,
+      creditsAwarded: (award.awardType as any)?.defaultCreditAmount || 0,
       awardId: award.id,
-      orgName: award.organization.name,
+      orgName: (award.organization as any)?.name || 'Organization',
     });
 
     return { success: true };
@@ -144,7 +144,7 @@ export async function notifyAwardPendingApproval(awardId: string) {
         
         // Fetch admin user details
         const adminUser = await db.query.users.findFirst({
-          where: eq(users.id, admin.userId),
+          where: eq(users.userId, admin.userId),
         });
 
         if (!adminUser) return Promise.resolve();
@@ -152,13 +152,13 @@ export async function notifyAwardPendingApproval(awardId: string) {
         return sendApprovalRequestEmail({
           adminName: adminUser.displayName || adminUser.email.split('@')[0] || 'Admin',
           adminEmail: adminUser.email,
-          awardTypeName: award.awardType?.name || 'Award',
+          awardTypeName: (award.awardType as any)?.name || 'Award',
           recipientName: recipient?.email.split('@')[0] || 'Unknown',
           issuerName: issuer?.email.split('@')[0] || 'Unknown',
           message: award.reason || '',
-          creditsToAward: award.awardType?.defaultCreditAmount || 0,
+          creditsToAward: (award.awardType as any)?.defaultCreditAmount || 0,
           awardId: award.id,
-          orgName: award.organization.name,
+          orgName: (award.organization as any)?.name || 'Organization',
         });
       })
     );
@@ -244,9 +244,8 @@ async function sendExpirationNotificationToUser(
       recipientName: entry.userName,
       recipientEmail: entry.userEmail,
       orgName: entry.organizationName,
-      expiringCredits: entry.expiringAmount,
+      expiringAmount: entry.expiringAmount,
       expirationDate: entry.expirationDate,
-      daysRemaining: entry.daysRemaining,
     });
 
     return { success: true, userId: entry.userId, emailSent: true };
@@ -350,7 +349,7 @@ export async function notifyRedemptionConfirmed(redemptionId: string) {
 
     // Fetch user details
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, redemption.userId),
+      where: (users, { eq }) => eq(users.userId, redemption.userId),
     });
 
     if (!user?.email) {
@@ -364,7 +363,7 @@ export async function notifyRedemptionConfirmed(redemptionId: string) {
       creditsRedeemed: redemption.creditsSpent || 0,
       checkoutUrl: redemption.providerCheckoutId || (redemption.providerPayloadJson as any)?.checkout_url,
       redemptionId: redemption.id,
-      orgName: redemption.organization?.name || 'Organization',
+      orgName: (redemption.organization as any)?.name || 'Organization',
     });
 
     return { success: true };

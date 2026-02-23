@@ -235,6 +235,15 @@ export function getVisibleScopesForRole(role: string): VisibilityScope[] {
     case 'officer':
     case 'staff':
       return ['member', 'staff'];
+    case 'admin':
+    case 'administrator':
+      return ['member', 'staff', 'admin'];
+    case 'system':
+      return ['member', 'staff', 'admin', 'system'];
+    default:
+      return ['member']; // Safe default
+  }
+}
 
 // ============================================================================
 // PR #13: SIGNAL RECOMPUTATION AFTER TIMELINE CHANGES
@@ -368,10 +377,9 @@ async function recomputeSignalsForCase(claimId: string): Promise<void> {
   try {
     // Store signals as JSON metadata in claim_updates table
     await db.insert(claimUpdates).values({
-      organizationId: claimData.organizationId,
       claimId,
       updateType: 'signal_recompute',
-      updateText: `Recomputed ${signals.length} signal(s)`,
+      message: `Recomputed ${signals.length} signal(s)`,
       createdBy: 'system',
       visibilityScope: 'admin',
       metadata: {
@@ -410,13 +418,3 @@ function mapUpdateTypeToTimelineType(
       return 'other';
   }
 }
-    case 'admin':
-    case 'administrator':
-      return ['member', 'staff', 'admin'];
-    case 'system':
-      return ['member', 'staff', 'admin', 'system'];
-    default:
-      return ['member']; // Safe default
-  }
-}
-

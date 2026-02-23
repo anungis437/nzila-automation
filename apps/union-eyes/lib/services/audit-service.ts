@@ -43,17 +43,15 @@ export async function createAuditLog(entry: AuditLogEntry): Promise<string> {
   
   try {
     await db.insert(auditLogs).values({
-      id,
+      auditId: id,
       organizationId: entry.organizationId,
       userId: entry.userId,
       action: entry.action,
       resourceType: entry.resourceType,
       resourceId: entry.resourceId,
-      description: entry.description,
-      metadata: entry.metadata ? JSON.stringify(entry.metadata) : undefined,
+      metadata: entry.metadata ?? undefined,
       ipAddress: entry.ipAddress,
       userAgent: entry.userAgent,
-      timestamp: new Date(),
     });
 
     logger.info('Created audit log', {
@@ -218,13 +216,14 @@ export async function archiveOldAuditLogs(
         lte(auditLogs.createdAt, beforeDate),
         eq(auditLogs.archived, false) // Only archive non-archived logs
       )
-    );
+    )
+    .returning();
 
   logger.info('Archived audit logs', {
-    count: result.rowCount,
+    count: result.length,
     beforeDate: beforeDate.toISOString(),
   });
-  return result.rowCount || 0;
+  return result.length;
 }
 
 /**
@@ -253,13 +252,12 @@ export async function exportAuditLogs(
   });
 
   const exportData = entries.map(entry => ({
-    id: entry.id,
-    timestamp: entry.timestamp,
+    id: entry.auditId,
+    timestamp: entry.createdAt,
     userId: entry.userId,
     action: entry.action,
     resourceType: entry.resourceType,
     resourceId: entry.resourceId,
-    description: entry.description,
     ipAddress: entry.ipAddress,
   }));
 

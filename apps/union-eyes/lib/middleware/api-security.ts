@@ -137,7 +137,8 @@ export function withSecureAPI(handler: ApiHandlerWithAuth): ApiHandler {
         );
       }
 
-      const sessionOrganizationId = (authResult as unknown)?.orgId || (authResult as unknown)?.organizationId;
+      const authData = authResult as unknown as Record<string, unknown>;
+      const sessionOrganizationId = (authData?.orgId || authData?.organizationId) as string | undefined;
 
       // Check for SQL injection patterns in request
       const bodyText = await request.clone().text();

@@ -449,7 +449,7 @@ export class FirebasePushProvider implements NotificationProvider {
         },
       };
 
-      const messageId = await messaging.send(fcmMessage);
+      const messageId = await messaging.send(fcmMessage as any);
 
       logger.info("Push notification sent via Firebase", {
         token: payload.recipientFirebaseToken?.substring(0, 20) as any,
@@ -1041,7 +1041,7 @@ export async function processPendingNotifications(batchSize: number = 50): Promi
 export async function retryFailedNotificationsJob(): Promise<{ retried: number; succeeded: number; failed: number }> {
   try {
     const notificationService = getNotificationService();
-    return await notificationService.retryFailed(3);
+    return await notificationService.retryFailed(undefined, 3);
   } catch (error) {
     logger.error("Error in retryFailedNotificationsJob", { error });
     return { retried: 0, succeeded: 0, failed: 0 };

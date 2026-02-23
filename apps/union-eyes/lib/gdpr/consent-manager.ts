@@ -56,13 +56,15 @@ export class ConsentManager {
     expiresAt?: Date;
     metadata?: unknown;
   }): Promise<typeof userConsents.$inferSelect> {
+    const { tenantId, ...rest } = data;
     const [consent] = await db
       .insert(userConsents)
       .values({
-        ...data,
+        ...rest,
+        organizationId: tenantId,
         status: "granted",
         grantedAt: new Date(),
-      })
+      } as any)
       .returning();
 
     return consent;
@@ -125,7 +127,7 @@ export class ConsentManager {
         and(
           eq(userConsents.userId, userId),
           eq(userConsents.organizationId /* was tenantId */, tenantId),
-          eq(userConsents.consentType, consentType as unknown),
+          eq(userConsents.consentType, consentType as any),
           eq(userConsents.status, "granted")
         )
       )
@@ -165,25 +167,29 @@ export class CookieConsentManager {
 
     if (existing.length > 0) {
       // Update existing
+      const { tenantId: _tid, ...updateFields } = data;
       const [updated] = await db
         .update(cookieConsents)
         .set({
-          ...data,
+          ...updateFields,
+          organizationId: data.tenantId,
           lastUpdated: new Date(),
           expiresAt,
-        })
+        } as any)
         .where(eq(cookieConsents.consentId, data.consentId))
         .returning();
 
       return updated;
     } else {
       // Insert new
+      const { tenantId: _tid2, ...insertFields } = data;
       const [consent] = await db
         .insert(cookieConsents)
         .values({
-          ...data,
+          ...insertFields,
+          organizationId: data.tenantId,
           expiresAt,
-        })
+        } as any)
         .returning();
 
       return consent;
@@ -234,10 +240,13 @@ export class GdprRequestManager {
     const [request] = await db
       .insert(gdprDataRequests)
       .values({
-        ...data,
-        requestType: "access",
-        status: "pending",
+        userId: data.userId,
+        organizationId: data.tenantId,
+        requestType: "access" as const,
+        status: "pending" as const,
         deadline,
+        requestDetails: data.requestDetails as any,
+        verificationMethod: data.verificationMethod,
       })
       .returning();
 
@@ -245,7 +254,7 @@ export class GdprRequestManager {
     try {
       const notificationService = new NotificationService();
       await notificationService.send({
-        organizationId: data.organizationId /* was tenantId */,
+        organizationId: data.tenantId,
         recipientEmail: process.env.DPO_EMAIL || process.env.ADMIN_EMAIL || 'admin@unioneyes.app',
         type: 'email',
         priority: 'high',
@@ -290,10 +299,13 @@ export class GdprRequestManager {
     const [request] = await db
       .insert(gdprDataRequests)
       .values({
-        ...data,
-        requestType: "erasure",
-        status: "pending",
+        userId: data.userId,
+        organizationId: data.tenantId,
+        requestType: "erasure" as const,
+        status: "pending" as const,
         deadline,
+        requestDetails: data.requestDetails as any,
+        verificationMethod: data.verificationMethod,
       })
       .returning();
 
@@ -316,13 +328,13 @@ export class GdprRequestManager {
       .insert(gdprDataRequests)
       .values({
         userId: data.userId,
-        tenantId: data.organizationId /* was tenantId */,
-        requestType: "portability",
-        status: "pending",
+        organizationId: data.tenantId,
+        requestType: "portability" as const,
+        status: "pending" as const,
         deadline,
         requestDetails: {
           preferredFormat: data.preferredFormat || "json",
-          ...data.requestDetails,
+          ...(data.requestDetails as any),
         },
       })
       .returning();
@@ -374,7 +386,7 @@ export class GdprRequestManager {
       rejectionReason?: string;
     }
   ) {
-    const updateData: unknown = {
+    const updateData: Record<string, unknown> = {
       status,
       updatedAt: new Date(),
       ...data,
@@ -390,7 +402,7 @@ export class GdprRequestManager {
 
     const [updated] = await db
       .update(gdprDataRequests)
-      .set(updateData)
+      .set(updateData as any)
       .where(eq(gdprDataRequests.id, requestId))
       .returning();
 
@@ -432,7 +444,7 @@ export class DataExportService {
   private static async getProfileData(userId: string) {
     // Query profile data
     const result = await db.query.profiles.findFirst({
-      where: (profiles: unknown, { eq }: unknown) => eq(profiles.userId, userId),
+      where: eq(profiles.userId, userId),
     });
     return result;
   }
@@ -567,7 +579,7 @@ export class DataExportService {
         {
           dataType: "claim_notes",
           count: claimNotes.length,
-          data: claimNotes.map((n: unknown) => ({
+          data: claimNotes.map((n: any) => ({
             updateId: n.updateId,
             claimId: n.claimId,
             updateType: n.updateType,
@@ -677,7 +689,7 @@ export class DataErasureService {
       // 5. Log the anonymization
       await db.insert(dataAnonymizationLog).values({
         userId,
-        tenantId,
+        organizationId: tenantId,
         operationType: "anonymize",
         reason: "RTBF request",
         requestId,
@@ -770,7 +782,7 @@ export class DataErasureService {
       .where(
         and(
           eq(smsMessages.organizationId, tenantId),
-          eq(smsMessages.recipientUserId, userId)
+          eq(smsMessages.userId, userId)
         )
       )
       .returning();
@@ -778,7 +790,7 @@ export class DataErasureService {
     // Delete SMS campaign recipient records
     const deletedCampaignRecipients = await db
       .delete(smsCampaignRecipients)
-      .where(eq(smsCampaignRecipients.recipientUserId, userId))
+      .where(eq(smsCampaignRecipients.userId, userId))
       .returning();
 
     const totalDeleted = 
@@ -833,11 +845,10 @@ export class DataErasureService {
     const anonymizedUpdates = await db
       .update(claimUpdates)
       .set({
-        updateText: "[Update removed per GDPR data erasure request]",
-        updatedAt: new Date(),
+        message: "[Update removed per GDPR data erasure request]",
       })
       .where(
-        eq(claimUpdates.updatedBy, userId)
+        eq(claimUpdates.createdBy, userId)
       )
       .returning();
 

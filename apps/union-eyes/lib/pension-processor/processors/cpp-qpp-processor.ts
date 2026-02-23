@@ -14,13 +14,12 @@ import type {
   PensionableEarnings,
   ContributionCalculation,
   ContributionRates,
-  ContributionPeriod,
   AnnualPensionStatement,
   PensionPlanConfig,
   ContributionRemittance,
   EmploymentStatus,
 } from '../types';
-import { PensionProcessorError } from '../types';
+import { PensionProcessorError, ContributionPeriod } from '../types';
 
 /**
  * CPP/QPP contribution rates by year
@@ -453,11 +452,11 @@ export class CPPQPPProcessor extends BasePensionProcessor {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays <= 7) return 'weekly';
-    if (diffDays <= 14) return 'bi_weekly';
-    if (diffDays <= 16) return 'semi_monthly';
-    if (diffDays <= 31) return 'monthly';
-    if (diffDays <= 92) return 'quarterly';
-    return 'annual';
+    if (diffDays <= 7) return ContributionPeriod.WEEKLY;
+    if (diffDays <= 14) return ContributionPeriod.BI_WEEKLY;
+    if (diffDays <= 16) return ContributionPeriod.SEMI_MONTHLY;
+    if (diffDays <= 31) return ContributionPeriod.MONTHLY;
+    if (diffDays <= 92) return ContributionPeriod.QUARTERLY;
+    return ContributionPeriod.ANNUAL;
   }
 }

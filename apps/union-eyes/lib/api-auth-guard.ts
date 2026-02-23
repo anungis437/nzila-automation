@@ -258,6 +258,7 @@ interface PermissionCheckResult {
  * Base context type with common authentication fields
  */
 export interface BaseAuthContext {
+  [key: string]: unknown;
   params?: Record<string, unknown>;
   organizationId?: string;
   userId?: string;
@@ -325,6 +326,7 @@ export interface ApiGuardOptions {
  * imports these constants from api-auth-guard.ts.
  */
 export { PUBLIC_API_ROUTES, CRON_API_ROUTES, isPublicRoute, isCronRoute } from './public-routes';
+import { isPublicRoute, isCronRoute } from './public-routes';
 
 /**
  * Verify cron secret header
@@ -390,8 +392,8 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     
     // Throw standardized error (doesn&apos;t leak system details)
     const authError = new Error('Service temporarily unavailable');
-    (authError as unknown).statusCode = 503;
-    (authError as unknown).code = 'AUTH_SERVICE_ERROR';
+    (authError as any).statusCode = 503;
+    (authError as any).code = 'AUTH_SERVICE_ERROR';
     throw authError;
   }
 }
@@ -426,7 +428,7 @@ export async function getUserContext(): Promise<UnifiedUserContext | null> {
     return null;
   }
 
-  let membership = null;
+  let membership: Awaited<ReturnType<typeof db.query.organizationMembers.findFirst>> = undefined;
 
   if (orgId) {
     membership = await db.query.organizationMembers.findFirst({
@@ -569,7 +571,7 @@ export async function isSystemAdmin(userIdOverride?: string): Promise<boolean> {
 
     return user?.isSystemAdmin ?? false;
   } catch (error) {
-    logger.error('[Auth] Error checking system admin status', error instanceof Error ? error : new Error(String(error)), { userId });
+    logger.error('[Auth] Error checking system admin status', error instanceof Error ? error : new Error(String(error)), { userId: userIdOverride });
     return false;
   }
 }
@@ -680,7 +682,7 @@ export async function hasRoleInOrganization(
     
     return userRoleLevel >= requiredRoleLevel;
   } catch (error) {
-    logger.error('[Auth] Error checking organization role', error instanceof Error ? error : new Error(String(error)), { userId, organizationId });
+    logger.error('[Auth] Error checking organization role', error instanceof Error ? error : new Error(String(error)), { organizationId });
     return false;
   }
 }
@@ -1383,11 +1385,12 @@ async function logAuditDenial(
   executionTimeMs: number,
   isSensitive?: boolean
 ): Promise<void> {
+  const ctx = context as Record<string, unknown>;
   await logPermissionCheck({
-    actorId: context.memberId || context.userId || 'unknown',
+    actorId: (ctx.memberId as string) || (ctx.userId as string) || 'unknown',
     action,
     resourceType,
-    organizationId: context.organizationId,
+    organizationId: ctx.organizationId as string,
     granted: false,
     denialReason: reason,
     executionTimeMs,

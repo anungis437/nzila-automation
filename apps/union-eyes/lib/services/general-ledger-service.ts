@@ -5,7 +5,7 @@
  * Implements double-entry bookkeeping principles and audit trail logging
  */
 
-import { db } from "@/database";
+import { db } from "@/db";
 import {
   chartOfAccounts,
   glTransactionLog,
@@ -511,7 +511,7 @@ export async function getUnreconciledTransactions(
       transactionNumber: tx.transactionNumber,
       debitAmount: Number(tx.debitAmount),
       creditAmount: Number(tx.creditAmount),
-      isPosted: tx.isPosted,
+      isPosted: tx.isPosted ?? false,
       createdAt: tx.createdAt,
     }));
   } catch (error) {

@@ -41,7 +41,6 @@ export function initRedis(url?: string): Redis {
 
   redisClient = new Redis(connectionUrl, {
     maxRetriesPerRequest: 3,
-    retryDelayOnFailover: 100,
     enableReadyCheck: true,
     lazyConnect: true,
   });
@@ -271,7 +270,7 @@ export async function cacheGetOrSetStale<T>(
       const ttl = await redis.ttl(cacheKey);
       
       // If within stale-while-revalidate window, trigger background refresh
-      if (ttl > 0 && ttl < options.staleWhileRevalidate) {
+      if (ttl > 0 && ttl < options!.staleWhileRevalidate) {
         logger.debug(`[Cache] Background revalidation triggered for ${cacheKey}`);
         
         // Revalidate in background (don&apos;t await)

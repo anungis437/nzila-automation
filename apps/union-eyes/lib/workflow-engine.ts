@@ -78,7 +78,7 @@ export const PRIORITY_MULTIPLIERS = {
  */
 async function getMemberName(
   memberId: string,
-  tx: NodePgDatabase<unknown>
+  tx: NodePgDatabase<any>
 ): Promise<string> {
   try {
     const result = await tx
@@ -187,11 +187,11 @@ export async function updateClaimStatus(
   newStatus: ClaimStatus,
   userId: string,
   notes?: string,
-  tx?: NodePgDatabase<unknown>
+  tx?: NodePgDatabase<any>
 ): Promise<{ success: boolean; error?: string; claim?: unknown }> {
   // If no transaction provided, wrap in withRLSContext
   if (!tx) {
-    return withRLSContext(async (transaction: NodePgDatabase<unknown>) => {
+    return withRLSContext(async (transaction: NodePgDatabase<any>) => {
       return updateClaimStatus(claimNumber, newStatus, userId, notes, transaction);
     });
   }
@@ -216,11 +216,11 @@ export async function updateClaimStatus(
       id: claim.claimId,
       status: currentStatus,
       priority,
-      createdAt: claim.createdAt,
+      createdAt: claim.createdAt ?? new Date(),
       updatedAt: claim.updatedAt ?? claim.createdAt ?? new Date(),
       assignedTo: claim.assignedTo || undefined,
       organizationId: claim.organizationId,
-    }]);
+    } as any]);
 
     const hasUnresolvedCriticalSignals = signals.some(
       signal => signal.severity === 'critical' && signal.actionable
@@ -252,9 +252,9 @@ export async function updateClaimStatus(
       currentStatus,
       targetStatus: newStatus,
       userId,
-      userRole: userRole as unknown,
+      userRole,
       priority,
-      statusChangedAt: claim.updatedAt ?? claim.createdAt ?? new Date(),
+      statusChangedAt: claim.updatedAt ?? claim.createdAt ?? new Date() as Date,
       hasUnresolvedCriticalSignals,
       hasRequiredDocumentation,
       notes,
@@ -268,7 +268,7 @@ export async function updateClaimStatus(
     }
 
     // Update claim status and timestamps
-    const updateData: unknown = {
+    const updateData: Record<string, any> = {
       status: newStatus,
       updatedAt: new Date(),
     };
@@ -412,8 +412,8 @@ export async function updateClaimStatus(
               memberId: claim.memberId,
               memberName: await getMemberName(claim.memberId, tx),
               currentState: newStatus,
-              createdAt: claim.createdAt,
-              lastUpdated: updatedClaim.updatedAt || new Date(),
+              createdAt: claim.createdAt ?? new Date(),
+              lastUpdated: updatedClaim.updatedAt ?? new Date(),
               grievanceType: claim.claimType || 'general',
               priority: claim.priority || 'medium',
             },
@@ -600,11 +600,11 @@ export async function addClaimNote(
   message: string,
   userId: string,
   isInternal: boolean = true,
-  tx?: NodePgDatabase<unknown>
+  tx?: NodePgDatabase<any>
 ): Promise<{ success: boolean; error?: string }> {
   // If no transaction provided, wrap in withRLSContext
   if (!tx) {
-    return withRLSContext(async (transaction: NodePgDatabase<unknown>) => {
+    return withRLSContext(async (transaction: NodePgDatabase<any>) => {
       return addClaimNote(claimNumber, message, userId, isInternal, transaction);
     });
   }
@@ -651,7 +651,7 @@ return {
 /**
  * Get workflow status for a claim (deadline info, transitions, etc.)
  */
-export function getClaimWorkflowStatus(claim: unknown) {
+export function getClaimWorkflowStatus(claim: Record<string, any>) {
   const status = claim.status as ClaimStatus;
   const priority = claim.priority as ClaimPriority;
   const statusDate = claim.updatedAt || claim.createdAt;

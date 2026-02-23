@@ -20,6 +20,7 @@ import {
   SyncResult,
   HealthCheckResult,
   WebhookEvent,
+  ConnectionStatus,
 } from '../../types';
 import { WaveClient, type WaveConfig } from './wave-client';
 import { db } from '@/db';
@@ -57,7 +58,7 @@ export class WaveAdapter extends BaseIntegration {
       const waveConfig: WaveConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        businessId: this.config!.settings?.businessId || '',
+        businessId: (this.config!.settings?.businessId as string) || '',
         refreshToken: this.config!.credentials.refreshToken,
         environment: 'production',
       };
@@ -160,7 +161,7 @@ export class WaveAdapter extends BaseIntegration {
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
@@ -224,8 +225,8 @@ export class WaveAdapter extends BaseIntegration {
             invoiceNumber: invoice.invoiceNumber,
             customerId: invoice.customer.id,
             customerName: invoice.customer.name,
-            invoiceDate: new Date(invoice.invoiceDate),
-            dueDate: new Date(invoice.dueDate),
+            invoiceDate: invoice.invoiceDate,
+            dueDate: invoice.dueDate,
             totalAmount: invoice.total.toFixed(2),
             balanceAmount: invoice.amountDue.toFixed(2),
             status: invoice.status.toLowerCase(),
@@ -290,7 +291,7 @@ export class WaveAdapter extends BaseIntegration {
           const paymentData = {
             customerId: payment.customer.id,
             customerName: payment.customer.name,
-            paymentDate: new Date(payment.date),
+            paymentDate: payment.date,
             amount: payment.amount.toFixed(2),
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -399,6 +400,6 @@ export class WaveAdapter extends BaseIntegration {
   }
 
   async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', 'Wave does not support webhooks');
+    this.logOperation('webhook', { message: 'Wave does not support webhooks' });
   }
 }

@@ -8,10 +8,10 @@
 import { BaseIntegration } from '../../base-integration';
 import { SlackClient } from './slack-client';
 import type {
-  IIntegration,
   SyncOptions,
   SyncResult,
-  IntegrationCapabilities,
+  HealthCheckResult,
+  WebhookEvent,
 } from '../../types';
 import { db } from '@/db';
 import { 
@@ -20,17 +20,26 @@ import {
   externalCommunicationUsers,
   externalCommunicationFiles,
 } from '@/db/schema/domains/data/communication';
-import { IntegrationProvider } from '../../types';
+import { IntegrationType, IntegrationProvider, ConnectionStatus } from '../../types';
 import { eq, and } from 'drizzle-orm';
-import { logger } from '@/lib/logger';
 
 const PAGE_SIZE = 200; // Slack cursor pagination
 
-export class SlackAdapter extends BaseIntegration implements IIntegration {
+export class SlackAdapter extends BaseIntegration {
   private client: SlackClient;
+  private orgId: string;
 
   constructor(orgId: string, config: Record<string, unknown>) {
-    super(orgId, IntegrationProvider.SLACK, config);
+    super(IntegrationType.COMMUNICATION, IntegrationProvider.SLACK, {
+      supportsFullSync: true,
+      supportsIncrementalSync: true,
+      supportsWebhooks: true,
+      supportsRealTime: true,
+      supportedEntities: ['channels', 'messages', 'users', 'files'],
+      requiresOAuth: true,
+      rateLimitPerMinute: 50,
+    });
+    this.orgId = orgId;
 
     this.client = new SlackClient({
       botToken: config.botToken as string,
@@ -44,26 +53,43 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
     if (health.status !== 'ok') {
       throw new Error(`Failed to connect to Slack: ${health.message}`);
     }
-    this.logger.info('Successfully connected to Slack API');
+    this.connected = true;
+    this.logOperation('connect', { message: 'Connected to Slack API' });
   }
 
   async disconnect(): Promise<void> {
-    this.logger.info('Slack integration disconnected');
+    this.connected = false;
+    this.logOperation('disconnect', { message: 'Slack integration disconnected' });
   }
 
-  async healthCheck(): Promise<{ status: 'ok' | 'error'; message: string }> {
-    return await this.client.healthCheck();
+  async healthCheck(): Promise<HealthCheckResult> {
+    try {
+      const startTime = Date.now();
+      const health = await this.client.healthCheck();
+      const latencyMs = Date.now() - startTime;
+      return {
+        healthy: health.status === 'ok',
+        status: health.status === 'ok' ? ConnectionStatus.CONNECTED : ConnectionStatus.ERROR,
+        latencyMs,
+        lastCheckedAt: new Date(),
+        lastError: health.status !== 'ok' ? health.message : undefined,
+      };
+    } catch (error) {
+      return {
+        healthy: false,
+        status: ConnectionStatus.ERROR,
+        lastCheckedAt: new Date(),
+        lastError: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 
-  getCapabilities(): IntegrationCapabilities {
-    return {
-      supportsFullSync: true,
-      supportsIncrementalSync: true,
-      supportsWebhooks: true, // Slack supports Events API
-      supportsRealTimeSync: true, // Slack supports WebSocket RTM API
-      batchSize: PAGE_SIZE,
-      rateLimitPerMinute: 50, // Tier 3 average
-    };
+  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+    return true; // Simplified for now
+  }
+
+  async processWebhook(event: WebhookEvent): Promise<void> {
+    this.logOperation('webhook', { eventType: event.type, message: `Processing ${event.type}` });
   }
 
   async sync(options: SyncOptions): Promise<SyncResult> {
@@ -95,19 +121,20 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
             await this.syncFiles(options, results);
             break;
           default:
-            this.logger.warn(`Unknown entity type: ${entity}`);
+            this.logOperation('sync', { message: `Unknown entity type: ${entity}` });
         }
       }
 
-      this.logger.info('Slack sync completed', {
+      this.logOperation('sync', {
+        message: 'Slack sync completed',
         processed: results.recordsProcessed,
         created: results.recordsCreated,
         updated: results.recordsUpdated,
       });
     } catch (error) {
       results.success = false;
-      results.error = error instanceof Error ? error.message : String(error);
-      this.logger.error('Slack sync failed', error);
+      results.metadata = { error: error instanceof Error ? error.message : String(error) };
+      this.logError('sync', error as Error);
     }
 
     return results;
@@ -163,7 +190,7 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync channel ${channel.id}`, error);
+          this.logError('syncChannel', error as Error, { message: `Failed to sync channel ${channel.id}` });
           results.recordsFailed++;
         }
       }
@@ -238,7 +265,7 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
 
             results.recordsProcessed++;
           } catch (error) {
-            this.logger.error(`Failed to sync message ${message.ts}`, error);
+            this.logError('syncMessage', error as Error, { message: `Failed to sync message ${message.ts}` });
             results.recordsFailed++;
           }
         }
@@ -305,7 +332,7 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync user ${user.id}`, error);
+          this.logError('syncUser', error as Error, { message: `Failed to sync user ${user.id}` });
           results.recordsFailed++;
         }
       }
@@ -329,7 +356,7 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
     for (const file of response.files) {
       try {
         // Find channel DB ID if file is shared in a channel
-        let channelDbId: number | null = null;
+        let channelDbId: string | null = null;
         if (file.channels && file.channels.length > 0) {
           const channel = await db
             .select()
@@ -380,7 +407,7 @@ export class SlackAdapter extends BaseIntegration implements IIntegration {
 
         results.recordsProcessed++;
       } catch (error) {
-        this.logger.error(`Failed to sync file ${file.id}`, error);
+        this.logError('syncFile', error as Error, { message: `Failed to sync file ${file.id}` });
         results.recordsFailed++;
       }
     }

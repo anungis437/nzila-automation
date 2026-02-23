@@ -104,7 +104,7 @@ export async function refreshAccessToken(connectionId: string): Promise<string> 
     
     const response = await msalClient.acquireTokenSilent({
       scopes: SCOPES,
-      account: { homeAccountId: connection.providerAccountId! } as unknown,
+      account: { homeAccountId: connection.providerAccountId! } as any,
     });
 
     // Update connection with new tokens
@@ -278,7 +278,7 @@ export async function importMicrosoftEvents(
           updatedCount++;
         } else {
           // Create new event
-          await db.insert(calendarEvents).values(eventData);
+          await db.insert(calendarEvents).values(eventData as any);
           importedCount++;
         }
       } catch (error) {
@@ -379,7 +379,7 @@ throw error;
 /**
  * Map Microsoft Outlook event to local event format
  */
-function mapMicrosoftEventToLocal(msEvent: unknown, calendarId: string, tenantId: string) {
+function mapMicrosoftEventToLocal(msEvent: any, calendarId: string, tenantId: string) {
   return {
     calendarId,
     tenantId,
@@ -411,8 +411,8 @@ function mapMicrosoftEventToLocal(msEvent: unknown, calendarId: string, tenantId
 /**
  * Map local event to Microsoft Outlook event format
  */
-function mapLocalEventToMicrosoft(localEvent: unknown) {
-  const msEvent: unknown = {
+function mapLocalEventToMicrosoft(localEvent: any) {
+  const msEvent: any = {
     subject: localEvent.title,
     body: {
       contentType: 'HTML',
@@ -451,7 +451,7 @@ function mapLocalEventToMicrosoft(localEvent: unknown) {
 /**
  * Map Microsoft recurrence to RRULE
  */
-function mapMicrosoftRecurrenceToRRule(recurrence: unknown): string {
+function mapMicrosoftRecurrenceToRRule(recurrence: any): string {
   const pattern = recurrence.pattern;
   const range = recurrence.range;
 
@@ -482,9 +482,9 @@ function mapMicrosoftRecurrenceToRRule(recurrence: unknown): string {
 /**
  * Map RRULE to Microsoft recurrence
  */
-function mapRRuleToMicrosoftRecurrence(rrule: string): unknown {
+function mapRRuleToMicrosoftRecurrence(rrule: string): any {
   const parts = rrule.split(';');
-  const recurrence: unknown = {
+  const recurrence: any = {
     pattern: {},
     range: {},
   };
@@ -585,7 +585,7 @@ async function updateDeltaLink(
 
     if (!connection) return;
 
-    const mappings = (connection.calendarMappings as unknown) || {};
+    const mappings: any = (connection.calendarMappings as any) || {};
     
     if (!mappings[microsoftCalendarId]) {
       mappings[microsoftCalendarId] = {};
@@ -596,7 +596,7 @@ async function updateDeltaLink(
     await db
       .update(externalCalendarConnections)
       .set({
-        calendarMappings: mappings,
+        calendarMappings: mappings as any,
         lastSyncAt: new Date(),
         syncStatus: 'synced',
         updatedAt: new Date(),
@@ -609,7 +609,7 @@ async function updateDeltaLink(
 /**
  * Get delta link for a calendar
  */
-export function getDeltaLink(connection: unknown, microsoftCalendarId: string): string | null {
+export function getDeltaLink(connection: any, microsoftCalendarId: string): string | null {
   const mappings = connection.calendarMappings || {};
   return mappings[microsoftCalendarId]?.deltaLink || null;
 }

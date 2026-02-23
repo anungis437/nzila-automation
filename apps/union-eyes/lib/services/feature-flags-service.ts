@@ -228,14 +228,14 @@ export async function addOrganizationToFeatureFlag(
       throw new Error(`Feature flag '${flagName}' not found`);
     }
 
-    const allowedTenants = flag.allowedTenants || [];
-    if (!allowedTenants.includes(organizationId)) {
-      allowedTenants.push(organizationId);
+    const allowedOrganizations = flag.allowedOrganizations || [];
+    if (!allowedOrganizations.includes(organizationId)) {
+      allowedOrganizations.push(organizationId);
       
       await db
         .update(featureFlags)
         .set({
-          allowedTenants,
+          allowedOrganizations,
           updatedAt: new Date(),
           lastModifiedBy: modifiedBy,
         })
@@ -364,7 +364,7 @@ export async function getAllFeatureFlags(): Promise<
       percentage: flag.percentage,
       description: flag.description,
       environmentDefault: getEnvironmentFlag(flag.name),
-      allowedTenants: flag.allowedTenants || [],
+      allowedTenants: flag.allowedOrganizations || [],
       allowedUsers: flag.allowedUsers || [],
     }));
   } catch (error) {

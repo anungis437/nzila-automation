@@ -20,7 +20,7 @@ export function withAnalyticsCache<T>(
   ttl: number = 5 * 60 * 1000 // 5 minutes default
 ) {
   return async (req: NextRequest) => {
-    const organizationId = (req as unknown).organizationId;
+    const organizationId = (req as any).organizationId;
     if (!organizationId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

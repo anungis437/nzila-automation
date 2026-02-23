@@ -21,6 +21,7 @@ import {
   HealthCheckResult,
   WebhookEvent,
   ConnectionStatus,
+  SyncError,
 } from '../../types';
 import { CanadaLifeClient, type CanadaLifeConfig } from './canadalife-client';
 import { db } from '@/db';
@@ -164,7 +165,7 @@ export class CanadaLifeAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: errors.length > 0 ? errors : undefined,
+        errors: errors.length > 0 ? errors as unknown as SyncError[] : undefined,
         cursor: new Date().toISOString(),
       };
     } catch (error) {
@@ -175,7 +176,7 @@ export class CanadaLifeAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: [{ entity: 'sync', error: errorMessage }],
+        errors: [{ entity: 'sync', error: errorMessage } as unknown as SyncError],
       };
     }
   }

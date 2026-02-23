@@ -145,8 +145,6 @@ export class ExchangeRateService {
       rate: rate.toString(),
       effectiveDate,
       source,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     return { baseCurrency, targetCurrency, rate, effectiveDate, source };
@@ -163,7 +161,7 @@ export class ExchangeRateService {
         try {
           const response = await fetch(
             `${this.BOC_API_URL}/${seriesId}/json?recent=1`,
-            { timeout: 5000 }
+            { signal: AbortSignal.timeout(5000) }
           );
 
           if (!response.ok) {

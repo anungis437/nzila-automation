@@ -27,17 +27,17 @@ export async function calculateRewardTotals(
     // Aggregate ledger entries by type
     const result = await db
       .select({
-        eventType: rewardWalletLedger.eventType,
-        total: sql<number>`CAST(SUM(${rewardWalletLedger.amountCredits}) AS INTEGER)`,
+        eventType: rewardWalletLedger.transactionType,
+        total: sql<number>`CAST(SUM(${rewardWalletLedger.pointsChange}) AS INTEGER)`,
       })
       .from(rewardWalletLedger)
       .where(
         and(
           eq(rewardWalletLedger.userId, userId),
-          eq(rewardWalletLedger.orgId, organizationId)
+          eq((rewardWalletLedger as any).orgId, organizationId)
         )
       )
-      .groupBy(rewardWalletLedger.eventType);
+      .groupBy(rewardWalletLedger.transactionType);
 
     // Initialize totals
     const totals: RewardTotals = {
@@ -88,14 +88,14 @@ export async function getTotalEarned(userId: string, organizationId: string): Pr
   try {
     const result = await db
       .select({
-        total: sql<number>`CAST(SUM(${rewardWalletLedger.amountCredits}) AS INTEGER)`,
+        total: sql<number>`CAST(SUM(${rewardWalletLedger.pointsChange}) AS INTEGER)`,
       })
       .from(rewardWalletLedger)
       .where(
         and(
           eq(rewardWalletLedger.userId, userId),
-          eq(rewardWalletLedger.orgId, organizationId),
-          sql`${rewardWalletLedger.eventType} IN ('earn', 'adjust', 'refund')`
+          eq((rewardWalletLedger as any).orgId, organizationId),
+          sql`${rewardWalletLedger.transactionType} IN ('earn', 'adjust', 'refund')`
         )
       );
 
@@ -112,14 +112,14 @@ export async function getTotalRedeemed(userId: string, organizationId: string): 
   try {
     const result = await db
       .select({
-        total: sql<number>`CAST(SUM(${rewardWalletLedger.amountCredits}) AS INTEGER)`,
+        total: sql<number>`CAST(SUM(${rewardWalletLedger.pointsChange}) AS INTEGER)`,
       })
       .from(rewardWalletLedger)
       .where(
         and(
           eq(rewardWalletLedger.userId, userId),
-          eq(rewardWalletLedger.orgId, organizationId),
-          eq(rewardWalletLedger.eventType, 'spend')
+          eq((rewardWalletLedger as any).orgId, organizationId),
+          eq(rewardWalletLedger.transactionType, 'spend')
         )
       );
 
