@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Plans Page
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 "use server";
 
 import { eq, and, desc, sql, sum, gte, lte } from "drizzle-orm";

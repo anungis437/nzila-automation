@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 ing /**
  * Edit Member Page
  * 

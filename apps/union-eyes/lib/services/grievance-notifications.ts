@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Grievance Notification Service
  * 

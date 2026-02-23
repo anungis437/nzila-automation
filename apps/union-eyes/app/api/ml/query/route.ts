@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';

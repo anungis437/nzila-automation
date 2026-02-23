@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Document Bulk Operations API Route
  * POST /api/documents/bulk - Perform bulk operations on documents

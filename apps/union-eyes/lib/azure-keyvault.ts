@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Azure Key Vault Integration for PII Encryption
  * 

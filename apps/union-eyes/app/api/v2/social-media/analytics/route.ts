@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST PUT DELETE /api/social-media/analytics
  * Migrated to withApi() framework

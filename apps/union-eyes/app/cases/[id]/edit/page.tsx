@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Edit Case Page
  * 

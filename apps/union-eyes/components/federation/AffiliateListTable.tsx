@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Affiliate List Table Component
  * 

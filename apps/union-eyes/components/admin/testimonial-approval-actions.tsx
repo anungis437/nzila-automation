@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Testimonial Approval Actions Component
  * 

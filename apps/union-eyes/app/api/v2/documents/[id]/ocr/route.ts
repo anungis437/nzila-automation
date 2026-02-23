@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/documents/[id]/ocr
  * Migrated to withApi() framework

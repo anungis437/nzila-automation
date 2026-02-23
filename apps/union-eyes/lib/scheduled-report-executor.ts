@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Scheduled Report Executor
  * 

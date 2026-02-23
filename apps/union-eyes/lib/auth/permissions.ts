@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Permission Matrix & Authorization Utilities
  * Re-exports and augments the permission system from roles.ts

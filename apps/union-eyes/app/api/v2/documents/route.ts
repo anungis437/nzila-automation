@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/documents
  * Migrated to withApi() framework

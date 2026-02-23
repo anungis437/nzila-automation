@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Database Abstraction Layer - Multi-Database Support
  * 

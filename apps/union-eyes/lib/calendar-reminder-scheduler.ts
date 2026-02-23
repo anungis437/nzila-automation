@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Calendar Reminder Scheduler
  * 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/documents/upload
  * Migrated to withApi() framework

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Bargaining Notes API Routes - Main endpoints

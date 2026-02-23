@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from "next/server";
 
 import { getOverdueClaims, getClaimsApproachingDeadline } from "@/lib/workflow-engine";

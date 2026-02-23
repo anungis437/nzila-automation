@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Award Service
  * Handles award lifecycle: creation, approval, issuance, revocation

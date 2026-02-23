@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Enhanced RBAC Middleware for Enterprise Unions
  * 

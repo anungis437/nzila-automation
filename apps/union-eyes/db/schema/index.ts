@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Domain-Driven Database Schema
  * 

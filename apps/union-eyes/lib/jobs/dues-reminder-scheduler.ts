@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Dues Reminder Scheduler
  * Automated reminders for dues payments

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Signature Request API
  * POST /api/signatures/documents - Create signature request

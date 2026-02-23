@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Integration Factory
  * Creates and manages integration adapter instances

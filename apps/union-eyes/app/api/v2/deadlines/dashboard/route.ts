@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/deadlines/dashboard
  * Migrated to withApi() framework

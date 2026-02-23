@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Indigenous Data Sovereignty Service (OCAP® Compliance)
  * 

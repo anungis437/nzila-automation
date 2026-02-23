@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Transfer Pricing & Currency Enforcement Service
  *

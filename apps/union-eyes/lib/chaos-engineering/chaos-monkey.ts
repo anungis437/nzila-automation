@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Chaos Engineering Framework
  * 

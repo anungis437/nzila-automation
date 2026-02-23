@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Service Worker Registration Hook
  * 

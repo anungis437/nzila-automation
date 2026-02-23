@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Integrations Dashboard
  * For Integration Manager - API keys, webhooks, and partner integrations

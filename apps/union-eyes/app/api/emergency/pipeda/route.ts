@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrivacyRules, assessBreachNotification } from '@/lib/services/provincial-privacy-service';

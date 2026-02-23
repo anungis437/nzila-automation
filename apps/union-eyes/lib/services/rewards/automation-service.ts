@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Automated Award Triggers Service
  * Handles automatic award creation based on predefined rules and milestones

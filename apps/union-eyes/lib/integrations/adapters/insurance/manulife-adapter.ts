@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Manulife Financial Integration Adapter
  * 

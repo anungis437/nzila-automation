@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Case Timeline Service
  * PR-4: Visibility Scopes (dual-surface enforcement)

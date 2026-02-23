@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Notification Triggers for Rewards System
  * Handles automatic email notifications for various reward events

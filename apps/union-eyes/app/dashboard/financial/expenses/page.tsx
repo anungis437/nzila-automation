@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { Suspense } from 'react';
 import ExpenseApprovalQueue from '@/components/financial/ExpenseApprovalQueue';
 import ExpenseRequestForm from '@/components/financial/ExpenseRequestForm';

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Incident Report Form Component
  * 

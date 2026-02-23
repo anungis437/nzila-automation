@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Remittance Compliance Widget Component
  * 

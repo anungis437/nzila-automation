@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * OTPP Processor
  * Ontario Teachers' Pension Plan integration

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET PATCH /api/admin/feature-flags
  * Migrated to withApi() framework

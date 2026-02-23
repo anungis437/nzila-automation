@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Testimonials Management Page
  * 

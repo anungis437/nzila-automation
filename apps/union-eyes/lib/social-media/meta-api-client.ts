@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Meta Graph API Client - Phase 10
  * 

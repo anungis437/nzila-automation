@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment event handlers for webhook processing
  * Handles payment success and failure events

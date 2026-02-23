@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Governance Service - Fully Transformed for Django REST API
  * All 11 methods implemented using Django backend endpoints

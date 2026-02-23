@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/ai/cache-stats
  * Migrated to withApi() framework

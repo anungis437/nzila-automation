@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Report Email Templates
  * 

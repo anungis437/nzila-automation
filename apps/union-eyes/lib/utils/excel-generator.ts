@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Excel Generator Utility
  * 

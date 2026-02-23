@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Case Study Editor Form Component
  * 

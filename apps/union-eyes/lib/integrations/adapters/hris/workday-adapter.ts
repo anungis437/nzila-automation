@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workday HRIS Integration Adapter
  * 

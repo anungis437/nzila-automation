@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/jobs/retry
  * Migrated to withApi() framework

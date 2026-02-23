@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Social Media Service - Phase 10
  * 

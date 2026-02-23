@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Policy Evaluation API
  * 

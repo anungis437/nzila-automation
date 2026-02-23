@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Xero Integration Adapter
  * 

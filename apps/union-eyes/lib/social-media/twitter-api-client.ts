@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Twitter API v2 Client - Phase 10
  * 

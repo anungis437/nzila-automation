@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from "next/server";
 import { ProvincialPrivacyService, type Province } from "@/services/provincial-privacy-service";

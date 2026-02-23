@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Content Dashboard
  * For Content Manager - Templates, resources, training materials

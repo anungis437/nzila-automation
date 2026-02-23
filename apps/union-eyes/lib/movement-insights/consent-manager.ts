@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Consent Manager Service
  * 

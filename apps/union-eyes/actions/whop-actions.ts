@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 "use server"; // Ensure this only runs on the server
 
 import { getProfileByUserId, updateProfile, updateProfileByWhopUserId, getProfileByEmail, createProfile, deleteProfileById } from "@/db/queries/profiles-queries";

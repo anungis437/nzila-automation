@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/rewards/cron
  * Migrated to withApi() framework

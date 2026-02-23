@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server';
 /**
  * POST /api/ai/extract-clauses

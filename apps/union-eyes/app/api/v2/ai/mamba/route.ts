@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/ai/mamba
  * Migrated to withApi() framework

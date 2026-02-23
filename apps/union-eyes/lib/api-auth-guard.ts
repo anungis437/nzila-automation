@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Canonical Authentication Module
  * 

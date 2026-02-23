@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Deep Linker Library
  * 

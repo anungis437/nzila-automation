@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * GDPR Data Export API (Article 15)
  * POST /api/gdpr/data-export - Request data export

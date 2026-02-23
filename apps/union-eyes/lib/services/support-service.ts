@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Support Ticketing Service
  * 

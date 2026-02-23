@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Pilot Application Actions Component
  * 

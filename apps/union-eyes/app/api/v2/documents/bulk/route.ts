@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/documents/bulk
  * Migrated to withApi() framework

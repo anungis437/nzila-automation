@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Precedents API Routes - Main endpoints for arbitration decisions

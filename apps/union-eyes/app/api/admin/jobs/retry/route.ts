@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * API Route: POST /api/admin/jobs/retry

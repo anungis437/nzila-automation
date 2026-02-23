@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Engagement Scoring System
  * Calculates and tracks member engagement scores across all communication channels

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Frictionless Payment Handlers
  * 

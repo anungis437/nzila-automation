@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Sun Life Financial Integration Adapter
  * 

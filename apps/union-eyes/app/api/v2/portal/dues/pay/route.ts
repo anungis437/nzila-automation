@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/portal/dues/pay
  * Migrated to withApi() framework

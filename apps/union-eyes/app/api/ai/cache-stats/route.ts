@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AI Embedding Cache Statistics API
  * 

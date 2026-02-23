@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/billing-cycles/trigger-scheduled
  * Migrated to withApi() framework

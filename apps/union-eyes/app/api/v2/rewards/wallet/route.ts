@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/rewards/wallet
  * Migrated to withApi() framework

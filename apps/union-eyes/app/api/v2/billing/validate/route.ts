@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/billing/validate
  * Migrated to withApi() framework

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * GDPR Consent Management Service
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Advanced Analytics Service
  * 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/pki/signatures/[id]/sign
  * Migrated to withApi() framework

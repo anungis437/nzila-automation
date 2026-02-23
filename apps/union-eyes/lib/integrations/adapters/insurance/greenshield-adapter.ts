@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Green Shield Canada Integration Adapter
  * 

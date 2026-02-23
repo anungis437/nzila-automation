@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * BambooHR API Client
  * 

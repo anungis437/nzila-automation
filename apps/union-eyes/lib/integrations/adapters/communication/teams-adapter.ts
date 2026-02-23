@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Microsoft Teams Integration Adapter
  * 

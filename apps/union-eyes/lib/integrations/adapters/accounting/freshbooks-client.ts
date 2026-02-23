@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * FreshBooks API Client
  * 

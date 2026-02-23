@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AutoPay Utilities
  * Helper functions for managing automatic payment settings

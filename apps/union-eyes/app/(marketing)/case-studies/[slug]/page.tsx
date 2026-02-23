@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Individual Case Study Detail Page
  * 

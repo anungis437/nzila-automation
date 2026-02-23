@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Member Segments Page
  * 

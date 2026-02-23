@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/rewards/redemptions
  * Migrated to withApi() framework

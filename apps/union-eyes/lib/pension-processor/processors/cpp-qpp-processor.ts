@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CPP/QPP Processor
  * Canada Pension Plan and Quebec Pension Plan integration

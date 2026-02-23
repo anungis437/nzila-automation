@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Auth Module - Centralized Authentication & Authorization
  * Export all auth-related functionality from a single entry point

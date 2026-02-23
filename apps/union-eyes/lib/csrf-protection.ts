@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CSRF Protection Middleware
  * 

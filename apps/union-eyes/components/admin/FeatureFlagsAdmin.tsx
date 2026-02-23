@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Feature Flags Admin Panel
  * 

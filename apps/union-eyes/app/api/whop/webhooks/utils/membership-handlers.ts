@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Membership cancellation handler for webhook processing
  * Handles membership.went_invalid events

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Strike Fund Application Form
  * 

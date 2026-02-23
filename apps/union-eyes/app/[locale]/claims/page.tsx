@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Claims Management Page
  * 

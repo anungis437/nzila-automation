@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/billing-cycles/preview
  * Migrated to withApi() framework

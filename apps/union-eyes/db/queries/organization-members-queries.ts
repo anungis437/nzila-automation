@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Organization Members Queries
  * Database queries for managing organization members

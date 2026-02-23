@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * System Administration Dashboard
  * 

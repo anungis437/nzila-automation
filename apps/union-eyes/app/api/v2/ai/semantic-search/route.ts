@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server';
 /**
  * GET POST /api/ai/semantic-search

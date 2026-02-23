@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Scheduled Jobs Configuration for Analytics
  * 

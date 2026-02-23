@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * LinkedIn API Client - Phase 10
  * 

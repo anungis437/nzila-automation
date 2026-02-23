@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Case Studies Management Page
  * 

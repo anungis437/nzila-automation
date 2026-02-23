@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 "use server";
 
 import { eq } from "drizzle-orm";

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Rewards Statistics Utilities
  * Helper functions for calculating reward totals and stats

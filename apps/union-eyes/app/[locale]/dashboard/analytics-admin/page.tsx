@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Analytics Admin Dashboard
  * For Data Analytics Manager & Data Analysts - Platform-wide analytics

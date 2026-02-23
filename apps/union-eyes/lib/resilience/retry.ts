@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Retry Pattern with Exponential Backoff
  * 

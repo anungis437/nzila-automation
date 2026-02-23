@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth, auth } from "@/lib/api-auth-guard";
 import { getUserRole } from "@/lib/auth/rbac-server";

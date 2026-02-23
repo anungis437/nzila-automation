@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Compliance Admin Dashboard
  * For Compliance Manager - Audit logs, compliance reports, GDPR

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Precedent Search API Route

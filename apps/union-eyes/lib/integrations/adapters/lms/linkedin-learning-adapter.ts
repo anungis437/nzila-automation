@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * LinkedIn Learning Integration Adapter
  * 

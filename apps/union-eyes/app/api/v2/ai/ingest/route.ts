@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/ai/ingest
  * Migrated to withApi() framework

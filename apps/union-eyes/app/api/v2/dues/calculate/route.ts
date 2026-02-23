@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/dues/calculate
  * Migrated to withApi() framework

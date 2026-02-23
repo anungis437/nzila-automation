@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { NextResponse } from "next/server";
 import { DEFAULT_REDIRECT_URL } from "../webhooks/utils/constants";
 import crypto from "crypto";

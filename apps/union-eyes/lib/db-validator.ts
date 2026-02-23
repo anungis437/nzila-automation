@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Database Health Check & Validation
  * 

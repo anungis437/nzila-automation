@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Signature Recording API
  * POST /api/signatures/sign - Record signature

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Alert Rules Management
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Health & Safety - Inspections Management Page
  * 

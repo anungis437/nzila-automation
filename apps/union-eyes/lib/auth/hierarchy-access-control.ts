@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Hierarchy-Based Access Control
  * 

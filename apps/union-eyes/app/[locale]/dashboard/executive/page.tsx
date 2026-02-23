@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { Metadata } from "next";
 import { requireUser, hasMinRole } from "@/lib/api-auth-guard";
 import { redirect } from "next/navigation";

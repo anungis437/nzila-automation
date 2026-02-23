@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Customer Success Dashboard
  * For Customer Success Director - User success, retention, and growth

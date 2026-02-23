@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/admin/jobs/[action]
  * Migrated to withApi() framework

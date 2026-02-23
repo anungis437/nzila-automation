@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Document OCR Processing API Route
  * POST /api/documents/[id]/ocr - Process document with OCR

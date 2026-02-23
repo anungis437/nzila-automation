@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Data Ingestion Pipeline
  * 

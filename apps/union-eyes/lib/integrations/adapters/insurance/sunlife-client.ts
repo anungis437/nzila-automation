@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Sun Life Financial Group Benefits API Client
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Metrics Reporting Dashboard
  * 

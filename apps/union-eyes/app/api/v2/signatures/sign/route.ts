@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/signatures/sign
  * Migrated to withApi() framework

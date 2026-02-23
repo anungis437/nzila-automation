@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/whop/create-checkout
  * Migrated to withApi() framework

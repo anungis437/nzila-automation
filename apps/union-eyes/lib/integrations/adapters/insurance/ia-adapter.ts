@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Industrial Alliance (iA Financial) Integration Adapter
  * 

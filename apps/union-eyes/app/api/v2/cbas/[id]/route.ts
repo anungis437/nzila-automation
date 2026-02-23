@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server';
 /**
  * GET PATCH DELETE /api/cbas/[id]

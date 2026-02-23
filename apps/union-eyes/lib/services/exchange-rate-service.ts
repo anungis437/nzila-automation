@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Exchange Rate Service
  * 

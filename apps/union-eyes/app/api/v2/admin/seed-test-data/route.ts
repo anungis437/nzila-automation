@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/admin/seed-test-data
  * Migrated to withApi() framework

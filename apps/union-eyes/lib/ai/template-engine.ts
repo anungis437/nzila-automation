@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * UnionEyes AI Template Engine
  * 

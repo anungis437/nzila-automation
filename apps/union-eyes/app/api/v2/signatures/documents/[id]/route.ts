@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET PATCH /api/signatures/documents/[id]
  * Migrated to withApi() framework

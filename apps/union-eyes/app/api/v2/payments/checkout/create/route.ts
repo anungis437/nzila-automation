@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/payments/checkout/create
  * Migrated to withApi() framework

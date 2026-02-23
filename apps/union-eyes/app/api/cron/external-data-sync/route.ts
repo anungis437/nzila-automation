@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * External Data Sync Cron Job
  * 

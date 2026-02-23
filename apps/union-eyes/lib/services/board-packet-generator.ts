@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Board Packet Generator Service
  * 

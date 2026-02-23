@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Token Cost Calculator
  * 

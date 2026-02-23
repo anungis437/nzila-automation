@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workload Forecast Model
  * 

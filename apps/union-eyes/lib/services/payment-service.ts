@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Service for Dues Transactions
  * Handles payment lifecycle for member dues

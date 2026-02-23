@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Claim Workflow Finite State Machine (FSM)
  * 

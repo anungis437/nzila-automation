@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Comprehensive Audit Trail Service
  * 

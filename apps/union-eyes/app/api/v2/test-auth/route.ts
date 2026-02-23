@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/test-auth
  * Migrated to withApi() framework

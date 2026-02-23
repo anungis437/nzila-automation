@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Document Folders API Routes
  * GET /api/documents/folders - List folders

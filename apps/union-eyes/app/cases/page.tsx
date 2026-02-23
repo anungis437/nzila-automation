@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Case Management Dashboard
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Role-Based Access Control (RBAC) System
  * Union Claims Management System with CLC Integration

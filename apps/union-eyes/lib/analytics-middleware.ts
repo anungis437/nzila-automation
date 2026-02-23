@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Analytics Middleware
  * 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/location/track
  * Migrated to withApi() framework

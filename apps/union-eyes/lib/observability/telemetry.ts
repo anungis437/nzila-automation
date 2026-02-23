@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * OpenTelemetry Distributed Tracing Configuration
  * 

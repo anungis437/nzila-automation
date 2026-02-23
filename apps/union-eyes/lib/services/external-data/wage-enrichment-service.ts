@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Wage Enrichment Service
  * 

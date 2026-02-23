@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Database RLS Context Middleware
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * SAT-based Entitlement Constraint Validator
  * 

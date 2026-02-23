@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Job Classification Management Component
  * 

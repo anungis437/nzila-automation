@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Operations Dashboard
  * For Platform Lead, COO, CTO - Day-to-day platform operations

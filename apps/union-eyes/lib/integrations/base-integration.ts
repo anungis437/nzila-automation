@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Base Integration Abstract Class
  * Provides common functionality for all integration adapters

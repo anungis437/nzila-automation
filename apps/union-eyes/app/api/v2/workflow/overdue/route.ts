@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/workflow/overdue
  * Migrated to withApi() framework

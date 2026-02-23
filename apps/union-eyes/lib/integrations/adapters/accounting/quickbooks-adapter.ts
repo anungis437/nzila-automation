@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * QuickBooks Online Integration Adapter
  * 

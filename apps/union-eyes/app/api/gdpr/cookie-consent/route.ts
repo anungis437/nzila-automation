@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * GDPR Cookie Consent API
  * POST /api/gdpr/cookie-consent

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/status
  * Migrated to withApi() framework

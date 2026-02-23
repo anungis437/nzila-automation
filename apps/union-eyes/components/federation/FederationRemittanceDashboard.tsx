@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Federation Remittance Dashboard Component
  * 

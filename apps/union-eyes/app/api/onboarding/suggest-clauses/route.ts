@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Clause Suggestions API
  * 

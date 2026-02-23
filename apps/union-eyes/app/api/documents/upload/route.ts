@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Document Upload API Route
  * POST /api/documents/upload - Upload document files

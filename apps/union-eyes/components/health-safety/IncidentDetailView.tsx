@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Incident Detail View Component
  * 

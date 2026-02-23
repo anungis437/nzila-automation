@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * E-Signature Provider Integration Service
  * 

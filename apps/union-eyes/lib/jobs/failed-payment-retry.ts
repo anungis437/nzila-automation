@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Failed Payment Retry Job
  * Automatically retries failed dues payments

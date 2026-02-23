@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CLC Remittances Dashboard Component
  * Purpose: View, filter, and manage per-capita remittances

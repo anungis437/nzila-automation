@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Redemption Service
  * Handles member redemption lifecycle

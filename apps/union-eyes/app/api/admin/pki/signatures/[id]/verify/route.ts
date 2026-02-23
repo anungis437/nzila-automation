@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-responses';
 

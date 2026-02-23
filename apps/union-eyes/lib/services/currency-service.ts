@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Currency & Transfer Pricing Service
  * 

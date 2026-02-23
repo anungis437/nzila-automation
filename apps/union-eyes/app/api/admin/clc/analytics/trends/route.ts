@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CLC Analytics - Multi-Year Trends API
  * 

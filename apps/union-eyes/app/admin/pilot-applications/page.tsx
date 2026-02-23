@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Pilot Applications Management Page
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AI Insights Generator
  * Q1 2025 - Advanced Analytics

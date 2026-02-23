@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Standardized Authentication Middleware
  * 

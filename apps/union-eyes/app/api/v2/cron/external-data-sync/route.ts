@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/cron/external-data-sync
  * Migrated to withApi() framework

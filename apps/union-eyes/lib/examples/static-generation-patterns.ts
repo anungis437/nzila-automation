@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Static Generation Examples and Patterns
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Member Profile Detail Page
  * 

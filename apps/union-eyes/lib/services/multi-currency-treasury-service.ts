@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Multi-Currency Treasury Service
  * 

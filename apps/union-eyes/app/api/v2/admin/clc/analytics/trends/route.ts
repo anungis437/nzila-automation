@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/admin/clc/analytics/trends
  * Migrated to withApi() framework

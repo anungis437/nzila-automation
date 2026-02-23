@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Wallet Service
  * Handles wallet balance, ledger queries, and transactional ledger writes

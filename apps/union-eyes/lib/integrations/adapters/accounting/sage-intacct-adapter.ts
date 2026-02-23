@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Sage Intacct Integration Adapter
  * 

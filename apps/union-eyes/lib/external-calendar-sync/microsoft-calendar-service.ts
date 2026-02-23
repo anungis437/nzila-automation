@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Microsoft Outlook Calendar Sync Service
  * 

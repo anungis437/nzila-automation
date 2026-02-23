@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Board Packet Distribution API
  * 

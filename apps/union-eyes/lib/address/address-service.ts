@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * International Address Validation Service
  * 

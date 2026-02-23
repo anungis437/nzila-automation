@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { NextRequest, NextResponse } from "next/server";
 import { transcribeAudioWithLanguage, type SupportedLanguage } from "@/lib/azure-speech";

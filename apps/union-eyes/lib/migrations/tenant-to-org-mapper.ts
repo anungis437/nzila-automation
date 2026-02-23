@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Tenant to Organization ID Mapper
  * 

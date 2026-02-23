@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET PUT DELETE /api/admin/pki/workflows/[id]
  * Migrated to withApi() framework

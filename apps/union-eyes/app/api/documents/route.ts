@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Documents API Routes - Main endpoints for document management
  * GET /api/documents - List documents with filtering and pagination

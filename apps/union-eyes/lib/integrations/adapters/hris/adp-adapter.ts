@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * ADP Workforce Now HRIS Integration Adapter
  * 

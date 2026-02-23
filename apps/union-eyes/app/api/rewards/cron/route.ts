@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Cron Job for Rewards Automation
  * Runs scheduled tasks for automated awards, expiration warnings, etc.

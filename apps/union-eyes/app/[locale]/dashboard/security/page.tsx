@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Security Dashboard
  * For Security Manager - Security events, threats, access monitoring

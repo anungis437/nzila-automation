@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Client-side CSRF Protection Utilities
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Arrears Management Page
  * 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import type { CarbonValidationRequest, CarbonValidationResponse } from '@/lib/types/compliance-api-types';

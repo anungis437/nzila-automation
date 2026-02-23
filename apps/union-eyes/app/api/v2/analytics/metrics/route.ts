@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET POST /api/analytics/metrics
  * Migrated to withApi() framework

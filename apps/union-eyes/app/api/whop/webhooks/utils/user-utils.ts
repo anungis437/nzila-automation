@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
 this is a utils file that works with the whop webhook that will find the clerk user id from the metadata that it gets from whop
 for us to use later on with our database opperations

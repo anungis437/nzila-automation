@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Notification Integration Example
  * 

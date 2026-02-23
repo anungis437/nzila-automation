@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Main Dashboard Page
  * 

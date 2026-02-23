@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GET /api/cron/education-reminders
  * Migrated to withApi() framework

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Award Templates Service
  * Provides pre-configured award templates for quick recognition

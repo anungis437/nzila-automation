@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Predictive Analytics Engine
  * Q1 2025 - Advanced Analytics

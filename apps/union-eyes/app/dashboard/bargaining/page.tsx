@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Bargaining Dashboard Page
  * 

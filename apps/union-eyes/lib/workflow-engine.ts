@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workflow Engine for Claims Management
  * 

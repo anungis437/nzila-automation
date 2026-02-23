@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Support Operations Dashboard
  * For Support Manager & Support Agents - Help desk operations
