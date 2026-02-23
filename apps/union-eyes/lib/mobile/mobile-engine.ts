@@ -216,7 +216,7 @@ export class MobileNotificationService {
         body: payload.body,
         data: payload.data || {},
         priority: payload.priority || 'normal',
-        badge: payload.badge ? String(payload.badge) : undefined,
+        badge: payload.badge ?? undefined,
         sound: payload.sound,
         status: 'pending',
         scheduledAt: new Date(),

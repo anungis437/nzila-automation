@@ -186,7 +186,7 @@ export const updateProfileByWhopUserId = async (
       }
       
       // First check if the profile exists
-      let existingProfile = null;
+      let existingProfile: SelectProfile | null = null;
       let retries = 0;
       const maxRetries = 3;
       

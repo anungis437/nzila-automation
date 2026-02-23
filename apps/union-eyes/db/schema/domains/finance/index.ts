@@ -27,3 +27,6 @@ export * from './accounting';
 export * from './taxes';
 export * from './transfer-pricing';
 export * from './billing-config';
+
+// Explicit re-exports to resolve ambiguities
+export { paymentProcessorEnum } from './payments';

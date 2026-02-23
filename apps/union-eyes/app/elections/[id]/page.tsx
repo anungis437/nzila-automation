@@ -15,7 +15,7 @@ import { logger } from '@/lib/logger';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -70,7 +70,7 @@ export default function ElectionDetailPage({ params }: { params: { id: string } 
   const fetchElectionDetail = async () => {
     try {
       const data = await api.elections.get(params.id);
-      setElection(data);
+      setElection(data as ElectionDetail);
     } catch (error) {
       logger.error('Error fetching election', error);
     } finally {

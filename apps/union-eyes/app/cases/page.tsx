@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { Input } from '@/components/ui/input';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Select,
   SelectContent,
@@ -77,7 +77,7 @@ export default function CasesDashboardPage() {
         type: typeFilter !== 'all' ? typeFilter : undefined,
       });
       
-      setCases(data);
+      setCases(data as Case[]);
       
       // Calculate stats from data
       setStats({

@@ -69,7 +69,7 @@ export function ProgramsList({ programs }: ProgramsListProps) {
                 </Badge>
               </TableCell>
               <TableCell className="text-sm text-muted-foreground">
-                {new Date(program.created_at).toLocaleDateString()}
+                {new Date(program.createdAt).toLocaleDateString()}
               </TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>

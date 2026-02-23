@@ -409,15 +409,15 @@ async function getEligibleOfficers(
         userId: officer.userId,
         name: officer.membershipNumber || officer.userId, // Use membershipNumber or userId as fallback
         role: officer.role,
-        expertise: metadata.expertise || [],
-        maxCaseload: metadata.maxCaseload || 20,
+        expertise: (metadata.expertise as string[]) || [],
+        maxCaseload: (metadata.maxCaseload as number) || 20,
         currentCaseload: workload?.activeCases || 0,
-        availableHours: metadata.weeklyHours || 40,
-        locations: metadata.locations || [],
+        availableHours: (metadata.weeklyHours as number) || 40,
+        locations: (metadata.locations as string[]) || [],
         successRate: workload?.successRate || 0,
         avgResolutionDays: workload?.avgResolutionDays || 0,
-        languages: metadata.languages || ["English"],
-        certifications: metadata.certifications || [],
+        languages: (metadata.languages as string[]) || ["English"],
+        certifications: (metadata.certifications as string[]) || [],
       });
     }
 
@@ -601,7 +601,7 @@ export async function getOfficerWorkload(
     );
 
     const metadata: Record<string, unknown> = {};
-    const maxCaseload = metadata.maxCaseload || 20;
+    const maxCaseload = Number(metadata.maxCaseload) || 20;
     const utilizationRate = Math.round((activeCases / maxCaseload) * 100);
 
     return {

@@ -13,6 +13,7 @@ import { useAuth, useOrganization } from "@clerk/nextjs";
 // Tenant information interface
 export interface TenantInfo {
   tenantId: string;
+  organizationId: string;
   name: string;
   slug: string;
   settings?: Record<string, any>;

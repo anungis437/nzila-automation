@@ -436,7 +436,7 @@ alert(err instanceof Error ? err.message : 'Failed to submit vote');
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setSelectedTab(tab.key)}
+                onClick={() => setSelectedTab(tab.key as typeof selectedTab)}
                 className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
                   selectedTab === tab.key
                     ? "bg-blue-600 text-white shadow-lg"

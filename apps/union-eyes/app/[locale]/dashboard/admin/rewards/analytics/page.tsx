@@ -141,8 +141,19 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
   );
 
   return {
-    overview: (overview as Array<Record<string, unknown>>)[0] as Record<string, unknown>,
-    redemption: (redemption as Array<Record<string, unknown>>)[0] as Record<string, unknown>,
+    overview: (overview as Array<Record<string, unknown>>)[0] as {
+      total_awards: number;
+      unique_recipients: number;
+      unique_issuers: number;
+      total_credits_awarded: number;
+      issued_awards: number;
+      pending_awards: number;
+    },
+    redemption: (redemption as Array<Record<string, unknown>>)[0] as {
+      total_redemptions: number;
+      total_credits_redeemed: number;
+      fulfilled_redemptions: number;
+    },
     budgets: budgets as Array<Record<string, unknown>>,
     topAwardTypes: topTypes as Array<Record<string, unknown>>,
     awardTrend: trend as Array<Record<string, unknown>>,

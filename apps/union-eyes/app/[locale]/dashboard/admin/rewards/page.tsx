@@ -55,7 +55,7 @@ export default async function AdminRewardsPage() {
   const t = await getTranslations('rewards.admin');
 
   // Fetch summary metrics
-  const summary = await getRewardsSummary();
+  const summary = await getRewardsSummary() as { success: boolean; data?: Record<string, any>; error?: string };
 
   return (
     <div className="container mx-auto py-8 space-y-8">

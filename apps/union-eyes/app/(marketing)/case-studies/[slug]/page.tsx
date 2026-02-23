@@ -143,19 +143,11 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               {caseStudy.metrics.map((metric, idx) => (
                 <ImpactMetricCard
                   key={idx}
-                  metric={{
-                    id: `${caseStudy.id}-metric-${idx}`,
-                    organizationId: caseStudy.organizationId || '',
-                    metricType: metric.type as any,
-                    value: metric.after,
-                    comparisonValue: metric.before,
-                    unit: metric.unit,
-                    period: '',
-                    visibility: 'public',
-                    anonymized: caseStudy.anonymized,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                  }}
+                  label={metric.label}
+                  before={metric.before}
+                  after={metric.after}
+                  unit={metric.unit}
+                  improvement={metric.improvement}
                 />
               ))}
             </div>
@@ -166,9 +158,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         {caseStudy.quote && (
           <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white rounded-lg p-8 mb-8">
             <blockquote className="text-2xl font-medium italic mb-4">
-              "{caseStudy.quote.text}"
+              "{typeof caseStudy.quote === 'string' ? caseStudy.quote : (caseStudy.quote as any).text}"
             </blockquote>
-            <p className="text-blue-100">— {caseStudy.quote.attribution}</p>
+            <p className="text-blue-100">— {typeof caseStudy.quote === 'string' ? '' : (caseStudy.quote as any).attribution}</p>
           </div>
         )}
 
@@ -180,7 +172,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             </h2>
             <div
               className="prose prose-lg max-w-none text-gray-800"
-              dangerouslySetInnerHTML={{ __html: caseStudy.results }}
+              dangerouslySetInnerHTML={{ __html: Array.isArray(caseStudy.results) ? caseStudy.results.join('') : (caseStudy.results as string) }}
             />
           </div>
         )}
@@ -210,7 +202,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             </h2>
             <div
               className="prose prose-lg max-w-none text-gray-800"
-              dangerouslySetInnerHTML={{ __html: caseStudy.replicability }}
+              dangerouslySetInnerHTML={{ __html: Array.isArray(caseStudy.replicability) ? caseStudy.replicability.join('') : (caseStudy.replicability as string) }}
             />
           </div>
         )}

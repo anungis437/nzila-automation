@@ -403,7 +403,7 @@ export function IncidentDetailView({
             <CardTitle>Activity Timeline</CardTitle>
           </CardHeader>
           <CardContent>
-            <IncidentTimelineViewer incidentId={incidentId} timeline={incident.timeline} />
+            <IncidentTimelineViewer timeline={incident.timeline} />
           </CardContent>
         </Card>
       )}

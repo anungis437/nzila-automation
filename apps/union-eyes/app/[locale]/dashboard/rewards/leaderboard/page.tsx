@@ -79,17 +79,17 @@ async function getLeaderboardData(orgId: string, period: 'all-time' | 'monthly' 
 
   return {
     topReceivers: (topReceivers as Array<Record<string, unknown>>).map((row) => ({
-      userId: row.user_id,
-      name: row.name || 'Unknown User',
-      avatar: row.avatar,
+      userId: String(row.user_id),
+      name: String(row.name || 'Unknown User'),
+      avatar: row.avatar as string | undefined,
       totalCredits: Number(row.total_credits),
       awardsReceived: Number(row.awards_received),
       rank: Number(row.rank),
     })),
     topGivers: (topGivers as Array<Record<string, unknown>>).map((row) => ({
-      userId: row.user_id,
-      name: row.name || 'Unknown User',
-      avatar: row.avatar,
+      userId: String(row.user_id),
+      name: String(row.name || 'Unknown User'),
+      avatar: row.avatar as string | undefined,
       totalCredits: Number(row.total_credits),
       awardsGiven: Number(row.awards_given),
       awardsReceived: 0,  // Not queried for givers leaderboard

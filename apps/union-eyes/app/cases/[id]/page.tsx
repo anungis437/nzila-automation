@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -81,9 +81,9 @@ export default function CaseDetailPage({ params }: { params: { id: string } }) {
         api.cases.evidence.list(params.id),
       ]);
       
-      setCaseDetail(caseData);
-      setTimeline(timelineData);
-      setEvidence(evidenceData);
+      setCaseDetail(caseData as CaseDetail);
+      setTimeline(timelineData as TimelineEvent[]);
+      setEvidence(evidenceData as Evidence[]);
     } catch (error) {
       logger.error('Error fetching case', error);
     } finally {
@@ -99,7 +99,7 @@ export default function CaseDetailPage({ params }: { params: { id: string } }) {
       setNote('');
       // Refresh timeline to show new note
       const timelineData = await api.cases.timeline(params.id);
-      setTimeline(timelineData);
+      setTimeline(timelineData as TimelineEvent[]);
     } catch (error) {
       logger.error('Error adding note', error);
     }

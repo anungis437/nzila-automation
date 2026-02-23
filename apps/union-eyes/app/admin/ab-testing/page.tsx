@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Flask,
+  FlaskConical,
   Play,
   Pause,
   CheckCircle2,
@@ -154,7 +154,7 @@ export default function ABTestingDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
-                <Flask className="h-8 w-8 text-blue-600" />
+                <FlaskConical className="h-8 w-8 text-blue-600" />
                 <p className="text-3xl font-bold text-gray-900">{activeTests}</p>
               </div>
             </CardContent>
@@ -323,7 +323,7 @@ function TestCard({ test }: { test: typeof mockTests[0] }) {
             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
               <span>Type: {test.type}</span>
               <span>|</span>
-              <span>Started: {test.startDate.toLocaleDateString()}</span>
+              <span>Started: {test.startDate?.toLocaleDateString()}</span>
               {test.endDate && (
                 <>
                   <span>|</span>

@@ -361,10 +361,10 @@ async function generatePredictionInsights(
 
   for (const [metricType, preds] of Object.entries(predictionsByMetric)) {
     const sortedPreds = preds.sort(
-      (a, b) => new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime()
+      (a, b) => new Date(a.predictionDate).getTime() - new Date(b.predictionDate).getTime()
     );
     const values = sortedPreds.map((p) => Number(p.predictedValue));
-    const confidences = sortedPreds.map((p) => Number(p.confidenceScore || '0'));
+    const confidences = sortedPreds.map((p) => Number(p.confidence || '0'));
     const avgConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length;
 
     // Trend in predictions
@@ -383,9 +383,9 @@ async function generatePredictionInsights(
         estimatedImpact: Math.abs(changePercent) > 30 ? 'High' : 'Medium',
         confidence: avgConfidence,
         dataPoints: sortedPreds.map((p) => ({
-          date: p.targetDate,
+          date: p.predictionDate,
           value: p.predictedValue,
-          confidence: p.confidenceScore
+          confidence: p.confidence
         }))
       });
     }

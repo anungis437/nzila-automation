@@ -194,7 +194,7 @@ export function arrayAppend(
  * Handle ILIKE vs LIKE differences
  */
 export function createLikeQuery(
-  column: unknown,
+  column: any,
   pattern: string,
   dbType: DatabaseType = 'postgresql'
 ) {
@@ -274,7 +274,7 @@ export function createPaginationQuery(
  * Handle boolean type differences
  */
 export function createBooleanQuery(
-  column: unknown,
+  column: any,
   value: boolean,
   dbType: DatabaseType = 'postgresql'
 ) {
@@ -291,7 +291,7 @@ export function createBooleanQuery(
  * Handle NULL checks differences
  */
 export function createNullCheck(
-  column: unknown,
+  column: any,
   checkNull: boolean = true,
   dbType: DatabaseType = 'postgresql'
 ) {
@@ -340,9 +340,9 @@ export async function checkDatabaseHealth(): Promise<{
     // Simple health check query
     await executeQuery(db, async (db) => {
       if (config.type === 'azure-sql' || config.type === 'mssql') {
-        return await db.execute(sql`SELECT 1`);
+        return await (db as any).execute(sql`SELECT 1`);
       } else {
-        return await db.execute(sql`SELECT 1`);
+        return await (db as any).execute(sql`SELECT 1`);
       }
     });
     

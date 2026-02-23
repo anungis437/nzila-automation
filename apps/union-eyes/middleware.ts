@@ -265,7 +265,7 @@ export default clerkMiddleware(async (auth, req) => {
     return withRequestId(intlResponse, requestId);
   }
   // Fallback: convert plain Response to NextResponse to set headers
-  const nr = NextResponse.next({ headers: new Headers(intlResponse.headers) });
+  const nr = NextResponse.next({ headers: new Headers((intlResponse as Response).headers) });
   nr.headers.set('x-request-id', requestId);
   return nr;
 });

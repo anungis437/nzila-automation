@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { logger } from '@/lib/logger';
 import { 
   Upload, FileText, CheckCircle, XCircle, AlertTriangle, ArrowLeft 

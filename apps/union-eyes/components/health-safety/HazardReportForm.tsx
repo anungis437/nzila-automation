@@ -75,7 +75,7 @@ export function HazardReportForm({
   const [photos, setPhotos] = React.useState<File[]>([]);
 
   const form = useForm<HazardFormData>({
-    resolver: zodResolver(hazardSchema),
+    resolver: zodResolver(hazardSchema) as any,
     defaultValues: {
       hazardType: "",
       location: "",

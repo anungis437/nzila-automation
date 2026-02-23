@@ -743,7 +743,7 @@ export default function AlertManagementDashboard() {
 
                     return (
                       <div key={category} className="flex items-center justify-between">
-                        <span className="text-sm capitalize">{category.replace('_', ' ')}</span>
+                        <span className="text-sm capitalize">{(category as string).replace('_', ' ')}</span>
                         <div className="flex items-center gap-2">
                           <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div 

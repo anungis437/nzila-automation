@@ -12,7 +12,8 @@
  */
 
 import { db } from '@/db';
-import { dataAggregationConsent, organizations } from '@/db/schema';
+import { dataAggregationConsent } from '@/db/schema/domains/marketing';
+import { organizations } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -48,18 +49,18 @@ export default async function DataSharingPage({ params }: DataSharingPageProps) 
     .where(
       and(
         eq(dataAggregationConsent.organizationId, organizationId),
-        eq(dataAggregationConsent.status, 'active')
+        eq((dataAggregationConsent as any).status, 'active')
       )
     )
-    .limit(1);
+    .limit(1) as any[];
 
   // Get consent history
   const consentHistory = await db
     .select()
     .from(dataAggregationConsent)
     .where(eq(dataAggregationConsent.organizationId, organizationId))
-    .orderBy(desc(dataAggregationConsent.createdAt))
-    .limit(10);
+    .orderBy(desc((dataAggregationConsent as any).createdAt))
+    .limit(10) as any[];
 
   const hasActiveConsent = consent !== undefined;
 

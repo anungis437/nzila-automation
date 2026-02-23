@@ -72,14 +72,14 @@ async function getAffiliateData(clcId: string) {
   try {
     // Fetch all affiliates (direct-chartered unions and provincial federations)
     const affiliates = await db.query.organizations.findMany({
-      where: (organizations, { eq }) => eq(organizations.parentOrganizationId, clcId),
+      where: (organizations, { eq }) => eq(organizations.parentId, clcId),
       orderBy: (organizations, { asc }) => [asc(organizations.name)],
     });
 
     // Categorize affiliates
     const directCharteredUnions = affiliates.filter(a => a.organizationType === 'union');
     const provincialFederations = affiliates.filter(a => a.organizationType === 'federation');
-    const chapters = affiliates.filter(a => a.organizationType === 'chapter');
+    const chapters = affiliates.filter(a => a.organizationType === 'local');
     const locals = affiliates.filter(a => a.organizationType === 'local');
 
     // Calculate summary metrics
@@ -357,7 +357,7 @@ export default async function CLCAffiliatesPage({
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <MapPin className="h-3 w-3" />
-                          {affiliate.province || affiliate.city || 'N/A'}
+                          {affiliate.province || 'N/A'}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">

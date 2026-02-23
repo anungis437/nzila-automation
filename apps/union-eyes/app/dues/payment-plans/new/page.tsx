@@ -23,6 +23,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Calculator, Save } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { api } from '@/lib/api/index';
 
 interface Member {
   id: string;
@@ -64,7 +65,7 @@ export default function NewPaymentPlanPage() {
 
   const fetchMember = async () => {
     try {
-      const data = await api.members.get(memberId || '');
+      const data = await api.members.get(memberId || '') as Record<string, any>;
       setMember({
         id: data.id,
         name: data.fullName || data.name,

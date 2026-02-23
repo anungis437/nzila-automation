@@ -50,7 +50,7 @@ export default async function MovementInsightsPage({
     .where(
       and(
         eq(dataAggregationConsent.organizationId, organizationId),
-        eq(dataAggregationConsent.status, 'active')
+        eq(dataAggregationConsent.consentGiven, true)
       )
     )
     .limit(1);
@@ -65,19 +65,17 @@ export default async function MovementInsightsPage({
     .where(
       and(
         eq(movementTrends.timeframe, timeframe),
-        gte(movementTrends.calculatedAt, thirtyDaysAgo),
-        sector ? eq(movementTrends.sector, sector) : undefined,
-        jurisdiction ? eq(movementTrends.jurisdiction, jurisdiction) : undefined
+        gte(movementTrends.createdAt, thirtyDaysAgo)
       )
     )
-    .orderBy(desc(movementTrends.calculatedAt));
+    .orderBy(desc(movementTrends.createdAt));
 
   // Group trends by type
   const trendsByType = trends.reduce((acc, trend) => {
-    if (!acc[trend.trendType]) {
-      acc[trend.trendType] = [];
+    if (!acc[trend.category]) {
+      acc[trend.category] = [];
     }
-    acc[trend.trendType].push(trend);
+    acc[trend.category].push(trend);
     return acc;
   }, {} as Record<string, typeof trends>);
 

@@ -106,7 +106,7 @@ export function IncidentReportForm({
   const [attachments, setAttachments] = React.useState<File[]>([]);
 
   const form = useForm<IncidentFormData>({
-    resolver: zodResolver(incidentSchema),
+    resolver: zodResolver(incidentSchema) as any,
     defaultValues: initialData || {
       incidentTime: "",
       location: "",

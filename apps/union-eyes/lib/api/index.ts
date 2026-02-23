@@ -5,6 +5,8 @@
  * Used by client components to communicate with backend
  */
 
+const logger = { error: console.error };
+
 interface RequestOptions {
   params?: Record<string, string | number | boolean | undefined>;
   headers?: Record<string, string>;

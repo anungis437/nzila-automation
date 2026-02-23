@@ -14,6 +14,7 @@
  * Access metrics at: GET /api/metrics
  */
 
+// @ts-ignore - prom-client may not be installed
 import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
 
 // Create registry

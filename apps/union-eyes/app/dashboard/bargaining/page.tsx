@@ -6,7 +6,7 @@
  */
 
 import { Suspense } from "react";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/api-auth-guard";
 import { redirect } from "next/navigation";
 import { NegotiationDashboard } from "@/components/bargaining/NegotiationDashboard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,7 +25,7 @@ async function BargainingDashboardContent() {
 
   // Role check: Requires bargaining committee role (level 40)
   // This is already handled by the API but we can do client-side check too
-  const organizationId = user.organizationId;
+  const organizationId = user.organizationId || '';
 
   return (
     <div className="container mx-auto py-8 px-4">

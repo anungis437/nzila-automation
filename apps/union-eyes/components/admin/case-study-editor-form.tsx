@@ -47,17 +47,17 @@ export default function CaseStudyEditorForm({ caseStudy }: CaseStudyEditorFormPr
   const [formData, setFormData] = useState({
     title: caseStudy?.title || '',
     slug: caseStudy?.slug || '',
-    organizationName: caseStudy?.organizationName || '',
+    organizationName: caseStudy?.organizationId || '',
     organizationType: caseStudy?.organizationType || 'local',
-    sector: caseStudy?.sector || '',
-    jurisdiction: caseStudy?.jurisdiction || '',
+    sector: (caseStudy as any)?.sector || '',
+    jurisdiction: (caseStudy as any)?.jurisdiction || '',
     category: caseStudy?.category || 'grievance-wins',
     summary: caseStudy?.summary || '',
     challenge: caseStudy?.challenge || '',
     solution: caseStudy?.solution || '',
-    results: caseStudy?.results || '',
-    publishStatus: caseStudy?.publishStatus || 'draft',
-    featuredImage: caseStudy?.featuredImage || '',
+    results: caseStudy?.outcome || '',
+    publishStatus: caseStudy?.publishedAt ? 'published' : 'draft',
+    featuredImage: (caseStudy as any)?.featuredImage || '',
   });
 
   // Metrics state

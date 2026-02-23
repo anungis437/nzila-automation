@@ -58,6 +58,8 @@ export type ESignatureRequest = {
   dueDate?: Date;
   message?: string;
   provider: "docusign" | "adobe_sign" | "internal";
+  requestedBy?: string;
+  id?: string;
 };
 
 export type ESignatureStatus = {
@@ -515,7 +517,7 @@ export async function requestESignature(
             order: 1,
           },
         ],
-        organizationId: document.organizationId as unknown,
+        organizationId: document.organizationId as string,
         userId: request.signerUserId,
       });
 
@@ -616,7 +618,7 @@ export async function getSignatureStatus(
 
     return {
       documentId: document.id,
-      status: (document.signatureStatus as unknown) || "pending",
+      status: (document.signatureStatus as ESignatureStatus['status']) || "pending",
       signedAt: document.signedAt ? new Date(document.signedAt) : undefined,
       signedBy: document.signedBy || undefined,
       provider: signatureData?.provider,

@@ -128,7 +128,7 @@ export const getDuesTransactionsByOrganization = async (
       const transactions = await dbOrTx
         .select()
         .from(duesTransactions)
-        .where(eq(duesTransactions.tenantId, organizationId))
+        .where(eq(duesTransactions.organizationId, organizationId))
         .orderBy(desc(duesTransactions.dueDate));
 
       let filtered = transactions;
@@ -175,7 +175,7 @@ export const createDuesTransaction = async (
 
       return transaction;
     } catch (error) {
-      logger.error("Error creating dues transaction", { error, organizationId: data.tenantId });
+      logger.error("Error creating dues transaction", { error, organizationId: data.organizationId });
       throw new Error("Failed to create dues transaction");
     }
   };
@@ -286,7 +286,7 @@ export const getOrganizationDuesSummary = async (
       const transactions = await dbOrTx
         .select()
         .from(duesTransactions)
-        .where(eq(duesTransactions.tenantId, organizationId));
+        .where(eq(duesTransactions.organizationId, organizationId));
 
       const pending = transactions.filter(t => t.status === 'pending');
       const overdue = transactions.filter(t => t.status === 'overdue');

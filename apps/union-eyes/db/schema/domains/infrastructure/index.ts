@@ -78,3 +78,6 @@ export { clcWebhookLog } from './clc-audit';
 
 // chartOfAccounts and chartOfAccountsRelations - use erp.ts (main ERP integration)
 export { chartOfAccounts, chartOfAccountsRelations } from './erp';
+
+// syncStatusEnum - use erp.ts (primary definition)
+export { syncStatusEnum } from './erp';

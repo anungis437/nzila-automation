@@ -4,8 +4,6 @@ import {
   memberDuesAssignments,
   duesTransactions,
   members,
-  type DuesRule,
-  type MemberDuesAssignment,
 } from '@/services/financial-service/src/db/schema';
 import { eq, and, sql, lte, gte, or, isNull, desc } from 'drizzle-orm';
 
@@ -35,6 +33,8 @@ interface DuesCalculationResult {
     rate?: number;
     hours?: number;
     tier?: string;
+    flatAmount?: number;
+    formula?: string;
   };
 }
 
@@ -96,7 +96,7 @@ return null;
 
     // Calculate based on rule type
     let amount: number;
-    let breakdown: unknown = {};
+    let breakdown: DuesCalculationResult['breakdown'] = { baseAmount: 0 };
 
     switch (rule.calculationType) {
       case 'flat_rate':
@@ -124,12 +124,12 @@ return null;
       case 'tiered':
         const tierResult = this.calculateTieredDues(rule, memberData);
         amount = tierResult.amount;
-        breakdown = tierResult.breakdown;
+        breakdown = tierResult.breakdown as DuesCalculationResult['breakdown'];
         break;
 
       case 'formula':
         amount = this.calculateFormulaDues(rule, memberData);
-        breakdown = { baseAmount: amount, formula: rule.customFormula };
+        breakdown = { baseAmount: amount, formula: rule.customFormula ?? undefined };
         break;
 
       default:
@@ -523,7 +523,7 @@ throw error;
           .set({
             lateFeeAmount: lateFee.toString(),
             totalAmount: newTotal.toString(),
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(duesTransactions.id, transaction.id));
       }

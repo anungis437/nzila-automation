@@ -231,7 +231,7 @@ export async function generatePredictions(params: {
     
     // Store predictions in database
     const lastDate = timeSeriesData[timeSeriesData.length - 1].date;
-    const storedPredictions = [];
+    const storedPredictions: any[] = [];
     
     for (let i = 0; i < predictions.length; i++) {
       const pred = predictions[i];

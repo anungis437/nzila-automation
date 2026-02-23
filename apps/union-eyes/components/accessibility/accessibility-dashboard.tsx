@@ -492,7 +492,7 @@ export function AccessibilityDashboard() {
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
-                          {complianceReport.summary.totalIssues}
+                          {(complianceReport as any).summary.totalIssues}
                         </div>
                       </CardContent>
                     </Card>
@@ -502,7 +502,7 @@ export function AccessibilityDashboard() {
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold text-orange-600">
-                          {complianceReport.summary.openIssues}
+                          {(complianceReport as any).summary.openIssues}
                         </div>
                       </CardContent>
                     </Card>
@@ -512,20 +512,20 @@ export function AccessibilityDashboard() {
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold text-green-600">
-                          {complianceReport.summary.resolvedIssues}
+                          {(complianceReport as any).summary.resolvedIssues}
                         </div>
                       </CardContent>
                     </Card>
                   </div>
                   
-                  {complianceReport.recommendations.length > 0 && (
+                  {(complianceReport as any).recommendations.length > 0 && (
                     <Card>
                       <CardHeader>
                         <CardTitle>Recommendations</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <ul className="space-y-2">
-                          {complianceReport.recommendations.map(
+                          {(complianceReport as any).recommendations.map(
                             (rec: string, idx: number) => (
                               <li key={idx} className="flex items-start gap-2">
                                 <Info className="h-4 w-4 mt-0.5 text-blue-600" />

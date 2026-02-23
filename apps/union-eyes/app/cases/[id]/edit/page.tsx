@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft, Save } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { api } from '@/lib/api/index';
 
 interface CaseFormData {
   memberId: string;

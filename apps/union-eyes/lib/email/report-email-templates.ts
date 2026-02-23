@@ -88,6 +88,7 @@ async function sendViaSendGrid(params: SendEmailParams): Promise<void> {
     let sgMail: { default: { setApiKey: (key: string) => void; send: (msg: Record<string, unknown>) => Promise<unknown> } };
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // @ts-ignore - @sendgrid/mail may not be installed
       sgMail = await import('@sendgrid/mail') as typeof sgMail;
     } catch (importError) {
 throw new Error('SendGrid package not installed. Using Resend fallback.');

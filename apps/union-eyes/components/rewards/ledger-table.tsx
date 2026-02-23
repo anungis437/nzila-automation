@@ -11,7 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ArrowDown, ArrowUp, RefreshCw, Plus, Minus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { RewardWalletLedger } from '@/db/schema/recognition-rewards-schema';
+import type { RewardWalletLedgerEntry as RewardWalletLedger } from '@/db/schema/recognition-rewards-schema';
 
 interface LedgerTableProps {
   entries: (RewardWalletLedger & {
@@ -54,13 +54,13 @@ export function LedgerTable({ entries }: LedgerTableProps) {
         </TableHeader>
         <TableBody>
           {entries.map((entry) => {
-            const isCredit = entry.amount > 0;
-            const Icon = getTransactionIcon(entry.entry_type);
+            const isCredit = entry.amountCredits > 0;
+            const Icon = getTransactionIcon(entry.eventType);
 
             return (
               <TableRow key={entry.id}>
                 <TableCell className="font-medium text-sm text-muted-foreground">
-                  {new Date(entry.created_at).toLocaleDateString('en-US', {
+                  {new Date(entry.createdAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',
@@ -73,9 +73,9 @@ export function LedgerTable({ entries }: LedgerTableProps) {
                     <span className="font-medium">
                       {getTransactionTitle(entry, t)}
                     </span>
-                    {entry.notes && (
+                    {(entry as any).notes && (
                       <span className="text-sm text-muted-foreground">
-                        {entry.notes}
+                        {(entry as any).notes}
                       </span>
                     )}
                   </div>
@@ -83,7 +83,7 @@ export function LedgerTable({ entries }: LedgerTableProps) {
                 <TableCell>
                   <Badge variant="outline" className="flex items-center gap-1 w-fit">
                     <Icon className="h-3 w-3" />
-                    {formatEntryType(entry.entry_type, t)}
+                    {formatEntryType(entry.eventType, t)}
                   </Badge>
                 </TableCell>
                 <TableCell
@@ -92,10 +92,10 @@ export function LedgerTable({ entries }: LedgerTableProps) {
                   }`}
                 >
                   {isCredit ? '+' : ''}
-                  {entry.amount.toLocaleString()}
+                  {entry.amountCredits.toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right font-medium">
-                  {entry.balance_after.toLocaleString()}
+                  {entry.balanceAfter.toLocaleString()}
                 </TableCell>
               </TableRow>
             );
@@ -127,19 +127,19 @@ function getTransactionTitle(
   entry: RewardWalletLedger & { created_by_name?: string },
   t: any
 ): string {
-  switch (entry.entry_type) {
-    case 'earned':
+  switch (entry.eventType) {
+    case 'earn':
       return t('types.earned', { defaultValue: 'Award Received' });
-    case 'redeemed':
+    case 'spend':
       return t('types.redeemed', { defaultValue: 'Credits Redeemed' });
     case 'refund':
       return t('types.refund', { defaultValue: 'Refund Processed' });
-    case 'adjustment':
+    case 'adjust':
       return t('types.adjustment', { defaultValue: 'Balance Adjustment' });
-    case 'revoked':
+    case 'revoke':
       return t('types.revoked', { defaultValue: 'Award Revoked' });
     default:
-      return entry.entry_type;
+      return entry.eventType;
   }
 }
 

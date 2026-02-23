@@ -222,7 +222,7 @@ export function standardErrorResponse(
   
   // Only include details in development or for specific error types
   if (isDevelopment || code === ErrorCode.VALIDATION_ERROR) {
-    errorResponse.details = details;
+    errorResponse.details = details as Record<string, unknown> | undefined;
   }
   
   return NextResponse.json(errorResponse, { 

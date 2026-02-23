@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Users, FileText, DollarSign, AlertCircle, 
   TrendingUp, Calendar, Award, ArrowRight
@@ -62,8 +62,8 @@ export default function DashboardPage() {
         api.dashboard.activities(10),
       ]);
       
-      setStats(statsData);
-      setActivities(activitiesData);
+      setStats(statsData as DashboardStats);
+      setActivities(activitiesData as RecentActivity[]);
     } catch (error) {
       logger.error('Error fetching dashboard data', error);
     } finally {

@@ -245,14 +245,14 @@ export async function setEncryptionKeyInSession(
     const encryptionKey = key || await getEncryptionKey();
 
     // Set session variable (works with both postgres and Drizzle)
-    if (db.execute) {
+    if ((db as any).execute) {
       // Drizzle db - SECURITY FIX: Use proper parameterization instead of string interpolation
       const { sql } = await import('drizzle-orm');
       // Use parameterized query to safely set the encryption key
-      await db.execute(sql`SET LOCAL app.encryption_key = ${encryptionKey}`);
-    } else if (db.query) {
+      await (db as any).execute(sql`SET LOCAL app.encryption_key = ${encryptionKey}`);
+    } else if ((db as any).query) {
       // postgres client
-      await db.query(`SET LOCAL app.encryption_key = $1`, [encryptionKey]);
+      await (db as any).query(`SET LOCAL app.encryption_key = $1`, [encryptionKey]);
     } else {
       throw new Error('Unsupported database client type');
     }

@@ -56,7 +56,8 @@ const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactEle
   union: { label: "Union", icon: <Building2 className="w-4 h-4" />, color: "text-green-700 bg-green-100 border-green-200" },
   local: { label: "Local", icon: <Users className="w-4 h-4" />, color: "text-orange-700 bg-orange-100 border-orange-200" },
   region: { label: "Region", icon: <MapPin className="w-4 h-4" />, color: "text-teal-700 bg-teal-100 border-teal-200" },
-  district: { label: "District", icon: <Network className="w-4 h-4" />, color: "text-indigo-700 bg-indigo-100 border-indigo-200" }
+  district: { label: "District", icon: <Network className="w-4 h-4" />, color: "text-indigo-700 bg-indigo-100 border-indigo-200" },
+  platform: { label: "Platform", icon: <Settings className="w-4 h-4" />, color: "text-purple-700 bg-purple-100 border-purple-200" }
 };
 
 const statusConfig: Record<OrganizationStatus, { label: string; color: string; dotColor: string }> = {
@@ -67,6 +68,7 @@ const statusConfig: Record<OrganizationStatus, { label: string; color: string; d
 };
 
 interface OrganizationWithDetails extends Organization {
+  description?: string;
   memberCount?: number;
   childCount?: number;
   activeClaims?: number;

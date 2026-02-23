@@ -69,7 +69,7 @@ export function RedemptionForm({ balance, mode, userId, orgId }: RedemptionFormP
         router.push('/dashboard/rewards?redemption=success');
       }
     } catch (err) {
-      setError(err.message || t('errors.unknown', { defaultValue: 'An error occurred' }));
+      setError((err as Error).message || t('errors.unknown', { defaultValue: 'An error occurred' }));
       setLoading(false);
     }
   };
@@ -99,7 +99,7 @@ export function RedemptionForm({ balance, mode, userId, orgId }: RedemptionFormP
           disabled={loading}
         />
         <p className="text-xs text-muted-foreground">
-          {t('creditsHelper', {
+          {(t as any)('creditsHelper', {
             defaultValue: 'Maximum: {balance} credits',
             values: { balance: balance.toLocaleString() },
           })}

@@ -38,11 +38,11 @@ export function AwardsQueue({ awards, status }: AwardsQueueProps) {
         <TableBody>
           {awards.map((award) => (
             <TableRow key={award.id}>
-              <TableCell className="font-medium">{award.recipient_user_id}</TableCell>
-              <TableCell>{award.award_type_id}</TableCell>
-              <TableCell>{award.credits_awarded}</TableCell>
+              <TableCell className="font-medium">{award.recipientUserId}</TableCell>
+              <TableCell>{award.awardTypeId}</TableCell>
+              <TableCell>{(award as any).creditsAwarded ?? '—'}</TableCell>
               <TableCell className="text-sm text-muted-foreground">
-                {new Date(award.created_at).toLocaleDateString()}
+                {new Date(award.createdAt).toLocaleDateString()}
               </TableCell>
               <TableCell className="text-right space-x-2">
                 {status === 'pending_approval' && (

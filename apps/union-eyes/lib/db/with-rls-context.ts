@@ -54,7 +54,7 @@ export async function withRLSContext<T>(
   operation: () => Promise<T>
 ): Promise<T>;
 export async function withRLSContext<T>(
-  operation: (tx: NodePgDatabase<unknown>) => Promise<T>
+  operation: (tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>
 ): Promise<T>;
 export async function withRLSContext<T>(
   context: Record<string, unknown>,
@@ -62,20 +62,20 @@ export async function withRLSContext<T>(
 ): Promise<T>;
 export async function withRLSContext<T>(
   context: Record<string, unknown>,
-  operation: (tx: NodePgDatabase<unknown>) => Promise<T>
+  operation: (tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>
 ): Promise<T>;
 export async function withRLSContext<T>(
   contextOrOperation:
     | Record<string, unknown>
-    | ((tx: NodePgDatabase<unknown>) => Promise<T>)
+    | ((tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>)
     | (() => Promise<T>),
   maybeOperation?:
-    | ((tx: NodePgDatabase<unknown>) => Promise<T>)
+    | ((tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>)
     | (() => Promise<T>)
 ): Promise<T> {
   const operation = (
     typeof contextOrOperation === 'function' ? contextOrOperation : maybeOperation!
-  ) as (tx: NodePgDatabase<unknown>) => Promise<T>;
+  ) as (tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>;
 
   // Get authenticated user from Clerk
   const { userId, orgId } = await auth();
@@ -107,7 +107,7 @@ export async function withRLSContext<T>(
     await tx.execute(sql`SELECT set_config('app.current_org_id', ${orgId}, true)`);
     
     // Execute the operation with user + org context set
-    const result = await operation(tx);
+    const result = await operation(tx as unknown as NodePgDatabase<Record<string, unknown>>);
     
     // Transaction commit automatically clears local config variables
     return result;

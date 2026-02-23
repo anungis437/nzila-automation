@@ -318,7 +318,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claims');
           ].map((stat) => (
             <motion.button
               key={stat.key}
-              onClick={() => setSelectedFilter(stat.key)}
+              onClick={() => setSelectedFilter(stat.key as typeof selectedFilter)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`p-4 rounded-lg border-2 transition-all ${

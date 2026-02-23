@@ -24,7 +24,7 @@ export default async function AdminBudgetsPage() {
   const t = await getTranslations('rewards.admin.budgets');
 
   // Fetch budgets and usage summary
-  const budgetsResult = await listBudgetEnvelopes({});
+  const budgetsResult = await listBudgetEnvelopes('');
   const usageSummaryResult = await getBudgetUsageSummary();
 
   const budgets = budgetsResult.success ? budgetsResult.data || [] : [];

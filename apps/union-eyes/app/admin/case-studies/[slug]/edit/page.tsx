@@ -23,7 +23,7 @@ export default async function CaseStudyEditorPage({ params }: CaseStudyEditorPag
   const { slug } = params;
   const isNew = slug === 'new';
 
-  let caseStudy = null;
+  let caseStudy: any = null;
 
   if (!isNew) {
     [caseStudy] = await db

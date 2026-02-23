@@ -119,7 +119,7 @@ export function BargainingUnitManagement({
   const { toast } = useToast();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: "",
       unitNumber: "",

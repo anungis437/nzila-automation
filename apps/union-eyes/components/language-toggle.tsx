@@ -24,7 +24,7 @@ export function LanguageToggle() {
     const currentPath = pathname.replace(`/${locale}`, '');
     
     // Build the new path with the new locale
-    const newPath = newLocale === 'en' 
+    const newPath = newLocale === 'en-CA' 
       ? currentPath || '/'  // Don&apos;t add /en for default locale
       : `/${newLocale}${currentPath || '/'}`;
     

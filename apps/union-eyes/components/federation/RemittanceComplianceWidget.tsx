@@ -155,7 +155,7 @@ export function RemittanceComplianceWidget({
         );
       case "at-risk":
         return (
-          <Badge variant="warning" className="gap-1">
+          <Badge variant="secondary" className="gap-1">
             <Clock className="h-3 w-3" />
             At Risk
           </Badge>
@@ -175,7 +175,7 @@ export function RemittanceComplianceWidget({
       case "paid":
         return <Badge variant="success">Paid</Badge>;
       case "partial":
-        return <Badge variant="warning">Partial</Badge>;
+        return <Badge variant="secondary">Partial</Badge>;
       case "unpaid":
         return <Badge variant="destructive">Unpaid</Badge>;
     }

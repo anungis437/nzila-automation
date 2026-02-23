@@ -229,7 +229,7 @@ export function retry(options?: RetryOptions) {
     const originalMethod = descriptor.value;
     const policy = new RetryPolicy({
       ...options,
-      name: options?.name || `${target.constructor.name}.${propertyKey}`,
+      name: options?.name || `${(target as any).constructor.name}.${propertyKey}`,
     });
 
     descriptor.value = async function (...args: unknown[]) {

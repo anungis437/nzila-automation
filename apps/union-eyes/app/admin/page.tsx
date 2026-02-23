@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
 
   const fetchAdminData = async () => {
     try {
-      const integrationsData = await api.admin.integrations.list();
+      const integrationsData = await api.get('/admin/integrations');
       
       // Calculate stats from available data
       const integrationsList = (integrationsData as unknown as { integrations?: Integration[] })?.integrations || [];

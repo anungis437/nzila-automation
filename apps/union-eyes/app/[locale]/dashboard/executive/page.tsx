@@ -23,7 +23,7 @@ export default async function ExecutiveDashboardPage() {
 
   // Get user's organization context
   const organizationId = user.organizationId || "default";
-  const userRole = user.role || "president";
+  const userRole = user.roles[0] || "president";
 
   // Example metrics for KeyMetricsWidget
   const executiveMetrics = [

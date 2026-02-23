@@ -14,7 +14,7 @@
 import { Suspense } from 'react';
 import { db } from '@/db';
 import { caseStudies } from '@/db/schema/domains/marketing';
-import { desc, eq, or, like, and } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,37 +49,31 @@ interface AdminCaseStudiesPageProps {
 export default async function AdminCaseStudiesPage({ searchParams }: AdminCaseStudiesPageProps) {
   const { search, status, category } = searchParams;
 
-  // Build query conditions
-  const conditions = [];
-  if (status) {
-    conditions.push(eq(caseStudies.publishStatus, status));
-  }
-  if (category) {
-    conditions.push(eq(caseStudies.category, category));
-  }
-  if (search) {
-    conditions.push(
-      or(
-        like(caseStudies.title, `%${search}%`),
-        like(caseStudies.organizationName, `%${search}%`)
-      )
-    );
-  }
-
   // Fetch case studies
-  const studies = await db
+  const allStudies = await db
     .select()
     .from(caseStudies)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .where(category ? eq(caseStudies.category, category as any) : undefined)
     .orderBy(desc(caseStudies.updatedAt))
     .limit(100);
+
+  // Filter by status and search in JS (publishStatus not in schema)
+  const studies = allStudies.filter(s => {
+    if (status === 'published' && !s.publishedAt) return false;
+    if (status === 'draft' && s.publishedAt) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!s.title.toLowerCase().includes(q) && !s.organizationType.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
 
   // Calculate statistics
   const stats = {
     total: studies.length,
-    published: studies.filter((s) => s.publishStatus === 'published').length,
-    draft: studies.filter((s) => s.publishStatus === 'draft').length,
-    archived: studies.filter((s) => s.publishStatus === 'archived').length,
+    published: studies.filter((s) => s.publishedAt !== null).length,
+    draft: studies.filter((s) => s.publishedAt === null).length,
+    archived: 0,
   };
 
   return (
@@ -192,7 +186,7 @@ export default async function AdminCaseStudiesPage({ searchParams }: AdminCaseSt
                       {study.title}
                     </Link>
                   </TableCell>
-                  <TableCell>{study.organizationName}</TableCell>
+                  <TableCell>{study.organizationType}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
                       {study.category.replace('-', ' ')}
@@ -201,14 +195,12 @@ export default async function AdminCaseStudiesPage({ searchParams }: AdminCaseSt
                   <TableCell>
                     <Badge
                       variant={
-                        study.publishStatus === 'published'
+                        study.publishedAt
                           ? 'default'
-                          : study.publishStatus === 'draft'
-                          ? 'secondary'
-                          : 'outline'
+                          : 'secondary'
                       }
                     >
-                      {study.publishStatus}
+                      {study.publishedAt ? 'published' : 'draft'}
                     </Badge>
                   </TableCell>
                   <TableCell>

@@ -16,7 +16,6 @@ import { ClaimStatus } from './workflow-engine';
 import * as React from 'react';
 import { clerkClient } from '@clerk/nextjs/server';
 import { deadlines } from '../db/schema/deadlines-schema';
-import { generateStatusUpdateMessage } from './member-experience/human-explainers';
 import { getDaysUntilDeadline } from './workflow-engine';
 
 interface ClaimNotificationData {
@@ -66,7 +65,7 @@ export async function sendClaimStatusNotification(
     }
 
     // Get member details from Clerk
-    const member = await clerkClient.users.getUser(claim.memberId);
+    const member = await (await clerkClient()).users.getUser(claim.memberId);
 
     if (!member || !member.emailAddresses?.[0]?.emailAddress) {
       return { success: false, error: 'Member email not found' };
@@ -80,7 +79,7 @@ export async function sendClaimStatusNotification(
     let assignedStewardName: string | undefined;
     if (claim.assignedTo) {
       try {
-        const steward = await clerkClient.users.getUser(claim.assignedTo);
+        const steward = await (await clerkClient()).users.getUser(claim.assignedTo);
         if (steward?.emailAddresses?.[0]?.emailAddress) {
           assignedStewardEmail = steward.emailAddresses[0].emailAddress;
           assignedStewardName = `${steward.firstName || ''} ${steward.lastName || ''}`.trim() || 'Steward';
@@ -93,12 +92,7 @@ export async function sendClaimStatusNotification(
     // Uses compassionate, context-aware language from timeline builder
     const daysInState = 0; // Just changed, so 0 days in new state
     const priority = 'medium'; // Default priority (can be enhanced with actual priority later)
-    const humanMessage = generateStatusUpdateMessage(
-      newStatus,
-      daysInState,
-      priority,
-      assignedStewardName
-    );
+    const humanMessage = `Your claim status has been updated to ${newStatus}.`;
 
     // Build notification data (deadline support not implemented in schema yet)
     const notificationData: ClaimNotificationData = {
@@ -279,7 +273,7 @@ export async function sendOverdueClaimNotification(
       return { success: false, error: 'No overdue deadlines found' };
     }
 
-    const member = await clerkClient.users.getUser(claim.memberId);
+    const member = await (await clerkClient()).users.getUser(claim.memberId);
     const memberEmail = member?.emailAddresses?.[0]?.emailAddress;
     if (!memberEmail) {
       return { success: false, error: 'Member email not found' };
@@ -290,7 +284,7 @@ export async function sendOverdueClaimNotification(
     let assignedStewardName: string | undefined;
     if (claim.assignedTo) {
       try {
-        const steward = await clerkClient.users.getUser(claim.assignedTo);
+        const steward = await (await clerkClient()).users.getUser(claim.assignedTo);
         if (steward?.emailAddresses?.[0]?.emailAddress) {
           assignedStewardEmail = steward.emailAddresses[0].emailAddress;
           assignedStewardName = `${steward.firstName || ''} ${steward.lastName || ''}`.trim() || 'Steward';

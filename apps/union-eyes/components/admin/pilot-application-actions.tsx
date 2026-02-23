@@ -139,14 +139,14 @@ export default function PilotApplicationActions({
                 <dt className="text-muted-foreground">Readiness Score:</dt>
                 <dd>{application.readinessScore}/100</dd>
                 <dt className="text-muted-foreground">Readiness Level:</dt>
-                <dd className="capitalize">{application.readinessLevel || 'Unknown'}</dd>
+                <dd className="capitalize">{(application as any).readinessLevel || 'Unknown'}</dd>
               </dl>
             </div>
 
             {/* Current Challenges */}
             <div>
               <h3 className="font-semibold mb-2">Current Challenges</h3>
-              <p className="text-sm">{application.currentChallenges || 'Not provided'}</p>
+              <p className="text-sm">{application.challenges?.join(', ') || 'Not provided'}</p>
             </div>
 
             {/* Goals */}
@@ -156,27 +156,27 @@ export default function PilotApplicationActions({
             </div>
 
             {/* Readiness Assessment */}
-            {application.readinessAssessment && (
+            {application.responses && (
               <div>
                 <h3 className="font-semibold mb-2">Readiness Assessment</h3>
                 <div className="text-sm space-y-1">
                   <p>
                     <strong>Setup Time:</strong>{' '}
-                    {(application.readinessAssessment as any).setupTime || 'Unknown'}
+                    {(application.responses as any).setupTime || 'Unknown'}
                   </p>
                   <p>
                     <strong>Support Level:</strong>{' '}
-                    {(application.readinessAssessment as any).supportLevel || 'Unknown'}
+                    {(application.responses as any).supportLevel || 'Unknown'}
                   </p>
                 </div>
               </div>
             )}
 
             {/* Review Notes */}
-            {application.reviewNotes && (
+            {application.notes && (
               <div>
                 <h3 className="font-semibold mb-2">Review Notes</h3>
-                <p className="text-sm">{application.reviewNotes}</p>
+                <p className="text-sm">{application.notes}</p>
               </div>
             )}
           </div>
@@ -190,7 +190,7 @@ export default function PilotApplicationActions({
       </Dialog>
 
       {/* Approve/Reject Actions */}
-      {application.status === 'pending' && (
+      {application.status === 'submitted' && (
         <>
           {/* Approve Dialog */}
           <Dialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>

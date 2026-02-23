@@ -25,7 +25,7 @@ export default async function AdminProgramsPage() {
   const t = await getTranslations('rewards.admin.programs');
 
   // Fetch programs
-  const programsResult = await listRecognitionPrograms({});
+  const programsResult = await listRecognitionPrograms();
   const programs = programsResult.success ? programsResult.data || [] : [];
 
   return (

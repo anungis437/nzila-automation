@@ -51,7 +51,7 @@ export function ContactForm() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Simulate API call
-      logger.info('Contact form submitted:', formData);
+      logger.info('Contact form submitted:', formData as unknown as Record<string, unknown>);
       
       setSubmitStatus('success');
       setFormData({

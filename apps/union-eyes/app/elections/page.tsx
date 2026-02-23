@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { Progress } from '@/components/ui/progress';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -62,7 +62,7 @@ export default function ElectionsDashboardPage() {
 
   const fetchElectionsData = async () => {
     try {
-      const data = await api.elections.list();
+      const data = await api.elections.list() as Election[];
       
       setElections(data);
       

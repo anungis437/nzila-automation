@@ -428,7 +428,7 @@ return {
       }
 
       // SECURITY FIX: Validate table exists in DATA_SOURCES
-      const tableExists = DATA_SOURCES.some(ds => ds.baseTable === join.table);
+      const tableExists = DATA_SOURCES.some(ds => ds.table === join.table);
       if (!tableExists) {
         throw new Error(`Invalid join table: ${join.table}`);
       }

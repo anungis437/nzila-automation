@@ -122,7 +122,7 @@ export default async function RewardsWalletPage() {
           <CardContent>
             <div className="text-2xl font-bold">
               {ledgerEntries.length > 0 
-                ? new Date(ledgerEntries[0].created_at).toLocaleDateString()
+                ? new Date(ledgerEntries[0].createdAt).toLocaleDateString()
                 : '-'}
             </div>
             <p className="text-xs text-muted-foreground">

@@ -161,7 +161,7 @@ toast({
   const fetchTrendData = async () => {
     try {
       const now = new Date();
-      const trends = [];
+      const trends: { month: string; amount: number; count: number }[] = [];
       
       for (let i = 11; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);

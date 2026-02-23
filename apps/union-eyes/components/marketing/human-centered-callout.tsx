@@ -13,13 +13,16 @@ import { Heart, Shield, Eye, Users } from 'lucide-react';
 
 export type CalloutVariant = 'solidarity' | 'trust' | 'transparency' | 'human';
 
-interface HumanCenteredCalloutProps {
+export interface HumanCenteredCalloutProps {
   icon?: React.ReactNode;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  /** Alias for description — accepted for convenience */
+  message?: string;
   variant?: CalloutVariant;
   className?: string;
   children?: React.ReactNode;
+  compact?: boolean;
 }
 
 const variantStyles: Record<CalloutVariant, { bg: string; border: string; icon: string }> = {
@@ -56,12 +59,15 @@ export function HumanCenteredCallout({
   icon,
   title,
   description,
+  message,
   variant = 'human',
   className,
   children,
+  compact,
 }: HumanCenteredCalloutProps) {
   const styles = variantStyles[variant];
   const displayIcon = icon || defaultIcons[variant];
+  const displayDescription = description || message || '';
 
   return (
     <div
@@ -81,7 +87,7 @@ export function HumanCenteredCallout({
             {title}
           </h3>
           <p className="text-slate-700 leading-relaxed">
-            {description}
+            {displayDescription}
           </p>
           {children && (
             <div className="mt-4">

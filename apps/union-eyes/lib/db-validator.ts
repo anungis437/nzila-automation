@@ -48,7 +48,7 @@ export async function checkDatabaseHealth(timeout = 5000): Promise<DatabaseHealt
     return {
       healthy: true,
       responseTime: Date.now() - startTime,
-      details: result as unknown,
+      details: result as DatabaseHealthStatus['details'],
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -79,7 +79,7 @@ async function performHealthCheck() {
     `);
     
     // Handle both array and rows format
-    const rows = Array.isArray(result) ? result : result.rows || [];
+    const rows = Array.isArray(result) ? result : (result as any).rows || [];
     const row = rows[0];
     
     return {
@@ -150,7 +150,7 @@ export async function testDatabaseQuery(): Promise<boolean> {
     `);
     
     // Handle both array and rows format
-    const rows = Array.isArray(result) ? result : result.rows || [];
+    const rows = Array.isArray(result) ? result : (result as any).rows || [];
     const count = rows[0]?.count;
     logger.info('Database query test passed', { tableCount: count });
     return true;
@@ -179,8 +179,8 @@ export async function validateDatabaseSchema(): Promise<{
     `);
     
     // Handle both array and rows format
-    const rows = Array.isArray(result) ? result : result.rows || [];
-    const tables = rows.map((row: unknown) => row.table_name);
+    const rows = Array.isArray(result) ? result : (result as any).rows || [];
+    const tables = rows.map((row: any) => row.table_name);
     const tableCount = tables.length;
     
     // Check for critical tables

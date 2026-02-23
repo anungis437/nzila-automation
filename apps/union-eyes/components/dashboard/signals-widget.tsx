@@ -22,7 +22,7 @@ import {
   type DashboardStats,
 } from '@/lib/services/lro-signals';
 import { SignalBadge } from '../cases/signal-badge';
-import { useFeatureFlags, getFeatureConfig } from '@/lib/hooks/use-feature-flags';
+import { useFeatureFlags } from '@/lib/hooks/use-feature-flags';
 import { LRO_FEATURES } from '@/lib/services/feature-flags';
 
 interface DashboardSignalsWidgetProps {

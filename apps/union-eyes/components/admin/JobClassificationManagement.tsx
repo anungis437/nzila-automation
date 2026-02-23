@@ -272,8 +272,8 @@ function ClassificationFormDialog({
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
 
-  const form = useForm<Record<string, unknown>>({
-    resolver: zodResolver(createJobClassificationSchema),
+  const form = useForm({
+    resolver: zodResolver(createJobClassificationSchema) as any,
     defaultValues: editingClassification
       ? {
           organizationId: editingClassification.organizationId,

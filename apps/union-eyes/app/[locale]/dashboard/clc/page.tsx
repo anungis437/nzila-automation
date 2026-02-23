@@ -47,7 +47,7 @@ async function getCLCMetrics(orgId: string) {
   try {
     // Fetch direct-chartered unions and provincial federations
     const affiliates = await db.query.organizations.findMany({
-      where: (organizations, { eq }) => eq(organizations.parentOrganizationId, orgId),
+      where: (organizations, { eq }) => eq(organizations.parentId, orgId),
     });
 
     // Filter by type
@@ -384,7 +384,7 @@ export default async function CLCDashboardPage() {
                       <Building2 className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <div className="font-medium">{federation.name}</div>
-                        <div className="text-sm text-muted-foreground">{federation.province || 'N/A'}</div>
+                        <div className="text-sm text-muted-foreground">{(federation as any).province || federation.provinceTerritory || 'N/A'}</div>
                       </div>
                     </div>
                     <Button variant="ghost" size="sm" asChild>

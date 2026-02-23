@@ -329,7 +329,7 @@ export default function InspectionsPage() {
                 <CardContent>
                   <InspectionScheduleCalendar
                     organizationId={organizationId}
-                    onScheduleInspection={handleViewInspection}
+                    onViewInspection={handleViewInspection}
                   />
                 </CardContent>
               </Card>
@@ -383,7 +383,7 @@ export default function InspectionsPage() {
                           assignedTo: "Safety Officer",
                           dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
                           createdAt: new Date().toISOString(),
-                        }}
+                        } as any}
                       />
                     ))}
                   </div>

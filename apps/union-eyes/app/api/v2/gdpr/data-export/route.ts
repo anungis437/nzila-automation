@@ -28,7 +28,7 @@ export const GET = withApi(
   },
   async ({ request, params }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1GET(request, { params: Promise.resolve(params) });
+    const response = await v1GET(request, { params: params as Record<string, unknown> });
     return response;
   },
 );
@@ -43,7 +43,7 @@ export const POST = withApi(
   },
   async ({ request, params }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1POST(request, { params: Promise.resolve(params) });
+    const response = await v1POST(request, { params: params as Record<string, unknown> });
     return response;
   },
 );

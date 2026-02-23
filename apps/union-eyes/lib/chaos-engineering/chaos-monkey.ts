@@ -234,7 +234,7 @@ export class ChaosMonkey {
  */
 export const chaos = new ChaosMonkey({
   enabled: process.env.CHAOS_ENABLED === 'true',
-  environment: (process.env.NODE_ENV as unknown) || 'development',
+  environment: (process.env.NODE_ENV || 'development') as ChaosConfig['environment'],
   seed: process.env.CHAOS_SEED ? parseInt(process.env.CHAOS_SEED) : undefined,
 });
 

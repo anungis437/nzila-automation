@@ -1,4 +1,4 @@
-ing /**
+/**
  * Edit Member Page
  * 
  * Edit existing member information
@@ -13,7 +13,7 @@ import { logger } from '@/lib/logger';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Select,
   SelectContent,
@@ -69,7 +69,7 @@ export default function EditMemberPage({ params }: { params: { id: string } }) {
 
   const fetchMember = async () => {
     try {
-      const data = await api.members.get(params.id);
+      const data = await api.members.get(params.id) as Record<string, any>;
       
       setFormData({
         firstName: data.firstName || '',

@@ -99,7 +99,7 @@ export function parseRRule(rruleString: string): RecurrenceOptions {
 
     switch (key) {
       case 'FREQ':
-        options.frequency = value as unknown;
+        options.frequency = value as RecurrenceOptions['frequency'];
         break;
       case 'INTERVAL':
         options.interval = parseInt(value);
@@ -145,7 +145,7 @@ export function getRecurrenceDescription(rruleString: string): string {
  * Generate recurring event instances for a date range
  */
 export function generateRecurringInstances(
-  baseEvent: unknown,
+  baseEvent: Record<string, any>,
   rruleString: string,
   startDate: Date,
   endDate: Date,

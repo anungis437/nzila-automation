@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   User, Mail, Phone, MapPin, Briefcase, FileText, 
@@ -45,7 +45,7 @@ export default function MemberProfilePage({ params }: { params: { id: string } }
   const fetchProfile = async () => {
     try {
       const data = await api.members.get(params.id);
-      setProfile(data);
+      setProfile(data as MemberProfile);
     } catch (error) {
       logger.error('Error fetching profile', error);
     } finally {

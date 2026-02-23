@@ -112,12 +112,8 @@ export default function PilotDashboardPage() {
                 {breakdown.overall}
               </div>
               <SystemStatusBadge
-                system={{
-                  name: status.status.replace('-', ' '),
-                  status: status.status === 'excellent' || status.status === 'good' ? 'active' : 'degraded',
-                  description: status.message,
-                }}
-                variant="detailed"
+                system={status.status.replace('-', ' ')}
+                status={status.status === 'excellent' || status.status === 'good' ? 'active' : 'degraded'}
               />
             </div>
           </div>

@@ -95,7 +95,7 @@ export const manageWhopMembershipStatusChange = async (
 
 // Check if the current user can access a premium feature
 export async function canAccessPremiumFeatures() {
-  const { userId } = auth();
+  const { userId } = await auth();
   
   if (!userId) {
     return false;
@@ -277,7 +277,7 @@ async function claimOldPendingProfile(
           await deleteProfileById(pendingProfile.userId);
         }
       } catch (cleanupError) {
-        logger.warn('Failed to cleanup temp profile', cleanupError as Error, { tempProfileId: pendingProfile.userId });
+        logger.warn('Failed to cleanup temp profile', { tempProfileId: pendingProfile.userId, error: String(cleanupError) });
       }
     } else {
       // Create a new profile based on the temporary one
@@ -304,7 +304,7 @@ async function claimOldPendingProfile(
       try {
         await deleteProfileById(pendingProfile.userId);
       } catch (cleanupError) {
-        logger.warn('Failed to cleanup temp profile', cleanupError as Error, { tempProfileId: pendingProfile.userId });
+        logger.warn('Failed to cleanup temp profile', { tempProfileId: pendingProfile.userId, error: String(cleanupError) });
       }
     }
     
@@ -323,3 +323,4 @@ async function claimOldPendingProfile(
     };
   }
 } 
+

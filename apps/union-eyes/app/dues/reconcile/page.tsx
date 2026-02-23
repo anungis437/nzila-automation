@@ -23,7 +23,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   CheckCircle, XCircle, AlertTriangle, Search, RefreshCw 
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { logger } from '@/lib/logger';
 
 interface ReconciliationItem {
@@ -56,7 +56,7 @@ export default function ReconciliationPage() {
 
   const fetchReconciliationQueue = async () => {
     try {
-      const data = await api.dues.reconciliation.queue();
+      const data = await api.dues.reconciliation.queue() as unknown as { items: ReconciliationItem[] };
       setItems(data.items || []);
     } catch (error) {
       logger.error('Error fetching reconciliation queue:', error);
@@ -79,7 +79,7 @@ export default function ReconciliationPage() {
 
   const handleReject = async (itemId: string) => {
     try {
-      await api.dues.reconciliation.reject(itemId);
+      await (api.dues.reconciliation.reject as any)(itemId);
       setItems(items.filter(item => item.id !== itemId));
       alert('Item rejected successfully.');
     } catch (error) {
@@ -91,7 +91,7 @@ export default function ReconciliationPage() {
   const runAutoReconciliation = async () => {
     try {
       setLoading(true);
-      const result = await api.dues.reconciliation.autoMatch();
+      const result = await api.dues.reconciliation.autoMatch() as { matched: number };
       alert(`Auto-reconciliation complete! Matched ${result.matched || 0} records.`);
       await fetchReconciliationQueue();
     } catch (error) {

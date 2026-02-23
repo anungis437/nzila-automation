@@ -5,7 +5,7 @@
  * and mobile app management
  */
 
-import { pgTable, uuid, varchar, timestamp, boolean, text, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, boolean, text, jsonb, index, integer } from 'drizzle-orm/pg-core';
 import { organizations } from '../schema-organizations';
 
 /**
@@ -264,8 +264,3 @@ export type MobileAnalyticsEvent = typeof mobileAnalytics.$inferSelect;
 export type NewMobileAnalyticsEvent = typeof mobileAnalytics.$inferInsert;
 export type MobileAppConfiguration = typeof mobileAppConfig.$inferSelect;
 export type NewMobileAppConfiguration = typeof mobileAppConfig.$inferInsert;
-
-// Helper to get integer type for badge
-function integer(name: string) {
-  return varchar(name, { length: 10 });
-}

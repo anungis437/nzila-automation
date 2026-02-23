@@ -671,7 +671,6 @@ export async function logPermissionCheck(entry: {
   executionTimeMs?: number;
   isSensitive?: boolean;
 }): Promise<void> {
-  const tenantId = organizationId;
   // Calculate hash for this record
   const recordData = JSON.stringify({
     timestamp: new Date(),

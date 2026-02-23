@@ -366,17 +366,19 @@ export default async function CLCStaffDashboardPage() {
           </p>
         </div>
         <CLCApprovalWorkflow
-          organizationId={orgId}
-          onApprove={async (id) => {
-            'use server';
-            // TODO: Implement approval logic
-            logger.info('Approved:', id);
-          }}
-          onReject={async (id) => {
-            'use server';
-            // TODO: Implement rejection logic
-            logger.info('Rejected:', id);
-          }}
+          {...{
+            organizationId: orgId,
+            onApprove: async (id: string) => {
+              'use server';
+              // TODO: Implement approval logic
+              logger.info('Approved', { id });
+            },
+            onReject: async (id: string) => {
+              'use server';
+              // TODO: Implement rejection logic
+              logger.info('Rejected', { id });
+            },
+          } as any}
         />
       </div>
 
@@ -399,7 +401,7 @@ export default async function CLCStaffDashboardPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {metrics.recentActivity.map((activity: { description: string; timestamp: string }, index: number) => (
+              {(metrics.recentActivity as any[]).map((activity: { description: string; timestamp: string; status: string }, index: number) => (
                 <div key={index} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent transition-colors">
                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <Database className="h-4 w-4 text-primary" />

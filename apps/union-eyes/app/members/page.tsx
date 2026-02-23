@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -62,7 +62,7 @@ export default function MembersPage() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
         search: searchQuery,
         limit: 100,
-      });
+      }) as { members: Member[] };
       
       setMembers(result.members);
     } catch (error) {
@@ -76,7 +76,7 @@ export default function MembersPage() {
     if (!searchQuery) return fetchMembers();
     
     try {
-      const result = await api.members.search(searchQuery);
+      const result = await api.members.search(searchQuery) as { members: Member[] };
       setMembers(result.members);
     } catch (error) {
       logger.error('Search error', error);
