@@ -321,9 +321,9 @@ export type Tenant = Organization;
 
 /**
  * Helper type: Backwards compatibility alias
- * @deprecated Use organization_id instead
+ * @deprecated Use OrganizationId instead
  */
-export type TenantId = string;
+export type OrganizationId = string;
 
 // =====================================================
 // Utility Functions

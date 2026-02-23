@@ -14,7 +14,7 @@
  * // Emit events
  * eventBus.emit('claim.created', {
  *   claimId: '123',
- *   tenantId: 'org1',
+ *   organizationId: 'org1',
  *   userId: 'user1',
  * });
  * 
@@ -24,7 +24,7 @@
  */
 
 import { logger } from '@/lib/logger';
-import type { TenantId } from '@/types';
+import type { OrganizationId } from '@/types';
 
 export type EventHandler<T = any> = (event: Event<T>) => void | Promise<void>;
 export type AsyncEventHandler<T = any> = (event: Event<T>) => Promise<void>;
@@ -38,7 +38,7 @@ export interface Event<T = any> {
 export interface EventMetadata {
   eventId: string;
   timestamp: Date;
-  tenantId?: TenantId;
+  organizationId?: OrganizationId;
   userId?: string;
   source?: string;
   correlationId?: string;
@@ -383,7 +383,7 @@ export const AppEvents = {
  */
 export interface ClaimCreatedEvent {
   claimId: string;
-  tenantId: TenantId;
+  organizationId: OrganizationId;
   createdBy: string;
   type: string;
 }
@@ -391,13 +391,13 @@ export interface ClaimCreatedEvent {
 export interface UserRegisteredEvent {
   userId: string;
   email: string;
-  tenantId: TenantId;
+  organizationId: OrganizationId;
 }
 
 export interface VoteCastEvent {
   voteId: string;
   voterId: string;
-  tenantId: TenantId;
+  organizationId: OrganizationId;
   ballotId: string;
 }
 

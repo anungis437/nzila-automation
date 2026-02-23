@@ -105,7 +105,6 @@ export async function getDocumentById(
 export async function listDocuments(
   filters: {
     organizationId?: string;
-    tenantId?: string;
     folderId?: string;
     category?: string;
     tags?: string[];
@@ -121,9 +120,8 @@ export async function listDocuments(
 
     const conditions: SQL[] = [sql`${documents.deletedAt} IS NULL`];
 
-    const scopedOrganizationId = filters.organizationId ?? filters.tenantId;
-    if (scopedOrganizationId) {
-      conditions.push(eq(documents.organizationId /* was tenantId */, scopedOrganizationId));
+    if (filters.organizationId) {
+      conditions.push(eq(documents.organizationId, filters.organizationId));
     }
 
     if (filters.folderId) {
@@ -303,7 +301,7 @@ export async function listFolders(
 ): Promise<FolderWithChildren[]> {
   try {
     const conditions: SQL[] = [
-      eq(documentFolders.organizationId /* was tenantId */, organizationId),
+      eq(documentFolders.organizationId, organizationId),
       sql`${documentFolders.deletedAt} IS NULL`,
     ];
 
@@ -424,7 +422,7 @@ export async function getFolderTree(organizationId: string): Promise<FolderWithC
     const allFolders = await db
       .select()
       .from(documentFolders)
-      .where(and(eq(documentFolders.organizationId /* was tenantId */, organizationId), sql`${documentFolders.deletedAt} IS NULL`));
+      .where(and(eq(documentFolders.organizationId, organizationId), sql`${documentFolders.deletedAt} IS NULL`));
 
     // Build tree structure
     const folderMap = new Map<string, FolderWithChildren>();
@@ -586,7 +584,7 @@ export async function searchDocuments(
     const offset = (page - 1) * limit;
 
     const conditions: SQL[] = [
-      eq(documents.organizationId /* was tenantId */, organizationId),
+      eq(documents.organizationId, organizationId),
       sql`${documents.deletedAt} IS NULL`,
     ];
 
@@ -761,7 +759,7 @@ export async function getDocumentStatistics(organizationId: string): Promise<{
     const docs = await db
       .select()
       .from(documents)
-      .where(and(eq(documents.organizationId /* was tenantId */, organizationId), sql`${documents.deletedAt} IS NULL`));
+      .where(and(eq(documents.organizationId, organizationId), sql`${documents.deletedAt} IS NULL`));
 
     const byCategory: Record<string, number> = {};
     const byFileType: Record<string, number> = {};

@@ -44,7 +44,7 @@ export class TeamsAdapter extends BaseIntegration {
     this.client = new TeamsClient({
       clientId: config.clientId as string,
       clientSecret: config.clientSecret as string,
-      tenantId: config.organizationId /* was tenantId */ as string,
+      tenantId: config.organizationId as string,
       apiUrl: config.apiUrl as string | undefined,
     });
   }

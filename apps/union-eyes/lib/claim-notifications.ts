@@ -33,7 +33,7 @@ interface ClaimNotificationData {
   memberName: string;
   assignedStewardEmail?: string;
   assignedStewardName?: string;
-  tenantId: string;
+  organizationId: string;
 }
 
 /**
@@ -54,7 +54,7 @@ export async function sendClaimStatusNotification(
         description: claims.description,
         memberId: claims.memberId,
         assignedTo: claims.assignedTo,
-        tenantId: claims.organizationId,
+        organizationId: claims.organizationId,
       })
       .from(claims)
       .where(eq(claims.claimId, claimId))
@@ -108,7 +108,7 @@ export async function sendClaimStatusNotification(
       memberName,
       assignedStewardEmail,
       assignedStewardName,
-      tenantId: claim.tenantId,
+      organizationId: claim.organizationId,
     };
 
     // Send notification
@@ -243,7 +243,7 @@ export async function sendOverdueClaimNotification(
         description: claims.description,
         memberId: claims.memberId,
         assignedTo: claims.assignedTo,
-        tenantId: claims.organizationId,
+        organizationId: claims.organizationId,
       })
       .from(claims)
       .where(eq(claims.claimId, claimId))

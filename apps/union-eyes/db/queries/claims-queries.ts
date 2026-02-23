@@ -105,7 +105,7 @@ export const getClaimsByOrganization = async (
 ) => {
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
-      // Convert organization slug to UUID (tenantId)
+      // Convert organization slug to UUID
       const [org] = await dbOrTx
         .select({ id: organizations.id })
         .from(organizations)
@@ -116,12 +116,12 @@ export const getClaimsByOrganization = async (
         throw new Error(`Organization with slug ${organizationSlug} not found`);
       }
       
-      const tenantId = org.id;
+      const orgId = org.id;
       
       let query = dbOrTx
         .select()
         .from(claims)
-        .where(eq(claims.organizationId, tenantId))
+        .where(eq(claims.organizationId, orgId))
         .orderBy(desc(claims.createdAt));
       
       if (limit) {
@@ -273,7 +273,7 @@ export const getClaimsAssignedToUser = async (
       
       // Filter by organization if provided (for multi-tenant isolation)
       if (organizationSlug) {
-        // Convert organization slug to UUID (tenantId)
+        // Convert organization slug to UUID
         const [org] = await dbOrTx
           .select({ id: organizations.id })
           .from(organizations)
@@ -317,7 +317,7 @@ export const getClaimStatistics = async (
       // Check if input is a UUID (contains hyphens and is 36 chars) or a slug
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(organizationSlugOrId);
       
-      // Convert organization slug/id to UUID (tenantId)
+      // Convert organization slug/id to UUID
       const [org] = await dbOrTx
         .select({ id: organizations.id })
         .from(organizations)
@@ -332,7 +332,7 @@ export const getClaimStatistics = async (
         throw new Error(`Organization with ${isUUID ? 'id' : 'slug'} ${organizationSlugOrId} not found`);
       }
       
-      const tenantId = org.id;
+      const orgId = org.id;
       
       // Total active claims (not resolved or closed)
       const [activeClaims] = await dbOrTx
@@ -340,7 +340,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             sql`${claims.status} NOT IN ('resolved', 'closed', 'rejected')`
           )
         );
@@ -351,7 +351,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             sql`${claims.status} IN ('submitted', 'under_review')`
           )
         );
@@ -362,7 +362,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             eq(claims.status, 'resolved')
           )
         );
@@ -373,7 +373,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             sql`${claims.priority} IN ('high', 'critical')`,
             sql`${claims.status} NOT IN ('resolved', 'closed', 'rejected')`
           )

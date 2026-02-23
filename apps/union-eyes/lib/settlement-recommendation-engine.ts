@@ -95,12 +95,12 @@ export type PredictionFeatures = {
  */
 export async function generateSettlementRecommendation(
   claimId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<SettlementRecommendation | null> {
   try {
     // Get claim details
     const claim = await db.query.claims.findFirst({
-      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
     });
 
     if (!claim) return null;
@@ -109,10 +109,10 @@ export async function generateSettlementRecommendation(
     const features = extractPredictionFeatures(claim);
 
     // Find similar precedent cases
-    const precedents = await findSimilarPrecedents(claim, tenantId);
+    const precedents = await findSimilarPrecedents(claim, organizationId);
 
     // Get relevant contract clauses
-    const relevantClauses = await findRelevantClauses(claim, tenantId);
+    const relevantClauses = await findRelevantClauses(claim, organizationId);
 
     // Calculate reasoning factors
     const reasoningFactors = calculateReasoningFactors(claim, precedents, relevantClauses);
@@ -180,13 +180,13 @@ function extractPredictionFeatures(claim: unknown): PredictionFeatures {
  */
 async function findSimilarPrecedents(
   claim: unknown,
-  tenantId: string
+  organizationId: string
 ): Promise<PrecedentCase[]> {
   try {
     // Find resolved/closed claims of same type
     const pastClaims = await db.query.claims.findMany({
       where: and(
-        eq(claims.organizationId, tenantId),
+        eq(claims.organizationId, organizationId),
         eq(claims.claimType, claim.claimType),
         inArray(claims.status, ["resolved", "closed"]),
         sql`${claims.claimId} != ${claim.claimId}` // Exclude current claim
@@ -312,12 +312,12 @@ function extractKeyFactors(claim: unknown): string[] {
  */
 async function findRelevantClauses(
   claim: unknown,
-  tenantId: string
+  organizationId: string
 ): Promise<ClauseReference[]> {
   try {
     // Search clause library for relevant clauses
     const allClauses = await db.query.sharedClauseLibrary.findMany({
-      where: eq(sharedClauseLibrary.sourceOrganizationId, tenantId),
+      where: eq(sharedClauseLibrary.sourceOrganizationId, organizationId),
     });
 
     const clauseReferences: ClauseReference[] = [];

@@ -124,7 +124,6 @@ export async function getCalendarById(id: string): Promise<Calendar | null> {
 export async function listCalendars(
   filters: {
     organizationId?: string;
-    tenantId?: string;
     ownerId?: string;
     isPersonal?: boolean;
     isShared?: boolean;
@@ -133,9 +132,8 @@ export async function listCalendars(
   try {
     const conditions: SQL[] = [];
 
-    const scopedOrganizationId = filters.organizationId ?? filters.tenantId;
-    if (scopedOrganizationId) {
-      conditions.push(eq(calendars.organizationId /* was tenantId */, scopedOrganizationId));
+    if (filters.organizationId) {
+      conditions.push(eq(calendars.organizationId, filters.organizationId));
     }
 
     if (filters.ownerId) {

@@ -264,7 +264,7 @@ export async function importMicrosoftEvents(
           )
           .limit(1);
 
-        const eventData = mapMicrosoftEventToLocal(msEvent, localCalendarId, localCalendar.organizationId /* was tenantId */);
+        const eventData = mapMicrosoftEventToLocal(msEvent, localCalendarId, localCalendar.organizationId);
 
         if (existingEvent) {
           // Update existing event
@@ -379,10 +379,10 @@ throw error;
 /**
  * Map Microsoft Outlook event to local event format
  */
-function mapMicrosoftEventToLocal(msEvent: any, calendarId: string, tenantId: string) {
+function mapMicrosoftEventToLocal(msEvent: any, calendarId: string, organizationId: string) {
   return {
     calendarId,
-    tenantId,
+    organizationId,
     title: msEvent.subject || 'Untitled Event',
     description: msEvent.bodyPreview || msEvent.body?.content || null,
     location: msEvent.location?.displayName || null,

@@ -23,7 +23,7 @@ type UserRole = "member" | "steward" | "officer" | "admin";
 
 interface UserRoleSelectProps {
   userId: string;
-  tenantId: string;
+  organizationId: string;
   currentRole: UserRole;
 }
 
@@ -54,7 +54,7 @@ const ROLE_CONFIG = {
   },
 };
 
-export function UserRoleSelect({ userId, tenantId, currentRole }: UserRoleSelectProps) {
+export function UserRoleSelect({ userId, organizationId, currentRole }: UserRoleSelectProps) {
   const [role, setRole] = useState<UserRole>(currentRole);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -66,7 +66,7 @@ export function UserRoleSelect({ userId, tenantId, currentRole }: UserRoleSelect
     startTransition(async () => {
       try {
         // TODO: Call server action when integrated with RLS
-        // await updateUserRole(userId, tenantId, newRole);
+        // await updateUserRole(userId, organizationId, newRole);
         
         // Mock API call
         await new Promise(resolve => setTimeout(resolve, 500));

@@ -48,7 +48,7 @@ import { logger } from '@/lib/logger';
  */
 export async function initializeClaimDeadlines(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   claimType: string,
   priorityLevel: string,
   filingDate: Date,
@@ -59,7 +59,7 @@ export async function initializeClaimDeadlines(
   try {
     const deadlines = await autoCreateClaimDeadlines(
       claimId,
-      tenantId,
+      organizationId,
       claimType,
       priorityLevel,
       filingDate,
@@ -79,7 +79,7 @@ export async function initializeClaimDeadlines(
  */
 export async function addClaimDeadline(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   deadlineName: string,
   daysFromNow: number,
   priority: 'low' | 'medium' | 'high' | 'critical',
@@ -129,10 +129,10 @@ export async function updateDeadlineStatuses(): Promise<{
  * Get upcoming deadlines for dashboard widget
  */
 export async function getUpcomingDeadlines(
-  tenantId: string,
+  organizationId: string,
   days: number = 7
 ): Promise<ClaimDeadline[]> {
-  return getCriticalDeadlines(tenantId);
+  return getCriticalDeadlines(organizationId);
 }
 
 /**
@@ -140,10 +140,10 @@ export async function getUpcomingDeadlines(
  */
 export async function getMemberUpcomingDeadlines(
   memberId: string,
-  tenantId: string,
+  organizationId: string,
   daysAhead: number = 7
 ): Promise<unknown> {
-  const summary = await getMemberDeadlineSummary(memberId, tenantId);
+  const summary = await getMemberDeadlineSummary(memberId, organizationId);
   return summary;
 }
 
@@ -155,15 +155,15 @@ export async function getMemberUpcomingDeadlines(
  * Generate alerts for upcoming deadlines
  * Run this as a scheduled job every hour
  */
-export async function generateDeadlineAlerts(tenantId: string): Promise<number> {
-  logger.info('Generating deadline alerts', { tenantId });
+export async function generateDeadlineAlerts(organizationId: string): Promise<number> {
+  logger.info('Generating deadline alerts', { organizationId });
   
   try {
-    const alertCount = await generateUpcomingDeadlineAlerts(tenantId);
-    logger.info('Deadline alerts generated', { tenantId, count: alertCount });
+    const alertCount = await generateUpcomingDeadlineAlerts(organizationId);
+    logger.info('Deadline alerts generated', { organizationId, count: alertCount });
     return alertCount;
   } catch (error) {
-    logger.error('Failed to generate deadline alerts', error instanceof Error ? error : new Error(String(error)), { tenantId });
+    logger.error('Failed to generate deadline alerts', error instanceof Error ? error : new Error(String(error)), { organizationId });
     throw error;
   }
 }
@@ -174,12 +174,12 @@ export async function generateDeadlineAlerts(tenantId: string): Promise<number> 
  */
 export async function sendDailyDeadlineDigest(
   memberId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
-  logger.info('Sending daily deadline digest', { memberId, tenantId });
+  logger.info('Sending daily deadline digest', { memberId, organizationId });
   
   try {
-    const summary = await getMemberDeadlineSummary(memberId, tenantId);
+    const summary = await getMemberDeadlineSummary(memberId, organizationId);
     
     if (summary.overdue_count > 0 || summary.due_soon_count > 0) {
       // Send email digest
@@ -187,7 +187,7 @@ export async function sendDailyDeadlineDigest(
       // Implementation: Send via email service
     }
   } catch (error) {
-    logger.error('Failed to send daily digest', error instanceof Error ? error : new Error(String(error)), { memberId, tenantId });
+    logger.error('Failed to send daily digest', error instanceof Error ? error : new Error(String(error)), { memberId, organizationId });
     throw error;
   }
 }
@@ -197,9 +197,9 @@ export async function sendDailyDeadlineDigest(
  */
 export async function getMemberAlerts(
   memberId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<DeadlineAlert[]> {
-  return getUnreadAlerts(memberId, tenantId);
+  return getUnreadAlerts(memberId, organizationId);
 }
 
 /**
@@ -228,7 +228,7 @@ export async function takeAlertAction(
  */
 export async function requestExtension(
   deadlineId: string,
-  tenantId: string,
+  organizationId: string,
   requestedBy: string,
   daysRequested: number,
   reason: string
@@ -243,7 +243,7 @@ export async function requestExtension(
   
   return requestDeadlineExtension(
     deadlineId,
-    tenantId,
+    organizationId,
     requestedBy,
     daysRequested,
     reason,
@@ -287,8 +287,8 @@ export async function denyExtension(
 /**
  * Get pending extension requests for approval queue
  */
-export async function getPendingExtensions(tenantId: string): Promise<DeadlineExtension[]> {
-  return getPendingExtensionRequests(tenantId);
+export async function getPendingExtensions(organizationId: string): Promise<DeadlineExtension[]> {
+  return getPendingExtensionRequests(organizationId);
 }
 
 // ============================================================================
@@ -299,11 +299,11 @@ export async function getPendingExtensions(tenantId: string): Promise<DeadlineEx
  * Escalate overdue deadline to next level
  * Run this as a scheduled job every 15 minutes
  */
-export async function escalateOverdueDeadlines(tenantId: string): Promise<number> {
-  logger.info('Checking for deadlines to escalate', { tenantId });
+export async function escalateOverdueDeadlines(organizationId: string): Promise<number> {
+  logger.info('Checking for deadlines to escalate', { organizationId });
   
   try {
-    const overdueDeadlines = await getOverdueDeadlines(tenantId);
+    const overdueDeadlines = await getOverdueDeadlines(organizationId);
     let escalatedCount = 0;
     
     for (const deadline of overdueDeadlines) {
@@ -313,10 +313,10 @@ export async function escalateOverdueDeadlines(tenantId: string): Promise<number
       escalatedCount++;
     }
     
-    logger.info('Deadlines escalated', { tenantId, count: escalatedCount });
+    logger.info('Deadlines escalated', { organizationId, count: escalatedCount });
     return escalatedCount;
   } catch (error) {
-    logger.error('Failed to escalate deadlines', error instanceof Error ? error : new Error(String(error)), { tenantId });
+    logger.error('Failed to escalate deadlines', error instanceof Error ? error : new Error(String(error)), { organizationId });
     throw error;
   }
 }
@@ -373,18 +373,18 @@ export async function autoCompleteClaimDeadlines(
  * Get deadline compliance report
  */
 export async function getComplianceReport(
-  tenantId: string,
+  organizationId: string,
   startDate?: Date,
   endDate?: Date
 ): Promise<unknown> {
-  return getDeadlineComplianceMetrics(tenantId, startDate, endDate);
+  return getDeadlineComplianceMetrics(organizationId, startDate, endDate);
 }
 
 /**
  * Get dashboard summary
  */
-export async function getDashboardSummary(tenantId: string): Promise<unknown> {
-  return getDeadlineDashboardSummary(tenantId);
+export async function getDashboardSummary(organizationId: string): Promise<unknown> {
+  return getDeadlineDashboardSummary(organizationId);
 }
 
 /**
@@ -392,9 +392,9 @@ export async function getDashboardSummary(tenantId: string): Promise<unknown> {
  */
 export async function getMemberPerformance(
   memberId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<unknown> {
-  return getMemberDeadlineSummary(memberId, tenantId);
+  return getMemberDeadlineSummary(memberId, organizationId);
 }
 
 // ============================================================================
@@ -408,10 +408,10 @@ export async function calculateDeadlineDate(
   startDate: Date,
   daysToAdd: number,
   businessDaysOnly: boolean,
-  tenantId?: string
+  organizationId?: string
 ): Promise<Date> {
   if (businessDaysOnly) {
-    return addBusinessDays(startDate, daysToAdd, tenantId);
+    return addBusinessDays(startDate, daysToAdd, organizationId);
   } else {
     const result = new Date(startDate);
     result.setDate(result.getDate() + daysToAdd);
@@ -483,7 +483,7 @@ export function getDeadlineStatus(deadline: ClaimDeadline): {
 /**
  * Main deadline monitoring job - run every 5 minutes
  */
-export async function runDeadlineMonitoringJob(tenantId: string): Promise<void> {
+export async function runDeadlineMonitoringJob(organizationId: string): Promise<void> {
   logger.info(`=== Deadline Monitoring Job (${new Date().toISOString()}) ===`);
   
   try {
@@ -491,7 +491,7 @@ export async function runDeadlineMonitoringJob(tenantId: string): Promise<void> 
     const { markedOverdue } = await updateDeadlineStatuses();
     
     // Generate alerts
-    const alertsGenerated = await generateDeadlineAlerts(tenantId);
+    const alertsGenerated = await generateDeadlineAlerts(organizationId);
     
      logger.info(`Job complete: ${markedOverdue} overdue, ${alertsGenerated} alerts`);
   } catch (error) {
@@ -502,11 +502,11 @@ export async function runDeadlineMonitoringJob(tenantId: string): Promise<void> 
 /**
  * Escalation job - run every 15 minutes
  */
-export async function runEscalationJob(tenantId: string): Promise<void> {
+export async function runEscalationJob(organizationId: string): Promise<void> {
   logger.info(`=== Escalation Job (${new Date().toISOString()}) ===`);
   
   try {
-    const escalated = await escalateOverdueDeadlines(tenantId);
+    const escalated = await escalateOverdueDeadlines(organizationId);
     logger.info(`Escalated ${escalated} deadlines`);
   } catch (error) {
     logger.error("Escalation job failed", { error });
@@ -516,7 +516,7 @@ export async function runEscalationJob(tenantId: string): Promise<void> {
 /**
  * Daily digest job - run at 8 AM daily
  */
-export async function runDailyDigestJob(tenantId: string): Promise<void> {
+export async function runDailyDigestJob(organizationId: string): Promise<void> {
   logger.info(`=== Daily Digest Job (${new Date().toISOString()}) ===`);
   
   try {

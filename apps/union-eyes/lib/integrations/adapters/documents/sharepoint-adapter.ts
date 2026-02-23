@@ -46,7 +46,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
     this.client = new SharePointClient({
       clientId: config.clientId as string,
       clientSecret: config.clientSecret as string,
-      tenantId: config.organizationId /* was tenantId */ as string,
+      tenantId: config.organizationId as string,
       siteUrl: config.siteUrl as string | undefined,
       apiUrl: config.apiUrl as string | undefined,
     });

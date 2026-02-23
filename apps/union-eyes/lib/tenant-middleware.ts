@@ -9,9 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { withOrganizationAuth, validateOrganizationAccess, getOrganizationIdFromRequest, type OrganizationContext } from "@/lib/organization-middleware";
 
 export interface TenantContext {
-  tenantId: string;
-  userId: string;
   organizationId: string;
+  userId: string;
   memberId: string;
 }
 
@@ -23,7 +22,7 @@ export interface TenantContext {
  * import { withTenantAuth } from "@/lib/tenant-middleware";
  * 
  * export const GET = withTenantAuth(async (request, context) => {
- *   const { tenantId, userId } = context;
+ *   const { organizationId, userId } = context;
  *   // Your tenant-aware logic here
  * });
  * ```
@@ -37,7 +36,6 @@ export function withTenantAuth<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, context: OrganizationContext, params?: T) => {
     const tenantContext: TenantContext = {
-      tenantId: context.organizationId,
       organizationId: context.organizationId,
       userId: context.userId,
       memberId: context.memberId,
@@ -55,9 +53,9 @@ export function withTenantAuth<T = any>(
  */
 export async function validateTenantAccess(
   userId: string,
-  requestedTenantId: string
+  requestedOrganizationId: string
 ): Promise<boolean> {
-return validateOrganizationAccess(userId, requestedTenantId);
+return validateOrganizationAccess(userId, requestedOrganizationId);
 }
 
 /**

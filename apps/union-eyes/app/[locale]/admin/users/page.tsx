@@ -37,11 +37,11 @@ interface PageProps {
 
 async function UsersTable({ 
   searchQuery, 
-  tenantId, 
+  organizationId, 
   role 
 }: { 
   searchQuery?: string; 
-  tenantId?: string; 
+  organizationId?: string; 
   role?: "member" | "steward" | "officer" | "admin";
 }) {
   // This will need RLS context - for now using a mock approach
@@ -55,7 +55,7 @@ async function UsersTable({
       name: "John Doe",
       email: "john@example.com",
       role: "admin" as const,
-      tenantId: "tenant-1",
+      organizationId: "tenant-1",
       tenantName: "Local 123",
       status: "active" as const,
       lastLogin: "2026-02-12T10:30:00Z",
@@ -71,7 +71,7 @@ async function UsersTable({
           <Users className="h-12 w-12 text-gray-400 mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No users found</h3>
           <p className="text-sm text-gray-600 mb-4">
-            {searchQuery || tenantId || role 
+            {searchQuery || organizationId || role 
               ? "Try adjusting your filters" 
               : "No users match the criteria"}
           </p>
@@ -109,7 +109,7 @@ async function UsersTable({
               <TableCell>
                 <UserRoleSelect
                   userId={user.id}
-                  tenantId={user.tenantId}
+                  organizationId={user.organizationId}
                   currentRole={user.role}
                 />
               </TableCell>
@@ -275,7 +275,7 @@ export default async function UsersPage({ params, searchParams }: PageProps) {
       <Suspense fallback={<TableSkeleton />}>
         <UsersTable 
           searchQuery={searchQuery} 
-          tenantId={selectedTenant} 
+          organizationId={selectedTenant} 
           role={selectedRole} 
         />
       </Suspense>

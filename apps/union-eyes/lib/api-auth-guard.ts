@@ -203,7 +203,7 @@ export interface AuthUser {
   firstName: string | null;
   lastName: string | null;
   imageUrl: string | null;
-  tenantId: string | null; // Legacy compatibility
+  legacyTenantId: string | null; // Legacy tenant ID from Clerk user metadata (publicMetadata.tenantId / privateMetadata.tenantId)
   role: string | null;
   organizationId: string | null;
   metadata: Record<string, unknown>;
@@ -380,7 +380,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       firstName: user.firstName || null,
       lastName: user.lastName || null,
       imageUrl: user.imageUrl || null,
-      tenantId: legacyTenantId,
+      legacyTenantId,
       role: (publicMetadata.role as string) || (privateMetadata.role as string) || 'member',
       organizationId: resolvedOrganizationId,
       metadata: { ...publicMetadata },

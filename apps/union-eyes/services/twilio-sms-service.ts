@@ -68,7 +68,6 @@ const SMS_COST_PER_SEGMENT = 0.0075; // Twilio US pricing (~$0.0075 per SMS)
 
 export interface SendSmsOptions {
   organizationId?: string;
-  tenantId?: string; // Legacy fallback for org scoping
   userId?: string;
   phoneNumber: string;
   message: string;
@@ -78,7 +77,6 @@ export interface SendSmsOptions {
 
 export interface SendBulkSmsOptions {
   organizationId?: string;
-  tenantId?: string; // Legacy fallback for org scoping
   userId: string;
   recipients: Array<{ phoneNumber: string; userId?: string }>;
   message: string;
@@ -138,8 +136,8 @@ export function calculateSmsCost(message: string): number {
   return segments * SMS_COST_PER_SEGMENT;
 }
 
-function resolveOrganizationId(input: { organizationId?: string; tenantId?: string }): string | null {
-  return input.organizationId ?? input.tenantId ?? null;
+function resolveOrganizationId(input: { organizationId?: string }): string | null {
+  return input.organizationId ?? null;
 }
 
 async function resolveOrganizationIdFromPhoneNumber(phoneNumber: string): Promise<string | null> {
@@ -250,8 +248,8 @@ export function renderSmsTemplate(template: string, variables: Record<string, an
  * Send a single SMS message
  */
 export async function sendSms(options: SendSmsOptions): Promise<SmsServiceResult> {
-  const { organizationId: organizationIdInput, tenantId: legacyTenantId, userId, phoneNumber, message, templateId, campaignId } = options;
-  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput, tenantId: legacyTenantId });
+  const { organizationId: organizationIdInput, userId, phoneNumber, message, templateId, campaignId } = options;
+  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput });
 
   if (!organizationId) {
     return {
@@ -378,8 +376,8 @@ export async function sendBulkSms(options: SendBulkSmsOptions): Promise<{
   failed: number;
   errors: Array<{ phoneNumber: string; error: string }>;
 }> {
-  const { organizationId: organizationIdInput, tenantId: legacyTenantId, userId, recipients, message, templateId, campaignId } = options;
-  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput, tenantId: legacyTenantId });
+  const { organizationId: organizationIdInput, userId, recipients, message, templateId, campaignId } = options;
+  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput });
 
   if (!organizationId) {
     return {

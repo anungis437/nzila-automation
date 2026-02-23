@@ -127,7 +127,7 @@ function getStatusFromStageType(stageType: string): ClaimStatus {
  * Map user ID to role level for FSM validation
  * Queries the organizationMembers table for the user's actual role
  */
-async function getUserRole(userId: string, tenantId: string): Promise<string> {
+async function getUserRole(userId: string, organizationId: string): Promise<string> {
   // System users have admin-level access
   if (userId === 'system') return 'system';
   
@@ -139,7 +139,7 @@ async function getUserRole(userId: string, tenantId: string): Promise<string> {
       .where(
         and(
           eq(organizationMembers.userId, userId),
-          eq(organizationMembers.organizationId, tenantId),
+          eq(organizationMembers.organizationId, organizationId),
           eq(organizationMembers.status, 'active')
         )
       )
@@ -233,14 +233,14 @@ async function checkClaimOverdue(claimId: string): Promise<boolean> {
 export async function initializeWorkflow(
   claimId: string,
   grievanceType: string,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<{ success: boolean; workflowId?: string; error?: string }> {
   try {
     // Find appropriate workflow for this grievance type
     const workflow = await db.query.grievanceWorkflows.findFirst({
       where: and(
-        eq(grievanceWorkflows.organizationId, tenantId),
+        eq(grievanceWorkflows.organizationId, organizationId),
         eq(grievanceWorkflows.grievanceType, grievanceType),
         eq(grievanceWorkflows.status, "active")
       ),
@@ -255,7 +255,7 @@ export async function initializeWorkflow(
       // Try to find default workflow
       const defaultWorkflow = await db.query.grievanceWorkflows.findFirst({
         where: and(
-          eq(grievanceWorkflows.organizationId, tenantId),
+          eq(grievanceWorkflows.organizationId, organizationId),
           eq(grievanceWorkflows.isDefault, true),
           eq(grievanceWorkflows.status, "active")
         ),
@@ -271,10 +271,10 @@ export async function initializeWorkflow(
       }
 
       // Use default workflow
-      return await startWorkflow(claimId, defaultWorkflow.id, tenantId, userId);
+      return await startWorkflow(claimId, defaultWorkflow.id, organizationId, userId);
     }
 
-    return await startWorkflow(claimId, workflow.id, tenantId, userId);
+    return await startWorkflow(claimId, workflow.id, organizationId, userId);
   } catch (error) {
     logger.error("Error initializing workflow", { error });
     return {
@@ -290,7 +290,7 @@ export async function initializeWorkflow(
 async function startWorkflow(
   claimId: string,
   workflowId: string,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<{ success: boolean; workflowId?: string; error?: string }> {
   try {
@@ -310,7 +310,7 @@ async function startWorkflow(
     const [transition] = await db
       .insert(grievanceTransitions)
       .values({
-        organizationId: tenantId,
+        organizationId,
         claimId,
         fromStageId: null, // No previous stage
         toStageId: firstStage.id,
@@ -322,16 +322,16 @@ async function startWorkflow(
       .returning();
 
     // Execute entry actions for first stage
-    await executeStageActions(firstStage.entryActions as StageAction[], claimId, tenantId, userId);
+    await executeStageActions(firstStage.entryActions as StageAction[], claimId, organizationId, userId);
 
     // Create SLA deadline if defined
     if (firstStage.slaDays) {
-      await createStageDeadline(claimId, firstStage.id, firstStage.slaDays, tenantId);
+      await createStageDeadline(claimId, firstStage.id, firstStage.slaDays, organizationId);
     }
 
     // Send notifications if configured
     if (firstStage.notifyOnEntry) {
-      await sendStageNotification(claimId, firstStage, "entered", tenantId);
+      await sendStageNotification(claimId, firstStage, "entered", organizationId);
     }
 
     return { success: true, workflowId };
@@ -354,7 +354,7 @@ async function startWorkflow(
 export async function transitionToStage(
   claimId: string,
   toStageId: string,
-  tenantId: string,
+  organizationId: string,
   userId: string,
   options: {
     reason?: string;
@@ -414,7 +414,7 @@ export async function transitionToStage(
     const targetStatus = getStatusFromStageType(toStage.stageType);
 
     // Get user role for permission check
-    const userRole = await getUserRole(userId, tenantId);
+    const userRole = await getUserRole(userId, organizationId);
 
     // Check if claim has required documentation
     const hasRequiredDocumentation = options.notes ? options.notes.length > 0 : false;
@@ -467,7 +467,7 @@ export async function transitionToStage(
       const [pendingTransition] = await db
         .insert(grievanceTransitions)
         .values({
-          organizationId: tenantId,
+          organizationId,
           claimId,
           fromStageId: currentStageId || null,
           toStageId,
@@ -497,7 +497,7 @@ export async function transitionToStage(
         await executeStageActions(
           currentStage.exitActions as StageAction[],
           claimId,
-          tenantId,
+          organizationId,
           userId
         );
       }
@@ -507,7 +507,7 @@ export async function transitionToStage(
     const [transition] = await db
       .insert(grievanceTransitions)
       .values({
-        organizationId: tenantId,
+        organizationId,
         claimId,
         fromStageId: currentStageId || null,
         toStageId,
@@ -524,27 +524,27 @@ export async function transitionToStage(
     const actionsTriggered = await executeStageActions(
       toStage.entryActions as StageAction[],
       claimId,
-      tenantId,
+      organizationId,
       userId
     );
 
     // Create SLA deadline if defined
     if (toStage.slaDays) {
-      await createStageDeadline(claimId, toStage.id, toStage.slaDays, tenantId);
+      await createStageDeadline(claimId, toStage.id, toStage.slaDays, organizationId);
     }
 
     // Send notifications
     if (toStage.notifyOnEntry) {
-      await sendStageNotification(claimId, toStage, "entered", tenantId);
+      await sendStageNotification(claimId, toStage, "entered", organizationId);
     }
 
     // Update claim progress
-    await updateClaimProgress(claimId, tenantId);
+    await updateClaimProgress(claimId, organizationId);
 
     // Check if auto-transition to next stage is configured
     if (toStage.autoTransition && toStage.nextStageId) {
       // Schedule auto-transition (could be delayed or conditional)
-      await scheduleAutoTransition(claimId, toStage.id, toStage.nextStageId, tenantId);
+      await scheduleAutoTransition(claimId, toStage.id, toStage.nextStageId, organizationId);
     }
 
     return {
@@ -571,7 +571,7 @@ export async function transitionToStage(
  */
 export async function approveTransition(
   transitionId: string,
-  tenantId: string,
+  organizationId: string,
   approverId: string
 ): Promise<TransitionResult> {
   try {
@@ -579,7 +579,7 @@ export async function approveTransition(
     const transition = await db.query.grievanceTransitions.findFirst({
       where: and(
         eq(grievanceTransitions.id, transitionId),
-        eq(grievanceTransitions.organizationId, tenantId),
+        eq(grievanceTransitions.organizationId, organizationId),
         eq(grievanceTransitions.requiresApproval, true),
         isNull(grievanceTransitions.approvedBy)
       ),
@@ -591,7 +591,7 @@ export async function approveTransition(
 
     // PR #10: Create append-only approval record (immutable transition history)
     await db.insert(grievanceApprovals).values({
-      organizationId: tenantId,
+      organizationId,
       transitionId: transitionId,
       approverUserId: approverId,
       action: 'approved',
@@ -609,7 +609,7 @@ export async function approveTransition(
     return await transitionToStage(
       transition.claimId,
       transition.toStageId,
-      tenantId,
+      organizationId,
       approverId,
       {
         reason: transition.reason || undefined,
@@ -632,14 +632,14 @@ export async function approveTransition(
  */
 export async function rejectTransition(
   transitionId: string,
-  tenantId: string,
+  organizationId: string,
   rejectorId: string,
   reason: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // PR #10: Create append-only rejection record (immutable transition history)
     await db.insert(grievanceApprovals).values({
-      organizationId: tenantId,
+      organizationId,
       transitionId: transitionId,
       approverUserId: rejectorId,
       action: 'rejected',
@@ -668,7 +668,7 @@ export async function rejectTransition(
         transition.claimId,
         transition.transitionedBy,
         reason,
-        tenantId
+        organizationId
       );
     }
 
@@ -691,12 +691,12 @@ export async function rejectTransition(
  */
 export async function getWorkflowStatus(
   claimId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<WorkflowStatus | null> {
   try {
     // Get claim details
     const claim = await db.query.claims.findFirst({
-      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
     });
 
     if (!claim) return null;
@@ -798,9 +798,9 @@ export async function getWorkflowStatus(
 /**
  * Update claim progress based on workflow completion
  */
-async function updateClaimProgress(claimId: string, tenantId: string): Promise<void> {
+async function updateClaimProgress(claimId: string, organizationId: string): Promise<void> {
   try {
-    const status = await getWorkflowStatus(claimId, tenantId);
+    const status = await getWorkflowStatus(claimId, organizationId);
     if (status) {
       await db
         .update(claims)
@@ -822,7 +822,7 @@ async function updateClaimProgress(claimId: string, tenantId: string): Promise<v
 async function executeStageActions(
   actions: StageAction[],
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<string[]> {
   const executedActions: string[] = [];
@@ -831,7 +831,7 @@ async function executeStageActions(
     try {
       switch (action.action_type) {
         case "notify":
-          await sendActionNotification(claimId, action.action_config, tenantId);
+          await sendActionNotification(claimId, action.action_config, organizationId);
           executedActions.push(`notify:${action.action_config.recipient || "all"}`);
           break;
 
@@ -840,7 +840,7 @@ async function executeStageActions(
             claimId,
             action.action_config.role,
             action.action_config.criteria,
-            tenantId,
+            organizationId,
             userId
           );
           executedActions.push(`assign:${action.action_config.role}`);
@@ -851,18 +851,18 @@ async function executeStageActions(
             claimId,
             action.action_config.type,
             action.action_config.days,
-            tenantId
+            organizationId
           );
           executedActions.push(`deadline:${action.action_config.type}`);
           break;
 
         case "send_email":
-          await sendActionEmail(claimId, action.action_config, tenantId);
+          await sendActionEmail(claimId, action.action_config, organizationId);
           executedActions.push(`email:${action.action_config.template}`);
           break;
 
         case "create_document":
-          await generateActionDocument(claimId, action.action_config, tenantId, userId);
+          await generateActionDocument(claimId, action.action_config, organizationId, userId);
           executedActions.push(`document:${action.action_config.template}`);
           break;
 
@@ -884,7 +884,7 @@ async function scheduleAutoTransition(
   claimId: string,
   currentStageId: string,
   nextStageId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   // Get stage conditions
   const stage = await db.query.grievanceStages.findFirst({
@@ -896,11 +896,11 @@ async function scheduleAutoTransition(
   const conditions = stage.conditions as StageCondition[];
 
   // Check if conditions are met
-  const conditionsMet = await evaluateConditions(claimId, conditions, tenantId);
+  const conditionsMet = await evaluateConditions(claimId, conditions, organizationId);
 
   if (conditionsMet) {
     // Execute transition
-    await transitionToStage(claimId, nextStageId, tenantId, "system", {
+    await transitionToStage(claimId, nextStageId, organizationId, "system", {
       triggerType: "automatic",
       reason: "Auto-transition conditions met",
     });
@@ -913,13 +913,13 @@ async function scheduleAutoTransition(
 async function evaluateConditions(
   claimId: string,
   conditions: StageCondition[],
-  tenantId: string
+  organizationId: string
 ): Promise<boolean> {
   if (conditions.length === 0) return true;
 
   // Get claim data
   const claim = await db.query.claims.findFirst({
-    where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+    where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
   });
 
   if (!claim) return false;
@@ -978,10 +978,10 @@ async function createStageDeadline(
   claimId: string,
   stageId: string,
   days: number,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   await db.insert(grievanceDeadlines).values({
-    organizationId: tenantId,
+    organizationId,
     claimId,
     stageId,
     deadlineType: "stage_completion",
@@ -995,7 +995,7 @@ async function sendStageNotification(
   claimId: string,
   stage: GrievanceStage,
   action: string,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   try {
     // Get claim details
@@ -1024,7 +1024,7 @@ async function sendStageNotification(
     // Notify assigned officers
     for (const assignment of assignments) {
       await notificationService.send({
-        organizationId: tenantId,
+        organizationId,
         recipientId: assignment.assignedTo,
         type: 'email',
         priority: 'normal',
@@ -1050,7 +1050,7 @@ async function sendStageNotification(
 async function sendActionNotification(
   claimId: string,
   config: Record<string, unknown>,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   try {
     const notificationService = getNotificationService();
@@ -1064,7 +1064,7 @@ async function sendActionNotification(
     }
 
     await notificationService.send({
-      organizationId: tenantId,
+      organizationId,
       recipientId: recipientId,
       recipientEmail: recipientEmail,
       type: config.notificationType || 'email',
@@ -1090,7 +1090,7 @@ async function autoAssignOfficer(
   claimId: string,
   role: string,
   criteria: Record<string, unknown>,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<void> {
   try {
@@ -1112,7 +1112,7 @@ async function autoAssignOfficer(
     // Attempt automatic assignment with intelligent matching
     const result = await autoAssignGrievance(
       claimId,
-      tenantId,
+      organizationId,
       assignmentCriteria,
       userId,
       {
@@ -1141,10 +1141,10 @@ async function createActionDeadline(
   claimId: string,
   type: string,
   days: number,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   await db.insert(grievanceDeadlines).values({
-    organizationId: tenantId,
+    organizationId,
     claimId,
     deadlineType: type,
     deadlineDate: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
@@ -1156,7 +1156,7 @@ async function createActionDeadline(
 async function sendActionEmail(
   claimId: string,
   config: Record<string, unknown>,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   try {
     const notificationService = getNotificationService();
@@ -1168,7 +1168,7 @@ async function sendActionEmail(
     }
 
     await notificationService.send({
-      organizationId: tenantId,
+      organizationId,
       recipientEmail: recipientEmail,
       type: 'email',
       priority: config.priority || 'normal',
@@ -1194,7 +1194,7 @@ async function sendActionEmail(
 async function generateActionDocument(
   claimId: string,
   config: Record<string, unknown>,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<void> {
   // Document generation can use the PDF/Excel generators we created
@@ -1233,7 +1233,7 @@ async function generateActionDocument(
 
     const storageService = new DocumentStorageService();
     const uploadResult = await storageService.uploadDocument({
-      organizationId: tenantId,
+      organizationId,
       documentName,
       documentBuffer: fileBuffer,
       documentType: 'workflow_document',
@@ -1260,13 +1260,13 @@ async function sendTransitionRejectedNotification(
   claimId: string,
   requesterId: string,
   reason: string,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   try {
     const notificationService = getNotificationService();
     
     await notificationService.send({
-      organizationId: tenantId,
+      organizationId,
       recipientId: requesterId,
       type: 'email',
       priority: 'high',

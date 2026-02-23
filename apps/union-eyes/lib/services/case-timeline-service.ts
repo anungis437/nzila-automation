@@ -341,7 +341,7 @@ async function recomputeSignalsForCase(claimId: string): Promise<void> {
           if (assignedOfficer?.email) {
             const notificationService = new NotificationService();
             await notificationService.send({
-              organizationId: claimData.organizationId || claimData.organizationId /* was tenantId */,
+              organizationId: claimData.organizationId,
               recipientId: claimData.assignedTo,
               recipientEmail: assignedOfficer.email,
               type: 'email',

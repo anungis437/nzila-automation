@@ -28,7 +28,7 @@ export interface BatchOperationResult {
  */
 export async function downloadMultiple(
   documentIds: string[],
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<{ stream: Readable; filename: string }> {
   const db = await getDatabase() as any;
@@ -45,7 +45,7 @@ export async function downloadMultiple(
     .where(
       and(
         inArray(documents.id, documentIds),
-        eq(documents.organizationId /* was tenantId */, tenantId),
+        eq(documents.organizationId, organizationId),
         isNull(documents.deletedAt)
       )
     );
@@ -107,7 +107,7 @@ continue;
   // Create audit log using Drizzle ORM
   await db.insert(auditLogs).values({
     id: crypto.randomUUID(),
-    tenantId,
+    tenantId: organizationId,
     userId,
     action: 'documents.bulk_download',
     resourceType: 'document',
@@ -134,7 +134,7 @@ continue;
 export async function bulkTag(
   documentIds: string[],
   tagsToAdd: string[],
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<BatchOperationResult> {
   const db = await getDatabase() as any;
@@ -158,7 +158,7 @@ export async function bulkTag(
       .where(
         and(
           inArray(documents.id, documentIds),
-          eq(documents.organizationId /* was tenantId */, tenantId),
+          eq(documents.organizationId, organizationId),
           isNull(documents.deletedAt)
         )
       );
@@ -192,7 +192,7 @@ export async function bulkTag(
     // Create audit log
     await db.insert(auditLogs).values({
       id: crypto.randomUUID(),
-      tenantId,
+      tenantId: organizationId,
       userId,
       action: 'documents.bulk_tag',
       resourceType: 'document',
@@ -220,7 +220,7 @@ export async function bulkTag(
  */
 export async function bulkDelete(
   documentIds: string[],
-  tenantId: string,
+  organizationId: string,
   userId: string,
   userRole: string
 ): Promise<BatchOperationResult> {
@@ -244,7 +244,7 @@ export async function bulkDelete(
       .where(
         and(
           inArray(documents.id, documentIds),
-          eq(documents.organizationId /* was tenantId */, tenantId),
+          eq(documents.organizationId, organizationId),
           isNull(documents.deletedAt)
         )
       );
@@ -291,7 +291,7 @@ export async function bulkDelete(
     // Create audit log
     await db.insert(auditLogs).values({
       id: crypto.randomUUID(),
-      tenantId,
+      tenantId: organizationId,
       userId,
       action: 'documents.bulk_delete',
       resourceType: 'document',
@@ -319,7 +319,7 @@ export async function bulkDelete(
 export async function moveToFolder(
   documentIds: string[],
   folderId: string | null,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<BatchOperationResult> {
   const db = await getDatabase() as any;
@@ -340,7 +340,7 @@ export async function moveToFolder(
         .where(
           and(
             eq(documentFolders.id, folderId),
-            eq(documentFolders.organizationId /* was tenantId */, tenantId),
+            eq(documentFolders.organizationId, organizationId),
             isNull(documentFolders.deletedAt)
           )
         )
@@ -358,7 +358,7 @@ export async function moveToFolder(
       .where(
         and(
           inArray(documents.id, documentIds),
-          eq(documents.organizationId /* was tenantId */, tenantId),
+          eq(documents.organizationId, organizationId),
           isNull(documents.deletedAt)
         )
       );
@@ -387,7 +387,7 @@ export async function moveToFolder(
     // Create audit log
     await db.insert(auditLogs).values({
       id: crypto.randomUUID(),
-      tenantId,
+      tenantId: organizationId,
       userId,
       action: 'documents.bulk_move',
       resourceType: 'document',
@@ -416,7 +416,7 @@ export async function moveToFolder(
 export async function bulkCopy(
   documentIds: string[],
   destinationFolderId: string | null,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<BatchOperationResult> {
   const db = await getDatabase() as any;
@@ -437,7 +437,7 @@ export async function bulkCopy(
         .where(
           and(
             eq(documentFolders.id, destinationFolderId),
-            eq(documentFolders.organizationId /* was tenantId */, tenantId),
+            eq(documentFolders.organizationId, organizationId),
             isNull(documentFolders.deletedAt)
           )
         )
@@ -465,7 +465,7 @@ export async function bulkCopy(
       .where(
         and(
           inArray(documents.id, documentIds),
-          eq(documents.organizationId /* was tenantId */, tenantId),
+          eq(documents.organizationId, organizationId),
           isNull(documents.deletedAt)
         )
       );
@@ -477,7 +477,7 @@ export async function bulkCopy(
         
         await db.insert(documents).values({
           id: crypto.randomUUID(),
-          tenantId,
+          organizationId,
           folderId: destinationFolderId,
           name: copyName,
           fileUrl: doc.fileUrl,
@@ -506,7 +506,7 @@ export async function bulkCopy(
     // Create audit log
     await db.insert(auditLogs).values({
       id: crypto.randomUUID(),
-      tenantId,
+      tenantId: organizationId,
       userId,
       action: 'documents.bulk_copy',
       resourceType: 'document',
@@ -535,7 +535,7 @@ export async function bulkCopy(
 export async function bulkUpdateMetadata(
   documentIds: string[],
   metadataUpdates: Record<string, unknown>,
-  tenantId: string,
+  organizationId: string,
   userId: string
 ): Promise<BatchOperationResult> {
   const db = await getDatabase() as any;
@@ -558,7 +558,7 @@ export async function bulkUpdateMetadata(
       .where(
         and(
           inArray(documents.id, documentIds),
-          eq(documents.organizationId /* was tenantId */, tenantId),
+          eq(documents.organizationId, organizationId),
           isNull(documents.deletedAt)
         )
       );
@@ -594,7 +594,7 @@ export async function bulkUpdateMetadata(
     // Create audit log
     await db.insert(auditLogs).values({
       id: crypto.randomUUID(),
-      tenantId,
+      tenantId: organizationId,
       userId,
       action: 'documents.bulk_update_metadata',
       resourceType: 'document',
@@ -622,7 +622,7 @@ export async function bulkUpdateMetadata(
  */
 export async function validateDocumentPermissions(
   documentIds: string[],
-  tenantId: string,
+  organizationId: string,
   userId: string,
   userRole: string
 ): Promise<{
@@ -649,7 +649,7 @@ export async function validateDocumentPermissions(
     .where(
       and(
         inArray(documents.id, documentIds),
-        eq(documents.organizationId /* was tenantId */, tenantId),
+        eq(documents.organizationId, organizationId),
         isNull(documents.deletedAt)
       )
     );

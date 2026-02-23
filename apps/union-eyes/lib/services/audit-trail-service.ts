@@ -71,7 +71,7 @@ export class AuditTrailService {
     }).returning();
 
     return {
-      ...(entry as AuditLogEntry & { tenantId?: string }),
+      ...(entry as AuditLogEntry),
       organizationId: (entry as any).organizationId || params.organizationId,
     } as AuditLogEntry;
   }
@@ -239,7 +239,7 @@ export class AuditTrailService {
    * Query audit log
    */
   static async queryAuditLog(options: AuditQueryOptions): Promise<AuditLogEntry[]> {
-    const conditions = [eq(financialAuditLog.organizationId /* was tenantId */, options.organizationId)];
+    const conditions = [eq(financialAuditLog.organizationId, options.organizationId)];
 
     if (options.entityType) {
       conditions.push(eq(financialAuditLog.entityType, options.entityType));
@@ -277,7 +277,7 @@ export class AuditTrailService {
       .offset(offset);
 
     return results.map((entry) => ({
-      ...(entry as AuditLogEntry & { tenantId?: string }),
+      ...(entry as AuditLogEntry),
       organizationId: (entry as any).organizationId || options.organizationId,
     })) as AuditLogEntry[];
   }

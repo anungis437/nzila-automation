@@ -54,7 +54,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
 
     const consent = await CookieConsentManager.saveCookieConsent({
       userId: user?.id ?? undefined,
-      tenantId: organizationId,
+      organizationId,
       consentId,
       essential: essential ?? true,
       functional: functional ?? false,

@@ -12,7 +12,6 @@ import { useAuth, useOrganization } from "@clerk/nextjs";
 
 // Tenant information interface
 export interface TenantInfo {
-  tenantId: string;
   organizationId: string;
   name: string;
   slug: string;
@@ -27,7 +26,7 @@ interface TenantContextType {
   tenants: TenantInfo[];
   isLoading: boolean;
   error: Error | null;
-  switchTenant: (tenantId: string) => Promise<void>;
+  switchTenant: (organizationId: string) => Promise<void>;
   refreshTenants: () => Promise<void>;
 }
 
@@ -93,7 +92,7 @@ setError(err instanceof Error ? err : new Error("Unknown error"));
   /**
    * Switch to a different tenant
    */
-  const switchTenant = useCallback(async (tenantId: string) => {
+  const switchTenant = useCallback(async (organizationId: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -103,7 +102,7 @@ setError(err instanceof Error ? err : new Error("Unknown error"));
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tenantId }),
+        body: JSON.stringify({ organizationId }),
       });
 
       if (!response.ok) {
@@ -174,7 +173,7 @@ export function useTenant() {
  */
 export function useTenantId(): string | null {
   const { currentTenant } = useTenant();
-  return currentTenant?.organizationId /* was tenantId */ || null;
+  return currentTenant?.organizationId || null;
 }
 
 /**

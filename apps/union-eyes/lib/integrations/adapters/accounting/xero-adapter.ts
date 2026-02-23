@@ -60,7 +60,7 @@ export class XeroAdapter extends BaseIntegration {
       const xeroConfig: XeroConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        tenantId: (this.config!.settings?.organizationId as string) /* was tenantId */ || '',
+        tenantId: (this.config!.settings?.organizationId as string) || '',
         environment: (this.config!.settings?.environment as 'production' | 'sandbox') || 'production',
         refreshToken: this.config!.credentials.refreshToken,
       };

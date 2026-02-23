@@ -109,7 +109,6 @@ export async function getExecutiveSummary(
   organizationId: string,
   dateRange: DateRange
 ): Promise<ExecutiveSummary> {
-  const tenantId = organizationId;
   const { startDate, endDate } = dateRange;
   
   // Get current period metrics
@@ -187,7 +186,6 @@ export async function getMonthlyTrends(
   organizationId: string,
   monthsBack: number = 12
 ): Promise<TrendData[]> {
-  const tenantId = organizationId;
   const trends = await db.execute(sql`
     SELECT 
       TO_CHAR(month, 'YYYY-MM') AS period,
@@ -218,7 +216,6 @@ export async function getClaimsAnalytics(
   organizationId: string,
   dateRange: DateRange
 ): Promise<ClaimsAnalytics> {
-  const tenantId = organizationId;
   const { startDate, endDate } = dateRange;
 
   // Get aggregate metrics
@@ -319,7 +316,6 @@ export async function getClaimsByDateRange(
     assignedTo?: string;
   }
 ): Promise<any[]> {
-  const tenantId = organizationId;
   const { startDate, endDate } = dateRange;
   
   let query = sql`
@@ -373,7 +369,6 @@ export async function getMemberAnalytics(
   organizationId: string,
   dateRange: DateRange
 ): Promise<MemberAnalytics> {
-  const tenantId = organizationId;
   const { startDate, endDate } = dateRange;
 
   // Get member counts
@@ -473,7 +468,6 @@ export async function getDeadlineAnalytics(
   organizationId: string,
   dateRange: DateRange
 ): Promise<DeadlineAnalytics> {
-  const tenantId = organizationId;
   const { startDate, endDate } = dateRange;
 
   // Get deadline metrics
@@ -548,7 +542,6 @@ export async function getFinancialAnalytics(
   organizationId: string,
   dateRange: DateRange
 ): Promise<FinancialAnalytics> {
-  const tenantId = organizationId;
   const { startDate, endDate } = dateRange;
 
   // Get financial metrics
@@ -632,7 +625,6 @@ export async function getFinancialAnalytics(
  * Get weekly activity heatmap data
  */
 export async function getWeeklyActivityHeatmap(organizationId: string): Promise<HeatmapData[]> {
-  const tenantId = organizationId;
   const heatmapData = await db.execute(sql`
     SELECT 
       day_of_week,
@@ -661,7 +653,6 @@ export async function getWeeklyActivityHeatmap(organizationId: string): Promise<
  * Kept for backwards compatibility if needed
  */
 export async function getReportsLegacy(organizationId: string, userId?: string): Promise<any[]> {
-  const tenantId = organizationId;
   let query = sql`
     SELECT 
       r.id,
@@ -709,7 +700,6 @@ export async function createReportLegacy(
     templateId?: string;
   }
 ): Promise<any> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO reports (
       organization_id, name, description, report_type, category, config, 
@@ -754,7 +744,6 @@ export async function createExportJob(
     exportType: string;
   }
 ): Promise<any> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO export_jobs (organization_id, report_id, schedule_id, export_type, created_by)
     VALUES (${organizationId}, ${exportData.reportId || null}, ${exportData.scheduleId || null}, 
@@ -817,7 +806,6 @@ export async function getExportJob(jobId: string): Promise<any> {
  * Get user's export jobs
  */
 export async function getUserExportJobs(organizationId: string, userId: string): Promise<any[]> {
-  const tenantId = organizationId;
   return await db.execute(sql`
     SELECT 
       ej.*,
@@ -875,8 +863,7 @@ export async function getReports(
     search?: string;
   }
 ): Promise<any[]> {
-  const tenantId = organizationId;
-  let conditions: any[] = [sql`r.tenant_id = ${tenantId}`];
+  let conditions: any[] = [sql`r.tenant_id = ${organizationId}`];
 
   // Add filters
   if (filters?.category) {
@@ -922,11 +909,10 @@ export async function getReportById(
   reportId: string,
   organizationId: string
 ): Promise<any | null> {
-  const tenantId = organizationId;
   const reports = await db.execute(sql`
     SELECT r.*
     FROM reports r
-    WHERE r.id = ${reportId} AND r.tenant_id = ${tenantId}
+    WHERE r.id = ${reportId} AND r.tenant_id = ${organizationId}
   `);
 
   return reports[0] || null;
@@ -949,13 +935,12 @@ export async function createReport(
     templateId?: string;
   }
 ): Promise<any> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO reports (
       tenant_id, name, description, report_type, category, config,
       is_public, is_template, template_id, created_by, updated_by
     ) VALUES (
-      ${tenantId}, ${data.name}, ${data.description || null}, ${data.reportType},
+      ${organizationId}, ${data.name}, ${data.description || null}, ${data.reportType},
       ${data.category || null}, ${JSON.stringify(data.config)}, ${data.isPublic || false},
       ${data.isTemplate || false}, ${data.templateId || null}, ${userId}, ${userId}
     )
@@ -979,7 +964,6 @@ export async function updateReport(
     isPublic?: boolean;
   }
 ): Promise<any> {
-  const tenantId = organizationId;
   const setClauses: SQL[] = [];
 
   // Build SET clauses using safe column names and parameterized values
@@ -1006,7 +990,7 @@ export async function updateReport(
   const result = await db.execute(sql`
     UPDATE reports
     SET ${setClause}
-    WHERE id = ${reportId} AND tenant_id = ${tenantId}
+    WHERE id = ${reportId} AND tenant_id = ${organizationId}
     RETURNING *
   `);
 
@@ -1020,10 +1004,9 @@ export async function deleteReport(
   reportId: string,
   organizationId: string
 ): Promise<boolean> {
-  const tenantId = organizationId;
   await db.execute(sql`
     DELETE FROM reports
-    WHERE id = ${reportId} AND tenant_id = ${tenantId}
+    WHERE id = ${reportId} AND tenant_id = ${organizationId}
   `);
 
   return true;
@@ -1047,14 +1030,13 @@ export async function logReportExecution(
     errorMessage?: string;
   }
 ): Promise<any> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO report_executions (
       report_id, tenant_id, executed_by, format, parameters,
       result_count, execution_time_ms, file_url, file_size,
       status, error_message
     ) VALUES (
-      ${reportId}, ${tenantId}, ${userId}, ${data.format},
+      ${reportId}, ${organizationId}, ${userId}, ${data.format},
       ${data.parameters ? JSON.stringify(data.parameters) : null},
       ${data.resultCount?.toString() || null}, ${data.executionTimeMs.toString()},
       ${data.fileUrl || null}, ${data.fileSize?.toString() || null},
@@ -1081,12 +1063,11 @@ export async function getReportExecutions(
   organizationId: string,
   limit: number = 50
 ): Promise<any[]> {
-  const tenantId = organizationId;
   const executions = await db.execute(sql`
     SELECT re.*, u.email as executed_by_email
     FROM report_executions re
     LEFT JOIN users u ON u.id = re.executed_by
-    WHERE re.report_id = ${reportId} AND re.tenant_id = ${tenantId}
+    WHERE re.report_id = ${reportId} AND re.tenant_id = ${organizationId}
     ORDER BY re.executed_at DESC
     LIMIT ${limit}
   `);
@@ -1101,12 +1082,11 @@ export async function getReportTemplates(
   organizationId?: string,
   category?: string
 ): Promise<any[]> {
-  const tenantId = organizationId;
   let conditions: any[] = [sql`rt.is_active = true`];
 
   // Include system templates and tenant-specific templates
-  if (tenantId) {
-    conditions.push(sql`(rt.tenant_id IS NULL OR rt.tenant_id = ${tenantId})`);
+  if (organizationId) {
+    conditions.push(sql`(rt.tenant_id IS NULL OR rt.tenant_id = ${organizationId})`);
   } else {
     conditions.push(sql`rt.tenant_id IS NULL`);
   }
@@ -1136,7 +1116,6 @@ export async function createReportFromTemplate(
   userId: string,
   name: string
 ): Promise<any> {
-  const tenantId = organizationId;
   // Get template
   const template = await db.execute(sql`
     SELECT * FROM report_templates WHERE id = ${templateId}
@@ -1149,7 +1128,7 @@ export async function createReportFromTemplate(
   const templateData = template[0];
 
   // Create report from template
-  return await createReport(tenantId, userId, {
+  return await createReport(organizationId, userId, {
     name,
     description: typeof templateData.description === 'string' ? templateData.description : undefined,
     reportType: 'template',

@@ -49,13 +49,13 @@ return null;
 /**
  * Get tenant's jurisdiction (via organization lookup)
  */
-export async function getTenantJurisdiction(tenantId: string): Promise<CAJurisdiction | null> {
+export async function getTenantJurisdiction(organizationId: string): Promise<CAJurisdiction | null> {
   try {
     // First try to get from organizations table directly if tenant_id matches org_id
     const result = await db.execute(sql`
       SELECT jurisdiction 
       FROM organizations 
-      WHERE id = ${tenantId}
+      WHERE id = ${organizationId}
     `);
     
     const rows = result as unknown as Array<{ jurisdiction: string }>;

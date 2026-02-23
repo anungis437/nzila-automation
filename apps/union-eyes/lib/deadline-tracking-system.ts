@@ -148,7 +148,7 @@ export const DEFAULT_DEADLINE_RULES: DeadlineCalculationRule[] = [
  */
 export async function createDeadline(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   deadlineType: DeadlineType,
   options: {
     referenceDate?: Date;
@@ -162,7 +162,7 @@ export async function createDeadline(
   try {
     // Get claim details
     const claim = await db.query.claims.findFirst({
-      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
     });
 
     if (!claim) {
@@ -224,7 +224,7 @@ return {
  */
 export async function createGrievanceStepDeadlines(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   filingDate: Date,
   incidentDate: Date
 ): Promise<{ success: boolean; deadlineIds: string[]; error?: string }> {
@@ -232,14 +232,14 @@ export async function createGrievanceStepDeadlines(
     const deadlineIds: string[] = [];
 
     // Step 1 Response deadline (from filing date)
-    const step1Result = await createDeadline(claimId, tenantId, "step_1_response", {
+    const step1Result = await createDeadline(claimId, organizationId, "step_1_response", {
       referenceDate: filingDate,
     });
     if (step1Result.deadlineId) deadlineIds.push(step1Result.deadlineId);
 
     // Appeal deadline (10 days after Step 1 expected response)
     if (step1Result.dueDate) {
-      const appealResult = await createDeadline(claimId, tenantId, "appeal_deadline", {
+      const appealResult = await createDeadline(claimId, organizationId, "appeal_deadline", {
         referenceDate: step1Result.dueDate,
       });
       if (appealResult.deadlineId) deadlineIds.push(appealResult.deadlineId);
@@ -248,7 +248,7 @@ export async function createGrievanceStepDeadlines(
     // Investigation completion deadline
     const investigationResult = await createDeadline(
       claimId,
-      tenantId,
+      organizationId,
       "investigation_completion",
       {
         referenceDate: filingDate,
@@ -271,7 +271,7 @@ return {
  */
 export async function completeDeadline(
   deadlineId: string,
-  tenantId: string,
+  organizationId: string,
   completedBy: string,
   notes?: string
 ): Promise<{ success: boolean; error?: string }> {
@@ -405,7 +405,7 @@ return {
  * Get upcoming deadlines for a tenant
  */
 export async function getUpcomingDeadlines(
-  tenantId: string,
+  organizationId: string,
   daysAhead: number = 30
 ): Promise<DeadlineAlert[]> {
   try {
@@ -429,7 +429,7 @@ return [];
 /**
  * Get overdue deadlines for a tenant
  */
-export async function getOverdueDeadlines(tenantId: string): Promise<DeadlineAlert[]> {
+export async function getOverdueDeadlines(organizationId: string): Promise<DeadlineAlert[]> {
   try {
     const today = new Date();
 
@@ -452,7 +452,7 @@ return [];
  */
 export async function getGrievanceDeadlines(
   claimId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<GrievanceDeadline[]> {
   try {
     const deadlines = await db.query.grievanceDeadlines.findMany({
@@ -469,9 +469,9 @@ return [];
 /**
  * Check and escalate missed deadlines
  */
-export async function escalateMissedDeadlines(tenantId: string): Promise<number> {
+export async function escalateMissedDeadlines(organizationId: string): Promise<number> {
   try {
-    const overdueDeadlines = await getOverdueDeadlines(tenantId);
+    const overdueDeadlines = await getOverdueDeadlines(organizationId);
     let escalatedCount = 0;
 
     for (const alert of overdueDeadlines) {

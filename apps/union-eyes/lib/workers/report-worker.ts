@@ -99,13 +99,13 @@ function toXml(entries: Array<{ path: string; value: string }>): string {
 }
 
 async function generateGdprExport(
-  tenantId: string,
+  organizationId: string,
   userId: string,
   parameters: { requestId: string; format: 'json' | 'csv' | 'xml' }
 ) {
   const exportData = await DataExportService.exportUserData(
     userId,
-    tenantId,
+    organizationId,
     parameters.format
   );
 
@@ -129,7 +129,7 @@ async function generateGdprExport(
  * Generate claims report
  */
 async function generateClaimsReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     startDate?: string;
     endDate?: string;
@@ -138,7 +138,7 @@ async function generateClaimsReport(
   }
 ) {
 // Build query with combined where conditions
-  const conditions: any[] = [eq(claims.organizationId, tenantId)];
+  const conditions: any[] = [eq(claims.organizationId, organizationId)];
   
   if (parameters.startDate && parameters.endDate) {
     conditions.push(
@@ -184,14 +184,14 @@ async function generateClaimsReport(
  * Generate members report
  */
 async function generateMembersReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     status?: string;
     format: 'pdf' | 'excel';
   }
 ) {
 // Build query with combined where conditions
-  const conditions: any[] = [eq(members.organizationId, tenantId)];
+  const conditions: any[] = [eq(members.organizationId, organizationId)];
   
   if (parameters.status) {
     conditions.push(eq(members.status, parameters.status as any));
@@ -230,7 +230,7 @@ async function generateMembersReport(
  * Generate grievances report
  */
 async function generateGrievancesReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     startDate?: string;
     endDate?: string;
@@ -240,7 +240,7 @@ async function generateGrievancesReport(
   }
 ) {
 // Build query with combined where conditions
-  const conditions: any[] = [eq(claims.organizationId, tenantId)];
+  const conditions: any[] = [eq(claims.organizationId, organizationId)];
   
   if (parameters.startDate && parameters.endDate) {
     conditions.push(
@@ -299,7 +299,7 @@ async function generateGrievancesReport(
  * Generate usage analytics report
  */
 async function generateUsageReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     startDate: string;
     endDate: string;
@@ -312,7 +312,7 @@ async function generateUsageReport(
     .from(claims)
     .where(
       and(
-        eq(claims.organizationId, tenantId),
+        eq(claims.organizationId, organizationId),
         between(claims.createdAt, new Date(parameters.startDate), new Date(parameters.endDate))
       )
     );
@@ -320,14 +320,14 @@ async function generateUsageReport(
   const membersData = await db
     .select()
     .from(members)
-    .where(eq(members.organizationId, tenantId));
+    .where(eq(members.organizationId, organizationId));
 
   const newMembers = await db
     .select()
     .from(members)
     .where(
       and(
-        eq(members.organizationId, tenantId),
+        eq(members.organizationId, organizationId),
         between(members.createdAt, new Date(parameters.startDate), new Date(parameters.endDate))
       )
     );
@@ -336,7 +336,7 @@ async function generateUsageReport(
   const grievanceTransitionsData = await db
     .select()
     .from(grievanceTransitions)
-    .where(eq(grievanceTransitions.organizationId, tenantId));
+    .where(eq(grievanceTransitions.organizationId, organizationId));
 
   const data = {
     period: { start: parameters.startDate, end: parameters.endDate },
@@ -390,7 +390,7 @@ async function generateUsageReport(
  * Process report generation job
  */
 async function processReportJob(job: any) {
-  const { reportType, tenantId, userId, parameters } = job.data;
+  const { reportType, tenantId: organizationId, userId, parameters } = job.data;
 await ensureReportsDir();
 
   await job.updateProgress(10);
@@ -402,27 +402,27 @@ await ensureReportsDir();
   try {
     switch (reportType) {
       case 'claims':
-        buffer = await generateClaimsReport(tenantId, parameters as any);
+        buffer = await generateClaimsReport(organizationId, parameters as any);
         filename = `claims-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'members':
-        buffer = await generateMembersReport(tenantId, parameters as any);
+        buffer = await generateMembersReport(organizationId, parameters as any);
         filename = `members-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'grievances':
-        buffer = await generateGrievancesReport(tenantId, parameters as any);
+        buffer = await generateGrievancesReport(organizationId, parameters as any);
         filename = `grievances-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'usage':
-        buffer = await generateUsageReport(tenantId, parameters as any);
+        buffer = await generateUsageReport(organizationId, parameters as any);
         filename = `usage-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'gdpr_export':
-        buffer = await generateGdprExport(tenantId, userId, parameters as any);
+        buffer = await generateGdprExport(organizationId, userId, parameters as any);
         filename = `gdpr-export-${parameters.requestId}.${parameters.format}`;
         break;
 
@@ -438,7 +438,7 @@ await ensureReportsDir();
 await job.updateProgress(90);
 
     if (reportType === 'gdpr_export') {
-      const downloadUrl = `/api/gdpr/data-export?requestId=${parameters.requestId}&tenantId=${tenantId}`;
+      const downloadUrl = `/api/gdpr/data-export?requestId=${parameters.requestId}&organizationId=${organizationId}`;
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
       await GdprRequestManager.updateRequestStatus(parameters.requestId, 'completed', {

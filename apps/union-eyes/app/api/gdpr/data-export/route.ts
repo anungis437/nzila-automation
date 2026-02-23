@@ -70,7 +70,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     // Create data access request
     const gdprRequest = await GdprRequestManager.requestDataAccess({
       userId: userId,
-      tenantId: organizationId,
+      organizationId,
       requestDetails: {
         preferredFormat: format,
         ...(requestDetails ?? {}),

@@ -179,11 +179,9 @@ export const DATA_SOURCES: DataSourceMetadata[] = [
 
 export class ReportExecutor {
   private organizationId: string;
-  private tenantId: string;
 
-  constructor(organizationId: string, tenantId: string) {
+  constructor(organizationId: string) {
     this.organizationId = organizationId;
-    this.tenantId = tenantId;
   }
 
   /**

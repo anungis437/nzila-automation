@@ -124,11 +124,11 @@ async function sendInAppNotification(
   title: string,
   message: string,
   data?: Record<string, any>,
-  tenantId?: string
+  organizationId?: string
 ) {
   await db.insert(inAppNotifications).values({
     userId,
-    tenantId: tenantId || 'default',
+    tenantId: organizationId || 'default',
     title,
     message,
     data,
@@ -140,11 +140,11 @@ async function sendInAppNotification(
   try {
     const redis = getRedisConnection();
     await redis.publish(
-      `notifications:${tenantId || 'default'}:${userId}`,
+      `notifications:${organizationId || 'default'}:${userId}`,
       JSON.stringify({
         type: 'notification',
         userId,
-        tenantId: tenantId || 'default',
+        tenantId: organizationId || 'default',
         title,
         message,
         data,
@@ -285,7 +285,7 @@ async function processNotification(job: any) {
           }
 
         case 'in-app':
-          await sendInAppNotification(userId, title, message, data, data?.organizationId /* was tenantId */);
+          await sendInAppNotification(userId, title, message, data, data?.organizationId);
           return { channel, success: true };
 
         default:

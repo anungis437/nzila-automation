@@ -253,7 +253,7 @@ export class RAGService {
       .where(
         and(
           eq(knowledgeBase.isActive, true),
-          options.organizationId ? eq(knowledgeBase.organizationId /* was tenantId */, options.organizationId) : undefined
+          options.organizationId ? eq(knowledgeBase.organizationId, options.organizationId) : undefined
         )
       )
       .limit(options.limit || 5);

@@ -74,7 +74,7 @@ const fileUrl = await uploadFile(
       fileBuffer,
       schedule.id,
       schedule.exportFormat,
-      schedule.tenantId
+      schedule.organizationId
     );
 
     const processingDurationMs = Date.now() - startTime;
@@ -133,7 +133,7 @@ async function createExportJob(schedule: ScheduledReport): Promise<any> {
       created_by
     ) VALUES (
       ${schedule.reportId},
-      ${schedule.tenantId},
+      ${schedule.organizationId},
       ${schedule.id},
       ${schedule.exportFormat},
       'processing',
@@ -200,16 +200,16 @@ async function fetchReportData(schedule: ScheduledReport): Promise<ReportData> {
 
   switch (config.reportType || config.type) {
     case 'claims':
-      result = await executeClaimsQuery(schedule.tenantId, config);
+      result = await executeClaimsQuery(schedule.organizationId, config);
       break;
     case 'analytics':
-      result = await executeAnalyticsQuery(schedule.tenantId, config);
+      result = await executeAnalyticsQuery(schedule.organizationId, config);
       break;
     case 'custom':
-      result = await executeCustomQuery(schedule.tenantId, config);
+      result = await executeCustomQuery(schedule.organizationId, config);
       break;
     default:
-      result = await executeDefaultQuery(schedule.tenantId, config);
+      result = await executeDefaultQuery(schedule.organizationId, config);
   }
 
   return {
@@ -222,7 +222,7 @@ async function fetchReportData(schedule: ScheduledReport): Promise<ReportData> {
 /**
  * Execute claims report query
  */
-async function executeClaimsQuery(tenantId: string, config: unknown): Promise<unknown[]> {
+async function executeClaimsQuery(organizationId: string, config: unknown): Promise<unknown[]> {
   const result = await db.execute(sql`
     SELECT 
       c.claim_number,
@@ -236,7 +236,7 @@ async function executeClaimsQuery(tenantId: string, config: unknown): Promise<un
       u.member_id
     FROM claims c
     LEFT JOIN user_profiles u ON c.user_id = u.user_id
-    WHERE c.tenant_id = ${tenantId}
+    WHERE c.tenant_id = ${organizationId}
       AND c.created_at >= NOW() - INTERVAL '90 days'
     ORDER BY c.created_at DESC
     LIMIT 1000
@@ -248,7 +248,7 @@ async function executeClaimsQuery(tenantId: string, config: unknown): Promise<un
 /**
  * Execute analytics report query
  */
-async function executeAnalyticsQuery(tenantId: string, config: any): Promise<unknown[]> {
+async function executeAnalyticsQuery(organizationId: string, config: any): Promise<unknown[]> {
   const groupBy = config.groupBy || 'status';
 
   // SECURITY FIX: Whitelist validation to prevent SQL injection via GROUP BY column
@@ -265,7 +265,7 @@ async function executeAnalyticsQuery(tenantId: string, config: any): Promise<unk
       AVG(claim_amount) as avg_amount,
       SUM(claim_amount) as total_amount
     FROM claims
-    WHERE tenant_id = ${tenantId}
+    WHERE tenant_id = ${organizationId}
       AND created_at >= NOW() - INTERVAL '30 days'
     GROUP BY ${sql.raw(groupBy)}
     ORDER BY count DESC
@@ -278,7 +278,7 @@ async function executeAnalyticsQuery(tenantId: string, config: any): Promise<unk
 /**
  * Execute default query
  */
-async function executeDefaultQuery(tenantId: string, config: any): Promise<unknown[]> {
+async function executeDefaultQuery(organizationId: string, config: any): Promise<unknown[]> {
   const result = await db.execute(sql`
     SELECT 
       id,
@@ -288,7 +288,7 @@ async function executeDefaultQuery(tenantId: string, config: any): Promise<unkno
       claim_amount,
       created_at
     FROM claims
-    WHERE tenant_id = ${tenantId}
+    WHERE tenant_id = ${organizationId}
     ORDER BY created_at DESC
     LIMIT 500
   `);
@@ -303,10 +303,10 @@ async function executeDefaultQuery(tenantId: string, config: any): Promise<unkno
  * security risk. It should ONLY be used with pre-approved, validated SQL queries.
  * Implementation includes strict allowlist validation.
  */
-async function executeCustomQuery(tenantId: string, config: any): Promise<unknown[]> {
+async function executeCustomQuery(organizationId: string, config: any): Promise<unknown[]> {
   const customQuery = config.query || '';
   if (!customQuery) {
-    return executeDefaultQuery(tenantId, config);
+    return executeDefaultQuery(organizationId, config);
   }
   
   // SECURITY FIX: Implement strict SQL allowlist validation
@@ -340,21 +340,21 @@ async function executeCustomQuery(tenantId: string, config: any): Promise<unknow
       result = await db.execute(sql`
         SELECT COUNT(*) as total, SUM(claim_amount) as total_amount 
         FROM claims 
-        WHERE tenant_id = ${tenantId}
+        WHERE tenant_id = ${organizationId}
       `);
       break;
     case 'member_stats':
       result = await db.execute(sql`
         SELECT COUNT(*) as total, COUNT(DISTINCT union_id) as unique_unions 
         FROM members 
-        WHERE tenant_id = ${tenantId}
+        WHERE tenant_id = ${organizationId}
       `);
       break;
     case 'recent_claims':
       result = await db.execute(sql`
         SELECT id, claim_number, status, claim_amount, created_at 
         FROM claims 
-        WHERE tenant_id = ${tenantId}
+        WHERE tenant_id = ${organizationId}
         ORDER BY created_at DESC 
         LIMIT 100
       `);
@@ -702,7 +702,7 @@ async function uploadFile(
   buffer: Buffer,
   scheduleId: string,
   format: string,
-  tenantId: string
+  organizationId: string
 ): Promise<string> {
   const timestamp = Date.now();
   const filename = `scheduled-report-${scheduleId}-${timestamp}.${format}`;
@@ -715,7 +715,7 @@ async function uploadFile(
         : 'application/json';
 
   const uploadResult = await storageService.uploadDocument({
-    organizationId: tenantId,
+    organizationId,
     documentName: filename,
     documentBuffer: buffer,
     documentType: 'scheduled_report',

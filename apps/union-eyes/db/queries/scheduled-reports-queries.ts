@@ -16,7 +16,7 @@ import { sql } from 'drizzle-orm';
 export interface ScheduledReport {
   id: string;
   reportId: string;
-  tenantId: string;
+  organizationId: string;
   scheduleType: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'custom';
   scheduleConfig: {
     time?: string; // HH:MM format

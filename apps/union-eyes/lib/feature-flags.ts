@@ -94,7 +94,7 @@ export class TenantFlag {
     private defaultEnabled: boolean = false
   ) {}
 
-  isEnabledForTenant(tenantId: string): boolean {
+  isEnabledForTenant(organizationId: string): boolean {
     const config = getFeatureConfig(this.name);
     if (!config?.enabled) return false;
     
@@ -102,28 +102,28 @@ export class TenantFlag {
       return this.defaultEnabled;
     }
     
-    return config.allowedTenants.includes(tenantId);
+    return config.allowedTenants.includes(organizationId);
   }
 
-  async enableForTenant(tenantId: string): Promise<void> {
+  async enableForTenant(organizationId: string): Promise<void> {
     const config = getFeatureConfig(this.name) || { allowedTenants: [] };
     const tenants = config.allowedTenants || [];
     
-    if (!tenants.includes(tenantId)) {
+    if (!tenants.includes(organizationId)) {
       await updateFeatureFlag(this.name, {
         enabled: true,
-        allowedTenants: [...tenants, tenantId]
+        allowedTenants: [...tenants, organizationId]
       });
     }
   }
 
-  async disableForTenant(tenantId: string): Promise<void> {
+  async disableForTenant(organizationId: string): Promise<void> {
     const config = getFeatureConfig(this.name);
     if (!config?.allowedTenants) return;
 
     await updateFeatureFlag(this.name, {
       enabled: true,
-      allowedTenants: config.allowedTenants.filter(id => id !== tenantId)
+      allowedTenants: config.allowedTenants.filter(id => id !== organizationId)
     });
   }
 }

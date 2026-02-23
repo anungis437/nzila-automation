@@ -538,7 +538,7 @@ return null;
  */
 async function checkMemberPermission(
   memberId: string,
-  tenantId: string,
+  organizationId: string,
   requiredPermission: string,
   memberPermissions: string[],
   resourceType?: string,
@@ -558,7 +558,7 @@ async function checkMemberPermission(
     // Check for exception first
     const exceptionId = await getPermissionExceptionId(
       memberId,
-      tenantId,
+      organizationId,
       requiredPermission,
       resourceType,
       resourceId

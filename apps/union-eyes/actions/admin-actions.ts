@@ -34,7 +34,7 @@ interface AdminUser {
   name: string;
   email: string;
   role: UserRole;
-  tenantId: string;
+  organizationId: string;
   tenantName: string;
   status: "active" | "inactive";
   lastLogin: string | null;
@@ -134,15 +134,15 @@ export async function getSystemStats(tx: NodePgDatabase<any>): Promise<SystemSta
 export async function getAdminUsers(
   tx: NodePgDatabase<any>,
   searchQuery?: string,
-  tenantId?: string,
+  organizationId?: string,
   role?: UserRole
 ): Promise<AdminUser[]> {
   try {
     // Build filter conditions
     const conditions = [isNull(tenants.deletedAt)];
     
-    if (tenantId) {
-      conditions.push(eq(organizationUsers.organizationId, tenantId));
+    if (organizationId) {
+      conditions.push(eq(organizationUsers.organizationId, organizationId));
     }
     
     if (role) {
@@ -162,7 +162,7 @@ export async function getAdminUsers(
       .select({
         userId: organizationUsers.userId,
         role: organizationUsers.role,
-        tenantId: organizationUsers.organizationId,
+        organizationId: organizationUsers.organizationId,
         tenantName: tenants.tenantName,
         isActive: organizationUsers.isActive,
         lastAccessAt: organizationUsers.lastAccessAt,
@@ -178,7 +178,7 @@ export async function getAdminUsers(
       name: u.userId.split('_')[0] || "User", // Extract from Clerk ID
       email: u.userId, // Temporary - need to fetch from Clerk
       role: u.role as UserRole,
-      tenantId: u.tenantId,
+      organizationId: u.organizationId,
       tenantName: u.tenantName,
       status: u.isActive ? "active" : "inactive",
       lastLogin: u.lastAccessAt?.toISOString() || null,
@@ -271,7 +271,7 @@ export async function getAdminTenants(searchQuery?: string): Promise<TenantWithS
 export async function updateUserRole(
   tx: NodePgDatabase<any>,
   userId: string,
-  tenantId: string,
+  organizationId: string,
   newRole: UserRole
 ): Promise<void> {
   try {
@@ -283,12 +283,12 @@ export async function updateUserRole(
       })
       .where(and(
         eq(organizationUsers.userId, userId),
-        eq(organizationUsers.organizationId, tenantId)
+        eq(organizationUsers.organizationId, organizationId)
       ));
 
     logger.info("User role updated", {
       userId,
-      tenantId,
+      organizationId,
       newRole,
     });
 
@@ -306,7 +306,7 @@ export async function updateUserRole(
 export async function toggleUserStatus(
   tx: NodePgDatabase<any>,
   userId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   try {
     const [user] = await tx
@@ -314,7 +314,7 @@ export async function toggleUserStatus(
       .from(organizationUsers)
       .where(and(
         eq(organizationUsers.userId, userId),
-        eq(organizationUsers.organizationId, tenantId)
+        eq(organizationUsers.organizationId, organizationId)
       ))
       .limit(1);
 
@@ -330,12 +330,12 @@ export async function toggleUserStatus(
       })
       .where(and(
         eq(organizationUsers.userId, userId),
-        eq(organizationUsers.organizationId, tenantId)
+        eq(organizationUsers.organizationId, organizationId)
       ));
 
     logger.info("User status toggled", {
       userId,
-      tenantId,
+      organizationId,
       newStatus: !user.isActive,
     });
 
@@ -353,19 +353,19 @@ export async function toggleUserStatus(
 export async function deleteUserFromTenant(
   tx: NodePgDatabase<any>,
   userId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<void> {
   try {
     await tx
       .delete(organizationUsers)
       .where(and(
         eq(organizationUsers.userId, userId),
-        eq(organizationUsers.organizationId, tenantId)
+        eq(organizationUsers.organizationId, organizationId)
       ));
 
     logger.info("User removed from tenant", {
       userId,
-      tenantId,
+      organizationId,
     });
 
     revalidatePath("/[locale]/dashboard/admin");
@@ -379,7 +379,7 @@ export async function deleteUserFromTenant(
  * Update tenant information
  */
 export async function updateTenant(
-  tenantId: string,
+  organizationId: string,
   data: {
     tenantName?: string;
     contactEmail?: string;
@@ -397,9 +397,9 @@ export async function updateTenant(
         ...data,
         updatedAt: new Date()
       })
-      .where(eq(tenants.tenantId, tenantId));
+      .where(eq(tenants.tenantId, organizationId));
 
-    logger.info("Tenant updated", { tenantId, data });
+    logger.info("Tenant updated", { organizationId, data });
 
     revalidatePath("/[locale]/dashboard/admin");
   } catch (error) {
@@ -486,7 +486,7 @@ export async function getSystemConfigs(tx: NodePgDatabase<any>, category?: strin
  */
 export async function updateSystemConfig(
   tx: NodePgDatabase<any>,
-  tenantId: string,
+  organizationId: string,
   category: string,
   key: string,
   value: any
@@ -497,7 +497,7 @@ export async function updateSystemConfig(
       .select()
       .from(tenantConfigurations)
       .where(and(
-        eq(tenantConfigurations.tenantId, tenantId),
+        eq(tenantConfigurations.tenantId, organizationId),
         eq(tenantConfigurations.category, category),
         eq(tenantConfigurations.key, key)
       ))
@@ -517,7 +517,7 @@ export async function updateSystemConfig(
       await tx
         .insert(tenantConfigurations)
         .values({
-          tenantId,
+          tenantId: organizationId,
           category,
           key,
           value,
@@ -525,7 +525,7 @@ export async function updateSystemConfig(
     }
 
     logger.info("System config updated", {
-      tenantId,
+      organizationId,
       category,
       key,
     });

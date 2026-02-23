@@ -65,7 +65,7 @@ export const POST = withApi(
                           "unknown";
         const consent = await CookieConsentManager.saveCookieConsent({
           userId: user?.id,
-          tenantId: organizationId,
+          organizationId,
           consentId,
           essential: essential ?? true,
           functional: functional ?? false,

@@ -57,11 +57,11 @@ const cacheWarmingJob: JobConfig = {
     try {
       // Get all active tenants
       const tenants = await db
-        .selectDistinct({ tenantId: claims.organizationId })
+        .selectDistinct({ organizationId: claims.organizationId })
         .from(claims);
 
-      for (const { tenantId } of tenants) {
-        await warmAnalyticsCache(tenantId);
+      for (const { organizationId } of tenants) {
+        await warmAnalyticsCache(organizationId);
       }
 
       logger.info('CRON: Cache warming completed', { tenantCount: tenants.length });

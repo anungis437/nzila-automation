@@ -131,7 +131,6 @@ export interface Holiday {
  * Get all active deadline rules for organization
  */
 export async function getDeadlineRules(organizationId: string): Promise<DeadlineRule[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM deadline_rules
     WHERE tenant_id = ${organizationId} AND is_active = TRUE
@@ -147,7 +146,6 @@ export async function getDeadlineRuleByCode(
   organizationId: string,
   ruleCode: string
 ): Promise<DeadlineRule | null> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM deadline_rules
     WHERE tenant_id = ${organizationId} AND rule_code = ${ruleCode} AND is_active = TRUE
@@ -163,7 +161,6 @@ export async function getApplicableDeadlineRules(
   claimType: string,
   priorityLevel?: string
 ): Promise<DeadlineRule[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM deadline_rules
     WHERE tenant_id = ${organizationId}
@@ -198,7 +195,6 @@ export async function createDeadlineRule(
     escalationDelayDays?: number;
   } = {}
 ): Promise<DeadlineRule> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO deadline_rules (
       tenant_id, rule_name, rule_code, description, claim_type, priority_level,
@@ -251,7 +247,6 @@ export async function getPendingClaimDeadlines(claimId: string): Promise<ClaimDe
  * Get critical deadlines for organization (overdue + due within 3 days)
  */
 export async function getCriticalDeadlines(organizationId: string): Promise<any[]> {
-  const tenantId = organizationId;
   try {
     // Check if v_critical_deadlines view exists
     const viewCheck = await db.execute(sql`
@@ -298,7 +293,6 @@ export async function getMemberDeadlines(
     daysAhead?: number;
   } = {}
 ): Promise<any[]> {
-  const tenantId = organizationId;
   let query = sql`
     SELECT cd.*, c.claim_number, c.claim_type, c.status as claim_status
     FROM claim_deadlines cd
@@ -325,7 +319,6 @@ export async function getMemberDeadlines(
  * Get overdue deadlines for organization
  */
 export async function getOverdueDeadlines(organizationId: string): Promise<ClaimDeadline[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM claim_deadlines
     WHERE tenant_id = ${organizationId}
@@ -353,7 +346,6 @@ export async function createClaimDeadline(
     priority?: 'low' | 'medium' | 'high' | 'critical';
   } = {}
 ): Promise<ClaimDeadline> {
-  const tenantId = organizationId;
   // Calculate deadline based on business days or calendar days
   const deadlineDate = options.businessDaysOnly
     ? await addBusinessDays(eventDate, daysFromEvent, organizationId)
@@ -384,7 +376,6 @@ export async function autoCreateClaimDeadlines(
   eventDate: Date,
   createdBy: string
 ): Promise<ClaimDeadline[]> {
-  const tenantId = organizationId;
   // Get applicable rules
   const rules = await getApplicableDeadlineRules(organizationId, claimType, priorityLevel);
   
@@ -460,7 +451,6 @@ export async function requestDeadlineExtension(
   reason: string,
   requiresApproval: boolean = true
 ): Promise<DeadlineExtension> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO deadline_extensions (
       deadline_id, tenant_id, requested_by, requested_days,
@@ -551,7 +541,6 @@ export async function denyDeadlineExtension(
 export async function getPendingExtensionRequests(
   organizationId: string
 ): Promise<DeadlineExtension[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT de.*, cd.deadline_name, cd.due_date, c.claim_number
     FROM deadline_extensions de
@@ -587,7 +576,6 @@ export async function createDeadlineAlert(
     actionUrl?: string;
   } = {}
 ): Promise<DeadlineAlert> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO deadline_alerts (
       deadline_id, tenant_id, recipient_id, alert_type, alert_severity,
@@ -655,7 +643,6 @@ export async function getUnreadAlerts(
   memberId: string,
   organizationId: string
 ): Promise<DeadlineAlert[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT da.*, cd.deadline_name, cd.due_date, c.claim_number
     FROM deadline_alerts da
@@ -676,7 +663,6 @@ export async function getUnreadAlerts(
 export async function generateUpcomingDeadlineAlerts(
   organizationId: string
 ): Promise<number> {
-  const tenantId = organizationId;
   let alertCount = 0;
   
   // Get deadlines due in 3 days (first alert)
@@ -855,7 +841,6 @@ export async function getDeadlineComplianceMetrics(
   startDate?: Date,
   endDate?: Date
 ): Promise<any[]> {
-  const tenantId = organizationId;
   let query = sql`
     SELECT * FROM v_deadline_compliance_metrics
     WHERE tenant_id = ${organizationId}
@@ -881,7 +866,6 @@ export async function getMemberDeadlineSummary(
   memberId: string,
   organizationId: string
 ): Promise<any> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM v_member_deadline_summary
     WHERE member_id = ${memberId} AND tenant_id = ${organizationId}
@@ -899,7 +883,6 @@ export async function getMemberDeadlineSummary(
  * Get deadline summary for all claims (dashboard widget)
  */
 export async function getDeadlineDashboardSummary(organizationId: string): Promise<any> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT 
       COUNT(*) FILTER (WHERE status = 'pending') as active_deadlines,

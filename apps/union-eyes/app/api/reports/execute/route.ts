@@ -115,7 +115,7 @@ export const POST = withRoleAuth('officer', async (request: NextRequest, context
     }
 
     // Execute report using secured ReportExecutor
-    const executor = new ReportExecutor(organizationId, organizationId);
+    const executor = new ReportExecutor(organizationId);
     const result = await executor.execute(config);
 
     // Log successful execution
