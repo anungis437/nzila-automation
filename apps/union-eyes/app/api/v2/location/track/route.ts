@@ -29,19 +29,17 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const body = await request.json();
-        // Validate request body
         // Track location (service will verify consent)
         const location = await GeofencePrivacyService.trackLocation({
-          userId,
-          latitude,
-          longitude,
-          accuracy,
-          altitude,
-          purpose,
-          activityType,
-          strikeId,
-          eventId,
+          userId: body.userId,
+          latitude: body.latitude,
+          longitude: body.longitude,
+          accuracy: body.accuracy,
+          altitude: body.altitude,
+          purpose: body.purpose,
+          activityType: body.activityType,
+          strikeId: body.strikeId,
+          eventId: body.eventId,
         });
         return { location,
             message: "Location recorded. Data will be automatically deleted after 24 hours.", };

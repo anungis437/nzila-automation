@@ -5,6 +5,15 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { withApi, ApiError, z } from '@/lib/api/framework';
+import {
+  listBargainingNotes,
+  createBargainingNote,
+  bulkCreateBargainingNotes,
+  getBargainingTimeline,
+  getBargainingNotesStatistics,
+  getNotesByTags,
+  getSessionTypes,
+} from '@/lib/services/bargaining-notes-service';
 
 const bargainingNotesSchema = z.object({
   map: z.unknown().optional(),
@@ -31,8 +40,8 @@ export const GET = withApi(
           const statistics = searchParams.get("statistics") === "true";
           const sessionTypes = searchParams.get("sessionTypes") === "true";
           const cbaId = searchParams.get("cbaId");
-          const organizationId = searchParams.get("organizationId");
-      if (organizationId && organizationId !== context.organizationId) {
+          const orgIdParam = searchParams.get("organizationId");
+      if (orgIdParam && orgIdParam !== organizationId) {
         throw ApiError.forbidden('Forbidden'
         );
       }
@@ -42,13 +51,13 @@ export const GET = withApi(
             return NextResponse.json({ timeline: timelineData });
           }
           // Return statistics
-          if (statistics && organizationId) {
-            const stats = await getBargainingNotesStatistics(organizationId);
+          if (statistics && orgIdParam) {
+            const stats = await getBargainingNotesStatistics(orgIdParam);
             return stats;
           }
           // Return session types
-          if (sessionTypes && organizationId) {
-            const types = await getSessionTypes(organizationId);
+          if (sessionTypes && orgIdParam) {
+            const types = await getSessionTypes(orgIdParam);
             return NextResponse.json({ sessionTypes: types });
           }
           // Check for tags filter
@@ -56,16 +65,16 @@ export const GET = withApi(
           if (tags) {
             const tagArray = tags.split(",");
             const limit = parseInt(searchParams.get("limit") || "50");
-            const notes = await getNotesByTags(tagArray, organizationId || undefined, limit);
+            const notes = await getNotesByTags(tagArray, orgIdParam || undefined, limit);
             return NextResponse.json({ notes, count: notes.length });
           }
           // Build filters
-          const filters = {};
+          const filters: Record<string, unknown> = {};
           if (cbaId) {
             filters.cbaId = cbaId;
           }
-          if (organizationId) {
-            filters.organizationId = organizationId;
+          if (orgIdParam) {
+            filters.organizationId = orgIdParam;
           }
           const sessionType = searchParams.get("sessionType");
           if (sessionType) {
@@ -113,9 +122,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-          // Validate request body
-        const validation = bargaining-notesSchema.safeParse(body);
-        // Check if bulk create
+          // Check if bulk create
           if (Array.isArray(body)) {
             // Validate all required fields
             for (const note of body) {
@@ -156,9 +163,9 @@ export const POST = withApi(
           }
           // Create note
           const note = await createBargainingNote({
-            ...body,
-            createdBy: userId,
-            lastModifiedBy: userId,
+            ...body as unknown as Parameters<typeof createBargainingNote>[0],
+            createdBy: userId!,
+            lastModifiedBy: userId!,
           });
           return {  note  };
   },

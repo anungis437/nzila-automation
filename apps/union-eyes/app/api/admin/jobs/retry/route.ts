@@ -16,12 +16,11 @@ import {
 } from '@/lib/api/standardized-responses';
 
 const adminJobsRetrySchema = z.object({
-  queue: z.unknown().optional(),
+  queue: z.string().optional(),
   jobId: z.string().uuid('Invalid jobId'),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withAdminAuth(async (request, context) => {
+export const POST = withAdminAuth(async (request, context) => {
   // Import job-queue functions (now delegates to Django Celery task API)
     const { retryJob } = await import('@/lib/job-queue');
     try {
@@ -55,6 +54,5 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 

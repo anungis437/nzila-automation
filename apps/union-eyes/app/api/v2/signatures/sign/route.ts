@@ -9,7 +9,7 @@ import { withApi, ApiError, z } from '@/lib/api/framework';
 const signatureSchema = z.object({
   signerId: z.string().uuid('Invalid signerId'),
   signatureImageUrl: z.string().url('Invalid signature image URL'),
-  signatureType: z.enum(['drawn', 'uploaded', 'typed', 'biometric'], { 
+  signatureType: z.enum(['electronic', 'digital', 'wet'], { 
     errorMap: () => ({ message: 'Invalid signature type' }) 
   }),
   geolocation: z.object({
@@ -20,7 +20,7 @@ const signatureSchema = z.object({
 
 export const POST = withApi(
   {
-    auth: { required: false },
+    auth: { required: true },
     body: signatureSchema,
     openapi: {
       tags: ['Signatures'],
@@ -29,11 +29,8 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        // Authentication guard
-        const { userId } = await requireApiAuth();
-        const body = await request.json();
-        // Validate request body
         // Get IP and user agent
+        const { signerId, signatureImageUrl, signatureType, geolocation } = body;
         const ipAddress = request.headers.get("x-forwarded-for") || 
                           request.headers.get("x-real-ip") || 
                           "unknown";

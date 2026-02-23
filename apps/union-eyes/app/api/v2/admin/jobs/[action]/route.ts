@@ -3,6 +3,7 @@
  * Migrated to withApi() framework
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
+import { pauseQueue, resumeQueue, cleanCompletedJobs } from '@/lib/job-queue';
 import { withApi, ApiError, z } from '@/lib/api/framework';
 
 const adminJobsSchema = z.object({
@@ -23,6 +24,7 @@ export const POST = withApi(
   async ({ request, params, userId, organizationId, user, body, query }) => {
 
           const { action } = params;
+          const { queue } = body;
           // Validate request body
         if (!queue) {
             throw ApiError.internal('Queue name is required'

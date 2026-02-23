@@ -2,7 +2,6 @@
  * POST /api/admin/pki/signatures/[id]/verify
  * Migrated to withApi() framework
  */
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { verifySignature, verifyDocumentIntegrity } from '@/services/pki/verification-service';
 import { withApi, ApiError, z } from '@/lib/api/framework';
 
@@ -23,21 +22,21 @@ export const POST = withApi(
   },
   async ({ request, params, userId, organizationId, user, body, query }) => {
 
+          const { verifyType, documentContent } = body;
           const signatureOrDocumentId = params.id;
-          // Validate request body
-        // Determine verification type
+          // Determine verification type
           if (verifyType === 'document') {
             // Verify entire document integrity
             const result = await verifyDocumentIntegrity(
               signatureOrDocumentId,
-              documentContent ? Buffer.from(documentContent, 'base64') : undefined
+              documentContent ? Buffer.from(String(documentContent), 'base64') : undefined
             );
             return { verification: result, };
           } else {
             // Verify single signature (default)
             const result = await verifySignature(
               signatureOrDocumentId,
-              documentContent ? Buffer.from(documentContent, 'base64') : undefined
+              documentContent ? Buffer.from(String(documentContent), 'base64') : undefined
             );
             return { verification: result, };
           }

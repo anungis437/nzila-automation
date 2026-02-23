@@ -19,6 +19,7 @@ export const GET = withApi(
     },
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
+        if (!userId) throw ApiError.unauthorized('User not authenticated');
 
         // Get the organizationId from query params or header
         const orgId = request.nextUrl.searchParams.get('organizationId')

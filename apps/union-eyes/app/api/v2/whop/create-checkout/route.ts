@@ -2,7 +2,6 @@
  * POST /api/whop/create-checkout
  * Migrated to withApi() framework
  */
-import { DEFAULT_REDIRECT_URL } from "../webhooks/utils/constants";
 import { logger } from '@/lib/logger';
 import { withApi, ApiError } from '@/lib/api/framework';
 
@@ -18,7 +17,7 @@ export const POST = withApi(
   },
   async ({ request, params }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1POST(request, { params: Promise.resolve(params) });
+    const response = await v1POST(request);
     return response;
   },
 );

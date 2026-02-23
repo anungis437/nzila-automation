@@ -16,9 +16,9 @@ export const GET = withApi(
       summary: 'GET trends',
     },
   },
-  async ({ request, params }) => {
+  async ({ request }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1GET(request, { params: Promise.resolve(params) });
+    const response = await v1GET(request, {} as any);
     return response;
   },
 );

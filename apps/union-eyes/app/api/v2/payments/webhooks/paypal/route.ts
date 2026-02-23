@@ -7,6 +7,76 @@ import { logger } from '@/lib/logger';
 import { PaymentService } from '@/lib/services/payment-service';
 import { withApi, ApiError } from '@/lib/api/framework';
 
+async function getPayPalAccessToken(clientId: string, clientSecret: string, baseUrl: string): Promise<string> {
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const response = await fetch(`${baseUrl}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`PayPal auth failed: ${response.status} ${errorText}`);
+  }
+  const data = await response.json();
+  return data.access_token as string;
+}
+
+async function verifyPayPalWebhook(
+  payload: string,
+  headers: Headers,
+  baseUrl: string,
+  clientId: string,
+  clientSecret: string,
+  webhookId: string
+): Promise<boolean> {
+  const transmissionId = headers.get('paypal-transmission-id');
+  const transmissionTime = headers.get('paypal-transmission-time');
+  const transmissionSig = headers.get('paypal-transmission-sig');
+  const certUrl = headers.get('paypal-cert-url');
+  const authAlgo = headers.get('paypal-auth-algo');
+  if (!transmissionId || !transmissionTime || !transmissionSig || !certUrl || !authAlgo) {
+    throw new Error('Missing PayPal signature headers');
+  }
+  const token = await getPayPalAccessToken(clientId, clientSecret, baseUrl);
+  const event = JSON.parse(payload);
+  const verifyBody = {
+    auth_algo: authAlgo,
+    cert_url: certUrl,
+    transmission_id: transmissionId,
+    transmission_sig: transmissionSig,
+    transmission_time: transmissionTime,
+    webhook_id: webhookId,
+    webhook_event: event,
+  };
+  const response = await fetch(`${baseUrl}/v1/notifications/verify-webhook-signature`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(verifyBody),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`PayPal webhook verification failed: ${response.status} ${errorText}`);
+  }
+  const data = await response.json();
+  return data.verification_status === 'SUCCESS';
+}
+
+function getTransactionIdFromPayPalEvent(resource: any): string | null {
+  return (
+    resource?.custom_id ||
+    resource?.invoice_id ||
+    resource?.supplementary_data?.related_ids?.order_id ||
+    null
+  );
+}
+
 export const POST = withApi(
   {
     auth: { required: false },

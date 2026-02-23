@@ -30,8 +30,8 @@ export const GET = withApi(
           );
         }
         const { searchParams } = new URL(request.url);
-        const organizationId = searchParams.get('organizationId');
-        if (!organizationId) {
+        const queryOrgId = searchParams.get('organizationId');
+        if (!queryOrgId) {
           throw ApiError.badRequest('organizationId query parameter is required'
           );
         }
@@ -39,7 +39,7 @@ export const GET = withApi(
         // This would query a billing_cycle_history table (to be created)
         // For now, return placeholder
         logger.info('Retrieving billing cycle history', {
-          organizationId,
+          organizationId: queryOrgId,
           userId: user.id,
         });
         return {
@@ -70,32 +70,32 @@ export const POST = withApi(
         // Calculate period dates if not provided
         let start: Date;
         let end: Date;
-        if (periodStart && periodEnd) {
-          start = new Date(periodStart);
-          end = new Date(periodEnd);
+        if (body.periodStart && body.periodEnd) {
+          start = new Date(body.periodStart);
+          end = new Date(body.periodEnd);
         } else {
-          const dates = BillingCycleService.calculatePeriodDates(frequency);
+          const dates = BillingCycleService.calculatePeriodDates(body.frequency);
           start = dates.periodStart;
           end = dates.periodEnd;
         }
         logger.info('Generating billing cycle', {
           organizationId,
-          frequency,
+          frequency: body.frequency,
           periodStart: start,
           periodEnd: end,
-          dryRun,
+          dryRun: body.dryRun,
           userId: user.id,
         });
         // Generate billing cycle
         const result = await BillingCycleService.generateBillingCycle({
-          organizationId,
+          organizationId: body.organizationId,
           periodStart: start,
           periodEnd: end,
-          frequency,
-          dryRun,
+          frequency: body.frequency,
+          dryRun: body.dryRun,
           executedBy: user.id,
         });
-        if (dryRun) {
+        if (body.dryRun) {
           logger.info('Billing cycle preview completed', {
             organizationId,
             transactionsWouldCreate: result.transactionsCreated,

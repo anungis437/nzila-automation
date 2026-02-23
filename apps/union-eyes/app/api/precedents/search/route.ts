@@ -20,8 +20,7 @@ const precedentSearchSchema = z.object({
   filters: z.record(z.string(), z.unknown()).default({}),
   limit: z.number().int().min(1).max(100).default(50),
 });
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context) => {
   try {
       const body = await request.json();
       
@@ -50,6 +49,5 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 

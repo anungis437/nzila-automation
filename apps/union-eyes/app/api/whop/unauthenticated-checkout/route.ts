@@ -139,7 +139,7 @@ export async function POST(req: Request) {
       }
     );
   } catch (error) {
-    logger.error('Error creating unauthenticated Whop checkout', error as Error, { email, planId });
+    logger.error('Error creating unauthenticated Whop checkout', error as Error);
     return NextResponse.json(
       { 
         error: "Internal server error",

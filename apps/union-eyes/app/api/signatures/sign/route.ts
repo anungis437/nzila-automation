@@ -19,7 +19,7 @@ import {
 const signatureSchema = z.object({
   signerId: z.string().uuid('Invalid signerId'),
   signatureImageUrl: z.string().url('Invalid signature image URL'),
-  signatureType: z.enum(['drawn', 'uploaded', 'typed', 'biometric'], { 
+  signatureType: z.enum(['electronic', 'digital', 'wet'], { 
     errorMap: () => ({ message: 'Invalid signature type' }) 
   }),
   geolocation: z.object({

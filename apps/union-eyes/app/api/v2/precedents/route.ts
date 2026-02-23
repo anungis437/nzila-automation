@@ -5,6 +5,13 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { withApi, ApiError, z } from '@/lib/api/framework';
+import {
+  listPrecedents,
+  createPrecedent,
+  getPrecedentStatistics,
+  getMostCitedPrecedents,
+  getPrecedentsByIssueType,
+} from '@/lib/services/precedent-service';
 
 const precedentsSchema = z.object({
   caseNumber: z.unknown().optional(),
@@ -53,7 +60,7 @@ export const GET = withApi(
             return NextResponse.json({ precedents, count: precedents.length });
           }
           // Build filters
-          const filters = {};
+          const filters: Record<string, unknown> = {};
           const tribunal = searchParams.get("tribunal");
           if (tribunal) {
             filters.tribunal = tribunal.split(",");
@@ -172,7 +179,7 @@ export const POST = withApi(
         );
           }
           // Create precedent
-          const precedent = await createPrecedent(body);
+          const precedent = await createPrecedent(body as unknown as Parameters<typeof createPrecedent>[0]);
           return {  precedent  };
   },
 );

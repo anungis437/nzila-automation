@@ -47,7 +47,7 @@ export const GET = withApi(
           affectingMinimumThreshold: true,
           reportDeadline: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
           reportingChannels: [
-            rules.authority,
+            rules.contactAuthority,
             'Affected Members',
           ],
           message: `Breach notification requirements: Follow ${province} protocols`,
@@ -68,8 +68,10 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
         // Validate request body
+        const { memberId, breachDate, affectedDataTypes, province: rawProvince, estimatedAffectedCount } = body;
+        const province = typeof rawProvince === 'string' ? rawProvince : undefined;
         // Validate required fields
-        if (!memberId || !breachDate || !affectedDataTypes || affectedDataTypes.length === 0) {
+        if (!memberId || !breachDate || !affectedDataTypes || (affectedDataTypes as any[]).length === 0) {
           return NextResponse.json(
             {
               requiresBreachReport: false,
@@ -84,7 +86,7 @@ export const POST = withApi(
         // Assess breach notification requirements
         const assessment = await assessBreachNotification(
           memberId,
-          affectedDataTypes,
+          affectedDataTypes as string[],
           new Date(breachDate)
         );
         // Get provincial rules
@@ -93,7 +95,7 @@ export const POST = withApi(
         const minimumThreshold = province === 'QC' ? 10 : 25; // QC has lower threshold
         const affectingMinimum = estimatedAffectedCount >= minimumThreshold;
         // Determine reporting channels
-        const reportingChannels = [];
+        const reportingChannels: string[] = [];
         if (affectingMinimum) {
           reportingChannels.push('Privacy Commissioner');
           if (province === 'QC') {

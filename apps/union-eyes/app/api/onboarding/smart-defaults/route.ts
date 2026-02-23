@@ -46,7 +46,7 @@ export const GET = withRoleAuth('member', async (request, context) => {
 
   } catch (error) {
     logger.error('Smart defaults generation failed', { error });
-    return standardErrorResponse(ErrorCode.INTERNAL_ERROR);
+    return standardErrorResponse(ErrorCode.INTERNAL_ERROR, 'Internal server error');
   }
 });
 

@@ -16,19 +16,16 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        // User context provided by withApiAuth guard
-        const userId = context.user?.id;
-        const orgId = context.user?.organizationId;
         // Evaluate all LRO features for this user
         const featureNames = Object.values(LRO_FEATURES);
         const flags = await evaluateFeatures(featureNames, {
-          userId,
-          organizationId: orgId || undefined,
+          userId: userId ?? undefined,
+          organizationId: organizationId ?? undefined,
         });
         return NextResponse.json({
           flags,
           userId,
-          organizationId: orgId || null,
+          organizationId: organizationId || null,
         });
   },
 );

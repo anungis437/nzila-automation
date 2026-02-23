@@ -75,7 +75,7 @@ const documentUploadSchema = z.object({
  * - accessLevel: string (optional)
  */
 export const POST = withRoleAuth('member', async (request, context) => {
-  const { userId, organizationId } = context;
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   try {
     // Rate limiting
@@ -90,10 +90,10 @@ export const POST = withRoleAuth('member', async (request, context) => {
         userId,
         endpoint: '/api/documents/upload',
         method: 'POST',
-        eventType: 'rate_limit_exceeded',
+        eventType: 'unauthorized_access',
         severity: 'medium',
-        dataType: 'DOCUMENTS',
         details: { 
+          dataType: 'DOCUMENTS',
           resetIn: rateLimitResult.resetIn 
         },
       });
@@ -133,8 +133,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'File is required' },
+        details: { dataType: 'DOCUMENTS', reason: 'File is required' },
       });
       return standardErrorResponse(
       ErrorCode.MISSING_REQUIRED_FIELD,
@@ -150,8 +149,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'organizationId is required' },
+        details: { dataType: 'DOCUMENTS', reason: 'organizationId is required' },
       });
       return standardErrorResponse(
       ErrorCode.MISSING_REQUIRED_FIELD,
@@ -166,10 +164,9 @@ export const POST = withRoleAuth('member', async (request, context) => {
         userId,
         endpoint: '/api/documents/upload',
         method: 'POST',
-        eventType: 'authorization_failed',
+        eventType: 'unauthorized_access',
         severity: 'high',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'Organization ID mismatch' },
+        details: { dataType: 'DOCUMENTS', reason: 'Organization ID mismatch' },
       });
       return standardErrorResponse(
       ErrorCode.FORBIDDEN,
@@ -186,8 +183,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
         details: { 
+          dataType: 'DOCUMENTS',
           reason: 'File too large',
           fileSize: file.size,
           maxSize: MAX_FILE_SIZE 
@@ -200,7 +197,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
     }
 
     // Validate MIME type
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    if (!(ALLOWED_MIME_TYPES_LIST as readonly string[]).includes(file.type)) {
       logApiAuditEvent({
         timestamp: new Date().toISOString(),
         userId,
@@ -208,8 +205,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
         details: { 
+          dataType: 'DOCUMENTS',
           reason: 'Invalid file type',
           fileType: file.type 
         },
@@ -260,8 +257,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
       method: 'POST',
       eventType: 'success',
       severity: 'medium',
-      dataType: 'DOCUMENTS',
       details: {
+        dataType: 'DOCUMENTS',
         organizationId: organizationIdFromForm,
         documentId: document.id,
         fileName: file.name,
@@ -277,10 +274,9 @@ export const POST = withRoleAuth('member', async (request, context) => {
       userId,
       endpoint: '/api/documents/upload',
       method: 'POST',
-      eventType: 'server_error',
+      eventType: 'validation_failed',
       severity: 'high',
-      dataType: 'DOCUMENTS',
-      details: { error: error instanceof Error ? error.message : 'Unknown error' },
+      details: { dataType: 'DOCUMENTS', error: error instanceof Error ? error.message : 'Unknown error' },
     });
 return standardErrorResponse(
       ErrorCode.INTERNAL_ERROR,

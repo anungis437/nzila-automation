@@ -30,7 +30,7 @@ const bulkOCRSchema = z.object({
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: bulkMoveSchema,
     openapi: {
       tags: ['Documents'],
@@ -40,6 +40,6 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        rawBody = await request.json();
+        const rawBody = await request.json();
   },
 );

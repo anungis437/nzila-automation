@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from 'drizzle-orm';
 import { withSystemContext } from '@/lib/db/with-rls-context';
+import { db } from '@/db';
 import { logger } from "@/lib/logger";
 import {
   ErrorCode,
@@ -59,8 +60,8 @@ export async function GET(request: NextRequest) {
     // ========================================
     
     // Use withSystemContext for system-wide cron job access
-    const sessionReminders = await withSystemContext(async (tx) => {
-      return await tx.execute(sql`
+    const sessionReminders = await withSystemContext(async () => {
+      return await db.execute(sql`
         SELECT 
           m.email,
           m.first_name,
@@ -90,7 +91,7 @@ export async function GET(request: NextRequest) {
           AND m.email != ''
         ORDER BY cs.session_date, m.email
       `);
-    });
+    }) as Record<string, unknown>[];
 
     if (sessionReminders.length > 0) {
       logger.info("Processing session reminders", {
@@ -98,22 +99,22 @@ export async function GET(request: NextRequest) {
       });
 
       const reminderData = sessionReminders.map((row: Record<string, unknown>) => ({
-        toEmail: row.email,
+        toEmail: String(row.email),
         memberName: `${row.first_name} ${row.last_name}`,
-        courseName: row.course_name,
-        sessionDate: new Date(row.session_date).toLocaleDateString("en-US", {
+        courseName: String(row.course_name),
+        sessionDate: new Date(row.session_date as string).toLocaleDateString("en-US", {
           weekday: "long",
           year: "numeric",
           month: "long",
           day: "numeric",
         }),
-        sessionTime: row.session_time || "TBD",
-        daysUntilSession: row.days_until,
-        location: row.location || undefined,
+        sessionTime: String(row.session_time || "TBD"),
+        daysUntilSession: Number(row.days_until),
+        location: row.location ? String(row.location) : undefined,
         instructorName: row.instructor_first_name
           ? `${row.instructor_first_name} ${row.instructor_last_name}`
           : undefined,
-        sessionDuration: row.duration_hours || undefined,
+        sessionDuration: row.duration_hours ? Number(row.duration_hours) : undefined,
       }));
 
       results.sessionReminders = await batchSendSessionReminders(reminderData);
@@ -130,8 +131,8 @@ export async function GET(request: NextRequest) {
     // 2. CERTIFICATION EXPIRY WARNINGS (90, 30 days)
     // ========================================
     
-    const expiryWarnings = await withSystemContext(async (tx) => {
-      return await tx.execute(sql`
+    const expiryWarnings = await withSystemContext(async () => {
+      return await db.execute(sql`
         SELECT 
           m.email,
           m.first_name,
@@ -154,7 +155,7 @@ export async function GET(request: NextRequest) {
           AND m.email != ''
         ORDER BY mc.expiry_date, m.email
       `);
-    });
+    }) as Record<string, unknown>[];
 
     if (expiryWarnings.length > 0) {
       logger.info("Processing expiry warnings", {
@@ -162,17 +163,16 @@ export async function GET(request: NextRequest) {
       });
 
       const warningData = expiryWarnings.map((row: Record<string, unknown>) => ({
-        toEmail: row.email,
+        toEmail: String(row.email),
         memberName: `${row.first_name} ${row.last_name}`,
-        certificationName: row.certification_name,
-        certificateNumber: row.certificate_number,
-        expiryDate: new Date(row.expiry_date).toLocaleDateString("en-US", {
+        certificationName: String(row.certification_name),
+        certificateNumber: String(row.certificate_number),
+        expiryDate: new Date(row.expiry_date as string).toLocaleDateString("en-US", {
           year: "numeric",
           month: "long",
           day: "numeric",
         }),
-        daysUntilExpiry: row.days_until_expiry,
-        continuingEducationHours: row.continuing_education_hours || undefined,
+        daysUntilExpiry: Number(row.days_until_expiry),
       }));
 
       results.expiryWarnings = await batchSendExpiryWarnings(warningData);

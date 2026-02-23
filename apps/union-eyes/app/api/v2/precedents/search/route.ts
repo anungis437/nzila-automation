@@ -15,7 +15,7 @@ const precedentSearchSchema = z.object({
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: precedentSearchSchema,
     openapi: {
       tags: ['Precedents'],
@@ -26,7 +26,8 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
           // Validate request body
-          const results = await searchPrecedents(query, filters, limit);
+          const { query: searchQuery, filters, limit } = body;
+          const results = await searchPrecedents(searchQuery, filters, limit);
           return NextResponse.json({ 
             precedents: results,
             count: results.length

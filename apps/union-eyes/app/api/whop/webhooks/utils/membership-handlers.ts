@@ -92,7 +92,7 @@ while (retries < maxRetries && !updateSuccess) {
       
       await updatePromise;
 updateSuccess = true;
-    } catch (error: Record<string, unknown>) {
+    } catch (error: unknown) {
       retries++;
 if (retries < maxRetries) {
         const backoffMs = 1000 * Math.pow(2, retries);

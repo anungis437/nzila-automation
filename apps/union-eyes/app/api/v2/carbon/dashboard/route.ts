@@ -17,7 +17,7 @@ export const GET = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
         const searchParams = request.nextUrl.searchParams;
-        const organizationId = searchParams.get('organizationId') || 'union-eyes';
+        const orgId = searchParams.get('organizationId') || organizationId || 'union-eyes';
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
         // Calculate default date range (current month)
@@ -53,8 +53,8 @@ export const GET = withApi(
             startDate: start.toISOString(),
             endDate: end.toISOString(),
           },
-          organizationId,
-          message: `Carbon dashboard for ${organizationId}: On track to meet 2025 targets`,
+          organizationId: orgId,
+          message: `Carbon dashboard for ${orgId}: On track to meet 2025 targets`,
         } as CarbonDashboardResponse);
   },
 );

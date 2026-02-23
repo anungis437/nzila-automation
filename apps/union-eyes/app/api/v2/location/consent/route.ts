@@ -8,11 +8,11 @@ import { withApi, ApiError, z } from '@/lib/api/framework';
 
 const locationConsentSchema = z.object({
   userId: z.string().uuid('Invalid userId'),
-  purpose: z.unknown().optional(),
+  purpose: z.string().min(1, 'purpose is required'),
   purposeDescription: z.string().optional(),
-  consentText: z.unknown().optional(),
-  allowedDuringStrike: z.unknown().optional(),
-  allowedDuringEvents: z.unknown().optional(),
+  consentText: z.string().min(1, 'consentText is required'),
+  allowedDuringStrike: z.boolean().optional(),
+  allowedDuringEvents: z.boolean().optional(),
 });
 
 export const GET = withApi(
@@ -23,18 +23,18 @@ export const GET = withApi(
       summary: 'GET consent',
     },
   },
-  async ({ request, userId, organizationId, user, body, query }) => {
+  async ({ request }) => {
 
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId");
+        const targetUserId = searchParams.get("userId");
         const context = searchParams.get("context") as "strike" | "event" | undefined;
-        if (!userId) {
+        if (!targetUserId) {
           throw ApiError.badRequest('Missing userId parameter'
         );
         }
-        const hasConsent = await GeofencePrivacyService.hasValidConsent(userId, context);
+        const hasConsent = await GeofencePrivacyService.hasValidConsent(targetUserId, context);
         return NextResponse.json({
-          userId,
+          userId: targetUserId,
           hasConsent,
           context,
         });
@@ -51,11 +51,10 @@ export const POST = withApi(
     },
     successStatus: 201,
   },
-  async ({ request, userId, organizationId, user, body, query }) => {
+  async ({ request, body }) => {
 
-        const body = await request.json();
-        const { userId, purpose, purposeDescription, consentText, allowedDuringStrike, allowedDuringEvents } = body;
-        if (!userId || !purpose || !purposeDescription || !consentText) {
+        const { userId: targetUserId, purpose, purposeDescription, consentText, allowedDuringStrike, allowedDuringEvents } = body;
+        if (!targetUserId || !purpose || !purposeDescription || !consentText) {
           throw ApiError.badRequest('Missing required fields: userId, purpose, purposeDescription, consentText'
         );
         }
@@ -63,7 +62,7 @@ export const POST = withApi(
         const ipAddress = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
         const userAgent = request.headers.get("user-agent") || "unknown";
         const consent = await GeofencePrivacyService.requestLocationConsent({
-          userId,
+          userId: targetUserId,
           purpose,
           purposeDescription,
           consentText,
@@ -86,16 +85,16 @@ export const DELETE = withApi(
       summary: 'DELETE consent',
     },
   },
-  async ({ request, userId, organizationId, user, body, query }) => {
+  async ({ request }) => {
 
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId");
+        const targetUserId = searchParams.get("userId");
         const reason = searchParams.get("reason");
-        if (!userId) {
+        if (!targetUserId) {
           throw ApiError.badRequest('Missing userId parameter'
         );
         }
-        await GeofencePrivacyService.revokeLocationConsent(userId, reason || undefined);
+        await GeofencePrivacyService.revokeLocationConsent(targetUserId, reason || undefined);
         return { message: "Location tracking consent revoked. All location data has been deleted.", };
   },
 );

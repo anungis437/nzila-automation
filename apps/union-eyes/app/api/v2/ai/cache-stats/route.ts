@@ -49,8 +49,8 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
         // Validate request body
-        const validation = aiCache-statsSchema.safeParse(body);
-        if (!action || !['clear', 'reset-stats'].includes(action)) {
+        const { action } = body;
+        if (!action || !['clear', 'reset-stats'].includes(action as string)) {
             throw ApiError.badRequest('Invalid action. Use ');
           }
           if (action === 'clear') {

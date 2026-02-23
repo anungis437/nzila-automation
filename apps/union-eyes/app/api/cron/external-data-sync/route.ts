@@ -14,7 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { wageEnrichmentService } from '@/lib/services/external-data/wage-enrichment-service';
+import { wageEnrichmentService, type SyncResult } from '@/lib/services/external-data/wage-enrichment-service';
 import { logger } from '@/lib/logger';
 
 import {
@@ -69,10 +69,10 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
       syncType: 'scheduled',
       dataSources: {
-        wages: null,
-        unionDensity: null,
-        cola: null,
-        contributions: null,
+        wages: null as SyncResult | { success: boolean; error: string } | null,
+        unionDensity: null as SyncResult | { success: boolean; error: string } | null,
+        cola: null as SyncResult | { success: boolean; error: string } | null,
+        contributions: null as SyncResult | { success: boolean; error: string } | null,
       },
       summary: {
         totalProcessed: 0,
@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
         totalUpdated: 0,
         totalFailed: 0,
         success: true,
+        duration: 0,
       },
       errors: [] as string[],
     };

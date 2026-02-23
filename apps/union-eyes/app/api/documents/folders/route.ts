@@ -38,9 +38,8 @@ const createFolderSchema = z.object({
  * - parentFolderId: string (optional, use "root" for root folders)
  * - tree: boolean - return full folder tree structure
  */
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
-    const { userId, organizationId } = context;
+export const GET = withRoleAuth('member', async (request, context) => {
+    const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   try {
         const { searchParams } = new URL(request.url);
@@ -99,7 +98,7 @@ export const GET = async (request: NextRequest) => {
           timestamp: new Date().toISOString(), userId,
           endpoint: '/api/documents/folders',
           method: 'GET',
-          eventType: 'server_error',
+          eventType: 'validation_failed',
           severity: 'high',
           details: { error: error instanceof Error ? error.message : 'Unknown error' },
         });
@@ -109,8 +108,7 @@ return standardErrorResponse(
       error
     );
       }
-      })(request);
-};
+});
 
 /**
  * POST /api/documents/folders
@@ -122,7 +120,7 @@ return standardErrorResponse(
  * - description: string
  * - parentFolderId: string
  */
-export const POST = withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context) => {
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -144,7 +142,7 @@ export const POST = withRoleAuth(20, async (request, context) => {
   }
 
   const body = parsed.data;
-  const { userId, organizationId } = context;
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   if (body.organizationId !== context.organizationId) {
     return standardErrorResponse(
@@ -181,7 +179,7 @@ try {
         timestamp: new Date().toISOString(), userId,
         endpoint: '/api/documents/folders',
         method: 'POST',
-        eventType: 'server_error',
+        eventType: 'validation_failed',
         severity: 'high',
         details: { error: error instanceof Error ? error.message : 'Unknown error' },
       });

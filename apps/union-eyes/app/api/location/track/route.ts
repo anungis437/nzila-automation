@@ -56,13 +56,11 @@ export const POST = withApiAuth(async (req: NextRequest) => {
 
     return standardSuccessResponse(
       { location,
-        message: "Location recorded. Data will be automatically deleted after 24 hours.", },
-      undefined,
-      201
+        message: "Location recorded. Data will be automatically deleted after 24 hours." }
     );
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || "Failed to track location" },
+      { error: (error as Error).message || "Failed to track location" },
       { status: 500 }
     );
   }

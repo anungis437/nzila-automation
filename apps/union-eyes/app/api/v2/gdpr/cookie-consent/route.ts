@@ -9,11 +9,11 @@ import { withApi, ApiError, z } from '@/lib/api/framework';
 const gdprCookieConsentSchema = z.object({
   consentId: z.string().uuid('Invalid consentId'),
   organizationId: z.string().uuid('Invalid organizationId'),
-  essential: z.unknown().optional(),
-  functional: z.unknown().optional(),
-  analytics: z.unknown().optional(),
-  marketing: z.unknown().optional(),
-  userAgent: z.unknown().optional(),
+  essential: z.boolean().optional(),
+  functional: z.boolean().optional(),
+  analytics: z.boolean().optional(),
+  marketing: z.boolean().optional(),
+  userAgent: z.string().optional(),
 });
 
 export const GET = withApi(
@@ -52,6 +52,7 @@ export const POST = withApi(
     successStatus: 201,
   },
   async ({ request, userId, organizationId, user, body, query }) => {
+        const { consentId, essential, functional, analytics, marketing, userAgent } = body;
 
         // Validate request body
         if (!consentId || !organizationId) {
@@ -63,8 +64,8 @@ export const POST = withApi(
                           request.headers.get("x-real-ip") || 
                           "unknown";
         const consent = await CookieConsentManager.saveCookieConsent({
-          userId: user?.id || null,
-          organizationId,
+          userId: user?.id,
+          tenantId: organizationId,
           consentId,
           essential: essential ?? true,
           functional: functional ?? false,

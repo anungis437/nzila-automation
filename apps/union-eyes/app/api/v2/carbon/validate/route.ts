@@ -76,6 +76,7 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
         // Validate request body
+        const { claimType, dataPoints } = body as CarbonValidationRequest;
         // Validate required fields
         if (!claimType || !dataPoints || dataPoints.length === 0) {
           return NextResponse.json(

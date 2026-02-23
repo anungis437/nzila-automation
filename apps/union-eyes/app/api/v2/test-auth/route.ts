@@ -2,8 +2,6 @@
  * GET /api/test-auth
  * Migrated to withApi() framework
  */
-import { auth } from '@clerk/nextjs/server';
-
 import { withApi, ApiError } from '@/lib/api/framework';
 
 export const GET = withApi(
@@ -16,8 +14,10 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
+        const DJANGO = process.env.DJANGO_URL;
         const r = await fetch(`${DJANGO}/api/auth_core/health/`, { cache: 'no-store' });
-        healthStatus = r.status;
-        healthBody = await r.json();
+        const healthStatus = r.status;
+        const healthBody = await r.json();
+        return { healthStatus, healthBody };
   },
 );

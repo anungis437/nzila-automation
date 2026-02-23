@@ -26,7 +26,7 @@ export async function GET() {
     
     return NextResponse.json(status, { status: statusCode });
   } catch (error) {
-    return standardErrorResponse(ErrorCode.SERVICE_UNAVAILABLE);
+    return standardErrorResponse(ErrorCode.SERVICE_UNAVAILABLE, 'Service unavailable');
   }
 }
 

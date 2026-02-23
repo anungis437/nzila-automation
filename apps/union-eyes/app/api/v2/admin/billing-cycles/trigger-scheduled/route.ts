@@ -24,9 +24,9 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
         if (!user) {
-          throw ApiError.unauthorized('Authentication required'
-          );
+          throw ApiError.unauthorized('Authentication required');
         }
+        const { frequency } = body;
         // Require admin role (you can adjust this based on your RBAC)
         // if (user.role !== 'admin') {
         //   return standardErrorResponse(

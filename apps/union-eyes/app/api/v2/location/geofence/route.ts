@@ -9,10 +9,10 @@ import { withApi, ApiError, z } from '@/lib/api/framework';
 const locationGeofenceSchema = z.object({
   name: z.string().min(1, 'name is required'),
   description: z.string().optional(),
-  geofenceType: z.unknown().optional(),
-  centerLatitude: z.string().min(1, 'centerLatitude is required'),
-  centerLongitude: z.string().min(1, 'centerLongitude is required'),
-  radiusMeters: z.unknown().optional(),
+  geofenceType: z.string().min(1, 'geofenceType is required'),
+  centerLatitude: z.coerce.number().min(-90).max(90),
+  centerLongitude: z.coerce.number().min(-180).max(180),
+  radiusMeters: z.coerce.number().positive('radiusMeters must be > 0'),
   strikeId: z.string().uuid('Invalid strikeId'),
   unionLocalId: z.string().uuid('Invalid unionLocalId'),
 });
@@ -25,14 +25,14 @@ export const GET = withApi(
       summary: 'GET geofence',
     },
   },
-  async ({ request, userId, organizationId, user, body, query }) => {
+  async ({ request }) => {
 
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId");
+        const targetUserId = searchParams.get("userId");
         const geofenceId = searchParams.get("geofenceId");
         const latitude = searchParams.get("latitude");
         const longitude = searchParams.get("longitude");
-        if (!userId || !geofenceId || !latitude || !longitude) {
+        if (!targetUserId || !geofenceId || !latitude || !longitude) {
           throw ApiError.badRequest('Missing required parameters: userId, geofenceId, latitude, longitude'
         );
         }
@@ -42,9 +42,9 @@ export const GET = withApi(
           throw ApiError.badRequest('Invalid latitude or longitude'
         );
         }
-        const result = await GeofencePrivacyService.checkGeofenceEntry(userId, lat, lon, geofenceId);
+        const result = await GeofencePrivacyService.checkGeofenceEntry(targetUserId, lat, lon, geofenceId);
         return NextResponse.json({
-          userId,
+          userId: targetUserId,
           geofenceId,
           inside: result.inside,
           distance: result.distance,
@@ -63,27 +63,9 @@ export const POST = withApi(
     },
     successStatus: 201,
   },
-  async ({ request, userId, organizationId, user, body, query }) => {
+  async ({ body }) => {
 
-        const body = await request.json();
         const { name, description, geofenceType, centerLatitude, centerLongitude, radiusMeters, strikeId, unionLocalId } = body;
-        if (!name || !geofenceType || centerLatitude === undefined || centerLongitude === undefined || !radiusMeters) {
-          throw ApiError.badRequest('Missing required fields: name, geofenceType, centerLatitude, centerLongitude, radiusMeters'
-        );
-        }
-        // Validate coordinates
-        if (centerLatitude < -90 || centerLatitude > 90) {
-          throw ApiError.badRequest('Invalid centerLatitude (must be -90 to 90)'
-        );
-        }
-        if (centerLongitude < -180 || centerLongitude > 180) {
-          throw ApiError.badRequest('Invalid centerLongitude (must be -180 to 180)'
-        );
-        }
-        if (radiusMeters <= 0) {
-          throw ApiError.badRequest('Invalid radiusMeters (must be > 0)'
-        );
-        }
         const geofence = await GeofencePrivacyService.createGeofence({
           name,
           description,

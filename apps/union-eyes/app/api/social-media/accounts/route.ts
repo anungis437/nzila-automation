@@ -14,7 +14,7 @@ import { createLinkedInClient } from '@/lib/social-media/linkedin-api-client';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { BaseAuthContext, getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
@@ -22,7 +22,7 @@ import {
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 // Lazy initialization to avoid build-time execution
-let supabaseClient: ReturnType<typeof createClient> | null = null;
+let supabaseClient: any = null;
 
 function getSupabaseClient() {
   if (!supabaseClient) {
@@ -33,8 +33,7 @@ function getSupabaseClient() {
   return supabaseClient;
 }
 
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const GET = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -47,8 +46,8 @@ export const GET = async (request: NextRequest) => {
 
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.SOCIAL_MEDIA_API,
-        `social-accounts:${organizationId}`
+        `social-accounts:${organizationId}`,
+        RATE_LIMITS.SOCIAL_MEDIA_API
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -94,7 +93,7 @@ return standardErrorResponse(
         dataType: 'SOCIAL_MEDIA',
         success: true,
         metadata: { count: accounts?.length || 0 },
-      });
+      } as any);
 
       return NextResponse.json({ accounts: accounts || [] });
     } catch (error) {
@@ -104,8 +103,7 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 
 
 const socialMediaAccountsSchema = z.object({
@@ -113,13 +111,12 @@ const socialMediaAccountsSchema = z.object({
   account_id: z.string().uuid('Invalid account_id'),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth('steward', async (request, context) => {
+export const POST = withRoleAuth('steward', async (request: NextRequest, context) => {
   try {
       const { userId, organizationId } = context;
       const body = await request.json();
     // Validate request body
-    const validation = social-mediaAccountsSchema.safeParse(body);
+    const validation = socialMediaAccountsSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
@@ -139,8 +136,8 @@ export const POST = async (request: NextRequest) => {
 
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.SOCIAL_MEDIA_API,
-        `social-connect:${userId}`
+        `social-connect:${userId}`,
+        RATE_LIMITS.SOCIAL_MEDIA_API
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -155,7 +152,7 @@ export const POST = async (request: NextRequest) => {
       const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/social-media/accounts/callback`;
 
       let authUrl: string;
-      const cookieStore = cookies();
+      const cookieStore = await cookies();
 
       switch (platform) {
         case 'facebook':
@@ -231,7 +228,7 @@ export const POST = async (request: NextRequest) => {
         dataType: 'SOCIAL_MEDIA',
         success: true,
         metadata: { platform },
-      });
+      } as any);
 
       return NextResponse.json({ auth_url: authUrl });
     } catch (error) {
@@ -243,18 +240,16 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
-export const DELETE = async (request: NextRequest) => {
-  return withRoleAuth('steward', async (request, context) => {
+export const DELETE = withRoleAuth('steward', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.SOCIAL_MEDIA_API,
-        `social-disconnect:${userId}`
+        `social-disconnect:${userId}`,
+        RATE_LIMITS.SOCIAL_MEDIA_API
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -336,7 +331,7 @@ return standardErrorResponse(
         recordId: accountId,
         success: true,
         metadata: { platform: account.platform },
-      });
+      } as any);
 
       return NextResponse.json({
         message: 'Account disconnected successfully',
@@ -351,11 +346,9 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
-export const PUT = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const PUT = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
       
@@ -440,7 +433,7 @@ export const PUT = async (request: NextRequest) => {
 
         // Update account with new tokens
         const expiresAt = new Date(Date.now() + expiresIn * 1000);
-        const updateData = {
+        const updateData: Record<string, any> = {
           access_token: newAccessToken,
           token_expires_at: expiresAt.toISOString(),
           status: 'active',
@@ -486,6 +479,4 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
-
+});

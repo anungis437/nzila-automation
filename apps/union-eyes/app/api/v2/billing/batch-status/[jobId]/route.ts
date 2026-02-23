@@ -27,14 +27,14 @@ export const GET = withApi(
             pending: 0,
           };
           let startedAt = new Date().toISOString();
-          let estimatedCompletion = null;
+          let estimatedCompletion: string | null = null;
           let errors: Array<Record<string, unknown>> = [];
           // Check if this is a newsletter campaign job
           if (jobId.startsWith('campaign-')) {
             const campaignId = jobId.replace('campaign-', '');
             const { newsletterCampaigns, newsletterRecipients } = await import('@/db/schema');
             const { db } = await import('@/db');
-            const { and } = await import('drizzle-orm');
+            const { and, eq, sql } = await import('drizzle-orm');
             // Get campaign details
             const [campaign] = await db
               .select()
@@ -42,7 +42,7 @@ export const GET = withApi(
               .where(
                 and(
                   eq(newsletterCampaigns.id, campaignId),
-                  eq(newsletterCampaigns.organizationId, context.organizationId)
+                  eq(newsletterCampaigns.organizationId, organizationId!)
                 )
               )
               .limit(1);
@@ -78,7 +78,7 @@ export const GET = withApi(
                 const failedRecipients = await db
                   .select({
                     email: newsletterRecipients.email,
-                    error: newsletterRecipients.failureReason,
+                    error: newsletterRecipients.errorMessage,
                   })
                   .from(newsletterRecipients)
                   .where(

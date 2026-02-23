@@ -19,6 +19,9 @@ export const GET = withApi(
     },
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
+        if (!userId) {
+          throw ApiError.unauthorized('Authentication required');
+        }
 
         // Fetch user's organization memberships
         const memberships = await db

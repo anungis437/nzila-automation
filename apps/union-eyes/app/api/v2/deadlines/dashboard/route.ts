@@ -13,9 +13,11 @@ export const GET = withApi(
       summary: 'GET dashboard',
     },
   },
-  async ({ request, userId, organizationId, user, body, query }) => {
-
+  async ({ organizationId }) => {
+        if (!organizationId) {
+          throw ApiError.unauthorized('Organization context required');
+        }
         const summary = await getDashboardSummary(organizationId);
-        return summary;
+        return summary as Record<string, unknown>;
   },
 );

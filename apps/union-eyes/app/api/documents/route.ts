@@ -59,8 +59,8 @@ const createDocumentSchema = z.object({
  * - statistics: boolean - returns statistics instead of list
  * - search: boolean - uses advanced search
  */
-export const GET = withRoleAuth(10, async (request, context) => {
-  const { userId, organizationId } = context;
+export const GET = withRoleAuth('member', async (request, context) => {
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   try {
     const { searchParams } = new URL(request.url);
@@ -76,8 +76,7 @@ export const GET = withRoleAuth(10, async (request, context) => {
         method: 'GET',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'organizationId is required' },
+        details: { dataType: 'DOCUMENTS', reason: 'organizationId is required' },
       });
       return standardErrorResponse(
         ErrorCode.MISSING_REQUIRED_FIELD,
@@ -92,10 +91,9 @@ export const GET = withRoleAuth(10, async (request, context) => {
         userId,
         endpoint: '/api/documents',
         method: 'GET',
-        eventType: 'authorization_failed',
+        eventType: 'auth_failed',
         severity: 'high',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'Organization ID mismatch' },
+        details: { dataType: 'DOCUMENTS', reason: 'Organization ID mismatch' },
       });
       return standardErrorResponse(
         ErrorCode.FORBIDDEN,
@@ -117,8 +115,7 @@ export const GET = withRoleAuth(10, async (request, context) => {
         method: 'GET',
         eventType: 'success',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { organizationId: organizationIdParam, mode: 'statistics' },
+        details: { dataType: 'DOCUMENTS', organizationId: organizationIdParam, mode: 'statistics' },
       });
       return NextResponse.json(stats);
     }
@@ -126,7 +123,7 @@ export const GET = withRoleAuth(10, async (request, context) => {
     // Advanced search mode
     if (search) {
       const searchQuery = searchParams.get("searchQuery") || "";
-      const filters = {};
+      const filters: Record<string, unknown> = {};
 
       const category = searchParams.get("category");
       if (category) filters.category = category;
@@ -151,14 +148,13 @@ export const GET = withRoleAuth(10, async (request, context) => {
         method: 'GET',
         eventType: 'success',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { organizationId: organizationIdParam, mode: 'search', searchQuery, resultCount: results.documents?.length || 0 },
+        details: { dataType: 'DOCUMENTS', organizationId: organizationIdParam, mode: 'search', searchQuery, resultCount: results.documents?.length || 0 },
       });
       return NextResponse.json(results);
     }
 
     // Build filters
-    const filters = { organizationId: organizationIdParam };
+    const filters: Record<string, unknown> = { organizationId: organizationIdParam };
     
     const folderId = searchParams.get("folderId");
     if (folderId) filters.folderId = folderId;
@@ -193,8 +189,7 @@ export const GET = withRoleAuth(10, async (request, context) => {
       method: 'GET',
       eventType: 'success',
       severity: 'low',
-      dataType: 'DOCUMENTS',
-      details: { organizationId: organizationIdParam, filters, resultCount: result.documents?.length || 0 },
+      details: { dataType: 'DOCUMENTS', organizationId: organizationIdParam, filters, resultCount: result.documents?.length || 0 },
     });
 
     return NextResponse.json(result);
@@ -204,10 +199,9 @@ export const GET = withRoleAuth(10, async (request, context) => {
       userId,
       endpoint: '/api/documents',
       method: 'GET',
-      eventType: 'server_error',
+      eventType: 'unauthorized_access',
       severity: 'high',
-      dataType: 'DOCUMENTS',
-      details: { error: error instanceof Error ? error.message : 'Unknown error' },
+      details: { dataType: 'DOCUMENTS', error: error instanceof Error ? error.message : 'Unknown error' },
     });
 return NextResponse.json(
       { error: "Failed to list documents", details: error instanceof Error ? error.message : "Unknown error" },
@@ -236,7 +230,7 @@ return NextResponse.json(
  * - metadata: object
  */
 export const POST = withRoleAuth('member', async (request, context) => {
-  const { userId, organizationId } = context;
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   let rawBody: unknown;
   try {
@@ -249,8 +243,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
       method: 'POST',
       eventType: 'validation_failed',
       severity: 'low',
-      dataType: 'DOCUMENTS',
-      details: { reason: 'Invalid JSON in request body' },
+      details: { dataType: 'DOCUMENTS', reason: 'Invalid JSON in request body' },
     });
     return standardErrorResponse(ErrorCode.VALIDATION_ERROR, 'Invalid JSON in request body');
   }
@@ -264,8 +257,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
       method: 'POST',
       eventType: 'validation_failed',
       severity: 'low',
-      dataType: 'DOCUMENTS',
-      details: { reason: 'Validation failed', errors: parsed.error.errors },
+      details: { dataType: 'DOCUMENTS', reason: 'Validation failed', errors: parsed.error.errors },
     });
     return NextResponse.json({ 
       error: 'Invalid request body',
@@ -282,10 +274,9 @@ export const POST = withRoleAuth('member', async (request, context) => {
       userId,
       endpoint: '/api/documents',
       method: 'POST',
-      eventType: 'authorization_failed',
+      eventType: 'auth_failed',
       severity: 'high',
-      dataType: 'DOCUMENTS',
-      details: { reason: 'Organization ID mismatch' },
+      details: { dataType: 'DOCUMENTS', reason: 'Organization ID mismatch' },
     });
     return standardErrorResponse(ErrorCode.FORBIDDEN, 'Forbidden');
   }
@@ -317,8 +308,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
       method: 'POST',
       eventType: 'success',
       severity: 'medium',
-      dataType: 'DOCUMENTS',
       details: { 
+        dataType: 'DOCUMENTS',
         organizationId: body.organizationId, 
         documentId: document.id,
         documentName: body.name, 
@@ -333,10 +324,9 @@ export const POST = withRoleAuth('member', async (request, context) => {
       userId,
       endpoint: '/api/documents',
       method: 'POST',
-      eventType: 'server_error',
+      eventType: 'unauthorized_access',
       severity: 'high',
-      dataType: 'DOCUMENTS',
-      details: { error: error instanceof Error ? error.message : 'Unknown error' },
+      details: { dataType: 'DOCUMENTS', error: error instanceof Error ? error.message : 'Unknown error' },
     });
 return NextResponse.json(
       { error: "Failed to create document", details: error instanceof Error ? error.message : "Unknown error" },

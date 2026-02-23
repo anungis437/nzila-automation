@@ -3,13 +3,12 @@
  * Migrated to withApi() framework
  */
 import { getOverdueClaims, getClaimsApproachingDeadline } from "@/lib/workflow-engine";
-import { logger } from '@/lib/logger';
 
-import { withApi, ApiError } from '@/lib/api/framework';
+import { withApi } from '@/lib/api/framework';
 
 export const GET = withApi(
   {
-    auth: { required: false },
+    auth: { required: true, minRole: 'steward' as const },
     openapi: {
       tags: ['Workflow'],
       summary: 'GET overdue',
@@ -17,11 +16,6 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        // Authentication guard with organization isolation
-        const { userId, organizationId } = await requireApiAuth({
-          organization: true,
-          roles: ['admin', 'steward'],
-        });
         const searchParams = request.nextUrl.searchParams;
         const type = searchParams.get("type") || "overdue";
         let result;

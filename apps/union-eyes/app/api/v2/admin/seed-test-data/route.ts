@@ -21,7 +21,7 @@ export const GET = withApi(
 
         const hierarchy = await seedOrganizationHierarchy();
         const children = await seedChildOrganizations();
-        logger.info('Full org seed completed (GET)', { userId: context.userId, hierarchy, children });
+        logger.info('Full org seed completed (GET)', { userId, hierarchy, children });
         return { message: `Seeded: CLC + ${hierarchy.federationsCreated} federations + ${hierarchy.affiliatesCreated} affiliates + ${children.localsCreated} locals + ${children.districtsCreated} districts. Skipped: ${hierarchy.skipped.length + children.skipped.length}.`,
           data: { hierarchy, children }, };
   },
@@ -40,7 +40,7 @@ export const POST = withApi(
 
         const hierarchy = await seedOrganizationHierarchy();
         const children = await seedChildOrganizations();
-        logger.info('Full org seed completed (POST)', { userId: context.userId, hierarchy, children });
+        logger.info('Full org seed completed (POST)', { userId, hierarchy, children });
         return { message: `Seeded: CLC + ${hierarchy.federationsCreated} federations + ${hierarchy.affiliatesCreated} affiliates + ${children.localsCreated} locals + ${children.districtsCreated} districts. Skipped: ${hierarchy.skipped.length + children.skipped.length}.`,
           data: { hierarchy, children }, };
   },

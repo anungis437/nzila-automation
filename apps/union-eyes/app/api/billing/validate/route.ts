@@ -6,7 +6,7 @@ import {
   validateBillingRequest,
 } from '@/lib/services/transfer-pricing-service';
 import type { BillingValidationRequest, BillingValidationResponse } from '@/lib/types/compliance-api-types';
-import { logApiAuditEvent } from '@/lib/middleware/request-validation';
+import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
 
 import {
@@ -38,8 +38,7 @@ export const POST = withRoleAuth('steward', async (request, context) => {
   } catch {
     return standardErrorResponse(
       ErrorCode.VALIDATION_ERROR,
-      'Invalid JSON in request body',
-      error
+      'Invalid JSON in request body'
     );
   }
 
@@ -53,7 +52,7 @@ export const POST = withRoleAuth('steward', async (request, context) => {
   }
 
   const body = parsed.data;
-  const { userId, organizationId } = context;
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
     const orgId = (body as Record<string, unknown>)["organizationId"] ?? (body as Record<string, unknown>)["orgId"] ?? (body as Record<string, unknown>)["organization_id"] ?? (body as Record<string, unknown>)["org_id"] ?? (body as Record<string, unknown>)["unionId"] ?? (body as Record<string, unknown>)["union_id"] ?? (body as Record<string, unknown>)["localId"] ?? (body as Record<string, unknown>)["local_id"];
   if (typeof orgId === 'string' && orgId.length > 0 && orgId !== context.organizationId) {
@@ -107,7 +106,7 @@ try {
               timestamp: new Date().toISOString(), userId,
               endpoint: '/api/billing/validate',
               method: 'POST',
-              eventType: 'error',
+              eventType: 'unauthorized_access',
               severity: 'high',
               details: { 
                 error: `Currency conversion failed: ${conversionError}`,
@@ -178,7 +177,7 @@ try {
         timestamp: new Date().toISOString(), userId,
         endpoint: '/api/billing/validate',
         method: 'POST',
-        eventType: 'error',
+        eventType: 'unauthorized_access',
         severity: 'high',
         details: { error: error instanceof Error ? error.message : 'Unknown error' },
       });

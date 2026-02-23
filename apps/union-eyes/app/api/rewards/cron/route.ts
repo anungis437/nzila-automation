@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const task = searchParams.get('task') || 'all';
 
-    const results = {
+    const results: { timestamp: string; task: string; executed: Array<Record<string, unknown>> } = {
       timestamp: new Date().toISOString(),
       task,
       executed: [],
@@ -104,9 +104,9 @@ return NextResponse.json({
       success: true,
       data: results,
     });
-  } catch (error: Record<string, unknown>) {
-return NextResponse.json(
-      { error: error.message || 'Failed to execute scheduled tasks' },
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to execute scheduled tasks' },
       { status: 500 }
     );
   }

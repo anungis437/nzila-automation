@@ -25,9 +25,9 @@ export const GET = withApi(
       summary: 'GET analytics',
     },
   },
-  async ({ request, params }) => {
+  async ({ request }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1GET(request, { params: Promise.resolve(params) });
+    const response = await v1GET(request, {} as any);
     return response;
   },
 );
@@ -41,9 +41,9 @@ export const POST = withApi(
       summary: 'POST analytics',
     },
   },
-  async ({ request, params }) => {
+  async ({ request }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1POST(request, { params: Promise.resolve(params) });
+    const response = await v1POST(request, {} as any);
     return response;
   },
 );
@@ -57,9 +57,9 @@ export const PUT = withApi(
       summary: 'PUT analytics',
     },
   },
-  async ({ request, params }) => {
+  async ({ request }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1PUT(request, { params: Promise.resolve(params) });
+    const response = await v1PUT(request, {} as any);
     return response;
   },
 );
@@ -73,9 +73,9 @@ export const DELETE = withApi(
       summary: 'DELETE analytics',
     },
   },
-  async ({ request, params }) => {
+  async ({ request }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1DELETE(request, { params: Promise.resolve(params) });
+    const response = await v1DELETE(request, {} as any);
     return response;
   },
 );

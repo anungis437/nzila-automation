@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
  * POST /api/whop/unauthenticated-checkout
  * Migrated to withApi() framework
  */
-import { DEFAULT_REDIRECT_URL } from "../webhooks/utils/constants";
+import { DEFAULT_REDIRECT_URL } from "@/app/api/whop/webhooks/utils/constants";
 import crypto from "crypto";
 import { logger } from '@/lib/logger';
 import { withApi, ApiError } from '@/lib/api/framework';

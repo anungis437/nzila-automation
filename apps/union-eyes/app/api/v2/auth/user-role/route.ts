@@ -17,11 +17,10 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        const { userId: authedUserId } = await auth();
         // Use userId from URL params if provided (for admin use), otherwise use authenticated user
         const searchParams = request.nextUrl.searchParams;
         const queryUserId = searchParams.get('userId');
-        const targetUserId = queryUserId || authedUserId;
+        const targetUserId = queryUserId || userId;
         if (!targetUserId) {
           throw ApiError.internal('Not authenticated');
         }

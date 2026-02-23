@@ -3,7 +3,7 @@
  * Migrated to withApi() framework
  */
 import type { BillingValidationRequest, BillingValidationResponse } from '@/lib/types/compliance-api-types';
-import { logApiAuditEvent } from '@/lib/middleware/request-validation';
+import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { withApi, ApiError, z } from '@/lib/api/framework';
 
 const billingValidationSchema = z.object({
@@ -24,6 +24,6 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        rawBody = await request.json();
+        const rawBody = await request.json();
   },
 );

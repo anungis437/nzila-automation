@@ -21,8 +21,8 @@ export const POST = async (
   request: NextRequest,
   { params }: { params: { id: string } }
 ) => {
-  return withRoleAuth(20, async (request, context) => {
-    const { userId, organizationId } = context;
+  return withRoleAuth('steward', async (request, context) => {
+    const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   try {
         const result = await processDocumentOCR(params.id);
@@ -42,7 +42,7 @@ export const POST = async (
           timestamp: new Date().toISOString(), userId,
           endpoint: `/api/documents/${params.id}/ocr`,
           method: 'POST',
-          eventType: 'server_error',
+          eventType: 'validation_failed',
           severity: 'high',
           details: { documentId: params.id, error: error instanceof Error ? error.message : 'Unknown error' },
         });

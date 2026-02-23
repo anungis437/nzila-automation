@@ -26,7 +26,7 @@ import {
 
 const onboardingDiscoverFederationSchema = z.object({
   province: z.string().min(1, 'province is required'),
-  sector: z.unknown().optional(),
+  sector: z.string().optional(),
   estimatedMemberCount: z.number().int().positive(),
 });
 

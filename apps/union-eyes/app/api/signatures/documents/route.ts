@@ -34,7 +34,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     const documentType = formData.get("documentType") as string;
     const organizationId = formData.get("organizationId") as string;
     const signersJson = formData.get("signers") as string;
-    const provider = formData.get("provider") as Record<string, unknown>;
+    const provider = formData.get("provider") as string | null;
     const expirationDays = formData.get("expirationDays") as string;
     const requireAuthentication = formData.get("requireAuthentication") as string;
     const sequentialSigning = formData.get("sequentialSigning") as string;
@@ -46,14 +46,15 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     );
     }
 
-    const validation = JSON.safeParse(signersJson);
-    if (!validation.success) {
+    let signers;
+    try {
+      signers = JSON.parse(signersJson);
+    } catch {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
-        validation.error.errors[0]?.message || 'Invalid request data'
+        'Invalid signers JSON'
       );
     }
-    const signers = validation.data;
 
     // Convert file to buffer
     const arrayBuffer = await file.arrayBuffer();
@@ -69,7 +70,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
       fileName: file.name,
       sentBy: userId,
       signers,
-      provider: provider || undefined,
+      provider: (provider as "internal" | "docusign" | "hellosign" | null) || undefined,
       expirationDays: expirationDays ? parseInt(expirationDays) : undefined,
       requireAuthentication: requireAuthentication === "true",
       sequentialSigning: sequentialSigning === "true",

@@ -24,8 +24,7 @@ import {
   standardErrorResponse,
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, context) => {
   try {
       const { searchParams } = new URL(request.url);
       
@@ -71,7 +70,7 @@ export const GET = async (request: NextRequest) => {
       }
 
       // Build filters
-      const filters = {};
+      const filters: Record<string, any> = {};
       
       if (cbaId) {
         filters.cbaId = cbaId;
@@ -127,8 +126,7 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 
 
 const bargainingNotesSchema = z.object({
@@ -140,14 +138,13 @@ const bargainingNotesSchema = z.object({
   content: z.unknown().optional(),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context) => {
     const { userId } = context;
 
   try {
       const body = await request.json();
     // Validate request body
-    const validation = bargaining-notesSchema.safeParse(body);
+    const validation = bargainingNotesSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
@@ -179,9 +176,7 @@ export const POST = async (request: NextRequest) => {
 
         const notes = await bulkCreateBargainingNotes(notesWithUser);
         return standardSuccessResponse(
-      {  notes, count: notes.length  },
-      undefined,
-      201
+      {  notes, count: notes.length  }
     );
       }
 
@@ -230,9 +225,7 @@ export const POST = async (request: NextRequest) => {
       });
 
       return standardSuccessResponse(
-      {  note  },
-      undefined,
-      201
+      {  note  }
     );
     } catch (error) {
 return standardErrorResponse(
@@ -241,6 +234,5 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 

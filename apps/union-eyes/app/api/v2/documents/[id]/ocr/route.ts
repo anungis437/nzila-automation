@@ -8,7 +8,7 @@ import { withApi, ApiError } from '@/lib/api/framework';
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     openapi: {
       tags: ['Documents'],
       summary: 'POST ocr',
@@ -17,9 +17,9 @@ export const POST = withApi(
   },
   async ({ request, params, userId, organizationId, user, body, query }) => {
 
-            const result = await processDocumentOCR(params.id);
+            const result = await processDocumentOCR(params.id) as unknown as Record<string, unknown>;
             logApiAuditEvent({
-              timestamp: new Date().toISOString(), userId,
+              timestamp: new Date().toISOString(), userId: userId ?? undefined,
               endpoint: `/api/documents/${params.id}/ocr`,
               method: 'POST',
               eventType: 'success',

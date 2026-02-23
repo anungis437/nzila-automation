@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { getClausesByCBAId } from "@/lib/services/clause-service";
 import { getBargainingNotesByCBA } from "@/lib/services/bargaining-notes-service";
+import { getCBAById, updateCBA, updateCBAStatus, deleteCBA } from "@/lib/services/cba-service";
 import { logger } from "@/lib/logger";
 
 import { withApi, ApiError, z } from '@/lib/api/framework';
@@ -38,7 +39,7 @@ export const GET = withApi(
             throw ApiError.notFound('CBA not found'
         );
           }
-          const response = { cba };
+          const response: Record<string, unknown> = { cba };
           // Optionally fetch clauses
           if (includeClauses) {
             const clauses = await getClausesByCBAId(id);
@@ -70,7 +71,7 @@ export const PATCH = withApi(
           // Validate request body
         // If only updating status, use specialized function
           if (body.status && Object.keys(body).length === 1) {
-            const updatedCba = await updateCBAStatus(id, body.status);
+            const updatedCba = await updateCBAStatus(id, body.status as Parameters<typeof updateCBAStatus>[1]);
             if (!updatedCba) {
               throw ApiError.notFound('CBA not found'
         );
@@ -79,9 +80,9 @@ export const PATCH = withApi(
           }
           // Update CBA
           const updatedCba = await updateCBA(id, {
-            ...body,
-            lastModifiedBy: userId,
-          });
+            ...(body as Record<string, unknown>),
+            lastModifiedBy: userId ?? undefined,
+          } as Parameters<typeof updateCBA>[1]);
           if (!updatedCba) {
             throw ApiError.notFound('CBA not found'
         );

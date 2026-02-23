@@ -119,7 +119,7 @@ export const DELETE = async (request: NextRequest, { params }: { params: { id: s
     );
       }
 
-      cancelWorkflow(workflowId, userId, reason);
+      cancelWorkflow(workflowId, userId as string, reason);
 
       return NextResponse.json({
         success: true,

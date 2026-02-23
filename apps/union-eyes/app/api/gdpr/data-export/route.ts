@@ -24,8 +24,8 @@ import {
 
 const gdprDataExportSchema = z.object({
   organizationId: z.string().uuid('Invalid organizationId'),
-  preferredFormat: z.unknown().optional(),
-  requestDetails: z.unknown().optional(),
+  preferredFormat: z.string().optional(),
+  requestDetails: z.record(z.unknown()).optional(),
 });
 
 export const POST = withApiAuth(async (request: NextRequest) => {
@@ -60,7 +60,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     );
     }
 
-    if (!['json', 'csv', 'xml'].includes(format)) {
+    if (!['json', 'csv', 'xml'].includes(format as string)) {
       return NextResponse.json(
         { error: "Unsupported export format" },
         { status: 400 }
@@ -68,17 +68,17 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     }
 
     // Create data access request
-    const request = await GdprRequestManager.requestDataAccess({
+    const gdprRequest = await GdprRequestManager.requestDataAccess({
       userId: userId,
-      organizationId,
+      tenantId: organizationId,
       requestDetails: {
         preferredFormat: format,
-        ...requestDetails,
+        ...(requestDetails ?? {}),
       },
       verificationMethod: "email",
     });
 
-    await GdprRequestManager.updateRequestStatus(request.id, "in_progress", {
+    await GdprRequestManager.updateRequestStatus(gdprRequest.id, "in_progress", {
       processedBy: "system",
     });
 
@@ -88,14 +88,14 @@ export const POST = withApiAuth(async (request: NextRequest) => {
         throw new Error("Report queue not available");
       }
 
-      await queue.add(
+      await (queue as unknown as { add: (...args: unknown[]) => Promise<unknown> }).add(
         "gdpr-export",
         {
           reportType: "gdpr_export",
           organizationId,
           userId,
           parameters: {
-            requestId: request.id,
+            requestId: gdprRequest.id,
             format,
           },
         },
@@ -112,7 +112,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
 
     return NextResponse.json({
       success: true,
-      requestId: request.id,
+      requestId: gdprRequest.id,
       status: "processing",
       message: "Your data export request has been received and is being processed",
       estimatedCompletion: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -153,27 +153,25 @@ export const GET = withApiAuth(async (request: NextRequest) => {
 
     // Get request status
     const requests = await GdprRequestManager.getUserRequests(userId, organizationIdFromQuery);
-    const request = requests.find((r) => r.id === requestId);
+    const gdprRequest = requests.find((r) => r.id === requestId);
 
-    if (!request) {
+    if (!gdprRequest) {
       return standardErrorResponse(
       ErrorCode.RESOURCE_NOT_FOUND,
       'Request not found'
     );
     }
 
-    if (request.status !== "completed") {
+    if (gdprRequest.status !== "completed") {
       return standardSuccessResponse(
       { 
-          status: request.status,
+          status: gdprRequest.status,
           message: "Export is still being processed",
-         },
-      undefined,
-      202
+         }
     );
     }
 
-    const responseData = request.responseData as Record<string, unknown>;
+    const responseData = gdprRequest.responseData as Record<string, unknown>;
     const fileName = responseData?.fileName as string | undefined;
     const expiresAt = responseData?.expiresAt ? new Date(responseData.expiresAt as string | number) : null;
 
@@ -202,7 +200,8 @@ export const GET = withApiAuth(async (request: NextRequest) => {
     );
     }
 
-    const format = request.requestDetails?.preferredFormat || "json";
+    const requestDetails = gdprRequest.requestDetails as Record<string, unknown> | null;
+    const format = (requestDetails?.preferredFormat as string) || "json";
     const contentType = format === "csv"
       ? "text/csv"
       : format === "xml"

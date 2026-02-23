@@ -28,9 +28,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        const body = await request.json();
-        // Validate input
-        const validatedData = evaluateSchema.parse(body);
+        const validatedData = body;
         // Evaluate policy
         const result = await policyEngine.evaluate(
           validatedData.ruleType,

@@ -17,6 +17,9 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
+          if (!userId) {
+            throw ApiError.unauthorized('Authentication required');
+          }
           // Generate authorization URL with userId as state
           const authUrl = await getAuthorizationUrl(userId);
           // Redirect to Microsoft authorization page

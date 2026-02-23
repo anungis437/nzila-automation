@@ -5,18 +5,19 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { withApi, ApiError, z } from '@/lib/api/framework';
+import { compareClauses, saveClauseComparison } from '@/lib/services/clause-service';
 
 const clausesCompareSchema = z.object({
-  clauseIds: z.string().uuid('Invalid clauseIds'),
-  analysisType: z.boolean().optional().default("all"),
-  save: z.unknown().optional().default(false),
-  comparisonName: z.boolean().optional(),
+  clauseIds: z.array(z.string().uuid()),
+  analysisType: z.enum(["all", "similarities", "differences", "best_practices"]).default("all"),
+  save: z.boolean().optional().default(false),
+  comparisonName: z.string().optional(),
   organizationId: z.string().uuid('Invalid organizationId'),
 });
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: clausesCompareSchema,
     openapi: {
       tags: ['Clauses'],
@@ -35,34 +36,34 @@ export const POST = withApi(
         // comparisonName,
         // organizationId
         // } = body;
-      if (organizationId && organizationId !== contextOrganizationId) {
+      if (body.organizationId && body.organizationId !== organizationId) {
         throw ApiError.forbidden('Forbidden'
         );
       }
-          if (!clauseIds || !Array.isArray(clauseIds) || clauseIds.length < 2) {
+          if (!body.clauseIds || !Array.isArray(body.clauseIds) || body.clauseIds.length < 2) {
             throw ApiError.internal('At least 2 clause IDs are required for comparison'
         );
           }
-          if (clauseIds.length > 10) {
+          if (body.clauseIds.length > 10) {
             throw ApiError.badRequest('Maximum 10 clauses can be compared at once');
           }
           // Perform comparison
           const result = await compareClauses({
-            clauseIds,
-            analysisType
+            clauseIds: body.clauseIds,
+            analysisType: body.analysisType,
           });
           // Optionally save the comparison
-          if (save) {
-            if (!comparisonName || !organizationId) {
+          if (body.save) {
+            if (!body.comparisonName || !organizationId) {
               throw ApiError.internal('comparisonName and organizationId are required to save comparison'
         );
             }
             const clauseType = result.clauses[0]?.clauseType || "other";
             const savedComparison = await saveClauseComparison(
-              comparisonName,
+              body.comparisonName,
               clauseType,
-              clauseIds,
-              organizationId, userId,
+              body.clauseIds,
+              organizationId, userId!,
               {
                 similarities: result.similarities,
                 differences: result.differences,
@@ -75,6 +76,6 @@ export const POST = withApi(
               savedComparison
             });
           }
-          return result;
+          return { ...result };
   },
 );

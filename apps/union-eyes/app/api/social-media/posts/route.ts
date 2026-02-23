@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSocialMediaService } from '@/lib/social-media/social-media-service';
 import { createClient } from '@supabase/supabase-js';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { BaseAuthContext, getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
@@ -19,7 +19,7 @@ import {
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 // Lazy initialization - env vars not available during build
-let supabaseClient: ReturnType<typeof createClient> | null = null;
+let supabaseClient: any = null;
 function getSupabaseClient() {
   if (!supabaseClient) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -29,7 +29,7 @@ function getSupabaseClient() {
   return supabaseClient;
 }
 
-export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
+export const GET = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -42,8 +42,8 @@ export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
 
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.SOCIAL_MEDIA_API,
-        `social-posts-read:${userId}`
+        `social-posts-read:${userId}`,
+        RATE_LIMITS.SOCIAL_MEDIA_API
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -63,7 +63,7 @@ export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
       const offset = parseInt(searchParams.get('offset') || '0');
 
       // Build query
-      let query = supabase
+      let query = getSupabaseClient()
         .from('social_posts')
         .select(`
         *,
@@ -132,7 +132,7 @@ const socialMediaPostsSchema = z.object({
   campaign_id: z.string().uuid("Invalid campaign_id").optional(),
 });
 
-export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -143,10 +143,17 @@ export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
         );
       }
 
+      if (!userId) {
+        return standardErrorResponse(
+          ErrorCode.FORBIDDEN,
+          'No user found'
+        );
+      }
+
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.SOCIAL_MEDIA_POST,
-        `social-posts-create:${userId}`
+        `social-posts-create:${userId}`,
+        RATE_LIMITS.SOCIAL_MEDIA_POST
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -249,7 +256,7 @@ return NextResponse.json(
     }
 });
 
-export const DELETE = withRoleAuth(20, async (request: NextRequest, context) => {
+export const DELETE = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
       
@@ -272,7 +279,7 @@ export const DELETE = withRoleAuth(20, async (request: NextRequest, context) => 
       }
 
       // Verify user has access to this post (belongs to their organization)
-      const { data: post, error: fetchError } = await supabase
+      const { data: post, error: fetchError } = await getSupabaseClient()
         .from('social_posts')
         .select('*, account:social_accounts(organization_id)')
         .eq('id', postId)

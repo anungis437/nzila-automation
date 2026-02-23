@@ -10,7 +10,7 @@ import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { BaseAuthContext, getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
@@ -18,7 +18,7 @@ import {
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 // Lazy initialization - env vars not available during build
-let supabaseClient: ReturnType<typeof createClient> | null = null;
+let supabaseClient: any = null;
 function getSupabaseClient() {
   if (!supabaseClient) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -28,8 +28,7 @@ function getSupabaseClient() {
   return supabaseClient;
 }
 
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const GET = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -42,8 +41,8 @@ export const GET = async (request: NextRequest) => {
 
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.CAMPAIGN_OPERATIONS,
-        `social-campaigns-read:${userId}`
+        `social-campaigns-read:${userId}`,
+        RATE_LIMITS.CAMPAIGN_OPERATIONS
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -63,7 +62,7 @@ export const GET = async (request: NextRequest) => {
       const offset = parseInt(searchParams.get('offset') || '0');
 
       // Build query
-      let query = supabase
+      let query = getSupabaseClient()
         .from('social_campaigns')
         .select(
           `
@@ -113,7 +112,7 @@ return standardErrorResponse(
       const campaignsWithMetrics = await Promise.all(
         (campaigns || []).map(async (campaign) => {
           // Get post performance
-          const { data: posts } = await supabase
+          const { data: posts } = await getSupabaseClient()
             .from('social_posts')
             .select('impressions, engagement, likes, comments, shares, clicks')
             .eq('campaign_id', campaign.id);
@@ -129,7 +128,7 @@ return standardErrorResponse(
           };
 
           // Calculate goal progress
-          const goalProgress = campaign.goals?.map((goal: Record<string, unknown>) => {
+          const goalProgress = campaign.goals?.map((goal: any) => {
             const currentValue = metrics[`total_${goal.metric}` as keyof typeof metrics] || 0;
             const progress = goal.target_value > 0 ? (currentValue / goal.target_value) * 100 : 0;
             return {
@@ -163,24 +162,22 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
 
 const socialMediaCampaignsSchema = z.object({
   name: z.string().min(1, 'name is required'),
   description: z.string().optional(),
-  platforms: z.unknown().optional(),
+  platforms: z.array(z.string()).optional(),
   start_date: z.string().datetime().optional(),
   end_date: z.string().datetime().optional(),
-  goals: z.unknown().optional(),
+  goals: z.array(z.any()).optional(),
   hashtags: z.unknown().optional(),
   target_audience: z.unknown().optional(),
   status: z.unknown().optional(),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth('member', async (request, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -193,8 +190,8 @@ export const POST = async (request: NextRequest) => {
 
       // Rate limit check
       const rateLimitResult = await checkRateLimit(
-        RATE_LIMITS.CAMPAIGN_OPERATIONS,
-        `social-campaigns-create:${userId}`
+        `social-campaigns-create:${userId}`,
+        RATE_LIMITS.CAMPAIGN_OPERATIONS
       );
       if (!rateLimitResult.allowed) {
         return standardErrorResponse(
@@ -213,7 +210,7 @@ export const POST = async (request: NextRequest) => {
 
       const body = await request.json();
     // Validate request body
-    const validation = social-mediaCampaignsSchema.safeParse(body);
+    const validation = socialMediaCampaignsSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
@@ -270,7 +267,7 @@ export const POST = async (request: NextRequest) => {
       }
 
       // Create campaign
-      const { data: campaign, error } = await supabase
+      const { data: campaign, error } = await getSupabaseClient()
         .from('social_campaigns')
         .insert({
           organization_id: organizationId,
@@ -296,9 +293,7 @@ return standardErrorResponse(
       }
 
       return standardSuccessResponse(
-      {  campaign  },
-      undefined,
-      201
+      {  campaign  }
     );
     } catch (error) {
 return NextResponse.json(
@@ -309,11 +304,9 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
-export const PUT = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const PUT = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -329,7 +322,7 @@ export const PUT = async (request: NextRequest) => {
       }
 
       // Verify user has access to this campaign
-      const { data: campaign, error: fetchError } = await supabase
+      const { data: campaign, error: fetchError } = await getSupabaseClient()
         .from('social_campaigns')
         .select('*')
         .eq('id', campaignId)
@@ -383,7 +376,7 @@ export const PUT = async (request: NextRequest) => {
       }
 
       // Update campaign
-      const updateData = {
+      const updateData: Record<string, any> = {
         updated_at: new Date().toISOString(),
       };
 
@@ -397,7 +390,7 @@ export const PUT = async (request: NextRequest) => {
       if (target_audience !== undefined) updateData.target_audience = target_audience;
       if (status !== undefined) updateData.status = status;
 
-      const { data: updatedCampaign, error: updateError } = await supabase
+      const { data: updatedCampaign, error: updateError } = await getSupabaseClient()
         .from('social_campaigns')
         .update(updateData)
         .eq('id', campaignId)
@@ -421,11 +414,9 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
-export const DELETE = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const DELETE = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   try {
       const { userId, organizationId } = context;
 
@@ -441,7 +432,7 @@ export const DELETE = async (request: NextRequest) => {
       }
 
       // Verify user has access to this campaign
-      const { data: campaign, error: fetchError } = await supabase
+      const { data: campaign, error: fetchError } = await getSupabaseClient()
         .from('social_campaigns')
         .select('*')
         .eq('id', campaignId)
@@ -462,7 +453,7 @@ export const DELETE = async (request: NextRequest) => {
       }
 
       // Check if campaign has posts
-      const { data: posts } = await supabase
+      const { data: posts } = await getSupabaseClient()
         .from('social_posts')
         .select('id')
         .eq('campaign_id', campaignId)
@@ -479,7 +470,7 @@ export const DELETE = async (request: NextRequest) => {
       }
 
       // Delete campaign
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await getSupabaseClient()
         .from('social_campaigns')
         .delete()
         .eq('id', campaignId);
@@ -504,6 +495,4 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
-
+});

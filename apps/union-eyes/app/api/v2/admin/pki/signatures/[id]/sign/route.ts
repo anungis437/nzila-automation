@@ -30,7 +30,7 @@ export const POST = withApi(
   },
   async ({ request, params }) => {
     // Delegate to v1 handler while framework migration is in progress
-    const response = await v1POST(request, { params: Promise.resolve(params) });
+    const response = await v1POST(request, { params: params as { id: string } });
     return response;
   },
 );

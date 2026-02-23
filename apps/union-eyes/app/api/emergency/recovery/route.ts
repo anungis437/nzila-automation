@@ -49,7 +49,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     }
 
     // Purge location data from emergency tracking
-    const purgeResult = await purgeExpiredLocations(memberId, 48);
+    const purgeResult = await purgeExpiredLocations();
 
     const recoverySteps = [
       'End emergency mode',

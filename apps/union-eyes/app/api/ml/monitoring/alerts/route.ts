@@ -44,7 +44,7 @@ import {
  *   }
  * }
  */
-export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
+export const GET = withRoleAuth('member', async (request: NextRequest, context) => {
   const { userId, organizationId } = context;
 
   // Rate limit monitoring reads
@@ -205,7 +205,7 @@ const mlMonitoringAlertsSchema = z.object({
   alertId: z.string().uuid('Invalid alertId'),
 });
 
-export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context) => {
   const { userId, organizationId } = context;
   const organizationScopeId = organizationId || userId;
   

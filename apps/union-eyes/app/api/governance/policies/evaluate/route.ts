@@ -45,7 +45,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     return NextResponse.json({
       result,
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
     logger.error('Error evaluating policy:', error);
     
     if (error instanceof z.ZodError) {
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     }
     
     return NextResponse.json(
-      { error: 'Failed to evaluate policy', details: error.message },
+      { error: 'Failed to evaluate policy', details: (error as Error).message },
       { status: 500 }
     );
   }

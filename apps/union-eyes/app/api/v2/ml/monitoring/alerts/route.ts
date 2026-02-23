@@ -16,13 +16,14 @@ const mlMonitoringAlertsSchema = z.object({
 
 export const GET = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     openapi: {
       tags: ['Ml'],
       summary: 'GET alerts',
     },
   },
   async ({ request, userId, organizationId, user, body, query }) => {
+        const organizationScopeId = organizationId || userId;
 
         // Query active alerts from monitoring tables
         const alertsData = await db.execute(sql`
@@ -137,7 +138,7 @@ export const GET = withApi(
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: mlMonitoringAlertsSchema,
     rateLimit: RATE_LIMITS.ML_PREDICTIONS,
     openapi: {
@@ -147,6 +148,8 @@ export const POST = withApi(
     successStatus: 201,
   },
   async ({ request, userId, organizationId, user, body, query }) => {
+        const { alertId } = body;
+        const organizationScopeId = organizationId || userId;
 
         // Validate request body
         if (!alertId) {

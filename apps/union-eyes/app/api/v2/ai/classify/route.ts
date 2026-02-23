@@ -5,6 +5,15 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
+import {
+  classifyClause,
+  generateClauseTags,
+  detectCrossReferences,
+  classifyPrecedent,
+  enrichClauseMetadata,
+  batchClassifyClauses,
+} from '@/lib/services/ai/auto-classification-service';
+import type { ClauseType } from '@/db/schema/domains/agreements';
 
 import { withApi, ApiError, z, RATE_LIMITS } from '@/lib/api/framework';
 
@@ -21,7 +30,7 @@ const aiClassifySchema = z.object({
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: aiClassifySchema,
     rateLimit: RATE_LIMITS.AI_COMPLETION,
     openapi: {
@@ -31,6 +40,7 @@ export const POST = withApi(
     successStatus: 201,
   },
   async ({ request, userId, organizationId, user, body, query }) => {
+    const { action, content, context, clauses, caseTitle, facts, reasoning, decision } = body;
 
           // Validate request body
           switch (action) {
@@ -53,7 +63,7 @@ export const POST = withApi(
                 throw ApiError.internal('clauseType is required in context'
         );
               }
-              const tags = await generateClauseTags(content, context.clauseType);
+              const tags = await generateClauseTags(content, context.clauseType as ClauseType);
               return NextResponse.json({
                 action: 'generate-tags',
                 tags,

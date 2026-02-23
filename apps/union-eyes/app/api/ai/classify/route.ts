@@ -16,7 +16,7 @@ import {
   batchClassifyClauses,
 } from '@/lib/services/ai/auto-classification-service';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth, BaseAuthContext } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
 
@@ -36,8 +36,7 @@ const aiClassifySchema = z.object({
   reasoning: z.string().optional(),
   decision: z.string().optional(),
 });
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
     // CRITICAL: Rate limit AI calls (expensive OpenAI API)
     const rateLimitResult = await checkRateLimit(
       `ai-completion:${context.userId}`,
@@ -83,7 +82,7 @@ export const POST = async (request: NextRequest) => {
       const {
         action,
         content,
-        context,
+        context: classificationContext,
         clauses,
         caseTitle,
         facts,
@@ -99,7 +98,7 @@ export const POST = async (request: NextRequest) => {
       'Content is required'
     );
           }
-          const classification = await classifyClause(content, context);
+          const classification = await classifyClause(content, classificationContext);
           return NextResponse.json({
             action: 'classify-clause',
             classification,
@@ -112,13 +111,13 @@ export const POST = async (request: NextRequest) => {
       'Content is required'
     );
           }
-          if (!context.clauseType) {
+          if (!classificationContext.clauseType) {
             return standardErrorResponse(
       ErrorCode.MISSING_REQUIRED_FIELD,
       'clauseType is required in context'
     );
           }
-          const tags = await generateClauseTags(content, context.clauseType);
+          const tags = await generateClauseTags(content, classificationContext.clauseType as Parameters<typeof generateClauseTags>[1]);
           return NextResponse.json({
             action: 'generate-tags',
             tags,
@@ -157,7 +156,7 @@ export const POST = async (request: NextRequest) => {
       'Content is required'
     );
           }
-          const enriched = await enrichClauseMetadata(content, context);
+          const enriched = await enrichClauseMetadata(content, classificationContext);
           return NextResponse.json({
             action: 'enrich',
             enrichment: enriched,
@@ -210,6 +209,5 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 

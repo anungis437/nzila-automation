@@ -13,7 +13,7 @@ import {
   generateLegalMemorandum,
 } from '@/lib/services/ai/precedent-matching-service';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth, BaseAuthContext } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
 
@@ -33,8 +33,7 @@ const matchPrecedentsSchema = z.object({
   }),
   options: z.record(z.string(), z.unknown()).default({}),
 });
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
     const user = { id: context.userId, organizationId: context.organizationId };
 
     // CRITICAL: Rate limit AI calls (expensive OpenAI API)
@@ -150,8 +149,7 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
 /**
  * Example request bodies:

@@ -3,7 +3,7 @@
  * Migrated to withApi() framework
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
-import { NextRequest, NextResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { initiateRedemptionSchema } from '@/lib/validation/rewards-schemas';
 import { withApi, ApiError } from '@/lib/api/framework';

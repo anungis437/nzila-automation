@@ -29,9 +29,7 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
         const packetId = params.id;
-        const body = await request.json();
-        // Validate input
-        const { recipients } = distributePacketSchema.parse(body);
+        const { recipients } = body;
         // Distribute packet
         const distributions = await boardPacketGenerator.distributePacket(
           packetId,

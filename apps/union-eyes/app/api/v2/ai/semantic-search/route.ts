@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
+import { semanticClauseSearch, semanticPrecedentSearch, unifiedSemanticSearch, findSimilarClauses } from '@/lib/services/ai/vector-search-service';
 
 import { withApi, ApiError, z, RATE_LIMITS } from '@/lib/api/framework';
 
@@ -27,7 +28,7 @@ const semanticSearchSchema = z.object({
 
 export const GET = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     openapi: {
       tags: ['Ai'],
       summary: 'GET semantic-search',
@@ -55,7 +56,7 @@ export const GET = withApi(
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: semanticSearchSchema,
     rateLimit: RATE_LIMITS.AI_COMPLETION,
     openapi: {
@@ -67,10 +68,11 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
           // Validate request body
+          const { searchType, query: searchQuery, limit, threshold, filters, hybridSearch, clauseId } = body;
           let results;
           switch (searchType) {
             case 'clauses':
-              results = await semanticClauseSearch(query, {
+              results = await semanticClauseSearch(searchQuery!, {
                 limit,
                 threshold,
                 filters,
@@ -78,25 +80,25 @@ export const POST = withApi(
               });
               return NextResponse.json({
                 searchType: 'clauses',
-                query,
+                query: searchQuery,
                 results,
                 count: results.length,
               });
             case 'precedents':
-              results = await semanticPrecedentSearch(query, {
+              results = await semanticPrecedentSearch(searchQuery!, {
                 limit,
                 threshold,
-                issueType: filters.issueType,
-                jurisdiction: filters.jurisdiction,
+                issueType: filters.issueType as string | undefined,
+                jurisdiction: filters.jurisdiction as string | undefined,
               });
               return NextResponse.json({
                 searchType: 'precedents',
-                query,
+                query: searchQuery,
                 results,
                 count: results.length,
               });
             case 'unified':
-              results = await unifiedSemanticSearch(query, {
+              results = await unifiedSemanticSearch(searchQuery!, {
                 includeClauses: true,
                 includePrecedents: true,
                 limit,
@@ -104,7 +106,7 @@ export const POST = withApi(
               });
               return NextResponse.json({
                 searchType: 'unified',
-                query,
+                query: searchQuery,
                 clauses: results.clauses,
                 precedents: results.precedents,
                 combined: results.combined,
@@ -115,10 +117,10 @@ export const POST = withApi(
                 },
               });
             case 'similar':
-              results = await findSimilarClauses(clauseId, {
+              results = await findSimilarClauses(clauseId!, {
                 limit,
                 threshold,
-                sameTypeOnly: filters.sameTypeOnly || false,
+                sameTypeOnly: (filters.sameTypeOnly as boolean) || false,
               });
               return NextResponse.json({
                 searchType: 'similar',

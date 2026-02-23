@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { getCurrentUser } from '@/lib/api-auth-guard';
 import { dataIngestion, IngestedDocument } from '@/lib/ai/data-ingestion';
-import { entityExtraction } from '@/lib/ai/entity-extraction';
+import { entityExtraction, ExtractionResult } from '@/lib/ai/entity-extraction';
 import { ragPipeline } from '@/lib/ai/rag-pipeline';
 
 // Validation schema
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Extract entities if requested
-    let extraction = null;
+    let extraction: ExtractionResult | null = null;
     if (metadata.extractEntities) {
       extraction = entityExtraction.extract(document.content, {
         jurisdiction: metadata.jurisdiction,
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to RAG if requested
-    let ragResult = null;
+    let ragResult: { status: string; documentId: string; chunkCount: number } | null = null;
     if (metadata.addToRAG) {
       await ragPipeline.addDocuments([{
         id: document.id,
@@ -137,7 +137,6 @@ export async function POST(request: NextRequest) {
           createdAt: new Date(),
           updatedAt: new Date(),
           tags: metadata.tags,
-          uploadedBy: userId,
         },
       }]);
 

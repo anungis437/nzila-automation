@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
+import { matchClaimToPrecedents, analyzeClaimWithPrecedents, generateLegalMemorandum } from '@/lib/services/ai/precedent-matching-service';
 
 import { withApi, ApiError, z, RATE_LIMITS } from '@/lib/api/framework';
 
@@ -21,7 +22,7 @@ const matchPrecedentsSchema = z.object({
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     body: matchPrecedentsSchema,
     rateLimit: RATE_LIMITS.AI_COMPLETION,
     openapi: {
@@ -33,6 +34,7 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
           // Validate request body
+          const { action, claim, options } = body;
           switch (action) {
             case 'match':
               // Simple precedent matching without full analysis

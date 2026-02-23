@@ -35,7 +35,7 @@ export const PATCH = withApi(
     },
   },
   async ({ request, userId, organizationId, user, body, query }) => {
-
-        rawBody = await request.json();
+    // TODO: migrate handler body
+    throw ApiError.internal('Route not yet migrated');
   },
 );

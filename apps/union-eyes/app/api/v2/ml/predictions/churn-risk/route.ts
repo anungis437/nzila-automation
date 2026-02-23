@@ -67,7 +67,7 @@ export const GET = withApi(
           ORDER BY (features_used->>'riskScore')::int DESC
           LIMIT ${limit}
         `);
-        const predictions: ChurnPrediction[] = ((result as unknown as Record<string, unknown>[]) || []).map((row: Record<string, unknown>) => {
+        const predictions = ((result as unknown as Record<string, unknown>[]) || []).map((row: Record<string, unknown>) => {
           const daysInactive = parseFloat(String(row.days_since_last_activity || '0'));
           const lastActivity = new Date();
           lastActivity.setDate(lastActivity.getDate() - daysInactive);
@@ -128,6 +128,7 @@ export const POST = withApi(
   async ({ request, userId, organizationId, user, body, query }) => {
 
           // Validate request body
+        const { memberId, organizationId: organizationIdFromBody } = body;
         const organizationScopeId = organizationIdFromBody ?? organizationId ?? userId;
         if (!memberId) {
           throw ApiError.internal('memberId is required'
@@ -298,7 +299,7 @@ export const POST = withApi(
         return NextResponse.json({
           prediction: {
             memberId,
-            memberName: String(features?. full_name || ''),
+            memberName: String(features?.full_name || ''),
             riskScore,
             riskLevel,
             contributingFactors: factors.slice(0, 3),

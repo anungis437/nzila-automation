@@ -22,7 +22,7 @@ import {
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(10, async (request, context) => {
+  return withRoleAuth('member', async (request, context) => {
     const user = { id: context.userId, organizationId: context.organizationId };
 
   try {
@@ -66,7 +66,7 @@ return standardErrorResponse(
 };
 
 export const PATCH = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(20, async (request, context) => {
+  return withRoleAuth('member', async (request, context) => {
     const user = { id: context.userId, organizationId: context.organizationId };
 
   try {
@@ -95,7 +95,7 @@ return standardErrorResponse(
 };
 
 export const DELETE = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(20, async (request, context) => {
+  return withRoleAuth('member', async (request, context) => {
     const user = { id: context.userId, organizationId: context.organizationId };
 
   try {

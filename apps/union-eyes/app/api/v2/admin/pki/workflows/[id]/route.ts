@@ -3,6 +3,7 @@
  * Migrated to withApi() framework
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
+import { getWorkflow, getWorkflowStatus, advanceWorkflow, cancelWorkflow } from "@/services/pki/workflow-engine";
 
 import { withApi, ApiError, z } from '@/lib/api/framework';
 
@@ -69,10 +70,10 @@ export const DELETE = withApi(
     },
   },
   async ({ request, params, userId, organizationId, user, body, query }) => {
-
+          const { reason } = body;
           const workflowId = params.id;
           // Validate request body
-        if (!reason) {
+        if (!reason || !userId) {
             throw ApiError.internal('Cancellation reason required'
         );
           }

@@ -18,8 +18,9 @@ return undefined;
   if (data.metadata) {
 if (typeof data.metadata === 'object' && data.metadata !== null) {
       // Direct object access - most common case
-      if (data.metadata.clerkUserId) {
-return data.metadata.clerkUserId;
+      const metadataObj = data.metadata as Record<string, unknown>;
+      if (metadataObj.clerkUserId) {
+return metadataObj.clerkUserId as string;
       }
       
       // Log all available metadata keys to help debugging
@@ -40,8 +41,9 @@ return parsedMetadata.clerkUserId;
   // Check membership_metadata (common in payment events)
   if (data.membership_metadata) {
 if (typeof data.membership_metadata === 'object' && data.membership_metadata !== null) {
-      if (data.membership_metadata.clerkUserId) {
-return data.membership_metadata.clerkUserId;
+      const membershipMeta = data.membership_metadata as Record<string, unknown>;
+      if (membershipMeta.clerkUserId) {
+return membershipMeta.clerkUserId as string;
       }
       
       // Log all available membership_metadata keys
@@ -55,9 +57,10 @@ return data.membership_metadata.clerkUserId;
 
   // Log all top-level fields in the webhook data to help with debugging
 // Check membership metadata if available
-  if (data.membership && data.membership.metadata) {
-if (data.membership.metadata.clerkUserId) {
-return data.membership.metadata.clerkUserId;
+  if (data.membership && (data.membership as Record<string, unknown>).metadata) {
+    const membershipMeta = (data.membership as Record<string, unknown>).metadata as Record<string, unknown>;
+if (membershipMeta.clerkUserId) {
+return membershipMeta.clerkUserId as string;
     }
 }
 return undefined;

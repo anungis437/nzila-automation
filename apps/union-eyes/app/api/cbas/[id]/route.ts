@@ -24,8 +24,8 @@ import {
   standardErrorResponse,
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, context) => {
+  const { params } = context as { params: { id: string } };
   try {
       const { id } = params;
       const { searchParams } = new URL(request.url);
@@ -47,7 +47,7 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
     );
       }
 
-      const response = { cba };
+      const response: Record<string, unknown> = { cba };
 
       // Optionally fetch clauses
       if (includeClauses) {
@@ -72,17 +72,15 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
       error
     );
     }
-    })(request, { params });
-};
+});
 
 
 const cbasSchema = z.object({
   status: z.unknown().optional(),
 });
 
-export const PATCH = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(20, async (request, context) => {
-    const { userId, organizationId } = context;
+export const PATCH = withRoleAuth('steward', async (request, context) => {
+    const { userId, organizationId, params } = context as { userId: string; organizationId: string; params: { id: string } };
 
   try {
       const { id } = params;
@@ -145,11 +143,10 @@ export const PATCH = async (request: NextRequest, { params }: { params: { id: st
       error
     );
     }
-    })(request, { params });
-};
+});
 
-export const DELETE = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(20, async (request, context) => {
+export const DELETE = withRoleAuth('steward', async (request, context) => {
+  const { params } = context as { params: { id: string } };
   try {
       const { id } = params;
       const { searchParams } = new URL(request.url);
@@ -195,5 +192,4 @@ export const DELETE = async (request: NextRequest, { params }: { params: { id: s
       error
     );
     }
-    })(request, { params });
-};
+});

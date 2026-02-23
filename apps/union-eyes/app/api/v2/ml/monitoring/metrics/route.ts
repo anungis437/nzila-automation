@@ -12,7 +12,7 @@ import { withApi, ApiError, RATE_LIMITS } from '@/lib/api/framework';
 
 export const GET = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     openapi: {
       tags: ['Ml'],
       summary: 'GET metrics',
@@ -92,12 +92,12 @@ export const GET = withApi(
         // Transform database results into response format
         const models = ((modelMetrics as Array<Record<string, unknown>>) || []).map((row: Record<string, unknown>) => ({
           modelName: row.model_name,
-          accuracy: parseFloat(row.accuracy || 0),
-          precision: parseFloat(row.precision || 0),
-          recall: parseFloat(row.recall || 0),
-          f1Score: parseFloat(row.f1_score || 0),
-          predictions24h: parseInt(row.predictions_24h || 0),
-          avgConfidence: parseFloat(row.avg_confidence || 0),
+          accuracy: parseFloat(String(row.accuracy ?? 0)),
+          precision: parseFloat(String(row.precision ?? 0)),
+          recall: parseFloat(String(row.recall ?? 0)),
+          f1Score: parseFloat(String(row.f1_score ?? 0)),
+          predictions24h: parseInt(String(row.predictions_24h ?? 0)),
+          avgConfidence: parseFloat(String(row.avg_confidence ?? 0)),
           lastUpdated: row.last_evaluated_at || new Date().toISOString(),
           status: row.status || 'healthy',
           trend: row.trend || 'stable'

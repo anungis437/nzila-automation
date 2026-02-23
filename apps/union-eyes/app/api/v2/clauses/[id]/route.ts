@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { withApi, ApiError } from '@/lib/api/framework';
+import { getClauseById, getClauseHierarchy, updateClause, deleteClause } from '@/lib/services/clause-service';
 
 export const GET = withApi(
   {

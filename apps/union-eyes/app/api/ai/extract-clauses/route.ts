@@ -48,7 +48,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
     }
 
     // CRITICAL: Check subscription entitlement for AI extract-clauses
-    const entitlement = await checkEntitlement(context.organizationId!, 'ai_extract_clauses');
+    const entitlement = await checkEntitlement(context.organizationId as string, 'ai_extract_clauses');
     if (!entitlement.allowed) {
       return NextResponse.json(
         { 

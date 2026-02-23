@@ -1,5 +1,3 @@
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
-
 // =====================================================================================
 // PKI Sign Document API
 // =====================================================================================
@@ -11,7 +9,7 @@ import { signDocument } from '@/services/pki/signature-service';
 import { recordSignature } from '@/services/pki/workflow-engine';
 import type { SignDocumentParams } from '@/services/pki/signature-service';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth, type BaseAuthContext } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
@@ -20,7 +18,7 @@ import {
 } from '@/lib/api/standardized-responses';
 
 const adminPkiSignaturesSignSchema = z.object({
-  documentType: z.unknown().optional(),
+  documentType: z.string().min(1, 'documentType is required'),
   documentUrl: z.string().url('Invalid URL'),
   userName: z.string().min(1, 'userName is required'),
   userTitle: z.string().min(1, 'userTitle is required'),
@@ -28,8 +26,7 @@ const adminPkiSignaturesSignSchema = z.object({
   workflowId: z.string().uuid('Invalid workflowId'),
 });
 
-export const POST = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(90, async (request, context) => {
+export const POST = withRoleAuth('admin', async (request, context: BaseAuthContext) => {
     const { userId, organizationId } = context;
 
   try {
@@ -40,7 +37,7 @@ export const POST = async (request: NextRequest, { params }: { params: { id: str
     );
       }
 
-      const documentId = params.id;
+      const { id: documentId } = (context.params || {}) as { id: string };
       const body = await request.json();
     // Validate request body
     const validation = adminPkiSignaturesSignSchema.safeParse(body);
@@ -106,5 +103,4 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request, { params });
-};
+});

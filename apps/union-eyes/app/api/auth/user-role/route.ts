@@ -22,7 +22,7 @@ export const GET = withApiAuth(async (request: NextRequest, context) => {
     const targetUserId = queryUserId || authedUserId;
 
     if (!targetUserId) {
-      return standardErrorResponse(ErrorCode.UNAUTHORIZED, 'Not authenticated');
+      return standardErrorResponse(ErrorCode.AUTH_REQUIRED, 'Not authenticated');
     }
 
     // Fetch role from database/Clerk

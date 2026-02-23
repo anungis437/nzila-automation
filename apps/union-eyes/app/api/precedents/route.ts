@@ -21,8 +21,7 @@ import {
   standardErrorResponse,
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, context) => {
   try {
       const { searchParams } = new URL(request.url);
       
@@ -52,7 +51,7 @@ export const GET = async (request: NextRequest) => {
       }
 
       // Build filters
-      const filters = {};
+      const filters: Record<string, any> = {};
       
       const tribunal = searchParams.get("tribunal");
       if (tribunal) {
@@ -131,8 +130,7 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 
 
 const precedentsSchema = z.object({
@@ -149,8 +147,7 @@ const precedentsSchema = z.object({
   fullText: z.unknown().optional(),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context) => {
   try {
       const body = await request.json();
     // Validate request body
@@ -247,9 +244,7 @@ export const POST = async (request: NextRequest) => {
       const precedent = await createPrecedent(body);
 
       return standardSuccessResponse(
-      {  precedent  },
-      undefined,
-      201
+      {  precedent  }
     );
     } catch (error) {
 // Handle unique constraint violations
@@ -267,6 +262,5 @@ export const POST = async (request: NextRequest) => {
       error
     );
     }
-    })(request);
-};
+});
 

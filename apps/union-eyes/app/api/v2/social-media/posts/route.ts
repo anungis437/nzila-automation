@@ -23,7 +23,7 @@ import { GET as v1GET, POST as v1POST, DELETE as v1DELETE } from '@/app/api/soci
 
 export const GET = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     openapi: {
       tags: ['Social-media'],
       summary: 'GET posts',
@@ -38,7 +38,7 @@ export const GET = withApi(
 
 export const POST = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     rateLimit: RATE_LIMITS.SOCIAL_MEDIA_API,
     openapi: {
       tags: ['Social-media'],
@@ -54,7 +54,7 @@ export const POST = withApi(
 
 export const DELETE = withApi(
   {
-    auth: { required: true, minRole: 'delegate' as const },
+    auth: { required: true, minRole: 'member' as const },
     rateLimit: RATE_LIMITS.SOCIAL_MEDIA_API,
     openapi: {
       tags: ['Social-media'],

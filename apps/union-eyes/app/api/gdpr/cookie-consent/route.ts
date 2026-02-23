@@ -17,11 +17,11 @@ import {
 const gdprCookieConsentSchema = z.object({
   consentId: z.string().uuid('Invalid consentId'),
   organizationId: z.string().uuid('Invalid organizationId'),
-  essential: z.unknown().optional(),
-  functional: z.unknown().optional(),
-  analytics: z.unknown().optional(),
-  marketing: z.unknown().optional(),
-  userAgent: z.unknown().optional(),
+  essential: z.boolean().optional(),
+  functional: z.boolean().optional(),
+  analytics: z.boolean().optional(),
+  marketing: z.boolean().optional(),
+  userAgent: z.string().optional(),
 });
 
 export const POST = withApiAuth(async (request: NextRequest) => {
@@ -53,8 +53,8 @@ export const POST = withApiAuth(async (request: NextRequest) => {
                       "unknown";
 
     const consent = await CookieConsentManager.saveCookieConsent({
-      userId: user?.id || null,
-      organizationId,
+      userId: user?.id ?? undefined,
+      tenantId: organizationId,
       consentId,
       essential: essential ?? true,
       functional: functional ?? false,

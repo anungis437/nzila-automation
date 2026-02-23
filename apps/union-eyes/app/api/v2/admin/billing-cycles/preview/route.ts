@@ -25,8 +25,9 @@ export const POST = withApi(
     successStatus: 201,
   },
   async ({ request, userId, organizationId, user, body, query }) => {
+        const { periodStart, periodEnd, frequency } = body;
 
-        if (!user) {
+        if (!user || !organizationId) {
           throw ApiError.unauthorized('Authentication required'
           );
         }

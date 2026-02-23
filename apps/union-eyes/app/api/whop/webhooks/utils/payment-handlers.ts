@@ -30,7 +30,7 @@ import { isFrictionlessPayment, handleFrictionlessPayment, createOrUpdatePending
  * @param data The webhook event data
  */
 export async function handlePaymentSuccess(data: Record<string, unknown>) {
-  const eventId = data.id || Date.now().toString();
+  const eventId = (data.id as string) || Date.now().toString();
 try {
     // Debug the frictionless detection
 if (data.membership_metadata) {
@@ -54,20 +54,20 @@ return;
     }
 // Calculate billing cycle details
     let billingCycleStart = new Date();
-    let billingCycleEnd = null;
+    let billingCycleEnd: Date | null = null;
     
     // Check if the webhook provides the cycle start/end dates
     if (data?.renewal_period_start) {
       // Convert timestamp to Date
-      billingCycleStart = convertTimestampToDate(data.renewal_period_start);
+      billingCycleStart = convertTimestampToDate(data.renewal_period_start as number);
 }
     
     if (data?.renewal_period_end) {
       // Convert timestamp to Date
-      billingCycleEnd = convertTimestampToDate(data.renewal_period_end);
+      billingCycleEnd = convertTimestampToDate(data.renewal_period_end as number);
 } else {
       // Need to calculate it ourselves based on the plan type
-      const planDuration = determinePlanType(data?.plan_id);
+      const planDuration = determinePlanType(data?.plan_id as string);
       
       if (planDuration === "yearly") {
         billingCycleEnd = new Date(billingCycleStart);
@@ -80,15 +80,15 @@ return;
 }
 
     // Determine plan duration based on the plan ID
-    const planDuration = determinePlanType(data?.plan_id);
+    const planDuration = determinePlanType(data?.plan_id as string);
 // Calculate next credit renewal date (always 4 weeks from now)
     const nextCreditRenewal = new Date();
     nextCreditRenewal.setDate(nextCreditRenewal.getDate() + CREDIT_RENEWAL_DAYS);
 // Prepare update data - we need to update all the important fields
     const updateData = {
       // Store Whop identifiers
-      whopUserId: data?.user_id || null,
-      whopMembershipId: data?.membership_id || data?.id || null,
+      whopUserId: (data?.user_id as string) || null,
+      whopMembershipId: (data?.membership_id as string) || (data?.id as string) || null,
       
       // Set payment provider
       paymentProvider: "whop" as const,
@@ -149,18 +149,18 @@ await new Promise(resolve => setTimeout(resolve, backoffMs));
 function prepareProfileUpdateData(data: Record<string, unknown>) {
   // Calculate billing cycle details
   let billingCycleStart = new Date();
-  let billingCycleEnd = null;
+  let billingCycleEnd: Date | null = null;
   
   // Check if the webhook provides the cycle start/end dates
   if (data?.renewal_period_start) {
-    billingCycleStart = convertTimestampToDate(data.renewal_period_start);
+    billingCycleStart = convertTimestampToDate(data.renewal_period_start as number);
   }
   
   if (data?.renewal_period_end) {
-    billingCycleEnd = convertTimestampToDate(data.renewal_period_end);
+    billingCycleEnd = convertTimestampToDate(data.renewal_period_end as number);
   } else {
     // Calculate based on plan type
-    const planDuration = determinePlanType(data?.plan_id);
+    const planDuration = determinePlanType(data?.plan_id as string);
     billingCycleEnd = new Date(billingCycleStart);
     
     if (planDuration === "yearly") {
@@ -175,12 +175,12 @@ function prepareProfileUpdateData(data: Record<string, unknown>) {
   nextCreditRenewal.setDate(nextCreditRenewal.getDate() + CREDIT_RENEWAL_DAYS);
   
   // Determine plan duration based on the plan ID
-  const planDuration = determinePlanType(data?.plan_id);
+  const planDuration = determinePlanType(data?.plan_id as string);
   
   return {
     // Store Whop identifiers
-    whopUserId: data?.user_id || null,
-    whopMembershipId: data?.membership_id || data?.id || null,
+    whopUserId: (data?.user_id as string) || null,
+    whopMembershipId: (data?.membership_id as string) || (data?.id as string) || null,
     
     // Set payment provider
     paymentProvider: "whop" as const,
@@ -231,7 +231,7 @@ try {
   const whopUserId = data.user_id;
   if (whopUserId) {
 try {
-      const profile = await getProfileByWhopUserId(whopUserId);
+      const profile = await getProfileByWhopUserId(whopUserId as string);
       if (profile) {
 await updateProfile(profile.userId, {
           status: "payment_failed"

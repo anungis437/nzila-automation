@@ -43,9 +43,9 @@ export const POST = withRoleAuth('officer', async (request, context) => {
       );
     }
 
-    const { organizationId: reqOrgId } = await request.json();
+    const body = await request.json();
     // Validate request body
-    const validation = onboardingSuggest-clausesSchema.safeParse(body);
+    const validation = onboardingSuggestClausesSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
@@ -54,14 +54,7 @@ export const POST = withRoleAuth('officer', async (request, context) => {
       );
     }
     
-    const { organizationId } = validation.data;
-
-    if (!reqOrgId) {
-      return standardErrorResponse(
-      ErrorCode.MISSING_REQUIRED_FIELD,
-      'organizationId is required'
-    );
-    }
+    const { organizationId: reqOrgId } = validation.data;
 
     const suggestions = await suggestRelevantClauses(reqOrgId);
 

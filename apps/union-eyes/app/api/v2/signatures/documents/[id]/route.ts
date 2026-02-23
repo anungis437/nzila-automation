@@ -48,11 +48,10 @@ export const PATCH = withApi(
   },
   async ({ request, params, userId, organizationId, user, body, query }) => {
 
-        if (!user || !user.id) {
+        if (!userId) {
           throw ApiError.unauthorized('Unauthorized'
         );
         }
-        const userId = user.id;
         const documentId = params.id;
         // SECURITY FIX: Verify user has access to this document (prevent IDOR)
         const hasAccess = await SignatureService.verifyDocumentAccess(documentId, userId);
@@ -60,7 +59,6 @@ export const PATCH = withApi(
           throw ApiError.forbidden('Access denied'
         );
         }
-        const body = await request.json();
         const { action, reason } = body;
         if (action === "void") {
           if (!reason) {

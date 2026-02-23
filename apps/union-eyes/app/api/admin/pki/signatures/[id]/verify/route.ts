@@ -1,5 +1,4 @@
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
-import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-responses';
 
 // =====================================================================================
 // PKI Verify Signature API
@@ -15,12 +14,12 @@ import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-respons
 
 
 const adminPkiSignaturesVerifySchema = z.object({
-  verifyType: z.unknown().optional(),
-  documentContent: z.unknown().optional(),
+  verifyType: z.string().optional(),
+  documentContent: z.string().optional(),
 });
 
-export const POST = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(90, async (request, context) => {
+export const POST = withRoleAuth('admin', async (request, context) => {
+  const { params } = context as { params: { id: string } };
   try {
       const signatureOrDocumentId = params.id;
       const body = await request.json();
@@ -67,5 +66,4 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request, { params });
-};
+});

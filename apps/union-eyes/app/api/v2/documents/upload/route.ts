@@ -8,6 +8,28 @@ import { put } from "@vercel/blob";
 
 import { withApi, ApiError, z, RATE_LIMITS } from '@/lib/api/framework';
 
+const ALLOWED_MIME_TYPES_LIST = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'text/csv',
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/x-rar-compressed',
+] as const;
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
 const documentUploadSchema = z.object({
   file: z.object({
     name: z.string().min(1, "File name is required"),

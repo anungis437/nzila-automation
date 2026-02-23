@@ -21,7 +21,7 @@ export const GET = withApi(
             const monthsAhead = parseInt(searchParams.get('months') || '12');
             if (monthsAhead < 1 || monthsAhead > 24) {
               logApiAuditEvent({
-                timestamp: new Date().toISOString(), userId,
+                timestamp: new Date().toISOString(), userId: userId ?? undefined,
                 endpoint: '/api/admin/clc/analytics/forecast',
                 method: 'GET',
                 eventType: 'validation_failed',
@@ -33,7 +33,7 @@ export const GET = withApi(
             }
             const forecast = await forecastRemittances(monthsAhead);
             logApiAuditEvent({
-              timestamp: new Date().toISOString(), userId,
+              timestamp: new Date().toISOString(), userId: userId ?? undefined,
               endpoint: '/api/admin/clc/analytics/forecast',
               method: 'GET',
               eventType: 'success',

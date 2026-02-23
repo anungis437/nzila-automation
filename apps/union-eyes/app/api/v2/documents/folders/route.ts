@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
  * Migrated to withApi() framework
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
+import { getFolderTree, listFolders } from "@/lib/services/document-service";
 import { withApi, ApiError, z } from '@/lib/api/framework';
 
 const createFolderSchema = z.object({
@@ -28,7 +29,7 @@ export const GET = withApi(
             const organizationIdParam = requestOrgId;
             if (!organizationIdParam) {
               logApiAuditEvent({
-                timestamp: new Date().toISOString(), userId,
+                timestamp: new Date().toISOString(), userId: userId ?? undefined,
                 endpoint: '/api/documents/folders',
                 method: 'GET',
                 eventType: 'validation_failed',
@@ -42,7 +43,7 @@ export const GET = withApi(
             if (tree) {
               const folderTree = await getFolderTree(organizationIdParam);
               logApiAuditEvent({
-                timestamp: new Date().toISOString(), userId,
+                timestamp: new Date().toISOString(), userId: userId ?? undefined,
                 endpoint: '/api/documents/folders',
                 method: 'GET',
                 eventType: 'success',
@@ -57,7 +58,7 @@ export const GET = withApi(
               parentFolderId === "root" ? null : parentFolderId || undefined
             );
             logApiAuditEvent({
-              timestamp: new Date().toISOString(), userId,
+              timestamp: new Date().toISOString(), userId: userId ?? undefined,
               endpoint: '/api/documents/folders',
               method: 'GET',
               eventType: 'success',
@@ -80,6 +81,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        rawBody = await request.json();
+        // body is already parsed and validated by withApi
+        return body;
   },
 );

@@ -2,11 +2,11 @@
  * POST /api/admin/jobs/retry
  * Migrated to withApi() framework
  */
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
+import { retryJob } from '@/lib/job-queue';
 import { withApi, ApiError, z } from '@/lib/api/framework';
 
 const adminJobsRetrySchema = z.object({
-  queue: z.unknown().optional(),
+  queue: z.string().optional(),
   jobId: z.string().uuid('Invalid jobId'),
 });
 
@@ -22,6 +22,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
+          const { queue, jobId } = body;
           // Validate request body
         if (!queue || !jobId) {
             throw ApiError.internal('Queue and jobId are required'

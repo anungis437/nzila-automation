@@ -24,6 +24,7 @@ export const POST = withApi(
     },
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
+        const { transactionId, returnUrl, cancelUrl, processorType } = body;
 
         logger.info('Creating checkout session', {
           transactionId,

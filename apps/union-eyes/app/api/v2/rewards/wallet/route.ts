@@ -2,9 +2,7 @@
  * GET /api/rewards/wallet
  * Migrated to withApi() framework
  */
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
-import { NextRequest, NextResponse } from 'next';
-import { db } from '@/db';
+import { NextResponse } from 'next/server';
 import { getBalance, listLedger } from '@/lib/services/rewards/wallet-service';
 import { withApi, ApiError } from '@/lib/api/framework';
 
@@ -18,11 +16,11 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-          // 1. Authenticate
-          const { userId, organizationId } = context;
           if (!organizationId) {
-            throw ApiError.internal('Organization context required'
-        );
+            throw ApiError.internal('Organization context required');
+          }
+          if (!userId) {
+            throw ApiError.unauthorized('Authentication required');
           }
           // 2. Parse query parameters
           const { searchParams } = new URL(request.url);
@@ -32,22 +30,19 @@ export const GET = withApi(
           );
           const offset = parseInt(searchParams.get('offset') || '0', 10);
           // 3. Get wallet balance
-          const balance = await getBalance(db, userId, organizationId);
+          const balance = await getBalance(organizationId, userId);
           // 4. Get recent ledger entries
-          const ledger = await listLedger(db, userId, organizationId, {
-            limit,
-            offset,
-          });
+          const ledger = await listLedger(organizationId, userId, limit, offset);
           // 5. Return response
           return NextResponse.json(
             {
               balance,
               ledger: {
-                entries: ledger,
+                entries: ledger.entries,
                 pagination: {
                   limit,
                   offset,
-                  hasMore: ledger.length === limit,
+                  hasMore: ledger.entries.length === limit,
                 },
               },
             },

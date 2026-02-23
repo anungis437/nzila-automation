@@ -18,9 +18,9 @@ import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-respons
 const emergencyPipedaSchema = z.object({
   memberId: z.string().uuid('Invalid memberId'),
   breachDate: z.string().datetime().optional(),
-  affectedDataTypes: z.unknown().optional(),
+  affectedDataTypes: z.array(z.string()).optional(),
   estimatedAffectedCount: z.number().int().positive(),
-  province: z.unknown().optional(),
+  province: z.string().optional(),
 });
 
 export const POST = withApiAuth(async (request: NextRequest) => {
@@ -67,7 +67,7 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     const affectingMinimum = estimatedAffectedCount >= minimumThreshold;
 
     // Determine reporting channels
-    const reportingChannels = [];
+    const reportingChannels: string[] = [];
     if (affectingMinimum) {
       reportingChannels.push('Privacy Commissioner');
       if (province === 'QC') {
@@ -137,7 +137,7 @@ export const GET = withApiAuth(async (request: NextRequest) => {
       affectingMinimumThreshold: true,
       reportDeadline: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
       reportingChannels: [
-        rules.authority,
+        rules.contactAuthority,
         'Affected Members',
       ],
       message: `Breach notification requirements: Follow ${province} protocols`,

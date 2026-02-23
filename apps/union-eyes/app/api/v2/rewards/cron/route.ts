@@ -45,7 +45,7 @@ export const POST = withApi(
         const results = {
           timestamp: new Date().toISOString(),
           task,
-          executed: [],
+          executed: [] as Record<string, unknown>[],
         };
         // 3. Get all organizations
         const organizations = await db.query.organizations.findMany({

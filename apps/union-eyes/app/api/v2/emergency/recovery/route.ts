@@ -68,6 +68,7 @@ export const POST = withApi(
     successStatus: 201,
   },
   async ({ request, userId, organizationId, user, body, query }) => {
+        const { emergencyId, memberId } = body;
 
         // Validate request body
         if (!emergencyId || !memberId) {
@@ -83,7 +84,7 @@ export const POST = withApi(
           );
         }
         // Purge location data from emergency tracking
-        const purgeResult = await purgeExpiredLocations(memberId, 48);
+        const purgeResult = await purgeExpiredLocations();
         const recoverySteps = [
           'End emergency mode',
           'Disable break-glass access',

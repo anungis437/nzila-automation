@@ -4,6 +4,11 @@
  */
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { withApi, ApiError, z } from '@/lib/api/framework';
+import {
+  listDocuments,
+  searchDocuments,
+  getDocumentStatistics,
+} from '@/lib/services/document-service';
 
 const createDocumentSchema = z.object({
   organizationId: z.string().uuid('Invalid organization ID'),
@@ -38,12 +43,11 @@ export const GET = withApi(
         if (!organizationIdParam) {
           logApiAuditEvent({
             timestamp: new Date().toISOString(), 
-            userId,
+            userId: userId ?? undefined,
             endpoint: '/api/documents',
             method: 'GET',
             eventType: 'validation_failed',
             severity: 'low',
-            dataType: 'DOCUMENTS',
             details: { reason: 'organizationId is required' },
           });
           throw ApiError.internal('organizationId is required'
@@ -53,12 +57,11 @@ export const GET = withApi(
         if (organizationIdParam !== organizationId) {
           logApiAuditEvent({
             timestamp: new Date().toISOString(),
-            userId,
+            userId: userId ?? undefined,
             endpoint: '/api/documents',
             method: 'GET',
-            eventType: 'authorization_failed',
+            eventType: 'auth_failed',
             severity: 'high',
-            dataType: 'DOCUMENTS',
             details: { reason: 'Organization ID mismatch' },
           });
           throw ApiError.forbidden('You do not have access to this organization\'s documents'
@@ -72,12 +75,11 @@ export const GET = withApi(
           const stats = await getDocumentStatistics(organizationIdParam);
           logApiAuditEvent({
             timestamp: new Date().toISOString(), 
-            userId,
+            userId: userId ?? undefined,
             endpoint: '/api/documents',
             method: 'GET',
             eventType: 'success',
             severity: 'low',
-            dataType: 'DOCUMENTS',
             details: { organizationId: organizationIdParam, mode: 'statistics' },
           });
           return stats;
@@ -85,7 +87,7 @@ export const GET = withApi(
         // Advanced search mode
         if (search) {
           const searchQuery = searchParams.get("searchQuery") || "";
-          const filters = {};
+          const filters: Record<string, unknown> = {};
           const category = searchParams.get("category");
           if (category) filters.category = category;
           const fileType = searchParams.get("fileType");
@@ -99,18 +101,17 @@ export const GET = withApi(
           const results = await searchDocuments(organizationIdParam, searchQuery, filters, { page, limit });
           logApiAuditEvent({
             timestamp: new Date().toISOString(), 
-            userId,
+            userId: userId ?? undefined,
             endpoint: '/api/documents',
             method: 'GET',
             eventType: 'success',
             severity: 'low',
-            dataType: 'DOCUMENTS',
             details: { organizationId: organizationIdParam, mode: 'search', searchQuery, resultCount: results.documents?.length || 0 },
           });
           return results;
         }
         // Build filters
-        const filters = { organizationId: organizationIdParam };
+        const filters: Record<string, unknown> = { organizationId: organizationIdParam };
         const folderId = searchParams.get("folderId");
         if (folderId) filters.folderId = folderId;
         const category = searchParams.get("category");
@@ -131,12 +132,11 @@ export const GET = withApi(
         const result = await listDocuments(filters, { page, limit, sortBy, sortOrder });
         logApiAuditEvent({
           timestamp: new Date().toISOString(), 
-          userId,
+          userId: userId ?? undefined,
           endpoint: '/api/documents',
           method: 'GET',
           eventType: 'success',
           severity: 'low',
-          dataType: 'DOCUMENTS',
           details: { organizationId: organizationIdParam, filters, resultCount: result.documents?.length || 0 },
         });
         return result;
@@ -155,6 +155,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        rawBody = await request.json();
+        const rawBody = await request.json();
+        return rawBody;
   },
 );

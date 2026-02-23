@@ -48,7 +48,7 @@ export async function POST(
         sent: distributions.length,
       },
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
     logger.error('Error distributing board packet:', error);
     
     if (error instanceof z.ZodError) {
@@ -59,7 +59,7 @@ export async function POST(
     }
     
     return NextResponse.json(
-      { error: 'Failed to distribute board packet', details: error.message },
+      { error: 'Failed to distribute board packet', details: (error as Error).message },
       { status: 500 }
     );
   }

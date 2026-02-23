@@ -41,14 +41,14 @@ export const POST = withApi(
           // batch = false,
           // cbas = [],
           // } = body;
-          if (organizationId && organizationId !== context.organizationId) {
+          if (body.organizationId && body.organizationId !== organizationId) {
             throw ApiError.forbidden('Forbidden'
             );
           }
           // Batch extraction
-          if (batch && cbas.length > 0) {
-            const results = await batchExtractClauses(cbas, {
-              autoSave,
+          if (body.batch && body.cbas && body.cbas.length > 0) {
+            const results = await batchExtractClauses(body.cbas, {
+              autoSave: body.autoSave,
               concurrency: 3,
             });
             const resultsArray = Array.from(results.entries()).map(([cbaId, result]) => ({
@@ -57,17 +57,17 @@ export const POST = withApi(
             }));
             return { batch: true,
               results: resultsArray,
-              totalCBAs: cbas.length,
+              totalCBAs: body.cbas!.length,
               successfulExtractions: resultsArray.filter(r => r.success).length, };
           }
           // Single extraction
-          if (!pdfUrl || !cbaId || !organizationId) {
+          if (!body.pdfUrl || !body.cbaId || !body.organizationId) {
             throw ApiError.badRequest('Missing required fields: pdfUrl, cbaId, organizationId'
             );
           }
-          const result = await extractClausesFromPDF(pdfUrl, cbaId, {
-            organizationId,
-            autoSave,
+          const result = await extractClausesFromPDF(body.pdfUrl, body.cbaId, {
+            organizationId: body.organizationId,
+            autoSave: body.autoSave,
           });
           return NextResponse.json({
             success: result.success,

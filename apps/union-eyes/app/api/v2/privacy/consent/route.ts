@@ -27,14 +27,14 @@ export const GET = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        // Authentication guard
-        const { userId } = await requireApiAuth();
+        if (!userId) {
+          throw ApiError.unauthorized('Authentication required');
+        }
         const { searchParams } = new URL(request.url);
         const province = searchParams.get("province") as Province;
         const consentType = searchParams.get("consentType");
         if (!province || !consentType) {
-          throw ApiError.badRequest('Missing province or consentType'
-        );
+          throw ApiError.badRequest('Missing province or consentType');
         }
         const hasConsent = await ProvincialPrivacyService.hasValidConsent(
           userId,
@@ -56,9 +56,10 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        // Authentication guard
-        const { userId } = await requireApiAuth();
-        // Validate request body
+        if (!userId) {
+          throw ApiError.unauthorized('Authentication required');
+        }
+        const { province, consentType, consentGiven, consentMethod, consentText, consentLanguage } = body;
         // Get user IP and user agent for audit trail
         const ipAddress = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
         const userAgent = request.headers.get("user-agent") || undefined;
@@ -89,15 +90,8 @@ export const DELETE = withApi(
   },
   async ({ request, userId, organizationId, user, body, query, params }) => {
 
-        const session = await getServerSession();
-        if (!session?.user) {
-          throw ApiError.unauthorized('Unauthorized'
-        );
-        }
-        const userId = session.user?.id;
         if (!userId) {
-          throw ApiError.unauthorized('Unauthorized'
-        );
+          throw ApiError.unauthorized('Unauthorized');
         }
         const { province, consentType } = body;
         if (!province || !consentType) {

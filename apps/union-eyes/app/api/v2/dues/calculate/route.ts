@@ -3,7 +3,6 @@
  * Migrated to withApi() framework
  */
 import { DuesCalculationEngine } from '@/lib/dues-calculation-engine';
-import { logApiAuditEvent } from '@/lib/middleware/request-validation';
 import { withApi, ApiError, z, RATE_LIMITS } from '@/lib/api/framework';
 
 const calculateDuesSchema = z.object({
@@ -26,6 +25,7 @@ export const POST = withApi(
   },
   async ({ request, userId, organizationId, user, body, query }) => {
 
-        rawBody = await request.json();
+        const rawBody = await request.json();
+        return rawBody;
   },
 );
