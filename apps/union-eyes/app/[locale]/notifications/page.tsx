@@ -1,3 +1,7 @@
+"use client";
+
+export const dynamic = 'force-dynamic';
+
 /**
  * Notifications Page
  * 
@@ -12,7 +16,7 @@
 
 import * as React from "react";
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,36 +48,36 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
-  // Mock notifications - would come from API/database
-  const [notifications, setNotifications] = React.useState<Notification[]>([
-    {
-      id: "1",
-      type: "announcement",
-      title: "System Maintenance Scheduled",
-      message: "Scheduled maintenance on Saturday from 2-4 AM EST",
-      timestamp: new Date(Date.now() - 3600000),
-      isRead: false,
-      priority: "high",
-    },
-    {
-      id: "2",
-      type: "claim",
-      title: "Claim Approved",
-      message: "Your claim #12345 has been approved",
-      timestamp: new Date(Date.now() - 7200000),
-      isRead: false,
-      priority: "normal",
-    },
-    {
-      id: "3",
-      type: "training",
-      title: "New Course Available",
-      message: "Advanced Safety Training course is now available",
-      timestamp: new Date(Date.now() - 86400000),
-      isRead: true,
-      priority: "normal",
-    },
-  ]);
+  // Fetch notifications from API
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    async function loadNotifications() {
+      try {
+        const res = await fetch('/api/v2/notifications');
+        if (res.ok) {
+          const data = await res.json();
+          const items = Array.isArray(data) ? data : data?.notifications ?? data?.data ?? [];
+          setNotifications(items.map((n: Record<string, unknown>) => ({
+            id: n.id as string ?? '',
+            type: (n.type as Notification['type']) ?? 'announcement',
+            title: n.title as string ?? '',
+            message: n.message as string ?? n.body as string ?? '',
+            timestamp: new Date(n.timestamp as string ?? n.createdAt as string ?? n.created_at as string ?? Date.now()),
+            isRead: Boolean(n.isRead ?? n.is_read ?? n.read),
+            priority: (n.priority as Notification['priority']) ?? 'normal',
+            link: n.link as string | undefined,
+          })));
+        }
+      } catch {
+        // API not available — empty state
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadNotifications();
+  }, []);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -182,7 +186,7 @@ export default function NotificationsPage() {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 mt-1">
+                      <div className="shrink-0 mt-1">
                         {getNotificationIcon(notification.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -252,7 +256,7 @@ export default function NotificationsPage() {
                   <Card key={notification.id}>
                     <CardContent className="p-4">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
+                        <div className="shrink-0 mt-1">
                           {getNotificationIcon(notification.type)}
                         </div>
                         <div className="flex-1 min-w-0">

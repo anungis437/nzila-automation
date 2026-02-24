@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * QuickBooks Online Integration Adapter
  * 
@@ -61,8 +60,8 @@ export class QuickBooksAdapter extends BaseIntegration {
       const qbConfig: QuickBooksConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        realmId: this.config!.settings?.realmId || '',
-        environment: this.config!.settings?.environment || 'production',
+        realmId: (this.config!.settings?.realmId as string) || '',
+        environment: (this.config!.settings?.environment as 'production' | 'sandbox') || 'production',
         refreshToken: this.config!.credentials.refreshToken,
       };
 
@@ -125,7 +124,7 @@ export class QuickBooksAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     this.ensureConnected();
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     let recordsProcessed = 0;
     let recordsCreated = 0;
     let recordsUpdated = 0;
@@ -247,9 +246,9 @@ export class QuickBooksAdapter extends BaseIntegration {
           const invoiceData = {
             invoiceNumber: qbInvoice.DocNumber,
             customerId: qbInvoice.CustomerRef.value,
-            customerName: qbInvoice.CustomerRef.name,
-            invoiceDate: new Date(qbInvoice.TxnDate),
-            dueDate: qbInvoice.DueDate ? new Date(qbInvoice.DueDate) : null,
+            customerName: qbInvoice.CustomerRef.name || '',
+            invoiceDate: qbInvoice.TxnDate,
+            dueDate: qbInvoice.DueDate ?? null,
             totalAmount: qbInvoice.TotalAmt.toFixed(2),
             balanceAmount: qbInvoice.Balance.toFixed(2),
             status: qbInvoice.TxnStatus || 'open',
@@ -324,8 +323,8 @@ export class QuickBooksAdapter extends BaseIntegration {
 
           const paymentData = {
             customerId: qbPayment.CustomerRef.value,
-            customerName: qbPayment.CustomerRef.name,
-            paymentDate: new Date(qbPayment.TxnDate),
+            customerName: qbPayment.CustomerRef.name || '',
+            paymentDate: qbPayment.TxnDate,
             amount: qbPayment.TotalAmt.toFixed(2),
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -500,7 +499,7 @@ export class QuickBooksAdapter extends BaseIntegration {
   // Webhook Support
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     // QuickBooks uses HMAC SHA256 for webhook verification
     // Implementation would verify intuit-signature header
     return true; // Simplified for now
@@ -511,7 +510,7 @@ export class QuickBooksAdapter extends BaseIntegration {
 
     // QuickBooks sends change data notifications
     // Event types: Create, Update, Delete, Merge for various entities
-    const payload = event.data as unknown;
+    const payload = event.data as { eventNotifications?: Array<{ dataChangeEvent?: { entities?: Array<{ name: string; operation: string; id: string }> } }> };
     
     if (payload.eventNotifications) {
       for (const notification of payload.eventNotifications) {

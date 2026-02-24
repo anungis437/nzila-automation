@@ -1,17 +1,14 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 // Get batch job status
 export const GET = async (req: NextRequest, { params }: { params: { jobId: string } }) => {
   return withRoleAuth('steward', async (request, context) => {
-    const user = { id: context.userId, organizationId: context.organizationId };
+    const _user = { id: context.userId, organizationId: context.organizationId };
 
     try {
       const jobId = params.jobId;
@@ -26,7 +23,7 @@ export const GET = async (req: NextRequest, { params }: { params: { jobId: strin
         pending: 0,
       };
       let startedAt = new Date().toISOString();
-      let estimatedCompletion = null;
+      let estimatedCompletion: string | null = null;
       let errors: Array<Record<string, unknown>> = [];
 
       // Check if this is a newsletter campaign job
@@ -35,7 +32,7 @@ export const GET = async (req: NextRequest, { params }: { params: { jobId: strin
         
         const { newsletterCampaigns, newsletterRecipients } = await import('@/db/schema');
         const { db } = await import('@/db');
-        const { and } = await import('drizzle-orm');
+        const { and, eq, sql } = await import('drizzle-orm');
 
         // Get campaign details
         const [campaign] = await db
@@ -44,7 +41,7 @@ export const GET = async (req: NextRequest, { params }: { params: { jobId: strin
           .where(
             and(
               eq(newsletterCampaigns.id, campaignId),
-              eq(newsletterCampaigns.organizationId, context.organizationId)
+              eq(newsletterCampaigns.organizationId, context.organizationId as string)
             )
           )
           .limit(1);
@@ -86,7 +83,7 @@ export const GET = async (req: NextRequest, { params }: { params: { jobId: strin
             const failedRecipients = await db
               .select({
                 email: newsletterRecipients.email,
-                error: newsletterRecipients.failureReason,
+                error: newsletterRecipients.errorMessage,
               })
               .from(newsletterRecipients)
               .where(
@@ -121,5 +118,5 @@ export const GET = async (req: NextRequest, { params }: { params: { jobId: strin
       error
     );
     }
-    })(request, { params });
+    })(req, { params });
 };

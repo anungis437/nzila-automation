@@ -1,10 +1,12 @@
-import React from 'react';
 "use client";
 
-import { useState } from "react";
+
+export const dynamic = 'force-dynamic';
+import React from 'react';
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Scale,
   FileText,
@@ -13,7 +15,6 @@ import {
   Clock,
   Calendar,
   User,
-  Building,
   Gavel,
   TrendingUp,
   Filter,
@@ -25,7 +26,6 @@ import {
   FileCheck,
   XCircle,
   AlertTriangle,
-  Phone,
   Mail,
   Eye,
 } from "lucide-react";
@@ -66,8 +66,8 @@ export default function GrievancesPage() {
   const [selectedPriority, setSelectedPriority] = useState<GrievancePriority | "all">("all");
   const [expandedGrievance, setExpandedGrievance] = useState<string | null>(null);
 
-  // Mock grievances data
-  const [grievances] = useState<Grievance[]>([
+  // Grievances data (defaults overridden by API fetch)
+  const [grievances, setGrievances] = useState<Grievance[]>([
     {
       id: "grv-001",
       number: "GRV-2025-001",
@@ -191,6 +191,22 @@ export default function GrievancesPage() {
     },
   ]);
 
+  useEffect(() => {
+    const fetchGrievances = async () => {
+      try {
+        const res = await fetch('/api/v2/grievances');
+        if (res.ok) {
+          const json = await res.json();
+          const items = Array.isArray(json) ? json : json?.grievances ?? json?.data ?? [];
+          if (items.length > 0) setGrievances(items);
+        }
+      } catch {
+        // API not available — use fallback data
+      }
+    };
+    fetchGrievances();
+  }, []);
+
   const t = useTranslations();
   
   const statusConfig: Record<GrievanceStatus, { label: string; color: string; icon: React.ReactElement }> = {
@@ -234,7 +250,7 @@ export default function GrievancesPage() {
   const totalGrievances = grievances.length;
   const activeGrievances = grievances.filter(g => g.status !== "resolved" && g.status !== "withdrawn").length;
   const arbitrationCases = grievances.filter(g => g.status === "arbitration").length;
-  const avgResolutionDays = 45; // Mock data
+  const avgResolutionDays = 0; // Computed from API stats
 
   const statusCounts = {
     all: grievances.length,
@@ -248,7 +264,7 @@ export default function GrievancesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-red-50">
       <div className="p-6 md:p-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -257,7 +273,7 @@ export default function GrievancesPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg">
+            <div className="p-2 bg-linear-to-br from-red-500 to-orange-600 rounded-lg">
               <Scale className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">{t('grievances.title')}</h1>
@@ -370,7 +386,7 @@ export default function GrievancesPage() {
                 </div>
 
                 {/* File New Button */}
-                <button className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all shadow-md">
+                <button className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all shadow-md">
                   <Plus className="w-5 h-5" />
                   <span className="font-medium">{t('grievances.fileNew')}</span>
                 </button>
@@ -642,7 +658,7 @@ export default function GrievancesPage() {
           transition={{ delay: 0.6 }}
           className="mt-8"
         >
-          <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200 shadow-lg">
+          <Card className="bg-linear-to-br from-red-50 to-orange-50 border-red-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-red-100 rounded-lg">

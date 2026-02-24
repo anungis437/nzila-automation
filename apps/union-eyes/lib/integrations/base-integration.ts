@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Base Integration Abstract Class
  * Provides common functionality for all integration adapters
@@ -13,6 +12,7 @@ import {
   IntegrationCapabilities,
   SyncOptions,
   SyncResult,
+  SyncError,
   HealthCheckResult,
   WebhookEvent,
   ConnectionStatus,
@@ -186,7 +186,7 @@ export function createSyncResult(
     recordsCreated?: number;
     recordsUpdated?: number;
     recordsFailed?: number;
-    errors?: unknown[];
+    errors?: SyncError[];
     cursor?: string;
     nextSyncAt?: Date;
   }

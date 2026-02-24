@@ -1,32 +1,34 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Bargaining Notes API Routes - Main endpoints
  * GET /api/bargaining-notes - List notes with filtering
  * POST /api/bargaining-notes - Create a new note
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { 
-  listBargainingNotes, 
+import { NextResponse } from "next/server";
+import {
+  listBargainingNotes,
   createBargainingNote,
   bulkCreateBargainingNotes,
-  searchBargainingNotes,
   getBargainingTimeline,
   getBargainingNotesStatistics,
   getNotesByTags,
-  getSessionTypes
+  getSessionTypes,
 } from "@/lib/services/bargaining-notes-service";
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 
+ 
+ 
+ 
+ 
+ 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, context) => {
   try {
       const { searchParams } = new URL(request.url);
       
@@ -72,7 +74,8 @@ export const GET = async (request: NextRequest) => {
       }
 
       // Build filters
-      const filters = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const filters: Record<string, any> = {};
       
       if (cbaId) {
         filters.cbaId = cbaId;
@@ -128,8 +131,7 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 
 
 const bargainingNotesSchema = z.object({
@@ -141,14 +143,13 @@ const bargainingNotesSchema = z.object({
   content: z.unknown().optional(),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context) => {
     const { userId } = context;
 
   try {
       const body = await request.json();
     // Validate request body
-    const validation = bargaining-notesSchema.safeParse(body);
+    const validation = bargainingNotesSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
@@ -157,7 +158,7 @@ export const POST = async (request: NextRequest) => {
       );
     }
     
-    const { map, organizationId, sessionDate, sessionType, title, content } = validation.data;
+    const { map: _map, organizationId: _organizationId, sessionDate: _sessionDate, sessionType: _sessionType, title: _title, content: _content } = validation.data;
 
       // Check if bulk create
       if (Array.isArray(body)) {
@@ -180,9 +181,7 @@ export const POST = async (request: NextRequest) => {
 
         const notes = await bulkCreateBargainingNotes(notesWithUser);
         return standardSuccessResponse(
-      {  notes, count: notes.length  },
-      undefined,
-      201
+      {  notes, count: notes.length  }
     );
       }
 
@@ -231,9 +230,7 @@ export const POST = async (request: NextRequest) => {
       });
 
       return standardSuccessResponse(
-      {  note  },
-      undefined,
-      201
+      {  note  }
     );
     } catch (error) {
 return standardErrorResponse(
@@ -242,6 +239,5 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Elections Dashboard
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { Progress } from '@/components/ui/progress';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -63,14 +64,18 @@ export default function ElectionsDashboardPage() {
 
   const fetchElectionsData = async () => {
     try {
-      const data = await api.elections.list();
+      const data = await api.elections.list() as Election[];
       
       setElections(data);
       
       // Calculate stats from data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const active = data.filter((e: any) => e.status === 'active').length;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const totalVoters = data.reduce((sum: number, e: any) => sum + (e.eligibleVoters || 0), 0);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const votesCast = data.reduce((sum: number, e: any) => sum + (e.votesCast || 0), 0);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const upcoming = data.filter((e: any) => e.status === 'upcoming').length;
       
       setStats({

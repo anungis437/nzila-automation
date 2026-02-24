@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Report Executor Module
  * 
@@ -180,11 +179,9 @@ export const DATA_SOURCES: DataSourceMetadata[] = [
 
 export class ReportExecutor {
   private organizationId: string;
-  private tenantId: string;
 
-  constructor(organizationId: string, tenantId: string) {
+  constructor(organizationId: string) {
     this.organizationId = organizationId;
-    this.tenantId = tenantId;
   }
 
   /**
@@ -336,7 +333,7 @@ return {
   private buildSelectClause(
     fields: SelectedField[],
     dataSource: DataSourceMetadata,
-    groupBy?: string[]
+    _groupBy?: string[]
   ): SQL {
     const fieldClauses: SQL[] = [];
 
@@ -429,7 +426,7 @@ return {
       }
 
       // SECURITY FIX: Validate table exists in DATA_SOURCES
-      const tableExists = DATA_SOURCES.some(ds => ds.baseTable === join.table);
+      const tableExists = DATA_SOURCES.some(ds => ds.table === join.table);
       if (!tableExists) {
         throw new Error(`Invalid join table: ${join.table}`);
       }
@@ -448,7 +445,7 @@ return {
    */
   private buildFilterClause(
     filters: FilterCondition[],
-    dataSource: DataSourceMetadata
+    _dataSource: DataSourceMetadata
   ): SQL | null {
     if (filters.length === 0) return null;
 
@@ -567,7 +564,11 @@ return {
       }
 
       if (sort.nulls) {
-        orderSQL = sql`${orderSQL} NULLS ${sql.raw(sort.nulls.toUpperCase())}`;
+        const nullsDir = sort.nulls.toUpperCase();
+        if (nullsDir !== 'FIRST' && nullsDir !== 'LAST') {
+          throw new Error(`Invalid nulls direction: ${sort.nulls}`);
+        }
+        orderSQL = sql`${orderSQL} NULLS ${sql.raw(nullsDir)}`;
       }
 
       orderClauses.push(orderSQL);

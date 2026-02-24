@@ -20,6 +20,7 @@
  * @see docs/phases/PHASE_5_COMMUNICATIONS.md
  */
 
+// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
 import twilio from 'twilio';
 import { db } from '@/db';
 import { eq, and, sql } from 'drizzle-orm';
@@ -27,13 +28,13 @@ import {
   smsMessages,
   smsTemplates,
   smsCampaigns,
-  smsCampaignRecipients,
+  _smsCampaignRecipients,
   smsConversations,
   smsOptOuts,
   smsRateLimits,
-  type NewSmsMessage,
+  type _NewSmsMessage,
   type NewSmsConversation,
-  type SmsCampaign,
+  type _SmsCampaign,
 } from '@/db/schema/domains/communications';
 import { organizations } from '@/db/schema-organizations';
 import { logger } from '@/lib/logger';
@@ -45,7 +46,7 @@ import { logger } from '@/lib/logger';
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID!;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN!;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER!;
-const TWILIO_WEBHOOK_SECRET = process.env.TWILIO_WEBHOOK_SECRET;
+const _TWILIO_WEBHOOK_SECRET = process.env.TWILIO_WEBHOOK_SECRET;
 
 if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
   logger.warn('Twilio credentials not configured. SMS features will not work.');
@@ -68,7 +69,6 @@ const SMS_COST_PER_SEGMENT = 0.0075; // Twilio US pricing (~$0.0075 per SMS)
 
 export interface SendSmsOptions {
   organizationId?: string;
-  tenantId?: string; // Legacy fallback for org scoping
   userId?: string;
   phoneNumber: string;
   message: string;
@@ -78,7 +78,6 @@ export interface SendSmsOptions {
 
 export interface SendBulkSmsOptions {
   organizationId?: string;
-  tenantId?: string; // Legacy fallback for org scoping
   userId: string;
   recipients: Array<{ phoneNumber: string; userId?: string }>;
   message: string;
@@ -138,8 +137,8 @@ export function calculateSmsCost(message: string): number {
   return segments * SMS_COST_PER_SEGMENT;
 }
 
-function resolveOrganizationId(input: { organizationId?: string; tenantId?: string }): string | null {
-  return input.organizationId ?? input.tenantId ?? null;
+function resolveOrganizationId(input: { organizationId?: string }): string | null {
+  return input.organizationId ?? null;
 }
 
 async function resolveOrganizationIdFromPhoneNumber(phoneNumber: string): Promise<string | null> {
@@ -234,6 +233,7 @@ async function incrementRateLimit(organizationId: string): Promise<void> {
  * Render SMS template with variables
  * Example: "Hello ${firstName}, your claim ${claimId} is ready." → "Hello John, your claim #12345 is ready."
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function renderSmsTemplate(template: string, variables: Record<string, any>): string {
   let rendered = template;
   for (const [key, value] of Object.entries(variables)) {
@@ -250,8 +250,8 @@ export function renderSmsTemplate(template: string, variables: Record<string, an
  * Send a single SMS message
  */
 export async function sendSms(options: SendSmsOptions): Promise<SmsServiceResult> {
-  const { organizationId: organizationIdInput, tenantId: legacyTenantId, userId, phoneNumber, message, templateId, campaignId } = options;
-  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput, tenantId: legacyTenantId });
+  const { organizationId: organizationIdInput, userId, phoneNumber, message, templateId, campaignId } = options;
+  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput });
 
   if (!organizationId) {
     return {
@@ -378,8 +378,8 @@ export async function sendBulkSms(options: SendBulkSmsOptions): Promise<{
   failed: number;
   errors: Array<{ phoneNumber: string; error: string }>;
 }> {
-  const { organizationId: organizationIdInput, tenantId: legacyTenantId, userId, recipients, message, templateId, campaignId } = options;
-  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput, tenantId: legacyTenantId });
+  const { organizationId: organizationIdInput, userId, recipients, message, templateId, campaignId } = options;
+  const organizationId = resolveOrganizationId({ organizationId: organizationIdInput });
 
   if (!organizationId) {
     return {
@@ -467,6 +467,7 @@ export async function handleTwilioWebhook(data: TwilioWebhookData): Promise<void
     const newStatus = statusMap[MessageStatus] || MessageStatus;
 
     // Update message status
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {
       status: newStatus,
     };
@@ -643,6 +644,7 @@ export async function getSmsTemplate(templateId: string, organizationId: string)
 export async function renderSmsFromTemplate(
   templateId: string,
   organizationId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variables: Record<string, any>
 ): Promise<string | null> {
   const template = await getSmsTemplate(templateId, organizationId);

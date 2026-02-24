@@ -43,6 +43,7 @@ export function GenerateReportsButton({ entityId }: { entityId: string }) {
         value={month}
         onChange={(e) => setMonth(e.target.value)}
         className="border rounded px-3 py-1.5 text-sm"
+        aria-label="Select month"
       />
       <button
         onClick={handleGenerate}
@@ -123,6 +124,7 @@ export function GenerateReportsAiActionButton({
           value={month}
           onChange={(e) => setMonth(e.target.value)}
           className="border rounded px-3 py-1.5 text-sm"
+          aria-label="Select month"
         />
         <button
           onClick={handleGenerate}

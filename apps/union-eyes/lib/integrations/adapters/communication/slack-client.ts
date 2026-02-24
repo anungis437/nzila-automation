@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Slack API Client
  * 
@@ -10,9 +9,10 @@
  * Authentication: OAuth2 with Bot Token
  */
 
+ 
 import type {
   IntegrationError,
-  RateLimitError,
+  RateLimitError as _RateLimitError,
   AuthenticationError,
 } from '../../types';
 
@@ -131,17 +131,16 @@ export class SlackClient {
       const response = await fetch(url, { ...options, headers });
 
       // Check for rate limiting
-      const rateLimitRemaining = response.headers.get('X-Rate-Limit-Remaining');
+      const _rateLimitRemaining = response.headers.get('X-Rate-Limit-Remaining');
       const rateLimitReset = response.headers.get('X-Rate-Limit-Reset');
       
       if (response.status === 429) {
-        const resetTime = rateLimitReset 
+        const _resetTime = rateLimitReset 
           ? new Date(parseInt(rateLimitReset) * 1000)
           : new Date(Date.now() + 60000);
         
-        const error = new Error('Rate limit exceeded') as RateLimitError;
+        const error = new Error('Rate limit exceeded');
         error.name = 'RateLimitError';
-        error.resetAt = resetTime;
         throw error;
       }
 

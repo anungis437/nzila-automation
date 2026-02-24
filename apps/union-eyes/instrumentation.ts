@@ -1,15 +1,16 @@
-﻿// @ts-nocheck
+ 
 import * as Sentry from '@sentry/nextjs';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { logger } from '@/lib/logger';
 
 export async function register() {
   // IMPORTANT: OpenTelemetry must be initialized FIRST, before any other imports
   // This ensures auto-instrumentation can wrap all modules correctly
   if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NEXT_PHASE !== 'phase-production-build') {
-    // Initialize distributed tracing (must be first!)
+    // Initialize distributed tracing via @nzila/os-core/telemetry (must be first!)
     try {
-      const { initializeTracing } = await import('./lib/tracing/opentelemetry');
-      await initializeTracing();
+      const { initOtel } = await import('@nzila/os-core/telemetry');
+      await initOtel({ appName: 'union-eyes' });
     } catch (error) {
       // Log error but don't fail startup - tracing is non-critical
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -17,6 +18,12 @@ export async function register() {
       console.error('❌ [ERROR] Failed to initialize OpenTelemetry tracing:', errorMessage);
       if (errorStack) console.error('Stack:', errorStack);
     }
+
+    // Initialise os-core metrics (SLO counters for union-eyes)
+    try {
+      const { initMetrics } = await import('@nzila/os-core/telemetry');
+      initMetrics('union-eyes');
+    } catch { /* non-critical */ }
   }
 
   // Skip Sentry initialization during build to prevent "self is not defined" errors
@@ -30,9 +37,22 @@ export async function register() {
     const { initializeConsoleWrapper } = await import('./lib/console-wrapper');
     initializeConsoleWrapper();
     try {
+      const { createLogger } = await import('@nzila/os-core/telemetry');
+      const osLogger = createLogger('union-eyes');
+
+      // ── os-core env validation ──────────────────────────────────────
+      try {
+        const { validateEnv } = await import('@nzila/os-core/config');
+        validateEnv('union-eyes');
+        osLogger.info('os-core env validation passed');
+      } catch (envError) {
+        osLogger.warn('os-core env validation issue', { error: envError });
+      }
+
+      // ── Legacy env validation (kept for backwards compat) ──────────
       const { logger } = await import('./lib/logger');
       // Import and run comprehensive environment validation
-      const { validateEnvironment, printEnvironmentReport } = await import('./lib/config/env-validation');
+      const { validateEnvironment, printEnvironmentReport: _printEnvironmentReport } = await import('./lib/config/env-validation');
       const envValidation = validateEnvironment();
       
       if (!envValidation.isValid) {

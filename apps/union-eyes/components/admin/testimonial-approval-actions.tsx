@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Testimonial Approval Actions Component
  * 
@@ -9,6 +8,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,13 +26,14 @@ import { CheckCircle, XCircle, Star, Loader2 } from 'lucide-react';
 import type { Testimonial } from '@/types/marketing';
 
 interface TestimonialApprovalActionsProps {
-  testimonial: Testimonial;
+  testimonial: Testimonial & { status?: string };
 }
 
 export default function TestimonialApprovalActions({
   testimonial,
 }: TestimonialApprovalActionsProps) {
   const router = useRouter();
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function TestimonialApprovalActions({
         body: JSON.stringify({
           status: 'approved',
           reviewedAt: new Date().toISOString(),
-          reviewedBy: 'admin-user', // TODO: Get from session
+          reviewedBy: user?.id ?? 'unknown',
         }),
       });
 
@@ -78,7 +79,7 @@ export default function TestimonialApprovalActions({
           status: 'rejected',
           rejectionReason: rejectionReason || null,
           reviewedAt: new Date().toISOString(),
-          reviewedBy: 'admin-user', // TODO: Get from session
+          reviewedBy: user?.id ?? 'unknown',
         }),
       });
 
@@ -105,7 +106,7 @@ export default function TestimonialApprovalActions({
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          isFeatured: !testimonial.isFeatured,
+          isFeatured: !testimonial.featured,
         }),
       });
 
@@ -204,14 +205,14 @@ export default function TestimonialApprovalActions({
           variant="ghost"
           onClick={handleToggleFeatured}
           disabled={loading}
-          title={testimonial.isFeatured ? 'Unfeature' : 'Feature'}
+          title={testimonial.featured ? 'Unfeature' : 'Feature'}
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Star
               className={`h-4 w-4 ${
-                testimonial.isFeatured
+                testimonial.featured
                   ? 'text-yellow-500 fill-current'
                   : 'text-gray-400'
               }`}

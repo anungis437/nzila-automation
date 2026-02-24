@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AI Vector Search Service
  * 
@@ -12,24 +11,21 @@
  * - Hybrid search (vector + keyword)
  */
 
-import { OpenAI } from 'openai';
+import { getAiClient, UE_APP_KEY, UE_PROFILES } from '@/lib/ai/ai-client';
 import { db } from '@/db';
-import { cbaClause, arbitrationDecisions } from '@/db/schema';
-import { eq, sql, and, or } from 'drizzle-orm';
+import { cbaClause } from '@/db/schema';
+import { eq, sql, and, or, SQL } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import { embeddingCache } from './embedding-cache';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const EMBEDDING_MODEL = 'text-embedding-3-small';
-const EMBEDDING_DIMENSIONS = 1536;
+const _EMBEDDING_DIMENSIONS = 1536;
 
 export interface SearchResult {
   id: string;
   content: string;
   similarity: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any>;
 }
 
@@ -65,20 +61,23 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       return cachedEmbedding;
     }
 
-    // Cache miss - call OpenAI API
+    // Cache miss - call AI SDK
     logger.info('Generating new embedding', { 
       model: EMBEDDING_MODEL,
       textLength: text.length,
       reason: 'cache_miss'
     });
 
-    const response = await openai.embeddings.create({
-      model: EMBEDDING_MODEL,
+    const ai = getAiClient();
+    const response = await ai.embed({
+      entityId: 'system',
+      appKey: UE_APP_KEY,
+      profileKey: UE_PROFILES.EMBEDDINGS,
       input: text,
-      dimensions: EMBEDDING_DIMENSIONS,
+      dataClass: 'internal',
     });
 
-    const embedding = response.data[0].embedding;
+    const embedding = response.embeddings[0];
 
     // Store in cache for future use (non-blocking)
     embeddingCache.setCachedEmbedding(text, EMBEDDING_MODEL, embedding).catch(err => {
@@ -112,9 +111,10 @@ export async function semanticClauseSearch(
     const embeddingString = `[${queryEmbedding.join(',')}]`;
 
     // Build WHERE clause based on filters
-    const whereConditions = [];
+    const whereConditions: (SQL<unknown> | undefined)[] = [];
     if (filters.clauseType && filters.clauseType.length > 0) {
       whereConditions.push(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         or(...filters.clauseType.map(type => eq(cbaClause.clauseType, type as any)))
       );
     }
@@ -142,6 +142,7 @@ export async function semanticClauseSearch(
       LIMIT ${limit}
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (results as any[]).map((row: any) => ({
       id: row.id as string,
       content: row.content as string,
@@ -153,6 +154,7 @@ export async function semanticClauseSearch(
         articleNumber: row.article_number,
         tags: row.tags,
       },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     })).filter((result: any) => result.similarity >= threshold);
   } catch (error) {
     logger.error('Error in semantic clause search', { error, query, options });
@@ -209,7 +211,9 @@ export async function findSimilarClauses(
       LIMIT ${limit}
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (results as any[])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((row: any) => ({
         id: row.id as string,
         content: row.content as string,
@@ -222,6 +226,7 @@ export async function findSimilarClauses(
           tags: row.tags,
         },
       }))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter((result: any) => result.similarity >= threshold);
   } catch (error) {
     logger.error('Error finding similar clauses', { error, clauseId, options });
@@ -247,7 +252,7 @@ export async function semanticPrecedentSearch(
     const queryEmbedding = await generateEmbedding(query);
     const embeddingString = `[${queryEmbedding.join(',')}]`;
 
-    const whereFilters = [];
+    const whereFilters: SQL<unknown>[] = [];
     if (issueType) {
       whereFilters.push(sql`issue_type = ${issueType}`);
     }
@@ -277,7 +282,9 @@ export async function semanticPrecedentSearch(
       LIMIT ${limit}
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (results as any[])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((row: any) => ({
         id: row.id as string,
         content: row.precedent_summary as string,
@@ -292,6 +299,7 @@ export async function semanticPrecedentSearch(
           citationCount: row.citation_count,
         },
       }))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter((result: any) => result.similarity >= threshold);
   } catch (error) {
     logger.error('Error in semantic precedent search', {

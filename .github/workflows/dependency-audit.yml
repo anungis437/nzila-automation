@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -38,14 +38,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Audit at critical level — exits non-zero immediately if criticals found.
-      # No '|| true': this step gates the CI job.
+      # Audit at critical level — capture report for waiver evaluation.
+      # Exit code is intentionally suppressed here; the waiver policy step
+      # is the authoritative gate (it accounts for accepted/waived CVEs).
       - name: Run pnpm audit (fail on critical)
         id: audit
         run: |
-          # Write report to file; exit code propagates (non-zero = criticals found)
-          pnpm audit --audit-level=critical --json > audit-report.json
-          echo "Audit clean — no critical vulnerabilities found."
+          # Write report to file; allow non-zero so waiver policy is the gate
+          pnpm audit --audit-level=critical --json > audit-report.json || true
+          echo "Audit report written to audit-report.json"
 
       # Also capture a high-severity JSON report for artifact upload (always runs)
       - name: Capture high-severity audit report
@@ -55,7 +56,6 @@ jobs:
           echo "High/critical audit report written to audit-report-high.json"
 
       - name: Enforce vulnerability waiver policy
-        if: always()
         run: |
           REPORT=audit-report.json
           [ -f "$REPORT" ] || REPORT=audit-report-high.json

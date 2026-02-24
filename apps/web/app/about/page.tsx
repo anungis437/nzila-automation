@@ -41,6 +41,12 @@ const values = [
     description:
       'Measurable outcomes: 56% time savings, 80%+ code reuse, and $4M+ in engineering investment across the portfolio.',
   },
+  {
+    title: 'B Corp Committed',
+    color: 'from-emerald to-electric',
+    description:
+      'We hold ourselves to B Corp standards — balancing purpose and profit, measuring social and environmental impact, and using business as a force for good.',
+  },
 ];
 
 const timeline = [
@@ -81,7 +87,8 @@ export default function About() {
           <ScrollReveal delay={0.2}>
             <p className="text-xl text-gray-300 max-w-3xl">
               A venture studio and IP-holding company transforming legacy platforms into
-              modern, scalable AI solutions that serve communities worldwide.
+              modern, scalable AI solutions that serve communities worldwide — guided by
+              B Corp values of people, planet, and purpose.
             </p>
           </ScrollReveal>
         </div>
@@ -143,7 +150,7 @@ export default function About() {
             subtitle="The principles that guide every decision, every line of code, and every partnership"
           />
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {values.map((value, i) => (
               <ScrollReveal key={value.title} delay={i * 0.1}>
                 <div className="bg-white rounded-2xl p-8 border border-gray-100 hover-lift">
@@ -221,10 +228,17 @@ export default function About() {
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-6">
               Built with Intentionality, Ethics, and Impact
             </h2>
-            <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
               Every platform we build, every line of code we write, and every partnership we form is
               guided by our commitment to ethical technology that truly serves humanity.
             </p>
+            <div className="inline-flex items-center gap-3 bg-emerald/5 border border-emerald/20 rounded-xl px-6 py-4 mb-10">
+              <span className="text-2xl">🌿</span>
+              <div className="text-left">
+                <div className="text-sm font-bold text-navy">Pursuing B Corp Certification</div>
+                <div className="text-xs text-gray-500">Using business as a force for good — people, planet, and purpose.</div>
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/investors"

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Feature Flags API Route
  * 
@@ -8,18 +7,18 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { withApiAuth } from '@/lib/api-auth-guard';
+import { withApiAuth, BaseAuthContext } from '@/lib/api-auth-guard';
 import { evaluateFeatures, LRO_FEATURES } from '@/lib/services/feature-flags';
 import {
   ErrorCode,
   standardErrorResponse,
 } from '@/lib/api/standardized-responses';
 
-export const GET = withApiAuth(async (request: NextRequest, context) => {
+export const GET = withApiAuth(async (request: NextRequest, context: BaseAuthContext) => {
   try {
     // User context provided by withApiAuth guard
-    const userId = context.user?.id;
-    const orgId = context.user?.organizationId;
+    const userId = context.userId;
+    const orgId = context.organizationId;
     
     // Evaluate all LRO features for this user
     const featureNames = Object.values(LRO_FEATURES);
@@ -34,8 +33,8 @@ export const GET = withApiAuth(async (request: NextRequest, context) => {
       userId,
       organizationId: orgId || null,
     });
-  } catch (error) {
-    return standardErrorResponse(ErrorCode.INTERNAL_ERROR);
+  } catch (_error) {
+    return standardErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to evaluate feature flags');
   }
 });
 

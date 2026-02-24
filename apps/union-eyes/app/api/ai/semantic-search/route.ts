@@ -1,5 +1,3 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * AI Semantic Search API Route
  * 
@@ -15,14 +13,13 @@ import {
   findSimilarClauses,
 } from '@/lib/services/ai/vector-search-service';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth, BaseAuthContext } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
-import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
+import { checkEntitlement } from '@/lib/services/entitlements';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const semanticSearchSchema = z.object({
@@ -41,9 +38,8 @@ const semanticSearchSchema = z.object({
   if (data.searchType === 'similar' && !data.clauseId) return false;
   return true;
 }, { message: 'Query required for non-similar searches, clauseId required for similar searches' });
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
-    const user = { id: context.userId, organizationId: context.organizationId };
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
+    const _user = { id: context.userId, organizationId: context.organizationId };
 
     // CRITICAL: Rate limit AI calls (expensive OpenAI API)
     const rateLimitResult = await checkRateLimit(
@@ -62,7 +58,7 @@ export const POST = async (request: NextRequest) => {
     }
 
     // CRITICAL: Check subscription entitlement for AI semantic-search
-    const entitlement = await checkEntitlement(context.organizationId!, 'ai_semantic_search');
+    const entitlement = await checkEntitlement(context.organizationId as string, 'ai_semantic_search');
     if (!entitlement.allowed) {
       return NextResponse.json(
         { 
@@ -101,7 +97,7 @@ export const POST = async (request: NextRequest) => {
 
       switch (searchType) {
         case 'clauses':
-          results = await semanticClauseSearch(query, {
+          results = await semanticClauseSearch(query!, {
             limit,
             threshold,
             filters,
@@ -115,11 +111,11 @@ export const POST = async (request: NextRequest) => {
           });
 
         case 'precedents':
-          results = await semanticPrecedentSearch(query, {
+          results = await semanticPrecedentSearch(query!, {
             limit,
             threshold,
-            issueType: filters.issueType,
-            jurisdiction: filters.jurisdiction,
+            issueType: filters.issueType as string | undefined,
+            jurisdiction: filters.jurisdiction as string | undefined,
           });
           return NextResponse.json({
             searchType: 'precedents',
@@ -129,7 +125,7 @@ export const POST = async (request: NextRequest) => {
           });
 
         case 'unified':
-          results = await unifiedSemanticSearch(query, {
+          results = await unifiedSemanticSearch(query!, {
             includeClauses: true,
             includePrecedents: true,
             limit,
@@ -149,10 +145,10 @@ export const POST = async (request: NextRequest) => {
           });
 
         case 'similar':
-          results = await findSimilarClauses(clauseId, {
+          results = await findSimilarClauses(clauseId!, {
             limit,
             threshold,
-            sameTypeOnly: filters.sameTypeOnly || false,
+            sameTypeOnly: Boolean(filters.sameTypeOnly),
           });
           return NextResponse.json({
             searchType: 'similar',
@@ -168,7 +164,7 @@ export const POST = async (request: NextRequest) => {
     );
       }
     } catch (error) {
-return NextResponse.json(
+      return NextResponse.json(
         {
           error: 'Semantic search failed',
           details: error instanceof Error ? error.message : 'Unknown error',
@@ -176,36 +172,31 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
-    const user = { id: context.userId, organizationId: context.organizationId };
-
+export const GET = withRoleAuth('member', async (_request: NextRequest, _context: BaseAuthContext) => {
   try {
-      // This would query database to check how many clauses/precedents have embeddings
-      // For now, return a placeholder response
-      return NextResponse.json({
-        status: 'ready',
-        clauses: {
-          total: 0,
-          withEmbeddings: 0,
-          percentage: 0,
-        },
-        precedents: {
-          total: 0,
-          withEmbeddings: 0,
-          percentage: 0,
-        },
-      });
-    } catch (error) {
-return standardErrorResponse(
+    // This would query database to check how many clauses/precedents have embeddings
+    // For now, return a placeholder response
+    return NextResponse.json({
+      status: 'ready',
+      clauses: {
+        total: 0,
+        withEmbeddings: 0,
+        percentage: 0,
+      },
+      precedents: {
+        total: 0,
+        withEmbeddings: 0,
+        percentage: 0,
+      },
+    });
+  } catch (error) {
+    return standardErrorResponse(
       ErrorCode.INTERNAL_ERROR,
       'Status check failed',
       error
     );
-    }
-    })(request);
-};
+  }
+});
 

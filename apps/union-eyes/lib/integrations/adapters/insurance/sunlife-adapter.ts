@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Sun Life Financial Integration Adapter
  * 
@@ -66,7 +65,7 @@ export class SunLifeAdapter extends BaseIntegration {
       const sunLifeConfig: SunLifeConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        groupNumber: this.config!.settings?.groupNumber || '',
+        groupNumber: (this.config!.settings?.groupNumber as string) || '',
         refreshToken: this.config!.credentials.refreshToken,
         environment: 'production',
       };
@@ -80,7 +79,7 @@ export class SunLifeAdapter extends BaseIntegration {
       }
       
       this.connected = true;
-      this.logOperation('connect', 'Connected to Sun Life');
+      this.logOperation('connect', { message: 'Connected to Sun Life' });
     } catch (error) {
       this.logError('connect', error);
       throw error;
@@ -90,7 +89,7 @@ export class SunLifeAdapter extends BaseIntegration {
   async disconnect(): Promise<void> {
     this.connected = false;
     this.client = undefined;
-    this.logOperation('disconnect', 'Disconnected from Sun Life');
+    this.logOperation('disconnect', { message: 'Disconnected from Sun Life' });
   }
 
   // ==========================================================================
@@ -129,7 +128,7 @@ export class SunLifeAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     this.ensureConnected();
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     let recordsProcessed = 0;
     let recordsCreated = 0;
     let recordsUpdated = 0;
@@ -142,7 +141,7 @@ export class SunLifeAdapter extends BaseIntegration {
 
       for (const entity of entities) {
         try {
-          this.logOperation('sync', `Syncing ${entity}`);
+          this.logOperation('sync', { message: `Syncing ${entity}` });
 
           switch (entity) {
             case 'plans':
@@ -178,11 +177,12 @@ export class SunLifeAdapter extends BaseIntegration {
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
-          errors.push({ entity, error: errorMsg });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          errors.push({ entity, error: errorMsg } as any);
           this.logError('sync', error, { entity });
         }
       }
@@ -205,7 +205,8 @@ export class SunLifeAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: [{ entity: 'sync', error: error instanceof Error ? error.message : 'Unknown error' }],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        errors: [{ entity: 'sync', error: error instanceof Error ? error.message : 'Unknown error' }] as any,
       };
     }
   }
@@ -242,11 +243,11 @@ export class SunLifeAdapter extends BaseIntegration {
             planName: plan.planName,
             planType: plan.planType,
             coverageLevel: plan.coverageLevel,
-            effectiveDate: new Date(plan.effectiveDate),
-            terminationDate: plan.terminationDate ? new Date(plan.terminationDate) : null,
-            premium: plan.premium,
-            employerContribution: plan.employerContribution,
-            employeeContribution: plan.employeeContribution,
+            effectiveDate: plan.effectiveDate,
+            terminationDate: plan.terminationDate || null,
+            premium: plan.premium != null ? String(plan.premium) : null,
+            employerContribution: plan.employerContribution != null ? String(plan.employerContribution) : null,
+            employeeContribution: plan.employeeContribution != null ? String(plan.employeeContribution) : null,
             status: plan.status,
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -313,12 +314,12 @@ export class SunLifeAdapter extends BaseIntegration {
             planId: enrollment.planId,
             planName: enrollment.planName,
             coverageLevel: enrollment.coverageLevel,
-            enrollmentDate: new Date(enrollment.enrollmentDate),
-            effectiveDate: new Date(enrollment.effectiveDate),
-            terminationDate: enrollment.terminationDate ? new Date(enrollment.terminationDate) : null,
+            enrollmentDate: enrollment.enrollmentDate,
+            effectiveDate: enrollment.effectiveDate,
+            terminationDate: enrollment.terminationDate || null,
             status: enrollment.status,
-            premium: enrollment.premium,
-            employeeContribution: enrollment.employeeContribution,
+            premium: enrollment.premium != null ? String(enrollment.premium) : null,
+            employeeContribution: enrollment.employeeContribution != null ? String(enrollment.employeeContribution) : null,
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
           };
@@ -381,7 +382,7 @@ export class SunLifeAdapter extends BaseIntegration {
             employeeId: dependent.employeeId,
             firstName: dependent.firstName,
             lastName: dependent.lastName,
-            dateOfBirth: new Date(dependent.dateOfBirth),
+            dateOfBirth: dependent.dateOfBirth,
             relationship: dependent.relationship,
             status: dependent.status,
             lastSyncedAt: new Date(),
@@ -447,10 +448,10 @@ export class SunLifeAdapter extends BaseIntegration {
             employeeId: coverage.employeeId,
             planId: coverage.planId,
             planType: coverage.planType,
-            coverageAmount: coverage.coverageAmount,
-            deductible: coverage.deductible,
-            effectiveDate: new Date(coverage.effectiveDate),
-            terminationDate: coverage.terminationDate ? new Date(coverage.terminationDate) : null,
+            coverageAmount: coverage.coverageAmount != null ? String(coverage.coverageAmount) : null,
+            deductible: coverage.deductible != null ? String(coverage.deductible) : null,
+            effectiveDate: coverage.effectiveDate,
+            terminationDate: coverage.terminationDate || null,
             status: coverage.status,
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -490,11 +491,11 @@ export class SunLifeAdapter extends BaseIntegration {
   // Webhook Support (Not Supported)
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     return false;
   }
 
-  async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', 'Sun Life does not support webhooks');
+  async processWebhook(_event: WebhookEvent): Promise<void> {
+    this.logOperation('webhook', { message: 'Sun Life does not support webhooks' });
   }
 }

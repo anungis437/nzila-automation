@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CanadaLife Integration Adapter
  * 
@@ -22,6 +21,7 @@ import {
   HealthCheckResult,
   WebhookEvent,
   ConnectionStatus,
+  SyncError,
 } from '../../types';
 import { CanadaLifeClient, type CanadaLifeConfig } from './canadalife-client';
 import { db } from '@/db';
@@ -114,7 +114,7 @@ export class CanadaLifeAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     this.ensureConnected();
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     let recordsProcessed = 0;
     let recordsCreated = 0;
     let recordsUpdated = 0;
@@ -165,7 +165,7 @@ export class CanadaLifeAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: errors.length > 0 ? errors : undefined,
+        errors: errors.length > 0 ? errors as unknown as SyncError[] : undefined,
         cursor: new Date().toISOString(),
       };
     } catch (error) {
@@ -176,7 +176,7 @@ export class CanadaLifeAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: [{ entity: 'sync', error: errorMessage }],
+        errors: [{ entity: 'sync', error: errorMessage } as unknown as SyncError],
       };
     }
   }
@@ -358,7 +358,7 @@ export class CanadaLifeAdapter extends BaseIntegration {
     return { processed, created, updated, failed };
   }
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     return false;
   }
 

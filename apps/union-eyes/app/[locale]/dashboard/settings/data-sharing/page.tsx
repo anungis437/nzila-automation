@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Data Sharing Settings Page
  * 
@@ -12,15 +11,21 @@
  * - Full audit trail visible
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/db';
-import { dataAggregationConsent, organizations } from '@/db/schema';
+import { dataAggregationConsent } from '@/db/schema/domains/marketing';
+import { organizations } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Info, CheckCircle2, XCircle, History } from 'lucide-react';
+import { auth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 import ConsentForm from '@/components/marketing/consent-form';
+ 
 import RevokeConsentButton from '@/components/marketing/revoke-consent-button';
 
 interface DataSharingPageProps {
@@ -30,13 +35,13 @@ interface DataSharingPageProps {
 }
 
 export default async function DataSharingPage({ params }: DataSharingPageProps) {
-  const { locale } = params;
+  const { locale: _locale } = params;
 
-  // Get user's organization
-  // TODO: Get from session context
-  const organizationId = 'org-placeholder';
+  // Get user's organization from Clerk session
+  const { orgId } = await auth();
+  const organizationId = orgId ?? '';
 
-  const [organization] = await db
+  const [_organization] = await db
     .select()
     .from(organizations)
     .where(eq(organizations.id, organizationId))
@@ -49,18 +54,22 @@ export default async function DataSharingPage({ params }: DataSharingPageProps) 
     .where(
       and(
         eq(dataAggregationConsent.organizationId, organizationId),
-        eq(dataAggregationConsent.status, 'active')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        eq((dataAggregationConsent as any).status, 'active')
       )
     )
-    .limit(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .limit(1) as any[];
 
   // Get consent history
   const consentHistory = await db
     .select()
     .from(dataAggregationConsent)
     .where(eq(dataAggregationConsent.organizationId, organizationId))
-    .orderBy(desc(dataAggregationConsent.createdAt))
-    .limit(10);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .orderBy(desc((dataAggregationConsent as any).createdAt))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .limit(10) as any[];
 
   const hasActiveConsent = consent !== undefined;
 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Standardized API Response Utilities
  * 
@@ -53,6 +52,9 @@ export enum ErrorCode {
   // Service Unavailability (503)
   SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE',
   CIRCUIT_BREAKER_OPEN = 'CIRCUIT_BREAKER_OPEN',
+
+  // Not Implemented (501)
+  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
 }
 
 /**
@@ -91,6 +93,9 @@ const ERROR_CODE_TO_STATUS: Record<ErrorCode, number> = {
   // Service unavailability
   [ErrorCode.SERVICE_UNAVAILABLE]: 503,
   [ErrorCode.CIRCUIT_BREAKER_OPEN]: 503,
+
+  // Not implemented
+  [ErrorCode.NOT_IMPLEMENTED]: 501,
 };
 
 /**
@@ -116,6 +121,7 @@ export interface StandardizedError {
 /**
  * Standard success response format
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface StandardizedSuccess<T = any> {
   /** Indicates successful operation */
   success: true;
@@ -223,7 +229,7 @@ export function standardErrorResponse(
   
   // Only include details in development or for specific error types
   if (isDevelopment || code === ErrorCode.VALIDATION_ERROR) {
-    errorResponse.details = details;
+    errorResponse.details = details as Record<string, unknown> | undefined;
   }
   
   return NextResponse.json(errorResponse, { 
@@ -248,6 +254,7 @@ export function standardErrorResponse(
  *   { page: 1, pageSize: 20, total: 150, hasMore: true }
  * );
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function standardSuccessResponse<T = any>(
   data: T,
   meta?: StandardizedSuccess<T>['meta']

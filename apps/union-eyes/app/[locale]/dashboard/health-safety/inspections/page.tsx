@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Health & Safety - Inspections Management Page
  * 
@@ -14,6 +13,8 @@
 
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -63,6 +64,8 @@ export default function InspectionsPage() {
   const [typeFilter, setTypeFilter] = useState<InspectionType | "all">("all");
   const [dateRange, setDateRange] = useState<"week" | "month" | "quarter">("month");
   const [selectedInspection, setSelectedInspection] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [findings, setFindings] = useState<any[]>([]);
 
   // Summary statistics
   const [stats, setStats] = useState({
@@ -76,22 +79,40 @@ export default function InspectionsPage() {
 
   useEffect(() => {
     if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
       loadStats();
+      // eslint-disable-next-line react-hooks/immutability
+      loadFindings();
     }
   }, [organizationId, dateRange]);
 
+  const loadFindings = async () => {
+    try {
+      const res = await fetch(`/api/v2/health-safety/inspections/findings?organizationId=${organizationId}`);
+      if (res.ok) {
+        const json = await res.json();
+        const items = Array.isArray(json) ? json : json?.findings ?? json?.data ?? [];
+        setFindings(items);
+      }
+    } catch (error) {
+      logger.error("Failed to load findings:", error);
+    }
+  };
+
   const loadStats = async () => {
     try {
-      // In production: fetch from API
-      // Example: const response = await fetch(`/api/health-safety/inspections/stats?organizationId=${organizationId}`);
-      setStats({
-        total: 28,
-        scheduled: 12,
-        completed: 14,
-        overdue: 2,
-        complianceRate: 96,
-        avgScore: 88.5,
-      });
+      const res = await fetch(`/api/v2/health-safety/inspections/stats?organizationId=${organizationId}`);
+      if (res.ok) {
+        const json = await res.json();
+        setStats({
+          total: json.total ?? 0,
+          scheduled: json.scheduled ?? 0,
+          completed: json.completed ?? 0,
+          overdue: json.overdue ?? 0,
+          complianceRate: json.complianceRate ?? json.compliance_rate ?? 0,
+          avgScore: json.avgScore ?? json.avg_score ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load inspection statistics");
@@ -124,7 +145,7 @@ export default function InspectionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-green-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Page Header */}
         <motion.div
@@ -162,7 +183,7 @@ export default function InspectionsPage() {
               </Button>
               <Button
                 onClick={handleScheduleInspection}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                className="flex items-center gap-2 bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               >
                 <Plus className="h-4 w-4" />
                 Schedule Inspection
@@ -330,7 +351,7 @@ export default function InspectionsPage() {
                 <CardContent>
                   <InspectionScheduleCalendar
                     organizationId={organizationId}
-                    onScheduleInspection={handleViewInspection}
+                    onViewInspection={handleViewInspection}
                   />
                 </CardContent>
               </Card>
@@ -369,24 +390,14 @@ export default function InspectionsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Mock findings - replace with actual data */}
-                    {[1, 2, 3].map((i) => (
+                    {findings.length > 0 ? findings.map((finding) => (
                       <InspectionFindingsCard
-                        key={i}
-                        finding={{
-                          id: `finding-${i}`,
-                          inspectionId: `inspection-${i}`,
-                          severity: i === 1 ? "critical" : i === 2 ? "moderate" : "minor",
-                          description: `Finding ${i} description`,
-                          location: `Location ${i}`,
-                          category: "Safety Equipment",
-                          status: "open",
-                          assignedTo: "Safety Officer",
-                          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                          createdAt: new Date().toISOString(),
-                        }}
+                        key={finding.id}
+                        finding={finding}
                       />
-                    ))}
+                    )) : (
+                      <p className="text-center text-gray-500 py-8">No findings recorded</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

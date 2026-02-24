@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Movement Insights Dashboard
  * 
@@ -12,7 +11,9 @@
  * - Consent status visible
  */
 
-import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/db';
 import { dataAggregationConsent, movementTrends } from '@/db/schema/domains/marketing';
 import { eq, and, desc, gte } from 'drizzle-orm';
@@ -21,6 +22,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, TrendingUp, TrendingDown, Shield, Users, FileText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+ 
+import { auth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 
 interface MovementInsightsPageProps {
@@ -39,11 +42,11 @@ export default async function MovementInsightsPage({
   searchParams,
 }: MovementInsightsPageProps) {
   const { locale } = params;
-  const { timeframe = 'quarter', sector, jurisdiction } = searchParams;
+  const { timeframe = 'quarter', sector: _sector, jurisdiction: _jurisdiction } = searchParams;
 
-  // Get user's organization consent status
-  // TODO: Get from session context
-  const organizationId = 'org-placeholder';
+  // Get user's organization consent status from Clerk session
+  const { orgId: authOrgId } = await auth();
+  const organizationId = authOrgId ?? '';
   
   const [consent] = await db
     .select()
@@ -51,7 +54,7 @@ export default async function MovementInsightsPage({
     .where(
       and(
         eq(dataAggregationConsent.organizationId, organizationId),
-        eq(dataAggregationConsent.status, 'active')
+        eq(dataAggregationConsent.consentGiven, true)
       )
     )
     .limit(1);
@@ -66,19 +69,17 @@ export default async function MovementInsightsPage({
     .where(
       and(
         eq(movementTrends.timeframe, timeframe),
-        gte(movementTrends.calculatedAt, thirtyDaysAgo),
-        sector ? eq(movementTrends.sector, sector) : undefined,
-        jurisdiction ? eq(movementTrends.jurisdiction, jurisdiction) : undefined
+        gte(movementTrends.createdAt, thirtyDaysAgo)
       )
     )
-    .orderBy(desc(movementTrends.calculatedAt));
+    .orderBy(desc(movementTrends.createdAt));
 
   // Group trends by type
   const trendsByType = trends.reduce((acc, trend) => {
-    if (!acc[trend.trendType]) {
-      acc[trend.trendType] = [];
+    if (!acc[trend.category]) {
+      acc[trend.category] = [];
     }
-    acc[trend.trendType].push(trend);
+    acc[trend.category].push(trend);
     return acc;
   }, {} as Record<string, typeof trends>);
 
@@ -189,7 +190,22 @@ export default async function MovementInsightsPage({
               </div>
             </div>
 
-            {/* TODO: Add sector and jurisdiction filters */}
+            {/* Sector filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Sector</label>
+              <div className="flex gap-2">
+                {['all', 'public', 'private', 'non-profit'].map((s) => (
+                  <Link
+                    key={s}
+                    href={`/${locale}/dashboard/movement-insights?timeframe=${timeframe}&sector=${s === 'all' ? '' : s}`}
+                  >
+                    <Badge variant={(_sector ?? '') === (s === 'all' ? '' : s) ? 'default' : 'outline'}>
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </Badge>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -277,6 +293,7 @@ function TrendCard({
 }: {
   title: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   trends: any[];
   unit: string;
   lowerIsBetter: boolean;

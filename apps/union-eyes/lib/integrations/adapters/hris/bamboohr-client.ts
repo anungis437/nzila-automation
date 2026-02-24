@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * BambooHR API Client
  * 
@@ -8,9 +7,8 @@
  * @see https://documentation.bamboohr.com/docs
  */
 
-import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { AuthenticationError, RateLimitError, IntegrationError } from '../../types';
+import { AuthenticationError, RateLimitError, IntegrationError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -91,7 +89,8 @@ export class BambooHRClient {
       if (response.status === 429) {
         const retryAfter = response.headers.get('Retry-After');
         throw new RateLimitError(
-          'BambooHR',
+          'BambooHR rate limit exceeded',
+          IntegrationProvider.BAMBOOHR,
           parseInt(retryAfter || '60', 10)
         );
       }
@@ -100,7 +99,7 @@ export class BambooHRClient {
       if (response.status === 401 || response.status === 403) {
         throw new AuthenticationError(
           'BambooHR authentication failed - check API key',
-          'BAMBOOHR'
+          IntegrationProvider.BAMBOOHR
         );
       }
 
@@ -108,7 +107,7 @@ export class BambooHRClient {
         const error = await response.text();
         throw new IntegrationError(
           `BambooHR API error (${response.status}): ${error}`,
-          'BAMBOOHR'
+          IntegrationProvider.BAMBOOHR
         );
       }
 
@@ -123,7 +122,7 @@ export class BambooHRClient {
       }
       throw new IntegrationError(
         `BambooHR request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'BAMBOOHR'
+        IntegrationProvider.BAMBOOHR
       );
     }
   }

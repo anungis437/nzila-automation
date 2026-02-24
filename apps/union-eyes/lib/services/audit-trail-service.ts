@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Comprehensive Audit Trail Service
  * 
@@ -7,8 +6,8 @@
  */
 
 import { db } from '@/db';
-import { financialAuditLog, journalEntries, erpInvoices, bankTransactions } from '@/db/schema/domains/infrastructure';
-import { eq, and, gte, lte, desc, sql } from 'drizzle-orm';
+import { financialAuditLog } from '@/db/schema/domains/infrastructure';
+import { eq, and, gte, lte, desc } from 'drizzle-orm';
 
 export interface AuditLogEntry {
   id: string;
@@ -20,9 +19,12 @@ export interface AuditLogEntry {
   userName: string;
   changes?: Array<{
     field: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     oldValue: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newValue: any;
   }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
   ipAddress?: string;
   userAgent?: string;
@@ -53,12 +55,13 @@ export class AuditTrailService {
     userId: string;
     userName: string;
     changes?: AuditLogEntry['changes'];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: Record<string, any>;
     ipAddress?: string;
     userAgent?: string;
   }): Promise<AuditLogEntry> {
     const [entry] = await db.insert(financialAuditLog).values({
-      tenantId: params.organizationId,
+      organizationId: params.organizationId,
       entityType: params.entityType,
       entityId: params.entityId,
       action: params.action,
@@ -72,8 +75,9 @@ export class AuditTrailService {
     }).returning();
 
     return {
-      ...(entry as AuditLogEntry & { tenantId?: string }),
-      organizationId: (entry as { tenantId?: string }).organizationId /* was tenantId */ || params.organizationId,
+      ...(entry as AuditLogEntry),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      organizationId: (entry as any).organizationId || params.organizationId,
     } as AuditLogEntry;
   }
 
@@ -85,6 +89,7 @@ export class AuditTrailService {
     entryId: string;
     userId: string;
     userName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     entry: any;
     ipAddress?: string;
   }): Promise<void> {
@@ -167,6 +172,7 @@ export class AuditTrailService {
     invoiceId: string;
     userId: string;
     userName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     changes: Array<{ field: string; oldValue: any; newValue: any }>;
     ipAddress?: string;
   }): Promise<void> {
@@ -240,7 +246,7 @@ export class AuditTrailService {
    * Query audit log
    */
   static async queryAuditLog(options: AuditQueryOptions): Promise<AuditLogEntry[]> {
-    const conditions = [eq(financialAuditLog.organizationId /* was tenantId */, options.organizationId)];
+    const conditions = [eq(financialAuditLog.organizationId, options.organizationId)];
 
     if (options.entityType) {
       conditions.push(eq(financialAuditLog.entityType, options.entityType));
@@ -255,6 +261,7 @@ export class AuditTrailService {
     }
 
     if (options.action) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       conditions.push(eq(financialAuditLog.action, options.action as any));
     }
 
@@ -278,8 +285,9 @@ export class AuditTrailService {
       .offset(offset);
 
     return results.map((entry) => ({
-      ...(entry as AuditLogEntry & { tenantId?: string }),
-      organizationId: (entry as { tenantId?: string }).organizationId /* was tenantId */ || options.organizationId,
+      ...(entry as AuditLogEntry),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      organizationId: (entry as any).organizationId || options.organizationId,
     })) as AuditLogEntry[];
   }
 
@@ -529,10 +537,12 @@ export class AuditTrailService {
     actionType: string;
     entityType: string;
     entityId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: Record<string, any>;
     visibilityScope: 'member' | 'staff' | 'admin' | 'system';
     ipAddress?: string;
     userAgent?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any> {
     // Import at method level to avoid circular dependencies
     const { auditLogs } = await import('@/db/schema/audit-security-schema');
@@ -569,6 +579,7 @@ export class AuditTrailService {
    * @param metadata - Raw metadata object
    * @returns Sanitized metadata
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static sanitizeMetadata(metadata: Record<string, any>): Record<string, any> {
     const sensitiveKeys = [
       'password',
@@ -587,6 +598,7 @@ export class AuditTrailService {
       'pin',
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sanitized: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(metadata)) {

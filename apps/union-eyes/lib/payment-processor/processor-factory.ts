@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Processor Factory
  * Creates and manages payment processor instances

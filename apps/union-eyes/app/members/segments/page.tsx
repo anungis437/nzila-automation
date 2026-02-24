@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Member Segments Page
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Select,
   SelectContent,
@@ -81,7 +82,7 @@ export default function MemberSegmentsPage() {
   const fetchSegments = async () => {
     try {
       const data = await api.memberSegments.list();
-      setSegments(data);
+      setSegments(data as Segment[]);
     } catch (error) {
       logger.error('Error fetching segments:', error);
     } finally {

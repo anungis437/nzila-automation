@@ -14,7 +14,7 @@
  * // Emit events
  * eventBus.emit('claim.created', {
  *   claimId: '123',
- *   tenantId: 'org1',
+ *   organizationId: 'org1',
  *   userId: 'user1',
  * });
  * 
@@ -24,11 +24,14 @@
  */
 
 import { logger } from '@/lib/logger';
-import type { TenantId } from '@/types';
+import type { OrganizationId } from '@/types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type EventHandler<T = any> = (event: Event<T>) => void | Promise<void>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AsyncEventHandler<T = any> = (event: Event<T>) => Promise<void>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Event<T = any> {
   type: string;
   data: T;
@@ -38,7 +41,7 @@ export interface Event<T = any> {
 export interface EventMetadata {
   eventId: string;
   timestamp: Date;
-  tenantId?: TenantId;
+  organizationId?: OrganizationId;
   userId?: string;
   source?: string;
   correlationId?: string;
@@ -63,6 +66,7 @@ export class EventBus {
   /**
    * Subscribe to an event type
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on<T = any>(
     eventType: string,
     handler: EventHandler<T>
@@ -89,6 +93,7 @@ export class EventBus {
   /**
    * Subscribe to an event type (fires once then unsubscribes)
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   once<T = any>(
     eventType: string,
     handler: EventHandler<T>
@@ -115,6 +120,7 @@ export class EventBus {
   /**
    * Emit an event (fire-and-forget)
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   emit<T = any>(
     eventType: string,
     data: T,
@@ -174,6 +180,7 @@ export class EventBus {
   /**
    * Emit an event and wait for all handlers to complete
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async emitAndWait<T = any>(
     eventType: string,
     data: T,
@@ -383,7 +390,7 @@ export const AppEvents = {
  */
 export interface ClaimCreatedEvent {
   claimId: string;
-  tenantId: TenantId;
+  organizationId: OrganizationId;
   createdBy: string;
   type: string;
 }
@@ -391,13 +398,13 @@ export interface ClaimCreatedEvent {
 export interface UserRegisteredEvent {
   userId: string;
   email: string;
-  tenantId: TenantId;
+  organizationId: OrganizationId;
 }
 
 export interface VoteCastEvent {
   voteId: string;
   voterId: string;
-  tenantId: TenantId;
+  organizationId: OrganizationId;
   ballotId: string;
 }
 

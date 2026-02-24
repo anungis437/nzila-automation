@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workload Forecast Model
  * 
@@ -149,8 +148,8 @@ export async function loadWorkloadModel(): Promise<tf.LayersModel> {
  * Synthetic pre-training for workload forecasting
  */
 async function syntheticPreTrain(model: tf.LayersModel): Promise<void> {
-  const syntheticExamples = [];
-  const syntheticTargets = [];
+  const syntheticExamples: number[][] = [];
+  const syntheticTargets: number[] = [];
 
   // Generate 200 synthetic examples based on known patterns
   for (let i = 0; i < 200; i++) {

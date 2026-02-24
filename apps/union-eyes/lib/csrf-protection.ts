@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CSRF Protection Middleware
  * 
@@ -19,7 +18,6 @@ import { cookies } from 'next/headers';
 import { Redis } from '@upstash/redis';
 import { logger } from './logger';
 import crypto from 'crypto';
-import { logger } from '@/lib/logger';
 
 // Initialize Redis client (same as rate-limiter)
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN

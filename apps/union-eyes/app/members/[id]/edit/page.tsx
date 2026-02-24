@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-ing /**
+/**
  * Edit Member Page
  * 
  * Edit existing member information
@@ -7,6 +6,8 @@ ing /**
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { logger } from '@/lib/logger';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Select,
   SelectContent,
@@ -66,11 +67,13 @@ export default function EditMemberPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchMember();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const fetchMember = async () => {
     try {
-      const data = await api.members.get(params.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = await api.members.get(params.id) as Record<string, any>;
       
       setFormData({
         firstName: data.firstName || '',

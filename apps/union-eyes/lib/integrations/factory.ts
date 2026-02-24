@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Integration Factory
  * Creates and manages integration adapter instances
@@ -6,13 +5,14 @@
 
 import { logger } from '@/lib/logger';
 import { db } from '@/db/db';
-import { integrationConfigs } from '@/db/schema';
+import { integrationConfigs, integrationProviderEnum, integrationTypeEnum } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import {
   IIntegration,
   IntegrationType,
   IntegrationProvider,
   IntegrationConfig,
+  IntegrationCredentials,
   IntegrationError,
 } from './types';
 import { IntegrationRegistry } from './registry';
@@ -110,7 +110,7 @@ export class IntegrationFactory {
     }
 
     // Create new instance
-    instance = this.createInstance(provider);
+    instance = this.createInstance(provider, organizationId, config);
     await instance.initialize(config);
 
     // Cache instance
@@ -169,7 +169,7 @@ export class IntegrationFactory {
   /**
    * Create integration instance based on provider
    */
-  private createInstance(provider: IntegrationProvider): IIntegration {
+  private createInstance(provider: IntegrationProvider, organizationId: string = '', config?: IntegrationConfig): IIntegration {
     // This will be implemented as we add each adapter
     // For now, throw an error indicating the adapter needs to be implemented
     
@@ -233,18 +233,18 @@ export class IntegrationFactory {
 
       // LMS
       case IntegrationProvider.LINKEDIN_LEARNING:
-        return new LinkedInLearningAdapter();
+        return new LinkedInLearningAdapter(organizationId, { ...config?.credentials, ...config?.settings } as Record<string, unknown>);
 
       // Communication
       case IntegrationProvider.SLACK:
-        return new SlackAdapter();
+        return new SlackAdapter(organizationId, { ...config?.credentials, ...config?.settings } as Record<string, unknown>);
       
       case IntegrationProvider.MICROSOFT_TEAMS:
-        return new TeamsAdapter();
+        return new TeamsAdapter(organizationId, { ...config?.credentials, ...config?.settings } as Record<string, unknown>);
 
       // Document Management
       case IntegrationProvider.SHAREPOINT:
-        return new SharePointAdapter();
+        return new SharePointAdapter(organizationId, { ...config?.credentials, ...config?.settings } as Record<string, unknown>);
 
       default:
         throw new IntegrationError(
@@ -268,7 +268,7 @@ export class IntegrationFactory {
       .where(
         and(
           eq(integrationConfigs.organizationId, organizationId),
-          eq(integrationConfigs.provider, provider)
+          eq(integrationConfigs.provider, provider as (typeof integrationProviderEnum.enumValues)[number])
         )
       )
       .limit(1);
@@ -286,10 +286,10 @@ export class IntegrationFactory {
       organizationId: config.organizationId,
       type: metadata.type,
       provider,
-      credentials: config.credentials as unknown,
-      settings: config.settings as unknown,
+      credentials: config.credentials as IntegrationCredentials,
+      settings: config.settings as Record<string, unknown> | undefined,
       webhookUrl: config.webhookUrl || undefined,
-      enabled: config.enabled,
+      enabled: config.enabled ?? false,
     };
   }
 
@@ -303,7 +303,7 @@ export class IntegrationFactory {
     const conditions = [eq(integrationConfigs.organizationId, organizationId)];
     
     if (type) {
-      conditions.push(eq(integrationConfigs.type, type));
+      conditions.push(eq(integrationConfigs.type, type as (typeof integrationTypeEnum.enumValues)[number]));
     }
 
     const configs = await db
@@ -312,15 +312,15 @@ export class IntegrationFactory {
       .where(and(...conditions));
 
     return configs.map(config => {
-      const metadata = this.registry.getMetadata(config.provider as IntegrationProvider);
+      const _metadata = this.registry.getMetadata(config.provider as IntegrationProvider);
       return {
         organizationId: config.organizationId,
         type: config.type as IntegrationType,
         provider: config.provider as IntegrationProvider,
-        credentials: config.credentials as unknown,
-        settings: config.settings as unknown,
+        credentials: config.credentials as IntegrationCredentials,
+        settings: config.settings as Record<string, unknown> | undefined,
         webhookUrl: config.webhookUrl || undefined,
-        enabled: config.enabled,
+        enabled: config.enabled ?? false,
       };
     });
   }

@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { CreditCard, Plus, Trash2 } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/lib/hooks/use-toast';
 
 interface PaymentMethod {
@@ -43,7 +42,7 @@ export default function PaymentMethodManager({
       if (!response.ok) throw new Error('Failed to load payment methods');
       const data = await response.json();
       setPaymentMethods(data);
-    } catch (error) {
+    } catch (_error) {
 toast({
         title: 'Error',
         description: 'Failed to load payment methods',
@@ -60,9 +59,11 @@ toast({
 
   const handleAddPaymentMethod = async () => {
     toast({
-      title: 'Coming Soon',
-      description: 'Add payment method functionality will be implemented',
+      title: 'Add Payment Method',
+      description: 'Redirecting to payment setup...',
     });
+    // Redirect to Stripe customer portal or inline form
+    window.location.href = '/dashboard/dues/payment-methods/new';
   };
 
   const handleDeletePaymentMethod = async (methodId: string) => {
@@ -79,7 +80,7 @@ toast({
       });
       
       loadPaymentMethods();
-    } catch (error) {
+    } catch (_error) {
 toast({
         title: 'Error',
         description: 'Failed to delete payment method',
@@ -103,7 +104,7 @@ toast({
       
       loadPaymentMethods();
       onUpdate();
-    } catch (error) {
+    } catch (_error) {
 toast({
         title: 'Error',
         description: 'Failed to update default payment method',
@@ -129,7 +130,7 @@ toast({
       });
       
       onUpdate();
-    } catch (error) {
+    } catch (_error) {
 toast({
         title: 'Error',
         description: 'Failed to update AutoPay setting',

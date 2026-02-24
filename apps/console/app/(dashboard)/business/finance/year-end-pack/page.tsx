@@ -175,6 +175,7 @@ export default function YearEndPackPage() {
                 setData(null)
               }}
               className="w-56 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              aria-label="Select entity"
             >
               {entities.map((e) => (
                 <option key={e.id} value={e.id}>{e.legalName}</option>
@@ -188,6 +189,7 @@ export default function YearEndPackPage() {
             value={selectedFiscalYear ?? ''}
             onChange={(e) => setSelectedFiscalYear(e.target.value)}
             className="w-48 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            aria-label="Select fiscal year"
           >
             {taxYears.map((y) => (
               <option key={y.id} value={y.fiscalYearLabel}>{y.fiscalYearLabel}</option>

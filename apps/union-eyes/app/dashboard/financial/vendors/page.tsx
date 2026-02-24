@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
 import VendorList from '@/components/financial/VendorList';
 import { getCurrentUser } from '@/lib/api-auth-guard';
@@ -17,7 +18,7 @@ export default async function VendorsPage() {
   }
 
   // Check minimum role level (85 = Financial Officer)
-  const userLevel = (user as Record<string, unknown>).roleLevel as number || 0;
+  const userLevel = (user as unknown as Record<string, unknown>).roleLevel as number || 0;
   if (userLevel < 85) {
     return (
       <div className="container mx-auto py-10">
@@ -31,7 +32,7 @@ export default async function VendorsPage() {
     );
   }
 
-  const organizationId = (user as Record<string, unknown>).organizationId as string;
+  const organizationId = (user as unknown as Record<string, unknown>).organizationId as string;
 
   return (
     <div className="container mx-auto py-10">

@@ -41,7 +41,7 @@ export async function getOrganizationJurisdiction(organizationId: string): Promi
     
     // Map the old enum value to new format
     return mapJurisdictionValue(rows[0].jurisdiction);
-  } catch (error) {
+  } catch (_error) {
 return null;
   }
 }
@@ -49,13 +49,13 @@ return null;
 /**
  * Get tenant's jurisdiction (via organization lookup)
  */
-export async function getTenantJurisdiction(tenantId: string): Promise<CAJurisdiction | null> {
+export async function getTenantJurisdiction(organizationId: string): Promise<CAJurisdiction | null> {
   try {
     // First try to get from organizations table directly if tenant_id matches org_id
     const result = await db.execute(sql`
       SELECT jurisdiction 
       FROM organizations 
-      WHERE id = ${tenantId}
+      WHERE id = ${organizationId}
     `);
     
     const rows = result as unknown as Array<{ jurisdiction: string }>;
@@ -64,7 +64,7 @@ export async function getTenantJurisdiction(tenantId: string): Promise<CAJurisdi
     }
     
     return null;
-  } catch (error) {
+  } catch (_error) {
 return null;
   }
 }
@@ -97,7 +97,7 @@ export async function getJurisdictionDeadline(
       days: rows[0].days,
       legalReference: rows[0].legal_reference,
     };
-  } catch (error) {
+  } catch (_error) {
 return null;
   }
 }
@@ -125,9 +125,8 @@ export async function calculateBusinessDaysDeadline(
     }
     
     return new Date(rows[0].deadline);
-  } catch (error) {
+  } catch (_error) {
 return null;
   }
 }
-
 

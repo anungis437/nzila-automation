@@ -3,7 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PenTool, UserCheck, Shield, Plus, Edit } from "lucide-react";
+ 
+import { PenTool, UserCheck, Shield, Plus, Edit, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Signatory {
   id: string;
@@ -23,49 +25,41 @@ interface SignatoryManagerProps {
 }
 
 export default function SignatoryManager({ organizationId, canManage = false }: SignatoryManagerProps) {
-  // Mock data - replace with actual API call
-  const signatories: Signatory[] = [
-    {
-      id: "1",
-      name: "John Smith",
-      role: "president",
-      title: "President",
-      authority: "full",
-      activeFrom: "2024-01-01",
-      status: "active",
-      documents: ["contracts", "agreements", "financial", "legal"]
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      role: "secretary_treasurer",
-      title: "Secretary-Treasurer",
-      authority: "full",
-      activeFrom: "2024-01-01",
-      status: "active",
-      documents: ["financial", "contracts", "banking"]
-    },
-    {
-      id: "3",
-      name: "Michael Chen",
-      role: "vice_president",
-      title: "Vice President",
-      authority: "limited",
-      activeFrom: "2024-01-01",
-      status: "active",
-      documents: ["contracts", "agreements"]
-    },
-    {
-      id: "4",
-      name: "Emily Davis",
-      role: "chief_steward",
-      title: "Chief Steward",
-      authority: "limited",
-      activeFrom: "2024-06-01",
-      status: "active",
-      documents: ["grievances", "member-agreements"]
+  const [signatories, setSignatories] = useState<Signatory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchSignatories = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/governance/signatories?organizationId=${organizationId}`);
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setSignatories(items.map((s: any, i: number) => ({
+          id: String(s.id ?? i + 1),
+          name: s.name ?? s.full_name ?? '',
+          role: s.role ?? '',
+          title: s.title ?? s.role ?? '',
+          authority: s.authority ?? 'limited',
+          activeFrom: s.activeFrom ?? s.active_from ?? '',
+          activeTo: s.activeTo ?? s.active_to,
+          status: s.status ?? 'active',
+          documents: s.documents ?? [],
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [organizationId]);
+
+  useEffect(() => { fetchSignatories(); }, [fetchSignatories]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
 
   const getAuthorityColor = (authority: string) => {
     switch (authority) {

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -67,10 +69,15 @@ async function checkFederationAccess(userId: string, orgId: string): Promise<boo
   }
 }
 
-async function getRemittanceData(_federationId: string) {
+async function getRemittanceData(federationId: string) {
   try {
-    // TODO: Replace with actual federation_remittances queries
-    // For now, return placeholder data
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/federation/remittances?federationId=${federationId}`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      return json;
+    }
+    // Fallback to empty state
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 

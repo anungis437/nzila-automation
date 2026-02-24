@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from "next/server";
 import { ProvincialPrivacyService, type Province } from "@/services/provincial-privacy-service";
@@ -7,7 +6,6 @@ import { requireApiAuth } from '@/lib/api-auth-guard';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const consentSchema = z.object({
@@ -30,6 +28,9 @@ export async function POST(request: NextRequest) {
   try {
     // Authentication guard
     const { userId } = await requireApiAuth();
+    if (!userId) {
+      return standardErrorResponse(ErrorCode.AUTH_REQUIRED, 'Unauthorized');
+    }
 
     const body = await request.json();
     
@@ -66,9 +67,9 @@ export async function POST(request: NextRequest) {
       consent,
       message: "Consent recorded successfully" 
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
 return NextResponse.json(
-      { error: error.message || "Failed to record consent" },
+      { error: error instanceof Error ? error.message : "Failed to record consent" },
       { status: 500 }
     );
   }
@@ -84,6 +85,9 @@ export async function GET(request: NextRequest) {
   try {
     // Authentication guard
     const { userId } = await requireApiAuth();
+    if (!userId) {
+      return standardErrorResponse(ErrorCode.AUTH_REQUIRED, 'Unauthorized');
+    }
 
     const { searchParams } = new URL(request.url);
     const province = searchParams.get("province") as Province;
@@ -103,9 +107,9 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.json({ hasConsent });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
 return NextResponse.json(
-      { error: error.message || "Failed to check consent" },
+      { error: error instanceof Error ? error.message : "Failed to check consent" },
       { status: 500 }
     );
   }
@@ -117,14 +121,7 @@ return NextResponse.json(
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession();
-    if (!session?.user) {
-      return standardErrorResponse(
-      ErrorCode.AUTH_REQUIRED,
-      'Unauthorized'
-    );
-    }
-    const userId = session.user?.id;
+    const { userId } = await requireApiAuth();
     if (!userId) {
       return standardErrorResponse(
       ErrorCode.AUTH_REQUIRED,
@@ -152,9 +149,9 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: "Consent revoked successfully" 
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
 return NextResponse.json(
-      { error: error.message || "Failed to revoke consent" },
+      { error: error instanceof Error ? error.message : "Failed to revoke consent" },
       { status: 500 }
     );
   }

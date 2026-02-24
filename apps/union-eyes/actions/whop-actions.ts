@@ -1,11 +1,9 @@
-﻿// @ts-nocheck
 "use server"; // Ensure this only runs on the server
 
 import { getProfileByUserId, updateProfile, updateProfileByWhopUserId, getProfileByEmail, createProfile, deleteProfileById } from "@/db/queries/profiles-queries";
-import { whopApp } from "@/lib/whop";
 import { auth } from '@/lib/api-auth-guard';
 import { revalidatePath } from "next/cache";
-import { getPendingProfileByEmail, markPendingProfileAsClaimed, deletePendingProfile } from "@/db/queries/pending-profiles-queries";
+import { getPendingProfileByEmail, markPendingProfileAsClaimed } from "@/db/queries/pending-profiles-queries";
 import { logger } from '@/lib/logger';
 
 // Convert Whop membership status to our app's membership status
@@ -96,7 +94,7 @@ export const manageWhopMembershipStatusChange = async (
 
 // Check if the current user can access a premium feature
 export async function canAccessPremiumFeatures() {
-  const { userId } = auth();
+  const { userId } = await auth();
   
   if (!userId) {
     return false;
@@ -242,6 +240,7 @@ export async function claimPendingProfile(
 async function claimOldPendingProfile(
   userId: string, 
   email: string, 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pendingProfile: any
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -278,7 +277,7 @@ async function claimOldPendingProfile(
           await deleteProfileById(pendingProfile.userId);
         }
       } catch (cleanupError) {
-        logger.warn('Failed to cleanup temp profile', cleanupError as Error, { tempProfileId: pendingProfile.userId });
+        logger.warn('Failed to cleanup temp profile', { tempProfileId: pendingProfile.userId, error: String(cleanupError) });
       }
     } else {
       // Create a new profile based on the temporary one
@@ -305,7 +304,7 @@ async function claimOldPendingProfile(
       try {
         await deleteProfileById(pendingProfile.userId);
       } catch (cleanupError) {
-        logger.warn('Failed to cleanup temp profile', cleanupError as Error, { tempProfileId: pendingProfile.userId });
+        logger.warn('Failed to cleanup temp profile', { tempProfileId: pendingProfile.userId, error: String(cleanupError) });
       }
     }
     
@@ -324,3 +323,4 @@ async function claimOldPendingProfile(
     };
   }
 } 
+

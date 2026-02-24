@@ -1,5 +1,3 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * AI Precedent Matching API Route
  * 
@@ -14,14 +12,13 @@ import {
   generateLegalMemorandum,
 } from '@/lib/services/ai/precedent-matching-service';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth, BaseAuthContext } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
-import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
+import { checkEntitlement } from '@/lib/services/entitlements';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const matchPrecedentsSchema = z.object({
@@ -34,9 +31,8 @@ const matchPrecedentsSchema = z.object({
   }),
   options: z.record(z.string(), z.unknown()).default({}),
 });
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
-    const user = { id: context.userId, organizationId: context.organizationId };
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
+    const _user = { id: context.userId, organizationId: context.organizationId };
 
     // CRITICAL: Rate limit AI calls (expensive OpenAI API)
     const rateLimitResult = await checkRateLimit(
@@ -151,8 +147,7 @@ return NextResponse.json(
         { status: 500 }
       );
     }
-    })(request);
-};
+});
 
 /**
  * Example request bodies:

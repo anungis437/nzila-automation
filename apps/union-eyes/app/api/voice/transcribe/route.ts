@@ -1,8 +1,6 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { transcribeAudioWithLanguage, type SupportedLanguage } from "@/lib/azure-speech";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import {
   ErrorCode,
   standardErrorResponse,
@@ -11,8 +9,7 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 60; // Maximum duration in seconds
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, _context) => {
   try {
       // Authenticate user
       // Parse form data
@@ -21,19 +18,19 @@ export const POST = async (request: NextRequest) => {
       const language = (formData.get("language") as SupportedLanguage) || "en-CA";
 
       if (!audioFile) {
-        return standardErrorResponse(ErrorCode.VALIDATION_ERROR);
+        return standardErrorResponse(ErrorCode.VALIDATION_ERROR, 'Audio file is required');
       }
 
       // Validate file type
       const validTypes = ["audio/wav", "audio/webm", "audio/ogg", "audio/mp3", "audio/mpeg"];
       if (!validTypes.includes(audioFile.type)) {
-        return standardErrorResponse(ErrorCode.VALIDATION_ERROR);
+        return standardErrorResponse(ErrorCode.VALIDATION_ERROR, 'Invalid audio file type');
       }
 
       // Validate file size (max 25MB)
       const maxSize = 25 * 1024 * 1024;
       if (audioFile.size > maxSize) {
-        return standardErrorResponse(ErrorCode.VALIDATION_ERROR);
+        return standardErrorResponse(ErrorCode.VALIDATION_ERROR, 'Audio file too large (max 25MB)');
       }
 
       // Convert file to buffer
@@ -44,7 +41,7 @@ export const POST = async (request: NextRequest) => {
       const text = await transcribeAudioWithLanguage(buffer, language);
 
       if (!text || text.trim().length === 0) {
-        return standardErrorResponse(ErrorCode.VALIDATION_ERROR);
+        return standardErrorResponse(ErrorCode.VALIDATION_ERROR, 'Transcription returned empty result');
       }
 
       return NextResponse.json({
@@ -54,9 +51,8 @@ export const POST = async (request: NextRequest) => {
         success: true,
       });
 
-    } catch (error) {
-return standardErrorResponse(ErrorCode.INTERNAL_ERROR);
+    } catch (_error) {
+return standardErrorResponse(ErrorCode.INTERNAL_ERROR, 'Transcription failed');
     }
-    })(request);
-};
+});
 

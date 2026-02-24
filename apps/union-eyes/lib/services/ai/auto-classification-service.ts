@@ -11,14 +11,10 @@
  * - Cross-reference detection
  */
 
-import { OpenAI } from 'openai';
+import { getAiClient, UE_APP_KEY, UE_PROFILES } from '@/lib/ai/ai-client';
 import type { ClauseType } from '@/db/schema/domains/agreements';
-import type { PrecedentValueEnum, OutcomeEnum, DecisionTypeEnum } from '@/db/schema/domains/agreements';
+import type { PrecedentValueEnum, OutcomeEnum } from '@/db/schema/domains/agreements';
 import { logger } from '@/lib/logger';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Clause type definitions with descriptions for classification
 const CLAUSE_TYPE_DEFINITIONS: Record<ClauseType, string> = {
@@ -110,23 +106,23 @@ Clause Content:
 ${clauseContent}`
       : clauseContent;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.2,
+    const ai = getAiClient();
+    const response = await ai.extract({
+      entityId: context?.jurisdiction || 'system',
+      appKey: UE_APP_KEY,
+      profileKey: UE_PROFILES.CLAUSE_CLASSIFICATION,
+      promptKey: UE_PROFILES.CLAUSE_CLASSIFICATION,
+      input: `${systemPrompt}\n\n${userContent}`,
+      dataClass: 'internal',
     });
 
-    const result = JSON.parse(response.choices[0]?.message?.content || '{}');
+    const result = response.data as Record<string, unknown>;
     
     return {
-      clauseType: result.clauseType || 'other',
-      confidence: result.confidence || 0.5,
-      alternativeTypes: result.alternativeTypes || [],
-      reasoning: result.reasoning || 'Classification based on content analysis',
+      clauseType: (result.clauseType as ClauseType) || 'other',
+      confidence: (result.confidence as number) || 0.5,
+      alternativeTypes: (result.alternativeTypes as { type: ClauseType; confidence: number }[]) || [],
+      reasoning: (result.reasoning as string) || 'Classification based on content analysis',
     };
   } catch (error) {
     logger.error('Error classifying clause', { error });
@@ -160,24 +156,21 @@ Return JSON with:
 - confidence: Overall confidence in tag quality (0.0-1.0)`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: `Clause Type: ${clauseType}\n\nContent: ${clauseContent}`,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.3,
+    const ai = getAiClient();
+    const response = await ai.extract({
+      entityId: 'system',
+      appKey: UE_APP_KEY,
+      profileKey: UE_PROFILES.TAG_GENERATION,
+      promptKey: UE_PROFILES.TAG_GENERATION,
+      input: `${systemPrompt}\n\nClause Type: ${clauseType}\n\nContent: ${clauseContent}`,
+      dataClass: 'internal',
     });
 
-    const result = JSON.parse(response.choices[0]?.message?.content || '{"tags": [], "confidence": 0.5}');
+    const result = response.data as Record<string, unknown>;
     
     return {
-      tags: result.tags || [],
-      confidence: result.confidence || 0.5,
+      tags: (result.tags as string[]) || [],
+      confidence: (result.confidence as number) || 0.5,
     };
   } catch (error) {
     logger.error('Error generating tags', { error });
@@ -206,21 +199,21 @@ Return JSON with:
 - confidence: Confidence in completeness (0.0-1.0)`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: clauseContent },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.2,
+    const ai = getAiClient();
+    const response = await ai.extract({
+      entityId: 'system',
+      appKey: UE_APP_KEY,
+      profileKey: UE_PROFILES.CROSS_REFERENCE,
+      promptKey: UE_PROFILES.CROSS_REFERENCE,
+      input: `${systemPrompt}\n\n${clauseContent}`,
+      dataClass: 'internal',
     });
 
-    const result = JSON.parse(response.choices[0]?.message?.content || '{"references": [], "confidence": 0.5}');
+    const result = response.data as Record<string, unknown>;
     
     return {
-      references: result.references || [],
-      confidence: result.confidence || 0.5,
+      references: (result.references as string[]) || [],
+      confidence: (result.confidence as number) || 0.5,
     };
   } catch (error) {
     logger.error('Error detecting cross-references', { error });
@@ -274,33 +267,24 @@ Return JSON with:
 - reasoning: Brief explanation`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: `Case: ${caseTitle}
-
-Facts: ${facts}
-
-Reasoning: ${reasoning}
-
-Decision: ${decision}`,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.2,
+    const ai = getAiClient();
+    const response = await ai.extract({
+      entityId: 'system',
+      appKey: UE_APP_KEY,
+      profileKey: UE_PROFILES.PRECEDENT_CLASSIFICATION,
+      promptKey: UE_PROFILES.PRECEDENT_CLASSIFICATION,
+      input: `${systemPrompt}\n\nCase: ${caseTitle}\n\nFacts: ${facts}\n\nReasoning: ${reasoning}\n\nDecision: ${decision}`,
+      dataClass: 'internal',
     });
 
-    const result = JSON.parse(response.choices[0]?.message?.content || '{}');
+    const result = response.data as Record<string, unknown>;
     
     return {
-      precedentValue: (result.precedentValue || 'medium') as PrecedentValueEnum,
-      outcome: (result.outcome || 'split') as OutcomeEnum,
-      issueType: result.issueType || 'other',
-      confidence: result.confidence || 0.5,
-      reasoning: result.reasoning || 'Classification based on case analysis',
+      precedentValue: (result.precedentValue as PrecedentValueEnum) || ('medium' as PrecedentValueEnum),
+      outcome: (result.outcome as OutcomeEnum) || ('split' as OutcomeEnum),
+      issueType: (result.issueType as string) || 'other',
+      confidence: (result.confidence as number) || 0.5,
+      reasoning: (result.reasoning as string) || 'Classification based on case analysis',
     };
   } catch (error) {
     logger.error('Error classifying precedent', { error });
@@ -377,7 +361,7 @@ export async function enrichClauseMetadata(
   crossReferences: CrossReferenceResult;
 }> {
   // Run all enrichment functions in parallel
-  const [classification, tags, crossReferences] = await Promise.all([
+  const [classification, _tags, crossReferences] = await Promise.all([
     classifyClause(clauseContent, context),
     generateClauseTags(clauseContent, 'other'), // Will be updated with actual type
     detectCrossReferences(clauseContent),

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Rate Limiting Utility
  * 
@@ -15,7 +14,6 @@
 import { Redis } from '@upstash/redis';
 import { logger } from './logger';
 import { circuitBreakers, CIRCUIT_BREAKERS, CircuitBreakerOpenError } from './circuit-breaker';
-import { logger } from '@/lib/logger';
 
 // Initialize Redis client (using Upstash for serverless-friendly Redis)
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN

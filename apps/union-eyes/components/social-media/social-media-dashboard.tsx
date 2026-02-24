@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+ 
 import {
   Facebook,
   Twitter,
@@ -30,11 +31,10 @@ import {
   Send,
   Image as ImageIcon,
   Video,
-  Link as LinkIcon,
+  Link as _LinkIcon,
   Hash,
   AtSign,
   TrendingUp,
-  Users,
   Heart,
   MessageCircle,
   Share2,
@@ -43,13 +43,12 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  AlertCircle,
   RefreshCw,
   Plus,
-  Filter,
+  Filter as _Filter,
   Search,
   Download,
-  Settings
+  Settings,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -91,7 +90,7 @@ interface SocialPost {
   engagementRate: number;
 }
 
-interface Campaign {
+interface _Campaign {
   id: string;
   name: string;
   status: 'planning' | 'active' | 'paused' | 'completed';
@@ -103,108 +102,6 @@ interface Campaign {
   totalEngagement: number;
   goalEngagementRate: number;
 }
-
-// ================================================================
-// SAMPLE DATA
-// ================================================================
-
-const sampleAccounts: SocialAccount[] = [
-  {
-    id: '1',
-    platform: 'facebook',
-    username: 'local123union',
-    displayName: 'Local 123 UFCW',
-    profileImageUrl: '/avatars/facebook.png',
-    status: 'active',
-    followerCount: 12500,
-    engagementRate: 4.8,
-    isPrimary: true
-  },
-  {
-    id: '2',
-    platform: 'twitter',
-    username: '@local123',
-    displayName: 'Local 123',
-    profileImageUrl: '/avatars/twitter.png',
-    status: 'active',
-    followerCount: 8300,
-    engagementRate: 3.2,
-    isPrimary: true
-  },
-  {
-    id: '3',
-    platform: 'instagram',
-    username: 'local123union',
-    displayName: 'Local 123 UFCW',
-    profileImageUrl: '/avatars/instagram.png',
-    status: 'active',
-    followerCount: 15200,
-    engagementRate: 6.5,
-    isPrimary: true
-  },
-  {
-    id: '4',
-    platform: 'linkedin',
-    username: 'local-123-ufcw',
-    displayName: 'Local 123 UFCW',
-    profileImageUrl: '/avatars/linkedin.png',
-    status: 'active',
-    followerCount: 4200,
-    engagementRate: 2.1,
-    isPrimary: false
-  }
-];
-
-const samplePosts: SocialPost[] = [
-  {
-    id: '1',
-    accountId: '1',
-    platform: 'facebook',
-    content: 'Join us tomorrow for our monthly membership meeting! We\'ll discuss the new contract proposal and upcoming strike vote. #UnionStrong #Local123',
-    postType: 'text',
-    mediaUrls: ['/posts/meeting.jpg'],
-    hashtags: ['UnionStrong', 'Local123'],
-    status: 'scheduled',
-    scheduledFor: new Date(Date.now() + 86400000),
-    likesCount: 0,
-    commentsCount: 0,
-    sharesCount: 0,
-    impressionsCount: 0,
-    engagementRate: 0
-  },
-  {
-    id: '2',
-    accountId: '2',
-    platform: 'twitter',
-    content: 'VICTORY! Our members voted 95% YES on the new contract! Better wages, stronger benefits, and job security for all. This is what solidarity looks like. #1u',
-    postType: 'text',
-    mediaUrls: [],
-    hashtags: ['1u'],
-    status: 'published',
-    publishedAt: new Date(Date.now() - 7200000),
-    likesCount: 342,
-    commentsCount: 56,
-    sharesCount: 128,
-    impressionsCount: 8500,
-    engagementRate: 6.2
-  },
-  {
-    id: '3',
-    accountId: '3',
-    platform: 'instagram',
-    content: 'Meet Sarah, shop steward and 12-year member. "This union changed my life. I went from barely making ends meet to owning my home." 💪 #MemberSpotlight',
-    postType: 'image',
-    mediaUrls: ['/posts/sarah.jpg'],
-    hashtags: ['MemberSpotlight'],
-    status: 'published',
-    publishedAt: new Date(Date.now() - 172800000),
-    likesCount: 892,
-    commentsCount: 43,
-    sharesCount: 67,
-    impressionsCount: 12300,
-    engagementRate: 8.1
-  }
-];
 
 // ================================================================
 // HELPER FUNCTIONS
@@ -226,7 +123,7 @@ const getPlatformColor = (platform: SocialPlatform): string => {
   const colors = {
     facebook: 'bg-blue-600',
     twitter: 'bg-sky-500',
-    instagram: 'bg-gradient-to-tr from-purple-600 via-pink-600 to-orange-500',
+    instagram: 'bg-linear-to-tr from-purple-600 via-pink-600 to-orange-500',
     linkedin: 'bg-blue-700',
     youtube: 'bg-red-600',
     tiktok: 'bg-black'
@@ -255,24 +152,63 @@ const formatNumber = (num: number): string => {
 // ================================================================
 
 export default function SocialMediaDashboard() {
+  const [accounts, setAccounts] = useState<SocialAccount[]>([]);
+  const [posts, setPosts] = useState<SocialPost[]>([]);
   const [selectedTab, setSelectedTab] = useState('overview');
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>(['1', '2', '3']);
+  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [newPostContent, setNewPostContent] = useState('');
-  const [newPostHashtags, setNewPostHashtags] = useState<string[]>([]);
+  const [_newPostHashtags, _setNewPostHashtags] = useState<string[]>([]);
   const [newPostSchedule, setNewPostSchedule] = useState<Date>();
   const [selectedPostType, setSelectedPostType] = useState<PostType>('text');
   const [filterStatus, setFilterStatus] = useState<PostStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const activeAccounts = sampleAccounts.filter(a => a.status === 'active');
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [accRes, postsRes] = await Promise.all([
+        fetch('/api/v2/social-media/accounts'),
+        fetch('/api/v2/social-media/posts'),
+      ]);
+      if (accRes.ok) {
+        const data = await accRes.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        setAccounts(items);
+        setSelectedAccounts(items.filter((a: SocialAccount) => a.status === 'active').map((a: SocialAccount) => a.id));
+      }
+      if (postsRes.ok) {
+        const data = await postsRes.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setPosts(items.map((p: any) => ({
+          ...p,
+          scheduledFor: p.scheduledFor ? new Date(p.scheduledFor) : undefined,
+          publishedAt: p.publishedAt ? new Date(p.publishedAt) : undefined,
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  const activeAccounts = accounts.filter(a => a.status === 'active');
   const totalFollowers = activeAccounts.reduce((sum, a) => sum + a.followerCount, 0);
-  const avgEngagementRate = activeAccounts.reduce((sum, a) => sum + a.engagementRate, 0) / activeAccounts.length;
+  const avgEngagementRate = activeAccounts.length > 0 ? activeAccounts.reduce((sum, a) => sum + a.engagementRate, 0) / activeAccounts.length : 0;
 
-  const filteredPosts = samplePosts.filter(post => {
+  const filteredPosts = posts.filter(post => {
     if (filterStatus !== 'all' && post.status !== filterStatus) return false;
     if (searchQuery && !post.content.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -407,7 +343,7 @@ export default function SocialMediaDashboard() {
                 <CardDescription>Latest posts and engagement</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {samplePosts.slice(0, 3).map(post => {
+                {posts.slice(0, 3).map(post => {
                   const Icon = getPlatformIcon(post.platform);
                   return (
                     <div key={post.id} className="flex items-start gap-3 p-3 border rounded-lg">
@@ -610,7 +546,7 @@ export default function SocialMediaDashboard() {
                 <Card key={post.id}>
                   <CardContent className="pt-6">
                     <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-full ${getPlatformColor(post.platform)} flex items-center justify-center flex-shrink-0`}>
+                      <div className={`w-12 h-12 rounded-full ${getPlatformColor(post.platform)} flex items-center justify-center shrink-0`}>
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">

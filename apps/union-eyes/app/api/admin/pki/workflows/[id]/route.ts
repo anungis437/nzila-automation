@@ -1,5 +1,3 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 
 // =====================================================================================
 // PKI Workflow Details API - Status, Advance, Cancel
@@ -22,10 +20,9 @@ import { withAdminAuth } from '@/lib/api-auth-guard';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withAdminAuth(async (request, context) => {
+  return withAdminAuth(async (request, _context) => {
   try {
       const workflowId = params.id;
       const { searchParams } = new URL(request.url);
@@ -71,7 +68,7 @@ const adminPkiWorkflowsSchema = z.object({
 });
 
 export const PUT = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withAdminAuth(async (request, context) => {
+  return withAdminAuth(async (_request, _context) => {
   try {
       const workflowId = params.id;
 
@@ -120,7 +117,7 @@ export const DELETE = async (request: NextRequest, { params }: { params: { id: s
     );
       }
 
-      cancelWorkflow(workflowId, userId, reason);
+      cancelWorkflow(workflowId, userId as string, reason);
 
       return NextResponse.json({
         success: true,

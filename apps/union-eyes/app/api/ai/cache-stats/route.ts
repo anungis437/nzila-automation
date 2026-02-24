@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AI Embedding Cache Statistics API
  * 
@@ -71,7 +70,7 @@ export const GET = withAdminAuth(async (_request: NextRequest) => {
  */
 
 const aiCacheStatsSchema = z.object({
-  action: z.unknown().optional(),
+  action: z.enum(['clear', 'reset-stats']).optional(),
 });
 
 export const POST = withAdminAuth(async (request: NextRequest) => {
@@ -79,7 +78,7 @@ export const POST = withAdminAuth(async (request: NextRequest) => {
     const user = await getCurrentUser();
     const body = await request.json();
     // Validate request body
-    const validation = aiCache-statsSchema.safeParse(body);
+    const validation = aiCacheStatsSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,

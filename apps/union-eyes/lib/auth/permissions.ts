@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Permission Matrix & Authorization Utilities
  * Re-exports and augments the permission system from roles.ts
@@ -8,7 +7,7 @@ import { UserRole, Permission, ROLE_PERMISSIONS } from './roles';
 import type { PermissionCheckOptions, RoleCheckOptions } from './types';
 import { db } from '@/db';
 import { organizationMembers } from '@/db/schema/organization-members-schema';
-import { eq, and, isNull } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * Check if a role has a specific permission
@@ -66,8 +65,7 @@ return false;
       .where(
         and(
           eq(organizationMembers.organizationId, options.organizationId),
-          eq(organizationMembers.userId, options.userId),
-          isNull(organizationMembers.deletedAt)
+          eq(organizationMembers.userId, options.userId)
         )
       )
       .limit(1);
@@ -78,7 +76,7 @@ return false;
 
     const mappedRole = mapOrganizationRoleToUserRole(member.role);
     return roleHasPermission(mappedRole, options.permission);
-  } catch (error) {
+  } catch (_error) {
 return false;
   }
 }
@@ -105,8 +103,7 @@ return false;
       .where(
         and(
           eq(organizationMembers.organizationId, options.organizationId),
-          eq(organizationMembers.userId, options.userId),
-          isNull(organizationMembers.deletedAt)
+          eq(organizationMembers.userId, options.userId)
         )
       )
       .limit(1);
@@ -118,7 +115,7 @@ return false;
     const mappedRole = mapOrganizationRoleToUserRole(member.role);
     const requiredRoles = Array.isArray(options.role) ? options.role : [options.role];
     return requiredRoles.includes(mappedRole);
-  } catch (error) {
+  } catch (_error) {
 return false;
   }
 }
@@ -137,7 +134,7 @@ function mapOrganizationRoleToUserRole(role: string): UserRole {
 }
 
 /**
- * Re-export permission system
+ * Re-export permission system (UserRole excluded - exported via unified-auth)
  */
-export { UserRole, Permission, ROLE_PERMISSIONS };
+export { Permission, ROLE_PERMISSIONS };
 

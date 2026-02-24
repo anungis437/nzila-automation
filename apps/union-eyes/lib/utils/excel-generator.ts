@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Excel Generator Utility
  * 
@@ -96,7 +95,8 @@ export async function generateExcel(options: ExcelOptions): Promise<Buffer> {
   headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
   // Add data rows
-  data.forEach((row, index) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data.forEach((row: any, index) => {
     const excelRow = worksheet.addRow(row);
 
     // Apply body font
@@ -392,7 +392,7 @@ export async function generateTrainingReportExcel(data: {
 export function applyConditionalFormatting(
   worksheet: ExcelJS.Worksheet,
   range: string,
-  rules: unknown[]
+  rules: ExcelJS.ConditionalFormattingRule[]
 ) {
   worksheet.addConditionalFormatting({
     ref: range,

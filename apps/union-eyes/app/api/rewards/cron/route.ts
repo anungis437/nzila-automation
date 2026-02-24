@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Cron Job for Rewards Automation
  * Runs scheduled tasks for automated awards, expiration warnings, etc.
@@ -10,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { db } from '@/db';
 import { processAnniversaryAwards, processScheduledAwards } from '@/lib/services/rewards/automation-service';
 import { sendBatchExpirationWarnings } from '@/lib/services/rewards/notification-service';
@@ -17,7 +17,6 @@ import { sendBatchExpirationWarnings } from '@/lib/services/rewards/notification
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * POST /api/rewards/cron
@@ -32,11 +31,14 @@ import {
  */
 export async function POST(request: NextRequest) {
   try {
-    // 1. Verify cron secret
+    // 1. Verify cron secret (timing-safe comparison)
     const authHeader = request.headers.get('authorization');
-    const secret = authHeader?.replace('Bearer ', '');
+    const secret = authHeader?.replace('Bearer ', '') ?? '';
+    const expected = process.env.CRON_SECRET ?? '';
+    const secretBuf = Buffer.from(secret);
+    const expectedBuf = Buffer.from(expected);
 
-    if (secret !== process.env.CRON_SECRET) {
+    if (secretBuf.length !== expectedBuf.length || !timingSafeEqual(secretBuf, expectedBuf)) {
       return standardErrorResponse(
       ErrorCode.AUTH_REQUIRED,
       'Unauthorized'
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const task = searchParams.get('task') || 'all';
 
-    const results = {
+    const results: { timestamp: string; task: string; executed: Array<Record<string, unknown>> } = {
       timestamp: new Date().toISOString(),
       task,
       executed: [],
@@ -105,9 +107,9 @@ return NextResponse.json({
       success: true,
       data: results,
     });
-  } catch (error: Record<string, unknown>) {
-return NextResponse.json(
-      { error: error.message || 'Failed to execute scheduled tasks' },
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to execute scheduled tasks' },
       { status: 500 }
     );
   }
@@ -116,7 +118,7 @@ return NextResponse.json(
 /**
  * GET handler - health check
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   return NextResponse.json({
     status: 'healthy',
     service: 'rewards-cron',

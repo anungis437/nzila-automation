@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Static Generation Examples and Patterns
  * 
@@ -21,8 +20,6 @@
 
 import { NextResponse } from 'next/server';
 import { db } from '@/db/db';
-import { organizations } from '@/db/schema';
-import { publicContent } from '@/db/schema';
 
 // ============================================================================
 // Example 1: Basic Static Page with ISR (Incremental Static Regeneration)
@@ -41,12 +38,11 @@ export async function getStaticOrganizationsPage() {
   // export const revalidate = 300; // 5 minutes
   
   const orgs = await db.query.organizations.findMany({
-    where: (organizations, { eq }) => eq(organizations.isPublic, true),
+    where: (organizations, { eq }) => eq(organizations.status, 'active'),
     columns: {
       id: true,
       name: true,
-      description: true,
-      logoUrl: true
+      description: true
     },
     limit: 100
   });
@@ -70,7 +66,7 @@ export async function generateOrganizationStaticParams() {
   // export async function generateStaticParams() { ... }
   
   const topOrganizations = await db.query.organizations.findMany({
-    where: (organizations, { eq }) => eq(organizations.isPublic, true),
+    where: (organizations, { eq }) => eq(organizations.status, 'active'),
     columns: {
       slug: true
     },
@@ -96,15 +92,11 @@ export async function getOrganizationDetailPage(slug: string) {
   const org = await db.query.organizations.findFirst({
     where: (organizations, { eq, and }) => and(
       eq(organizations.slug, slug),
-      eq(organizations.isPublic, true)
+      eq(organizations.status, 'active')
     ),
     with: {
       members: {
         limit: 10
-      },
-      events: {
-        limit: 5,
-        orderBy: (events, { desc }) => [desc(events.startDate)]
       }
     }
   });
@@ -179,10 +171,10 @@ export async function revalidateOrganization(slug: string, token: string) {
     revalidatePath('/public/organizations');
     
     // Revalidate by tag (if using cache tags)
-    revalidateTag(`organization-${slug}`);
+    revalidateTag(`organization-${slug}`, 'default');
     
     return NextResponse.json({ revalidated: true, now: Date.now() });
-  } catch (err) {
+  } catch (_err) {
     return NextResponse.json({ message: 'Error revalidating' }, { status: 500 });
   }
 }

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Bulk Import Wizard Page
  * 
@@ -7,14 +6,15 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { logger } from '@/lib/logger';
 import { 
   Upload, FileText, CheckCircle, XCircle, AlertTriangle, ArrowLeft 
@@ -26,8 +26,9 @@ export default function BulkImportPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<ImportStep>('upload');
   const [file, setFile] = useState<File | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
-  const [validationResults, setValidationResults] = useState<any>(null);
+  const [_jobId, setJobId] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [_validationResults, _setValidationResults] = useState<any>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];

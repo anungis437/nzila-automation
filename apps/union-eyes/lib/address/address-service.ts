@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * International Address Validation Service
  * 
@@ -13,7 +12,6 @@ import {
   countryAddressFormats,
   addressValidationCache,
   addressChangeHistory,
-  type NewInternationalAddress,
   type InternationalAddress,
   type CountryAddressFormat,
 } from "@/db/schema";
@@ -299,8 +297,8 @@ class SmartyStreetsProvider implements AddressValidationProvider {
     }
     
     return {
-      latitude: validation.metadata.latitude,
-      longitude: validation.metadata.longitude,
+      latitude: validation.metadata.latitude as string,
+      longitude: validation.metadata.longitude as string,
       accuracy: "rooftop",
     };
   }
@@ -350,7 +348,7 @@ export class AddressService {
           postalCode: data.postalCode,
           countryCode: data.countryCode,
         });
-      } catch (error) {
+      } catch (_error) {
 }
     }
     
@@ -366,7 +364,7 @@ export class AddressService {
           postalCode: data.postalCode,
           countryCode: data.countryCode,
         });
-      } catch (error) {
+      } catch (_error) {
 }
     }
     
@@ -388,9 +386,9 @@ export class AddressService {
     const [address] = await db
       .insert(internationalAddresses)
       .values({
-        tenantId: data.organizationId,
+        organizationId: data.organizationId,
         userId: data.userId,
-        addressType: data.addressType as unknown,
+        addressType: data.addressType as typeof internationalAddresses.$inferInsert['addressType'],
         countryCode: data.countryCode,
         countryName: countryFormat.countryName,
         addressLine1: data.addressLine1,
@@ -418,7 +416,7 @@ export class AddressService {
         validationResult: validationResult
           ? {
               isValid: validationResult.isValid,
-              confidence: validationResult.confidence,
+              confidence: ({ high: 1, medium: 0.5, low: 0.25 } as Record<string, number>)[validationResult.confidence] ?? 0.5,
               corrections: validationResult.corrections,
               metadata: validationResult.metadata,
             }
@@ -516,7 +514,7 @@ export class AddressService {
     
     if (format.displayOrder) {
       for (const field of format.displayOrder) {
-        const value = (address as unknown)[field];
+        const value = (address as unknown as Record<string, string>)[field];
         if (value) parts.push(value);
       }
     } else {
@@ -589,9 +587,9 @@ export class AddressService {
       
       return {
         isValid: cached[0].isValid,
-        confidence: (cached[0].confidence as unknown) || "medium",
+        confidence: (cached[0].confidence as ValidationResult['confidence']) || "medium",
         corrections: cached[0].correctedAddress || undefined,
-        metadata: (cached[0].metadata as unknown) || undefined,
+        metadata: (cached[0].metadata as Record<string, unknown>) || undefined,
       };
     }
     
@@ -622,9 +620,9 @@ export class AddressService {
       validatedBy: "google",
       confidence: result.confidence,
       correctedAddress: result.corrections,
-      latitude: result.metadata?.latitude,
-      longitude: result.metadata?.longitude,
-      metadata: result.metadata,
+      latitude: result.metadata?.latitude as string | undefined,
+      longitude: result.metadata?.longitude as string | undefined,
+      metadata: result.metadata as Record<string, unknown> | undefined,
       expiresAt,
     });
   }

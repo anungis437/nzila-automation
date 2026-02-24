@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 "use client";
 
 /**
@@ -65,6 +64,7 @@ type AlertExecutionSummary = {
   startedAt: string;
   completedAt: string | null;
   executionTimeMs: number | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   actionsExecuted: any;
   errorMessage?: string | null;
 };
@@ -75,6 +75,7 @@ type AlertEscalationSummary = {
   alertRuleName: string | null;
   name: string;
   description: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   escalationLevels: any;
   status: string;
   currentLevel: number;
@@ -165,6 +166,7 @@ export default function AlertManagementDashboard() {
 
   useEffect(() => {
     fetchAlertData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filter alert rules
@@ -444,6 +446,7 @@ export default function AlertManagementDashboard() {
                 </select>
                 <select
                   value={selectedStatus}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onChange={(e) => setSelectedStatus(e.target.value as any)}
                   className="border rounded-md px-3 py-2"
                 >
@@ -744,7 +747,7 @@ export default function AlertManagementDashboard() {
 
                     return (
                       <div key={category} className="flex items-center justify-between">
-                        <span className="text-sm capitalize">{category.replace('_', ' ')}</span>
+                        <span className="text-sm capitalize">{(category as string).replace('_', ' ')}</span>
                         <div className="flex items-center gap-2">
                           <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div 

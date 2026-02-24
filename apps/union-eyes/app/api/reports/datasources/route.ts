@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Data Sources API
  * 
@@ -17,9 +16,8 @@ import { getAllDataSources } from '@/lib/report-executor';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-async function getHandler(req: NextRequest, context) {
+async function getHandler(_req: NextRequest, _context) {
   try {
     const user = await getCurrentUser();
     if (!user || !user.organizationId) {
@@ -29,8 +27,8 @@ async function getHandler(req: NextRequest, context) {
     );
     }
     
-    const organizationId = user.organizationId;
-    const userId = user.id;
+    const _organizationId = user.organizationId;
+    const _userId = user.id;
     
     // Get data sources from report executor registry
     const dataSources = getAllDataSources();
@@ -59,9 +57,9 @@ async function getHandler(req: NextRequest, context) {
       dataSources: formattedDataSources,
       count: formattedDataSources.length,
     });
-  } catch (error: Record<string, unknown>) {
-return NextResponse.json(
-      { error: 'Failed to fetch data sources', details: error.message },
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: 'Failed to fetch data sources', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

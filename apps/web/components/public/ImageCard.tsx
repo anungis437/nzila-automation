@@ -25,8 +25,8 @@ export default function ImageCard({
   };
 
   const overlayClasses = {
-    dark: 'bg-gradient-to-t from-black/80 via-black/40 to-black/20',
-    gradient: 'bg-gradient-to-br from-navy/90 via-electric/30 to-violet/40',
+    dark: 'bg-linear-to-t from-black/80 via-black/40 to-black/20',
+    gradient: 'bg-linear-to-br from-navy/90 via-electric/30 to-violet/40',
     none: '',
   };
 

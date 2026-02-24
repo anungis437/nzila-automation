@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * API Security Utilities
  * 
@@ -11,7 +10,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/api-auth-guard';
 import { validateEnvironment } from '@/lib/config/env-validation';
 import { SQLInjectionScanner } from '@/lib/middleware/sql-injection-prevention';
-import { RequestValidator } from '@/lib/middleware/request-validation';
 import { AuthenticationService, SUPPORTED_ROLES } from '@/lib/middleware/auth-middleware';
 import { db } from '@/db';
 import { organizationMembers } from '@/db/schema/organization-members-schema';
@@ -138,7 +136,8 @@ export function withSecureAPI(handler: ApiHandlerWithAuth): ApiHandler {
         );
       }
 
-      const sessionOrganizationId = (authResult as unknown)?.orgId || (authResult as unknown)?.organizationId;
+      const authData = authResult as unknown as Record<string, unknown>;
+      const sessionOrganizationId = (authData?.orgId || authData?.organizationId) as string | undefined;
 
       // Check for SQL injection patterns in request
       const bodyText = await request.clone().text();

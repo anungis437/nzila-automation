@@ -14,6 +14,8 @@
 
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -54,23 +56,25 @@ export default function HealthSafetyPage() {
 
   useEffect(() => {
     if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
       loadQuickStats();
     }
   }, [organizationId, period]);
 
   const loadQuickStats = async () => {
     try {
-      // In production, this would fetch from your API
-      // Example: const response = await fetch(`/api/health-safety/stats?organizationId=${organizationId}&period=${period}`);
-      // For now, using mock data matching the component interface
-      setQuickStats({
-        totalIncidents: 12,
-        openHazards: 8,
-        inspectionsDue: 3,
-        trainingDue: 15,
-        daysWithoutIncident: 45,
-        complianceRate: 94,
-      });
+      const res = await fetch(`/api/v2/health-safety/stats?organizationId=${organizationId}&period=${period}`);
+      if (res.ok) {
+        const json = await res.json();
+        setQuickStats({
+          totalIncidents: json.totalIncidents ?? json.total_incidents ?? 0,
+          openHazards: json.openHazards ?? json.open_hazards ?? 0,
+          inspectionsDue: json.inspectionsDue ?? json.inspections_due ?? 0,
+          trainingDue: json.trainingDue ?? json.training_due ?? 0,
+          daysWithoutIncident: json.daysWithoutIncident ?? json.days_without_incident ?? 0,
+          complianceRate: json.complianceRate ?? json.compliance_rate ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load health & safety statistics");
@@ -95,7 +99,7 @@ export default function HealthSafetyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Page Header */}
         <motion.div
@@ -123,7 +127,7 @@ export default function HealthSafetyPage() {
               Export Data
             </Button>
             <Link href="/dashboard/health-safety/incidents/new">
-              <Button className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700">
+              <Button className="flex items-center gap-2 bg-linear-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700">
                 <Plus className="h-4 w-4" />
                 Report Incident
               </Button>
@@ -192,7 +196,7 @@ export default function HealthSafetyPage() {
           className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
         >
           <Link href="/dashboard/health-safety/incidents">
-            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:shadow-xl transition-all cursor-pointer group">
+            <Card className="bg-linear-to-br from-blue-500 to-blue-600 text-white hover:shadow-xl transition-all cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <FileWarning className="h-8 w-8" />
@@ -207,7 +211,7 @@ export default function HealthSafetyPage() {
           </Link>
 
           <Link href="/dashboard/health-safety/inspections">
-            <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white hover:shadow-xl transition-all cursor-pointer group">
+            <Card className="bg-linear-to-br from-green-500 to-green-600 text-white hover:shadow-xl transition-all cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <ClipboardCheck className="h-8 w-8" />
@@ -222,7 +226,7 @@ export default function HealthSafetyPage() {
           </Link>
 
           <Link href="/dashboard/health-safety/hazards">
-            <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white hover:shadow-xl transition-all cursor-pointer group">
+            <Card className="bg-linear-to-br from-orange-500 to-orange-600 text-white hover:shadow-xl transition-all cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <AlertTriangle className="h-8 w-8" />
@@ -237,7 +241,7 @@ export default function HealthSafetyPage() {
           </Link>
 
           <Link href="/dashboard/health-safety/training">
-            <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white hover:shadow-xl transition-all cursor-pointer group">
+            <Card className="bg-linear-to-br from-purple-500 to-purple-600 text-white hover:shadow-xl transition-all cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <Users className="h-8 w-8" />

@@ -16,8 +16,10 @@ export type SelectClaim = typeof claims.$inferSelect;
  */
 export const createClaim = async (
   data: Omit<InsertClaim, 'claimId' | 'claimNumber' | 'createdAt' | 'updatedAt'>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       // Generate claim number (format: CASE-YYYYMMDD-XXXX)
@@ -61,6 +63,7 @@ export const createClaim = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -70,8 +73,10 @@ export const createClaim = async (
  */
 export const getClaimsByMember = async (
   memberId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const memberClaims = await dbOrTx
@@ -90,6 +95,7 @@ export const getClaimsByMember = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -101,11 +107,13 @@ export const getClaimsByMember = async (
 export const getClaimsByOrganization = async (
   organizationSlug: string,
   limit?: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
-      // Convert organization slug to UUID (tenantId)
+      // Convert organization slug to UUID
       const [org] = await dbOrTx
         .select({ id: organizations.id })
         .from(organizations)
@@ -116,15 +124,16 @@ export const getClaimsByOrganization = async (
         throw new Error(`Organization with slug ${organizationSlug} not found`);
       }
       
-      const tenantId = org.id;
+      const orgId = org.id;
       
       let query = dbOrTx
         .select()
         .from(claims)
-        .where(eq(claims.organizationId, tenantId))
+        .where(eq(claims.organizationId, orgId))
         .orderBy(desc(claims.createdAt));
       
       if (limit) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.limit(limit) as any;
       }
       
@@ -139,6 +148,7 @@ export const getClaimsByOrganization = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -148,8 +158,10 @@ export const getClaimsByOrganization = async (
  */
 export const getClaimById = async (
   claimId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const [claim] = await dbOrTx
@@ -167,6 +179,7 @@ export const getClaimById = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -179,8 +192,10 @@ export const updateClaimStatus = async (
   newStatus: SelectClaim['status'],
   updatedBy: string,
   notes?: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       // Update the claim
@@ -211,6 +226,7 @@ export const updateClaimStatus = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -222,8 +238,10 @@ export const assignClaim = async (
   claimId: string,
   assignedTo: string,
   assignedBy: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const [updatedClaim] = await dbOrTx
@@ -254,6 +272,7 @@ export const assignClaim = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -265,15 +284,17 @@ export const assignClaim = async (
 export const getClaimsAssignedToUser = async (
   userId: string,
   organizationSlug?: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const conditions = [eq(claims.assignedTo, userId)];
       
       // Filter by organization if provided (for multi-tenant isolation)
       if (organizationSlug) {
-        // Convert organization slug to UUID (tenantId)
+        // Convert organization slug to UUID
         const [org] = await dbOrTx
           .select({ id: organizations.id })
           .from(organizations)
@@ -301,6 +322,7 @@ export const getClaimsAssignedToUser = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -310,14 +332,16 @@ export const getClaimsAssignedToUser = async (
  */
 export const getClaimStatistics = async (
   organizationSlugOrId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       // Check if input is a UUID (contains hyphens and is 36 chars) or a slug
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(organizationSlugOrId);
       
-      // Convert organization slug/id to UUID (tenantId)
+      // Convert organization slug/id to UUID
       const [org] = await dbOrTx
         .select({ id: organizations.id })
         .from(organizations)
@@ -332,7 +356,7 @@ export const getClaimStatistics = async (
         throw new Error(`Organization with ${isUUID ? 'id' : 'slug'} ${organizationSlugOrId} not found`);
       }
       
-      const tenantId = org.id;
+      const orgId = org.id;
       
       // Total active claims (not resolved or closed)
       const [activeClaims] = await dbOrTx
@@ -340,7 +364,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             sql`${claims.status} NOT IN ('resolved', 'closed', 'rejected')`
           )
         );
@@ -351,7 +375,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             sql`${claims.status} IN ('submitted', 'under_review')`
           )
         );
@@ -362,7 +386,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             eq(claims.status, 'resolved')
           )
         );
@@ -373,7 +397,7 @@ export const getClaimStatistics = async (
         .from(claims)
         .where(
           and(
-            eq(claims.organizationId, tenantId),
+            eq(claims.organizationId, orgId),
             sql`${claims.priority} IN ('high', 'critical')`,
             sql`${claims.status} NOT IN ('resolved', 'closed', 'rejected')`
           )
@@ -394,6 +418,7 @@ export const getClaimStatistics = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -403,8 +428,10 @@ export const getClaimStatistics = async (
  */
 export const getRecentClaimUpdates = async (
   claimId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const updates = await dbOrTx
@@ -424,6 +451,7 @@ export const getRecentClaimUpdates = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -436,8 +464,10 @@ export const addClaimUpdate = async (
   message: string,
   createdBy: string,
   updateType: string = 'note',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const [newUpdate] = await dbOrTx
@@ -468,6 +498,7 @@ export const addClaimUpdate = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -477,8 +508,10 @@ export const addClaimUpdate = async (
  */
 export const deleteClaim = async (
   claimId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const [deletedClaim] = await dbOrTx
@@ -501,6 +534,7 @@ export const deleteClaim = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };

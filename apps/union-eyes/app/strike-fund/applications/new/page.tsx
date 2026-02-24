@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Strike Fund Application Form
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
 
 interface ApplicationData {

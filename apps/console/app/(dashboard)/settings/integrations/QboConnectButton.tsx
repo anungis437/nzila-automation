@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@nzila/ui'
+import { validateRedirectUrl } from '@/lib/sanitize'
 
 interface QboConnectButtonProps {
   entityId: string
@@ -31,7 +32,9 @@ export function QboConnectButton({
       if (!res.ok || !data.authUrl) {
         throw new Error(data.error ?? 'Failed to build authorization URL')
       }
-      window.location.href = data.authUrl
+      const safeUrl = validateRedirectUrl(data.authUrl)
+      if (!safeUrl) throw new Error('Untrusted redirect URL')
+      window.location.href = safeUrl
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)

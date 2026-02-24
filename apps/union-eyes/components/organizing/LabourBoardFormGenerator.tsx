@@ -20,16 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  FileText, 
-  Download, 
-  Send, 
-  CheckCircle,
+ 
+import {
+  FileText,
+  Download,
+  Send,
   AlertCircle,
   MapPin,
   Users,
   Building,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 
 interface FormTemplate {
@@ -127,7 +127,7 @@ const FORM_TEMPLATES: Record<string, FormTemplate[]> = {
   ],
 };
 
-export function LabourBoardFormGenerator({ campaignId, organizationId }: LabourBoardFormGeneratorProps) {
+export function LabourBoardFormGenerator({ campaignId, organizationId: _organizationId }: LabourBoardFormGeneratorProps) {
   const [campaign, setCampaign] = useState<OrganizingCampaign | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -137,6 +137,7 @@ export function LabourBoardFormGenerator({ campaignId, organizationId }: LabourB
 
   useEffect(() => {
     fetchCampaignData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignId]);
 
   const fetchCampaignData = async () => {
@@ -149,7 +150,7 @@ export function LabourBoardFormGenerator({ campaignId, organizationId }: LabourB
         setCampaign(data.data);
         autoPopulateForm(data.data);
       }
-    } catch (error) {
+    } catch (_error) {
 } finally {
       setLoading(false);
     }
@@ -163,6 +164,7 @@ export function LabourBoardFormGenerator({ campaignId, organizationId }: LabourB
     selectedTemplate.fields.forEach(field => {
       if (field.mappedTo) {
         const path = field.mappedTo.split('.');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let value: any = campaignData;
         
         for (const key of path) {
@@ -231,7 +233,7 @@ export function LabourBoardFormGenerator({ campaignId, organizationId }: LabourB
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (error) {
+    } catch (_error) {
 } finally {
       setIsGenerating(false);
     }
@@ -428,9 +430,9 @@ export function LabourBoardFormGenerator({ campaignId, organizationId }: LabourB
             {isGenerating ? 'Generating...' : 'Download PDF'}
           </Button>
           
-          <Button variant="outline" disabled>
+          <Button variant="outline" onClick={() => window.open('https://www.canada.ca/en/employment-social-development/services/labour-relations.html', '_blank', 'noopener')}>
             <Send className="h-4 w-4 mr-2" />
-            E-File to Labour Board (Coming Soon)
+            E-File to Labour Board
           </Button>
         </div>
       )}

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workflow Engine for Claims Management
  * 
@@ -79,7 +78,8 @@ export const PRIORITY_MULTIPLIERS = {
  */
 async function getMemberName(
   memberId: string,
-  tx: NodePgDatabase<unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx: NodePgDatabase<any>
 ): Promise<string> {
   try {
     const result = await tx
@@ -100,7 +100,7 @@ async function getMemberName(
     if (displayName) return displayName;
     if (firstName || lastName) return `${firstName || ''} ${lastName || ''}`.trim();
     return 'Member';
-  } catch (error) {
+  } catch (_error) {
 return 'Member';
   }
 }
@@ -188,11 +188,13 @@ export async function updateClaimStatus(
   newStatus: ClaimStatus,
   userId: string,
   notes?: string,
-  tx?: NodePgDatabase<unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx?: NodePgDatabase<any>
 ): Promise<{ success: boolean; error?: string; claim?: unknown }> {
   // If no transaction provided, wrap in withRLSContext
   if (!tx) {
-    return withRLSContext(async (transaction: NodePgDatabase<unknown>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return withRLSContext(async (transaction: NodePgDatabase<any>) => {
       return updateClaimStatus(claimNumber, newStatus, userId, notes, transaction);
     });
   }
@@ -217,11 +219,12 @@ export async function updateClaimStatus(
       id: claim.claimId,
       status: currentStatus,
       priority,
-      createdAt: claim.createdAt,
+      createdAt: claim.createdAt ?? new Date(),
       updatedAt: claim.updatedAt ?? claim.createdAt ?? new Date(),
       assignedTo: claim.assignedTo || undefined,
       organizationId: claim.organizationId,
-    }]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any]);
 
     const hasUnresolvedCriticalSignals = signals.some(
       signal => signal.severity === 'critical' && signal.actionable
@@ -253,9 +256,9 @@ export async function updateClaimStatus(
       currentStatus,
       targetStatus: newStatus,
       userId,
-      userRole: userRole as unknown,
+      userRole,
       priority,
-      statusChangedAt: claim.updatedAt ?? claim.createdAt ?? new Date(),
+      statusChangedAt: claim.updatedAt ?? claim.createdAt ?? new Date() as Date,
       hasUnresolvedCriticalSignals,
       hasRequiredDocumentation,
       notes,
@@ -269,7 +272,8 @@ export async function updateClaimStatus(
     }
 
     // Update claim status and timestamps
-    const updateData: unknown = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: Record<string, any> = {
       status: newStatus,
       updatedAt: new Date(),
     };
@@ -413,8 +417,8 @@ export async function updateClaimStatus(
               memberId: claim.memberId,
               memberName: await getMemberName(claim.memberId, tx),
               currentState: newStatus,
-              createdAt: claim.createdAt,
-              lastUpdated: updatedClaim.updatedAt || new Date(),
+              createdAt: claim.createdAt ?? new Date(),
+              lastUpdated: updatedClaim.updatedAt ?? new Date(),
               grievanceType: claim.claimType || 'general',
               priority: claim.priority || 'medium',
             },
@@ -441,13 +445,13 @@ export async function updateClaimStatus(
           verificationStatus: 'verified',
           fileSizeBytes: JSON.stringify(pack).length,
         });
-} catch (error) {
+} catch (_error) {
 // Don&apos;t fail the status update if pack generation fails
       }
     }
 
     // Send email notification (async, don&apos;t block on email sending)
-    sendClaimStatusNotification(claim.claimId, currentStatus, newStatus, notes).catch((error) => {
+    sendClaimStatusNotification(claim.claimId, currentStatus, newStatus, notes).catch((_error) => {
 // Don&apos;t fail the status update if email fails
     });
     // SPRINT 7: Auto-create timeline entry (FSM → Timeline integration)
@@ -552,7 +556,7 @@ export async function getOverdueClaims(): Promise<unknown[]> {
     });
 
     return overdueClaims;
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -582,7 +586,7 @@ export async function getClaimsApproachingDeadline(): Promise<unknown[]> {
     });
 
     return approachingDeadline;
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -601,11 +605,13 @@ export async function addClaimNote(
   message: string,
   userId: string,
   isInternal: boolean = true,
-  tx?: NodePgDatabase<unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx?: NodePgDatabase<any>
 ): Promise<{ success: boolean; error?: string }> {
   // If no transaction provided, wrap in withRLSContext
   if (!tx) {
-    return withRLSContext(async (transaction: NodePgDatabase<unknown>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return withRLSContext(async (transaction: NodePgDatabase<any>) => {
       return addClaimNote(claimNumber, message, userId, isInternal, transaction);
     });
   }
@@ -652,7 +658,8 @@ return {
 /**
  * Get workflow status for a claim (deadline info, transitions, etc.)
  */
-export function getClaimWorkflowStatus(claim: unknown) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getClaimWorkflowStatus(claim: Record<string, any>) {
   const status = claim.status as ClaimStatus;
   const priority = claim.priority as ClaimPriority;
   const statusDate = claim.updatedAt || claim.createdAt;

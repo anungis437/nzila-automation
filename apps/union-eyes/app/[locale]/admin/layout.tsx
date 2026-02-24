@@ -9,6 +9,7 @@ import { ReactNode } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth/rbac-server";
 import { 
   LayoutDashboard, 
   Users, 
@@ -33,8 +34,12 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
     redirect(`/${locale}/sign-in`);
   }
 
-  // TODO: Add RBAC check here once integrated with requireAdmin()
-  // For now, relying on page-level checks
+  // RBAC check — only admins can access admin layout
+  try {
+    await requireAdmin();
+  } catch {
+    redirect(`/${locale}/dashboard`);
+  }
 
   const navItems = [
     { 
@@ -123,7 +128,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
                     href={item.href}
                     className="flex items-start gap-3 px-3 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors group"
                   >
-                    <Icon className="h-5 w-5 mt-0.5 flex-shrink-0 group-hover:text-blue-600" />
+                    <Icon className="h-5 w-5 mt-0.5 shrink-0 group-hover:text-blue-600" />
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm">{item.label}</div>
                       <div className="text-xs text-gray-500 group-hover:text-blue-600 truncate">
@@ -136,7 +141,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
             </nav>
 
             {/* Quick Stats Card */}
-            <div className="mt-4 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg shadow-sm border p-4 text-white">
+            <div className="mt-4 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg shadow-sm border p-4 text-white">
               <h3 className="text-sm font-semibold mb-2">Admin Access</h3>
               <p className="text-xs opacity-90">
                 You have full system access. All actions are logged for audit.

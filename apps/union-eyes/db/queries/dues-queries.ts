@@ -1,7 +1,6 @@
-﻿// @ts-nocheck
 "use server";
 
-import { eq, and, desc, sql, sum, gte, lte } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { duesTransactions, type DuesTransaction, type NewDuesTransaction } from "../schema/dues-transactions-schema";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { withRLSContext } from "@/lib/db/with-rls-context";
@@ -12,8 +11,10 @@ import { logger } from "@/lib/logger";
  */
 export const getDuesBalanceByMember = async (
   memberId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       // Get all transactions for the member
@@ -52,6 +53,7 @@ export const getDuesBalanceByMember = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -67,8 +69,10 @@ export const getDuesTransactionsByMember = async (
     endDate?: Date;
     limit?: number;
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       let query = dbOrTx
@@ -108,6 +112,7 @@ export const getDuesTransactionsByMember = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -122,14 +127,16 @@ export const getDuesTransactionsByOrganization = async (
     startDate?: Date;
     endDate?: Date;
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const transactions = await dbOrTx
         .select()
         .from(duesTransactions)
-        .where(eq(duesTransactions.tenantId, organizationId))
+        .where(eq(duesTransactions.organizationId, organizationId))
         .orderBy(desc(duesTransactions.dueDate));
 
       let filtered = transactions;
@@ -156,6 +163,7 @@ export const getDuesTransactionsByOrganization = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -165,8 +173,10 @@ export const getDuesTransactionsByOrganization = async (
  */
 export const createDuesTransaction = async (
   data: NewDuesTransaction,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const [transaction] = await dbOrTx
@@ -176,7 +186,7 @@ export const createDuesTransaction = async (
 
       return transaction;
     } catch (error) {
-      logger.error("Error creating dues transaction", { error, organizationId: data.tenantId });
+      logger.error("Error creating dues transaction", { error, organizationId: data.organizationId });
       throw new Error("Failed to create dues transaction");
     }
   };
@@ -184,6 +194,7 @@ export const createDuesTransaction = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -199,8 +210,10 @@ export const updateDuesTransactionStatus = async (
     paymentReference?: string;
     receiptUrl?: string;
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const updateData: Partial<DuesTransaction> = {
@@ -233,6 +246,7 @@ export const updateDuesTransactionStatus = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -241,8 +255,10 @@ export const updateDuesTransactionStatus = async (
  * Mark overdue transactions (to be called by a scheduled job)
  */
 export const markOverdueTransactions = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const today = new Date();
@@ -271,6 +287,7 @@ export const markOverdueTransactions = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };
@@ -280,14 +297,16 @@ export const markOverdueTransactions = async (
  */
 export const getOrganizationDuesSummary = async (
   organizationId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx?: NodePgDatabase<any>
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeQuery = async (dbOrTx: NodePgDatabase<any>) => {
     try {
       const transactions = await dbOrTx
         .select()
         .from(duesTransactions)
-        .where(eq(duesTransactions.tenantId, organizationId));
+        .where(eq(duesTransactions.organizationId, organizationId));
 
       const pending = transactions.filter(t => t.status === 'pending');
       const overdue = transactions.filter(t => t.status === 'overdue');
@@ -331,6 +350,7 @@ export const getOrganizationDuesSummary = async (
   if (tx) {
     return executeQuery(tx);
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return withRLSContext(async (tx: NodePgDatabase<any>) => executeQuery(tx));
   }
 };

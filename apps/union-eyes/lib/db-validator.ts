@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Database Health Check & Validation
  * 
@@ -49,7 +48,7 @@ export async function checkDatabaseHealth(timeout = 5000): Promise<DatabaseHealt
     return {
       healthy: true,
       responseTime: Date.now() - startTime,
-      details: result as unknown,
+      details: result as DatabaseHealthStatus['details'],
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -80,7 +79,8 @@ async function performHealthCheck() {
     `);
     
     // Handle both array and rows format
-    const rows = Array.isArray(result) ? result : result.rows || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows = Array.isArray(result) ? result : (result as any).rows || [];
     const row = rows[0];
     
     return {
@@ -151,7 +151,8 @@ export async function testDatabaseQuery(): Promise<boolean> {
     `);
     
     // Handle both array and rows format
-    const rows = Array.isArray(result) ? result : result.rows || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows = Array.isArray(result) ? result : (result as any).rows || [];
     const count = rows[0]?.count;
     logger.info('Database query test passed', { tableCount: count });
     return true;
@@ -180,8 +181,10 @@ export async function validateDatabaseSchema(): Promise<{
     `);
     
     // Handle both array and rows format
-    const rows = Array.isArray(result) ? result : result.rows || [];
-    const tables = rows.map((row: unknown) => row.table_name);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows = Array.isArray(result) ? result : (result as any).rows || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tables = rows.map((row: any) => row.table_name);
     const tableCount = tables.length;
     
     // Check for critical tables
@@ -223,36 +226,39 @@ export async function validateDatabaseSchema(): Promise<{
  * Performs connection check, query test, and schema validation
  * 
  * @param throwOnError - Whether to throw error if validation fails
- * @returns Promise<boolean> - true if all checks pass
+ * @returns Promise with isHealthy flag and any error messages
  */
-export async function runDatabaseStartupChecks(throwOnError = false): Promise<boolean> {
+export async function runDatabaseStartupChecks(throwOnError = false): Promise<{ isHealthy: boolean; errors: string[] }> {
   logger.info('Running database startup validation');
+  const errors: string[] = [];
   
   // 1. Validate connection with retries
   const connectionValid = await validateDatabaseConnection(3, 2000);
   if (!connectionValid) {
-    const error = new Error('Database connection validation failed');
-    if (throwOnError) throw error;
-    return false;
+    const msg = 'Database connection validation failed';
+    errors.push(msg);
+    if (throwOnError) throw new Error(msg);
+    return { isHealthy: false, errors };
   }
   
   // 2. Test query execution
   const queryValid = await testDatabaseQuery();
   if (!queryValid) {
-    const error = new Error('Database query test failed');
-    if (throwOnError) throw error;
-    return false;
+    const msg = 'Database query test failed';
+    errors.push(msg);
+    if (throwOnError) throw new Error(msg);
+    return { isHealthy: false, errors };
   }
   
   // 3. Validate schema
   const schemaResult = await validateDatabaseSchema();
   if (!schemaResult.valid) {
     logger.warn('Database schema validation warnings detected');
-    // Don&apos;t fail on schema warnings, just log them
+    // Don't fail on schema warnings, just log them
   }
   
   logger.info('All database startup checks passed');
-  return true;
+  return { isHealthy: true, errors };
 }
 
 /**

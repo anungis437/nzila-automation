@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Unified LRB Service
  * 
@@ -16,15 +15,11 @@
 
 import { logger } from '@/lib/logger';
 import { db } from '@/db/db';
-import { 
-  lrbAgreements, 
-  lrbEmployers, 
-  lrbUnions, 
+import {
+  lrbAgreements,
   lrbSyncLog,
-  lrbSourceEnum,
-  agreementStatusEnum
 } from '@/db/schema/lrb-agreements-schema';
-import { eq, and, desc, like, or, gte, sql } from 'drizzle-orm';
+import { eq, and, desc, like, sql, type SQL } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
 // =============================================================================
@@ -59,10 +54,10 @@ export interface LRBSyncResult {
 export interface AgreementComparison {
   employerName: string;
   unionName: string;
-  sector: string;
+  sector: string | null;
   jurisdiction: string;
-  effectiveDate: string | null;
-  expiryDate: string | null;
+  effectiveDate: Date | null;
+  expiryDate: Date | null;
   hourlyWageRange: string | null;
   annualSalaryRange: string | null;
   source: string;
@@ -83,6 +78,7 @@ class OntarioLRBClient {
     page?: number;
     employerName?: string;
     unionName?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any[]> {
     // Placeholder: In production, this would call the actual Ontario LRB API
     // or scrape their website using puppeteer/cheerio
@@ -131,6 +127,7 @@ class BCLRBClient {
     page?: number;
     employerName?: string;
     unionName?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any[]> {
     logger.info('[LRB] Fetching BC LRB agreements', params);
     
@@ -492,6 +489,7 @@ export class UnifiedLRBService {
    * Search agreements
    */
   async search(params: LRBSearchParams): Promise<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     agreements: any[];
     total: number;
     page: number;
@@ -501,7 +499,7 @@ export class UnifiedLRBService {
     const limit = params.limit || 20;
     const offset = (page - 1) * limit;
 
-    const conditions = [];
+    const conditions: SQL[] = [];
     
     if (params.source) {
       conditions.push(eq(lrbAgreements.source, params.source));
@@ -551,6 +549,7 @@ export class UnifiedLRBService {
   /**
    * Get agreement by ID
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getById(id: string): Promise<any> {
     const result = await db.select()
       .from(lrbAgreements)
@@ -564,7 +563,7 @@ export class UnifiedLRBService {
    * Get wage comparisons for an occupation
    */
   async getWageComparisons(nocCode: string, jurisdiction?: string): Promise<AgreementComparison[]> {
-    const conditions = [];
+    const conditions: SQL[] = [];
     
     if (jurisdiction) {
       conditions.push(eq(lrbAgreements.jurisdiction, jurisdiction));

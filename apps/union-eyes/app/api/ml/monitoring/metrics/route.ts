@@ -1,15 +1,11 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from 'drizzle-orm';
-import { logger } from '@/lib/logger';
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
-import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { db } from '@/db';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * GET /api/ml/monitoring/metrics
@@ -38,7 +34,7 @@ import {
  *   timestamp: string
  * }
  */
-export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
+export const GET = withRoleAuth('member', async (request: NextRequest, context) => {
   const { userId, organizationId } = context;
 
   // Rate limit monitoring reads
@@ -138,12 +134,12 @@ export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
     // Transform database results into response format
     const models = ((modelMetrics as Array<Record<string, unknown>>) || []).map((row: Record<string, unknown>) => ({
       modelName: row.model_name,
-      accuracy: parseFloat(row.accuracy || 0),
-      precision: parseFloat(row.precision || 0),
-      recall: parseFloat(row.recall || 0),
-      f1Score: parseFloat(row.f1_score || 0),
-      predictions24h: parseInt(row.predictions_24h || 0),
-      avgConfidence: parseFloat(row.avg_confidence || 0),
+      accuracy: Number(row.accuracy) || 0,
+      precision: Number(row.precision) || 0,
+      recall: Number(row.recall) || 0,
+      f1Score: Number(row.f1_score) || 0,
+      predictions24h: Number(row.predictions_24h) || 0,
+      avgConfidence: Number(row.avg_confidence) || 0,
       lastUpdated: row.last_evaluated_at || new Date().toISOString(),
       status: row.status || 'healthy',
       trend: row.trend || 'stable'

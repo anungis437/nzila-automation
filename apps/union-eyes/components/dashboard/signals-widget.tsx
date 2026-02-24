@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Dashboard Signals Widget
  * 
@@ -23,7 +22,7 @@ import {
   type DashboardStats,
 } from '@/lib/services/lro-signals';
 import { SignalBadge } from '../cases/signal-badge';
-import { useFeatureFlags, getFeatureConfig } from '@/lib/hooks/use-feature-flags';
+import { useFeatureFlags } from '@/lib/hooks/use-feature-flags';
 import { LRO_FEATURES } from '@/lib/services/feature-flags';
 
 interface DashboardSignalsWidgetProps {
@@ -59,6 +58,7 @@ export function DashboardSignalsWidget({
   }, [cases]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshSignals();
 
     // Auto-refresh only if feature flag enabled
@@ -279,7 +279,7 @@ function SignalRow({ signal }: SignalRowProps) {
         </div>
 
         {signal.actionable && signal.actionText && (
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <span className="inline-block px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium whitespace-nowrap">
               {signal.actionText}
             </span>

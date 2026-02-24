@@ -1,5 +1,10 @@
+ 
 /**
  * Check Database Tables - Verify what tables exist
+ *
+ * NzilaOS-GATE: ADMIN-ONLY diagnostic script.
+ * This script inspects information_schema metadata and does NOT access Org-scoped data.
+ * Raw postgres is permitted here per PR-UE-01 allowlist.
  */
 
 import postgres from 'postgres';
@@ -43,7 +48,7 @@ const tablesToCheck = [
       const exists = result[0].exists;
 if (exists) {
         // Check column count
-        const columns = await sql`
+        const _columns = await sql`
           SELECT column_name 
           FROM information_schema.columns 
           WHERE table_schema = 'public' 
@@ -51,7 +56,7 @@ if (exists) {
           ORDER BY ordinal_position
         `;
 }
-    } catch (error) {
+    } catch (_error) {
 }
   }
 

@@ -173,7 +173,7 @@ export const bodySchemas = {
   createOrganization: z.object({
     name: z.string().min(2, 'Organization name must be at least 2 characters').max(200, 'Name too long'),
     slug: z.string().min(1, 'Slug required').max(100, 'Slug too long').regex(/^[a-z0-9-_]+$/, 'Slug must contain only lowercase letters, numbers, hyphens, and underscores'),
-    type: z.enum(['congress', 'federation', 'union', 'local', 'region', 'district'], {
+    type: z.enum(['platform', 'congress', 'federation', 'union', 'local', 'region', 'district'], {
       errorMap: () => ({ message: 'Invalid organization type' })
     }),
     parentId: commonSchemas.uuid.optional().nullable(),

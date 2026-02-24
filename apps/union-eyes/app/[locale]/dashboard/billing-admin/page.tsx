@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Billing Admin Dashboard
  * For Billing Manager & Billing Specialists - Subscription & payment operations
@@ -7,7 +6,9 @@
  * @dashboard_path /dashboard/billing-admin
  */
 
-import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
+
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -53,19 +54,15 @@ export default async function BillingAdminDashboard() {
   const billingData = await getBillingSubscriptions();
   
   // Fallback to placeholder if API fails
-  const subscriptions = billingData?.data?.subscriptions || [
-    { customer: 'Unifor Local 1', plan: 'Professional', mrr: 1200, status: 'active', renewal: '2026-03-15' },
-    { customer: 'CUPE Local 416', plan: 'Enterprise', mrr: 2500, status: 'active', renewal: '2026-02-28' },
-    { customer: 'UAW Local 27', plan: 'Professional', mrr: 1200, status: 'past-due', renewal: '2026-02-10' },
-  ];
+  const subscriptions = billingData?.data?.subscriptions || [];
   
   const metrics = billingData?.data?.metrics || {
-    total_mrr: 428900,
-    active_subscriptions: 342,
-    payment_success_rate: 98.5,
-    past_due_count: 3,
-    mrr_growth: 45000,
-    new_subscriptions: 12,
+    total_mrr: 0,
+    active_subscriptions: 0,
+    payment_success_rate: 0,
+    past_due_count: 0,
+    mrr_growth: 0,
+    new_subscriptions: 0,
   };
   
   return (
@@ -207,6 +204,7 @@ export default async function BillingAdminDashboard() {
                 <p className="text-sm text-muted-foreground">No subscriptions found</p>
               ) : (
                 <div className="space-y-3">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {subscriptions.map((sub: any) => (
                     <div key={sub.id || sub.customer} className="flex items-center justify-between border-b pb-3 last:border-0">
                       <div className="space-y-1">

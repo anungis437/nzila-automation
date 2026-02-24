@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * SMS Service
  * 
@@ -17,6 +16,8 @@
  * Created: February 13, 2026
  */
 
+import { logger } from '@/lib/logger';
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -26,6 +27,7 @@ export interface SMSMessage {
   body: string;
   from?: string; // Sending phone number or shortcode
   mediaUrl?: string[]; // MMS support
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
 }
 
@@ -206,7 +208,7 @@ export class TwilioAdapter implements SMSProvider {
 
       // Add media URLs for MMS
       if (message.mediaUrl && message.mediaUrl.length > 0) {
-        message.mediaUrl.forEach((url, index) => {
+        message.mediaUrl.forEach((url, _index) => {
           body.append('MediaUrl', url);
         });
       }
@@ -316,7 +318,7 @@ export class MockSMSAdapter implements SMSProvider {
   private sentMessages: SMSMessage[] = [];
 
   async send(message: SMSMessage): Promise<SMSResult> {
-    logger.info('[MOCK SMS] Sending:', message);
+    logger.info('[MOCK SMS] Sending:', { to: message.to, body: message.body });
     this.sentMessages.push(message);
     
     return {

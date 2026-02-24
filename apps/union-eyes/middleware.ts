@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Next.js Edge Middleware
  * 
@@ -43,11 +42,31 @@
 
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './lib/locales';
-import { PUBLIC_API_ROUTES, CRON_API_ROUTES, isPublicRoute as isPublicApiRoute } from './lib/public-routes';
+import { CRON_API_ROUTES, isPublicRoute as isPublicApiRoute } from './lib/public-routes';
 
-const isProtectedRoute = createRouteMatcher([
+// ---------------------------------------------------------------------------
+// os-core telemetry – request-id propagation  (Edge-safe)
+// ---------------------------------------------------------------------------
+// The full createRequestContext() from @nzila/os-core/telemetry uses Node.js
+// APIs (AsyncLocalStorage, node:crypto) that are unavailable on the Edge
+// runtime. Instead, the middleware sets a lightweight `x-request-id` header
+// on every response so downstream API routes (running on Node.js) can call
+// createRequestContext(req) and pick it up automatically.
+// ---------------------------------------------------------------------------
+function ensureRequestId(req: NextRequest): string {
+  return req.headers.get('x-request-id') ?? crypto.randomUUID();
+}
+
+/** Attach telemetry headers to an outgoing response. */
+function withRequestId(response: NextResponse, requestId: string): NextResponse {
+  response.headers.set('x-request-id', requestId);
+  return response;
+}
+
+const _isProtectedRoute = createRouteMatcher([
   "/:locale/dashboard(.*)"
 ]);
 
@@ -61,7 +80,14 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/login(.*)",
   "/:locale/signup(.*)",
   "/:locale/sign-in(.*)",
-  "/:locale/sign-up(.*)"
+  "/:locale/sign-up(.*)",
+  // Marketing pages (no locale prefix)
+  "/story(.*)",
+  "/pricing(.*)",
+  "/contact(.*)",
+  "/status(.*)",
+  "/case-studies(.*)",
+  "/pilot-request(.*)",
 ]);
 
 // Clerk's auth pages live at root (no locale prefix) — skip intl redirect for them
@@ -70,6 +96,18 @@ const isClerkAuthPath = createRouteMatcher([
   "/sign-up(.*)",
   "/login(.*)",
   "/signup(.*)",
+]);
+
+// Marketing / public pages live at root (no locale prefix).
+// They use (marketing)/layout.tsx with their own SiteNavigation + SiteFooter.
+const isMarketingPath = createRouteMatcher([
+  "/",
+  "/story(.*)",
+  "/pricing(.*)",
+  "/contact(.*)",
+  "/status(.*)",
+  "/case-studies(.*)",
+  "/pilot-request(.*)",
 ]);
 
 // PR #4: Removed duplicate API route lists (now imported from lib/api-auth-guard.ts)
@@ -114,6 +152,9 @@ const isOriginAllowed = (origin: string | null): boolean => {
 
 // This handles both payment provider use cases from whop-setup.md and stripe-setup.md
 export default clerkMiddleware(async (auth, req) => {
+  // os-core: generate / forward a request-id for distributed tracing
+  const requestId = ensureRequestId(req);
+
   if (req.nextUrl.pathname.startsWith('/api')) {
     // PR #4: Use centralized public route checker from api-auth-guard.ts
     if (isPublicApiRoute(req.nextUrl.pathname)) {
@@ -123,19 +164,19 @@ export default clerkMiddleware(async (auth, req) => {
       if (req.method === 'OPTIONS') {
         // Security: Only allow configured origins
         if (origin && isOriginAllowed(origin)) {
-          return new NextResponse(null, {
+          return withRequestId(new NextResponse(null, {
             status: 200,
             headers: {
               'Access-Control-Allow-Origin': origin,
               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-              'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, X-Request-Id',
               'Access-Control-Max-Age': '86400',
               'Vary': 'Origin',
             },
-          });
+          }), requestId);
         }
         // Reject disallowed origins
-        return new NextResponse(null, { status: 403 });
+        return withRequestId(new NextResponse(null, { status: 403 }), requestId);
       }
 
       const response = NextResponse.next();
@@ -145,7 +186,7 @@ export default clerkMiddleware(async (auth, req) => {
         response.headers.set('Access-Control-Allow-Credentials', 'true');
         response.headers.set('Vary', 'Origin');
       }
-      return response;
+      return withRequestId(response, requestId);
     }
 
     // PR #4: Check cron routes using centralized CRON_API_ROUTES
@@ -153,19 +194,19 @@ export default clerkMiddleware(async (auth, req) => {
       const cronSecret = process.env.CRON_SECRET || "";
       const providedSecret = req.headers.get("x-cron-secret") || "";
       if (!cronSecret || cronSecret !== providedSecret) {
-        return new NextResponse("Unauthorized", { status: 401 });
+        return withRequestId(new NextResponse("Unauthorized", { status: 401 }), requestId);
       }
-      return NextResponse.next();
+      return withRequestId(NextResponse.next(), requestId);
     }
 
     await auth.protect();
-    return NextResponse.next();
+    return withRequestId(NextResponse.next(), requestId);
   }
 
   // Skip middleware for static files
   if (req.nextUrl.pathname.startsWith('/_next') ||
       req.nextUrl.pathname.includes('.')) {
-    return NextResponse.next();
+    return withRequestId(NextResponse.next(), requestId);
   }
   
   // Check for problematic URLs that might cause 431 errors
@@ -185,18 +226,23 @@ export default clerkMiddleware(async (auth, req) => {
     // Instead of just letting it pass through, redirect to a clean URL
     // This prevents the accumulation of large cookies
     
-    // Extract the base URL path without query parameters
+    // Extract the base URL path without query parameters (same-origin only)
     const cleanUrl = req.nextUrl.pathname;
     
-    // Create a new URL object based on the current request
+    // Create a new URL object based on the current request (same-origin redirect)
     const url = new URL(cleanUrl, req.url);
+    
+    // Ensure the redirect stays on the same origin to prevent open-redirect attacks
+    if (url.origin !== new URL(req.url).origin) {
+      return withRequestId(NextResponse.next(), requestId);
+    }
     
     // Important: Add a small cache-busting parameter to ensure the browser doesn't use cached data
     // This helps avoid cookie-related issues without adding significant query string size
     url.searchParams.set('cb', Date.now().toString().slice(-4));
     
-    // Return a redirect response to the clean URL
-    return NextResponse.redirect(url);
+    // Return a redirect response to the clean URL (same-origin)
+    return withRequestId(NextResponse.redirect(url), requestId);
   }
 
   // Protect non-public routes
@@ -208,11 +254,25 @@ export default clerkMiddleware(async (auth, req) => {
   // Clerk's NEXT_PUBLIC_CLERK_SIGN_IN_URL is configured without locale prefix,
   // so adding it would create a redirect loop (Clerk → /sign-in → intl → /en-CA/sign-in → Clerk → ...).
   if (isClerkAuthPath(req)) {
-    return NextResponse.next();
+    return withRequestId(NextResponse.next(), requestId);
+  }
+
+  // Marketing pages live at root without locale prefix (/, /story, /pricing, etc.)
+  // They use (marketing)/layout.tsx — skip intl redirect so visitors land directly.
+  if (isMarketingPath(req)) {
+    return withRequestId(NextResponse.next(), requestId);
   }
 
   // For non-API routes, run i18n middleware and return its response
-  return intlMiddleware(req);
+  const intlResponse = intlMiddleware(req);
+  // intlMiddleware returns a Response; wrap it so we can attach our header
+  if (intlResponse instanceof NextResponse) {
+    return withRequestId(intlResponse, requestId);
+  }
+  // Fallback: convert plain Response to NextResponse to set headers
+  const nr = NextResponse.next({ headers: new Headers((intlResponse as Response).headers) });
+  nr.headers.set('x-request-id', requestId);
+  return nr;
 });
 
 export const config = {

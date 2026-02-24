@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Hierarchy Validation Utilities
  * 
@@ -11,7 +10,7 @@
 
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
 // =============================================================================
@@ -20,6 +19,7 @@ import { logger } from '@/lib/logger';
 
 export const MAX_HIERARCHY_DEPTH = 10;
 export const HIERARCHY_TYPES = {
+  platform: -1, // SaaS platform provider (above congress)
   congress: 0,
   federation: 1,
   union: 2,
@@ -107,7 +107,8 @@ export async function findOrphanedOrganizations(): Promise<string[]> {
       )
   `);
 
-  return (result as unknown as { rows: unknown[] }).rows.map((row: unknown) => row.id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (result as unknown as { rows: unknown[] }).rows.map((row: any) => row.id);
 }
 
 /**
@@ -235,9 +236,9 @@ export function validateTypeHierarchy(
 
   if (!parentType) {
     // Root organizations should be congress or federation
-    if (orgType !== 'congress' && orgType !== 'federation') {
+    if (orgType !== 'platform' && orgType !== 'congress' && orgType !== 'federation') {
       warnings.push(
-        `Root organization with type '${orgType}' is unusual. Typically congress or federation.`
+        `Root organization with type '${orgType}' is unusual. Typically platform, congress, or federation.`
       );
     }
     return { valid: true, errors, warnings };

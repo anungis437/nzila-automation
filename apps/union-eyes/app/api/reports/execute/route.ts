@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Report Execution API
  * 
@@ -14,41 +13,17 @@ import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
-import { ReportExecutor } from '@/lib/report-executor';
+import { ReportExecutor, type ReportConfig } from '@/lib/report-executor';
 import { logApiAuditEvent } from '@/lib/middleware/api-security';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-interface AuthContext {
+interface _AuthContext {
   userId: string;
   organizationId: string;
   params?: Record<string, unknown>;
-}
-
-interface ReportConfig {
-  dataSourceId: string;
-  fields: Array<{
-    fieldId: string;
-    fieldName: string;
-    aggregation?: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'distinct';
-    alias?: string;
-  }>;
-  filters: Array<{
-    id: string;
-    fieldId: string;
-    operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'between' | 'in';
-    value: any;
-    logicalOperator?: 'AND' | 'OR';
-  }>;
-  groupBy: string[];
-  sortBy: Array<{
-    fieldId: string;
-    direction: 'asc' | 'desc';
-  }>;
-  limit?: number;
 }
 
 
@@ -56,8 +31,8 @@ const reportsExecuteSchema = z.object({
   config: z.unknown().optional(),
 });
 
-export const POST = withRoleAuth('officer', async (request: NextRequest, context: AuthContext) => {
-  const { userId, organizationId } =context;
+export const POST = withRoleAuth('officer', async (request: NextRequest, context) => {
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   try {
     if (!userId || !organizationId) {
@@ -105,8 +80,7 @@ export const POST = withRoleAuth('officer', async (request: NextRequest, context
       );
     }
     
-    const { config } = validation.data;
-    const config: ReportConfig = body.config;
+    const config = validation.data.config as ReportConfig | undefined;
 
     if (!config || !config.dataSourceId || !config.fields || config.fields.length === 0) {
       return standardErrorResponse(
@@ -139,7 +113,7 @@ export const POST = withRoleAuth('officer', async (request: NextRequest, context
     }
 
     // Execute report using secured ReportExecutor
-    const executor = new ReportExecutor(organizationId, organizationId);
+    const executor = new ReportExecutor(organizationId);
     const result = await executor.execute(config);
 
     // Log successful execution
@@ -167,7 +141,7 @@ export const POST = withRoleAuth('officer', async (request: NextRequest, context
       rowCount: result.rowCount,
       executionTime: result.executionTimeMs,
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
     logApiAuditEvent({
       timestamp: new Date().toISOString(),
       userId: userId || 'unknown',
@@ -176,7 +150,7 @@ export const POST = withRoleAuth('officer', async (request: NextRequest, context
       eventType: 'auth_failed',
       severity: 'high',
       details: {
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         organizationId: organizationId || 'unknown',
       },
     });

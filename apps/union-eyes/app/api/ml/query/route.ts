@@ -1,6 +1,5 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth, BaseAuthContext } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { z } from 'zod';
@@ -8,7 +7,6 @@ import { z } from 'zod';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 const QuerySchema = z.object({
   question: z.string().min(1).max(500),
@@ -41,7 +39,7 @@ const QuerySchema = z.object({
  * - "What&apos;s our win rate this quarter?"
  * - "Which employer has the most claims?"
  */
-export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context: BaseAuthContext) => {
   const { userId, organizationId } = context;
 
   // CRITICAL: Rate limit ML query calls (expensive AI operations)
@@ -64,7 +62,7 @@ export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
     const body = await request.json();
     const { question, context: queryContext } = QuerySchema.parse(body);
 
-    const organizationScopeId = organizationId || userId;
+    const organizationScopeId = organizationId || userId || '';
 
     // Call AI service for natural language query
     const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:3005';
@@ -85,7 +83,7 @@ export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-throw new Error('AI service query failed');
+      throw new Error(errorData?.error || 'AI service query failed');
     }
 
     const result = await response.json();
@@ -94,12 +92,14 @@ throw new Error('AI service query failed');
     const suggestions = generateFollowUpSuggestions(question, result);
 
     // Log audit event
-    await logApiAuditEvent({
-      action: 'ml_query',
-      resourceType: 'AI_ML',
-      organizationId,
+    logApiAuditEvent({
+      timestamp: new Date().toISOString(),
+      endpoint: '/api/ml/query',
+      method: 'POST',
+      eventType: 'success',
+      severity: 'low',
       userId,
-      metadata: {
+      details: {
         question: question.substring(0, 100),
         confidence: result.confidence,
       },
@@ -131,7 +131,7 @@ if (error instanceof z.ZodError) {
  */
 function generateFollowUpSuggestions(
   question: string, 
-  result: Record<string, unknown>
+  _result: Record<string, unknown>
 ): string[] {
   const suggestions: string[] = [];
   const lowerQuestion = question.toLowerCase();

@@ -16,7 +16,7 @@
  * =============================================================================
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+ 
 import {
   Clock,
   Mail,
@@ -61,10 +61,9 @@ import {
   XCircle,
   AlertCircle,
   Users,
-  FileSpreadsheet,
-  History,
+  History as _History,
   Settings,
-  ChevronRight,
+  Loader2,
 } from "lucide-react";
 
 // =============================================================================
@@ -113,9 +112,9 @@ interface DeliveryHistory {
 }
 
 // =============================================================================
-// SAMPLE DATA
+// SAMPLE DATA (module-level defaults, replaced by API fetch at runtime)
 // =============================================================================
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const sampleScheduledReports: ScheduledReport[] = [
   {
     id: "sr-1",
@@ -317,15 +316,44 @@ const sampleDeliveryHistory: DeliveryHistory[] = [
   },
 ];
 
+/* eslint-enable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // MAIN COMPONENT
 // =============================================================================
 
 export default function ScheduledReportsManager() {
-  const [scheduledReports, setScheduledReports] = useState(sampleScheduledReports);
-  const [deliveryHistory, setDeliveryHistory] = useState(sampleDeliveryHistory);
+  const [scheduledReports, setScheduledReports] = useState<ScheduledReport[]>([]);
+  const [deliveryHistory, setDeliveryHistory] = useState<DeliveryHistory[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<ScheduledReport | null>(null);
+  const [_selectedReport, setSelectedReport] = useState<ScheduledReport | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchReports = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/v2/analytics/scheduled-reports");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.reports) setScheduledReports(json.reports);
+        else if (Array.isArray(json)) setScheduledReports(json);
+        if (json.deliveryHistory) setDeliveryHistory(json.deliveryHistory);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchReports(); }, [fetchReports]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   // Stats
   const activeReports = scheduledReports.filter((r) => r.isActive).length;
@@ -792,6 +820,7 @@ function CreateScheduleForm({ onClose }: CreateScheduleFormProps) {
         <Label htmlFor="scheduleType">Schedule Type *</Label>
         <Select
           value={formData.scheduleType}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onValueChange={(value: any) => setFormData({ ...formData, scheduleType: value })}
         >
           <SelectTrigger>
@@ -890,6 +919,7 @@ function CreateScheduleForm({ onClose }: CreateScheduleFormProps) {
         <Label htmlFor="deliveryFormat">Delivery Format *</Label>
         <Select
           value={formData.deliveryFormat}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onValueChange={(value: any) => setFormData({ ...formData, deliveryFormat: value })}
         >
           <SelectTrigger>

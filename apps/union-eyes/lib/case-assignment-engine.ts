@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // ============================================================================
 // INTELLIGENT CASE ASSIGNMENT ENGINE
 // ============================================================================
@@ -8,12 +7,11 @@
 // ============================================================================
 
 import { db } from "@/db/db";
-import { eq, and, desc, asc, isNull, count, sql, gte, lt, or } from "drizzle-orm";
+import { eq, and, desc, or } from "drizzle-orm";
 import {
   claims,
   grievanceAssignments,
   organizationMembers,
-  type InsertGrievanceAssignment,
   type GrievanceAssignment,
 } from "@/db/schema";
 import { withRLSContext } from "@/lib/db/with-rls-context";
@@ -88,7 +86,7 @@ export type WorkloadStats = {
  */
 export async function autoAssignGrievance(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   criteria: AssignmentCriteria,
   assignedBy: string,
   options: {
@@ -99,9 +97,9 @@ export async function autoAssignGrievance(
 ): Promise<AssignmentResult> {
   try {
     // Get claim details (wrapped with RLS for tenant isolation)
-    const claim = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const claim = await withRLSContext({ organizationId }, async (db) =>
       db.query.claims.findFirst({
-        where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+        where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
       })
     );
 
@@ -110,7 +108,7 @@ export async function autoAssignGrievance(
     }
 
     // Get all eligible officers
-    const officers = await getEligibleOfficers(tenantId, criteria);
+    const officers = await getEligibleOfficers(organizationId, criteria);
 
     if (officers.length === 0) {
       return { success: false, error: "No eligible officers found" };
@@ -121,7 +119,7 @@ export async function autoAssignGrievance(
       officers,
       claim,
       criteria,
-      tenantId
+      organizationId
     );
 
     // Filter by minimum score threshold
@@ -155,7 +153,7 @@ export async function autoAssignGrievance(
     const [assignment] = await db
       .insert(grievanceAssignments)
       .values({
-        organizationId: tenantId,
+        organizationId,
         claimId,
         assignedTo: bestMatch.userId,
         role,
@@ -196,7 +194,7 @@ return {
  */
 export async function manuallyAssignGrievance(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   assignedTo: string,
   assignedBy: string,
   options: {
@@ -209,7 +207,7 @@ export async function manuallyAssignGrievance(
   try {
     // Validate officer exists and has capacity (unless bypassed)
     if (!options.bypassWorkloadCheck) {
-      const workload = await getOfficerWorkload(assignedTo, tenantId);
+      const workload = await getOfficerWorkload(assignedTo, organizationId);
       
       if (workload && workload.utilizationRate > 100) {
         return {
@@ -220,7 +218,7 @@ export async function manuallyAssignGrievance(
     }
 
     // Check if already assigned (wrapped with RLS for tenant isolation)
-    const existing = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const existing = await withRLSContext({ organizationId }, async (db) =>
       db.query.grievanceAssignments.findFirst({
         where: and(
           eq(grievanceAssignments.claimId, claimId),
@@ -239,11 +237,11 @@ export async function manuallyAssignGrievance(
 
     // Create assignment (wrapped with RLS for tenant isolation)
     const role = options.role || "primary_officer";
-    const [assignment] = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const [assignment] = await withRLSContext({ organizationId }, async (db) =>
       db
         .insert(grievanceAssignments)
         .values({
-          organizationId: tenantId,
+          organizationId,
           claimId,
           assignedTo,
           role,
@@ -258,7 +256,7 @@ export async function manuallyAssignGrievance(
 
     // Update claim if primary officer (wrapped with RLS for tenant isolation)
     if (role === "primary_officer") {
-      await withRLSContext({ organizationId: tenantId }, async (db) =>
+      await withRLSContext({ organizationId }, async (db) =>
         db
           .update(claims)
           .set({
@@ -288,7 +286,7 @@ return {
  */
 export async function reassignGrievance(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   currentAssignmentId: string,
   newAssignedTo: string,
   reassignedBy: string,
@@ -296,11 +294,11 @@ export async function reassignGrievance(
 ): Promise<AssignmentResult> {
   try {
     // Get current assignment (wrapped with RLS for tenant isolation)
-    const currentAssignment = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const currentAssignment = await withRLSContext({ organizationId }, async (db) =>
       db.query.grievanceAssignments.findFirst({
         where: and(
           eq(grievanceAssignments.id, currentAssignmentId),
-          eq(grievanceAssignments.organizationId, tenantId)
+          eq(grievanceAssignments.organizationId, organizationId)
         ),
       })
     );
@@ -321,7 +319,7 @@ export async function reassignGrievance(
     // Create new assignment
     const result = await manuallyAssignGrievance(
       claimId,
-      tenantId,
+      organizationId,
       newAssignedTo,
       reassignedBy,
       {
@@ -347,24 +345,24 @@ return {
  */
 export async function getAssignmentRecommendations(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   criteria: AssignmentCriteria
 ): Promise<AssignmentRecommendation[]> {
   try {
     // Get claim details (wrapped with RLS for tenant isolation)
-    const claim = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const claim = await withRLSContext({ organizationId }, async (db) =>
       db.query.claims.findFirst({
-        where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+        where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
       })
     );
 
     if (!claim) return [];
 
-    const officers = await getEligibleOfficers(tenantId, criteria);
-    const recommendations = await scoreOfficers(officers, claim, criteria, tenantId);
+    const officers = await getEligibleOfficers(organizationId, criteria);
+    const recommendations = await scoreOfficers(officers, claim, criteria, organizationId);
 
     return recommendations.slice(0, 10); // Top 10 recommendations
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -377,15 +375,15 @@ return [];
  * Get eligible officers based on basic criteria
  */
 async function getEligibleOfficers(
-  tenantId: string,
-  criteria: AssignmentCriteria
+  organizationId: string,
+  _criteria: AssignmentCriteria
 ): Promise<OfficerProfile[]> {
   try {
     // Get active officers (wrapped with RLS for tenant isolation)
-    const officers = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const officers = await withRLSContext({ organizationId }, async (db) =>
       db.query.organizationMembers.findMany({
         where: and(
-          eq(organizationMembers.organizationId, tenantId),
+          eq(organizationMembers.organizationId, organizationId),
           or(
             eq(organizationMembers.role, "union_officer"),
             eq(organizationMembers.role, "union_steward"),
@@ -400,7 +398,7 @@ async function getEligibleOfficers(
     const profiles: OfficerProfile[] = [];
     
     for (const officer of officers) {
-      const workload = await getOfficerWorkload(officer.userId, tenantId);
+      const workload = await getOfficerWorkload(officer.userId, organizationId);
       
       // Extract metadata (this would come from officer profile/settings)
       // Note: organizationMembers doesn&apos;t have metadata - using defaults
@@ -410,20 +408,20 @@ async function getEligibleOfficers(
         userId: officer.userId,
         name: officer.membershipNumber || officer.userId, // Use membershipNumber or userId as fallback
         role: officer.role,
-        expertise: metadata.expertise || [],
-        maxCaseload: metadata.maxCaseload || 20,
+        expertise: (metadata.expertise as string[]) || [],
+        maxCaseload: (metadata.maxCaseload as number) || 20,
         currentCaseload: workload?.activeCases || 0,
-        availableHours: metadata.weeklyHours || 40,
-        locations: metadata.locations || [],
+        availableHours: (metadata.weeklyHours as number) || 40,
+        locations: (metadata.locations as string[]) || [],
         successRate: workload?.successRate || 0,
         avgResolutionDays: workload?.avgResolutionDays || 0,
-        languages: metadata.languages || ["English"],
-        certifications: metadata.certifications || [],
+        languages: (metadata.languages as string[]) || ["English"],
+        certifications: (metadata.certifications as string[]) || [],
       });
     }
 
     return profiles;
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -435,7 +433,7 @@ async function scoreOfficers(
   officers: OfficerProfile[],
   claim: unknown,
   criteria: AssignmentCriteria,
-  tenantId: string
+  _organizationId: string
 ): Promise<AssignmentRecommendation[]> {
   const recommendations: AssignmentRecommendation[] = [];
 
@@ -534,15 +532,15 @@ async function scoreOfficers(
  */
 export async function getOfficerWorkload(
   userId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<WorkloadStats | null> {
   try {
     // Get all assignments for this officer (wrapped with RLS for tenant isolation)
-    const assignments = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const assignments = await withRLSContext({ organizationId }, async (db) =>
       db.query.grievanceAssignments.findMany({
         where: and(
           eq(grievanceAssignments.assignedTo, userId),
-          eq(grievanceAssignments.organizationId, tenantId)
+          eq(grievanceAssignments.organizationId, organizationId)
         ),
         with: {
           claim: true,
@@ -592,17 +590,17 @@ export async function getOfficerWorkload(
       .reduce((sum, a) => sum + (Number(a.estimatedHours) || 0), 0);
 
     // Get officer profile for max caseload (wrapped with RLS for tenant isolation)
-    const officer = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const officer = await withRLSContext({ organizationId }, async (db) =>
       db.query.organizationMembers.findFirst({
         where: and(
           eq(organizationMembers.userId, userId),
-          eq(organizationMembers.organizationId, tenantId)
+          eq(organizationMembers.organizationId, organizationId)
         ),
       })
     );
 
     const metadata: Record<string, unknown> = {};
-    const maxCaseload = metadata.maxCaseload || 20;
+    const maxCaseload = Number(metadata.maxCaseload) || 20;
     const utilizationRate = Math.round((activeCases / maxCaseload) * 100);
 
     return {
@@ -616,7 +614,7 @@ export async function getOfficerWorkload(
       estimatedHoursRemaining,
       utilizationRate,
     };
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -625,14 +623,14 @@ export async function getOfficerWorkload(
  * Get workload statistics for all officers in tenant
  */
 export async function getTenantWorkloadReport(
-  tenantId: string
+  organizationId: string
 ): Promise<WorkloadStats[]> {
   try {
     // Get all active officers (wrapped with RLS for tenant isolation)
-    const officers = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const officers = await withRLSContext({ organizationId }, async (db) =>
       db.query.organizationMembers.findMany({
         where: and(
-          eq(organizationMembers.organizationId, tenantId),
+          eq(organizationMembers.organizationId, organizationId),
           or(
             eq(organizationMembers.role, "union_officer"),
             eq(organizationMembers.role, "union_steward"),
@@ -646,7 +644,7 @@ export async function getTenantWorkloadReport(
     const workloadStats: WorkloadStats[] = [];
 
     for (const officer of officers) {
-      const stats = await getOfficerWorkload(officer.userId, tenantId);
+      const stats = await getOfficerWorkload(officer.userId, organizationId);
       if (stats) {
         workloadStats.push(stats);
       }
@@ -654,7 +652,7 @@ export async function getTenantWorkloadReport(
 
     // Sort by utilization rate (descending)
     return workloadStats.sort((a, b) => b.utilizationRate - a.utilizationRate);
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }
@@ -663,7 +661,7 @@ export async function getTenantWorkloadReport(
  * Balance workload by suggesting reassignments
  */
 export async function suggestWorkloadBalancing(
-  tenantId: string
+  organizationId: string
 ): Promise<Array<{
   claimId: string;
   currentOfficer: string;
@@ -671,7 +669,7 @@ export async function suggestWorkloadBalancing(
   reason: string;
 }>> {
   try {
-    const workloadReport = await getTenantWorkloadReport(tenantId);
+    const workloadReport = await getTenantWorkloadReport(organizationId);
     
     // Find overloaded officers (>90% utilization)
     const overloaded = workloadReport.filter((w) => w.utilizationRate > 90);
@@ -693,11 +691,11 @@ export async function suggestWorkloadBalancing(
     // For each overloaded officer, suggest moving their newest cases
     for (const overloadedOfficer of overloaded) {
       // Get their recent assignments (wrapped with RLS for tenant isolation)
-      const recentAssignments = await withRLSContext({ organizationId: tenantId }, async (db) =>
+      const recentAssignments = await withRLSContext({ organizationId }, async (db) =>
         db.query.grievanceAssignments.findMany({
           where: and(
             eq(grievanceAssignments.assignedTo, overloadedOfficer.userId),
-            eq(grievanceAssignments.organizationId, tenantId),
+            eq(grievanceAssignments.organizationId, organizationId),
             eq(grievanceAssignments.status, "assigned")
           ),
           orderBy: [desc(grievanceAssignments.assignedAt)],
@@ -719,7 +717,7 @@ export async function suggestWorkloadBalancing(
     }
 
     return suggestions;
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -733,13 +731,13 @@ return [];
  */
 export async function addCollaborator(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   userId: string,
   role: "secondary_officer" | "legal_counsel" | "external_arbitrator" | "witness" | "observer",
   addedBy: string,
   reason?: string
 ): Promise<AssignmentResult> {
-  return await manuallyAssignGrievance(claimId, tenantId, userId, addedBy, {
+  return await manuallyAssignGrievance(claimId, organizationId, userId, addedBy, {
     role: role as "primary_officer" | "secondary_officer" | "legal_counsel" | "external_arbitrator" | undefined,
     reason: reason || `Added as ${role}`,
     bypassWorkloadCheck: role !== "secondary_officer", // Only check workload for officers
@@ -751,16 +749,16 @@ export async function addCollaborator(
  */
 export async function removeCollaborator(
   assignmentId: string,
-  tenantId: string,
+  organizationId: string,
   removedBy: string,
   reason: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const assignment = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const assignment = await withRLSContext({ organizationId }, async (db) =>
       db.query.grievanceAssignments.findFirst({
         where: and(
           eq(grievanceAssignments.id, assignmentId),
-          eq(grievanceAssignments.organizationId, tenantId)
+          eq(grievanceAssignments.organizationId, organizationId)
         ),
       })
     );
@@ -801,14 +799,14 @@ return {
  */
 export async function getGrievanceTeam(
   claimId: string,
-  tenantId: string
+  organizationId: string
 ): Promise<Array<GrievanceAssignment & { officerName: string; officerRole: string }>> {
   try {
-    const assignments = await withRLSContext({ organizationId: tenantId }, async (db) =>
+    const assignments = await withRLSContext({ organizationId }, async (db) =>
       db.query.grievanceAssignments.findMany({
         where: and(
           eq(grievanceAssignments.claimId, claimId),
-          eq(grievanceAssignments.organizationId, tenantId)
+          eq(grievanceAssignments.organizationId, organizationId)
         ),
         orderBy: [desc(grievanceAssignments.assignedAt)],
       })
@@ -817,7 +815,7 @@ export async function getGrievanceTeam(
     // Enrich with officer details
     const enriched = await Promise.all(
       assignments.map(async (assignment) => {
-        const officer = await withRLSContext({ organizationId: tenantId }, async (db) =>
+        const officer = await withRLSContext({ organizationId }, async (db) =>
           db.query.organizationMembers.findFirst({
             where: eq(organizationMembers.userId, assignment.assignedTo),
           })
@@ -832,7 +830,7 @@ export async function getGrievanceTeam(
     );
 
     return enriched;
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }

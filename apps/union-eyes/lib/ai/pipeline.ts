@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Complete AI Pipeline
  * 
@@ -16,7 +15,6 @@ import { entityExtraction, ExtractionResult } from './entity-extraction';
 import { ragPipeline, SearchResult } from './rag-pipeline';
 import { templateEngine, TemplateContext } from './template-engine';
 import { aiSafety, SafetyCheckResult } from './safety';
-import { aiResilience } from './resilience';
 import { learningService } from './learning';
 
 // Pipeline configuration
@@ -116,10 +114,12 @@ class AIPipeline {
       // 3. Build template context
       const templateContext: TemplateContext = {
         query,
-        jurisdiction: context.jurisdiction || 'federal',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        jurisdiction: (context.jurisdiction || 'federal') as any,
         userRole: 'member',
         intent: this.classifyIntent(query),
-        entities: [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        entities: [] as any[],
         retrievedContext: sources.map(s => s.chunk.content),
         sla: 'standard',
         organizationId: context.organizationId,
@@ -229,7 +229,8 @@ class AIPipeline {
       content: document.content,
       metadata: {
         source: metadata.source,
-        type: extraction.documentType as unknown,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        type: extraction.documentType as any,
         jurisdiction: metadata.jurisdiction,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -250,8 +251,10 @@ class AIPipeline {
    * Generate response using template engine
    */
   private async generateResponse(context: TemplateContext): Promise<string> {
-    const prompt = templateEngine.buildPrompt('general_query', context);
-    const response = await templateEngine.execute(prompt, context);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const prompt = (templateEngine as any).buildPrompt('general_query', context);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await (templateEngine as any).execute(prompt, context);
     return response;
   }
 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Members Directory Page
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -50,10 +51,11 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [selectedMembers, _setSelectedMembers] = useState<string[]>([]);
 
   useEffect(() => {
     fetchMembers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
   const fetchMembers = async () => {
@@ -63,7 +65,7 @@ export default function MembersPage() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
         search: searchQuery,
         limit: 100,
-      });
+      }) as { members: Member[] };
       
       setMembers(result.members);
     } catch (error) {
@@ -77,16 +79,34 @@ export default function MembersPage() {
     if (!searchQuery) return fetchMembers();
     
     try {
-      const result = await api.members.search(searchQuery);
+      const result = await api.members.search(searchQuery) as { members: Member[] };
       setMembers(result.members);
     } catch (error) {
       logger.error('Search error', error);
     }
   };
 
-  const handleBulkExport = () => {
-    // TODO: Implement bulk export
-    logger.info('Exporting members', { selectedMembers });
+  const handleBulkExport = async () => {
+    try {
+      const res = await fetch('/api/v2/members/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memberIds: selectedMembers }),
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `members-export-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        logger.error('Export failed', { status: res.status });
+      }
+    } catch (error) {
+      logger.error('Exporting members failed', { error, selectedMembers });
+    }
   };
 
   const handleBulkImport = () => {

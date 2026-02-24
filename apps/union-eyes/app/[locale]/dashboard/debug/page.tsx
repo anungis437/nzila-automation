@@ -1,21 +1,33 @@
 /**
  * Debug page to view current user information
  * This helps link Clerk users to database records
+ * 
+ * GATED: Only accessible in development. Returns 404 in production.
  */
+
+export const dynamic = 'force-dynamic';
+
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getClaimsAssignedToUser } from "@/db/queries/claims-queries";
+import { notFound } from "next/navigation";
 
 export default async function DebugPage() {
+  // Gate: only available in development
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   const { userId, orgId } = await auth();
   const user = await currentUser();
   
   // Get assigned claims
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let assignedClaims: any[] = [];
   if (userId) {
     try {
       assignedClaims = await getClaimsAssignedToUser(userId);
-    } catch (error) {
+    } catch (_error) {
 }
   }
 
@@ -73,6 +85,7 @@ export default async function DebugPage() {
             <p className="text-sm text-muted-foreground">No claims assigned to this user</p>
           ) : (
             <div className="space-y-2">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {assignedClaims.map((claim: any) => (
                 <div key={claim.id} className="p-3 border rounded">
                   <p className="font-medium">{claim.claimNumber}</p>

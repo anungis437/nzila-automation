@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -7,7 +8,7 @@ import { getTotalEarned, getTotalRedeemed } from '@/lib/utils/rewards-stats-util
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Coins, Gift, TrendingUp, Calendar } from 'lucide-react';
+import { Gift, TrendingUp, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { WalletBalanceCard } from '@/components/rewards/wallet-balance-card';
 import { LedgerTable } from '@/components/rewards/ledger-table';
@@ -123,7 +124,7 @@ export default async function RewardsWalletPage() {
           <CardContent>
             <div className="text-2xl font-bold">
               {ledgerEntries.length > 0 
-                ? new Date(ledgerEntries[0].created_at).toLocaleDateString()
+                ? new Date(ledgerEntries[0].createdAt).toLocaleDateString()
                 : '-'}
             </div>
             <p className="text-xs text-muted-foreground">

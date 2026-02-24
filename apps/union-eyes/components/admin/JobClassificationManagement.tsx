@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Job Classification Management Component
  * 
@@ -273,8 +272,9 @@ function ClassificationFormDialog({
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
 
-  const form = useForm<Record<string, unknown>>({
-    resolver: zodResolver(createJobClassificationSchema),
+  const form = useForm({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(createJobClassificationSchema) as any,
     defaultValues: editingClassification
       ? {
           organizationId: editingClassification.organizationId,
@@ -298,10 +298,12 @@ function ClassificationFormDialog({
         },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
     setSubmitting(true);
     try {
       // Convert numeric rates to strings
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const classificationData: any = {
         ...data,
         minimumRate: data.minimumRate ? String(data.minimumRate) : undefined,
@@ -326,7 +328,7 @@ function ClassificationFormDialog({
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: "An unexpected error occurred",

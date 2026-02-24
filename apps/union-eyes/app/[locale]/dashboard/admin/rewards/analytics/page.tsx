@@ -1,8 +1,10 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/db';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,7 +17,6 @@ import {
   DollarSign,
   Download,
   Calendar,
-  Target,
 } from 'lucide-react';
 import { sql } from 'drizzle-orm';
 import {
@@ -26,7 +27,6 @@ import {
   rewardRedemptions,
 } from '@/db/schema/recognition-rewards-schema';
 import { Badge } from '@/components/ui/badge';
-import { BudgetUsageChart } from '@/components/rewards/admin/budget-usage-chart';
 
 export const metadata: Metadata = {
   title: 'Analytics & Reporting | Rewards Admin',
@@ -126,18 +126,34 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
     LIMIT 10
   `;
 
-  const [overview, redemption, budgets, topTypes, trend, topReceivers] = await Promise.all([
-    db.execute(overviewQuery),
-    db.execute(redemptionQuery),
-    db.execute(budgetQuery),
-    db.execute(topAwardTypesQuery),
-    db.execute(awardTrendQuery),
-    db.execute(topReceiversQuery),
-  ]);
+  // NzilaOS: All DB queries wrapped in RLS context for org isolation (PR-UE-01)
+  const [overview, redemption, budgets, topTypes, trend, topReceivers] = await withRLSContext(
+    async (tx) => {
+      return Promise.all([
+        tx.execute(overviewQuery),
+        tx.execute(redemptionQuery),
+        tx.execute(budgetQuery),
+        tx.execute(topAwardTypesQuery),
+        tx.execute(awardTrendQuery),
+        tx.execute(topReceiversQuery),
+      ]);
+    },
+  );
 
   return {
-    overview: (overview as Array<Record<string, unknown>>)[0] as Record<string, unknown>,
-    redemption: (redemption as Array<Record<string, unknown>>)[0] as Record<string, unknown>,
+    overview: (overview as Array<Record<string, unknown>>)[0] as {
+      total_awards: number;
+      unique_recipients: number;
+      unique_issuers: number;
+      total_credits_awarded: number;
+      issued_awards: number;
+      pending_awards: number;
+    },
+    redemption: (redemption as Array<Record<string, unknown>>)[0] as {
+      total_redemptions: number;
+      total_credits_redeemed: number;
+      fulfilled_redemptions: number;
+    },
     budgets: budgets as Array<Record<string, unknown>>,
     topAwardTypes: topTypes as Array<Record<string, unknown>>,
     awardTrend: trend as Array<Record<string, unknown>>,
@@ -309,6 +325,7 @@ export default async function RewardsAnalyticsPage({
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {data.topAwardTypes.map((type: any) => (
                     <div key={type.award_type_id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -335,6 +352,7 @@ export default async function RewardsAnalyticsPage({
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {data.topReceivers.map((receiver: any, index: number) => (
                     <div key={receiver.user_id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -364,6 +382,7 @@ export default async function RewardsAnalyticsPage({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {data.budgets.map((budget: any) => {
                   const usagePercent = (budget.used_credits / budget.total_credits) * 100;
                   return (

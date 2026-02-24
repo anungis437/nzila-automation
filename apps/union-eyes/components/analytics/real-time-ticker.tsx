@@ -87,6 +87,7 @@ export function RealTimeTicker({
         }
       };
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onRefresh, refreshInterval]);
 
   const handleRefresh = async () => {
@@ -105,7 +106,7 @@ export function RealTimeTicker({
         })
       );
       setLastUpdate(new Date());
-    } catch (error) {
+    } catch (_error) {
 } finally {
       setIsRefreshing(false);
     }
@@ -221,6 +222,7 @@ function MetricCard({
     }, stepDuration);
 
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metric.value]);
 
   const formatValue = (value: number): string => {
@@ -349,7 +351,7 @@ function CompactMetricCard({ metric }: { metric: MetricData }) {
   };
 
   return (
-    <Card className="flex-shrink-0">
+    <Card className="shrink-0">
       <CardContent className="p-3">
         <div className="flex items-center gap-2">
           {metric.icon && <div className="text-muted-foreground">{metric.icon}</div>}
@@ -427,6 +429,7 @@ throw error;
 
   useEffect(() => {
     refresh();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { metrics, loading, refresh };

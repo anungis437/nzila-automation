@@ -7,16 +7,14 @@
 // ============================================================================
 
 import { db } from "@/db/db";
-import { eq, and, desc, asc, lte, gte, isNull, sql } from "drizzle-orm";
+import { eq, and, asc, lte } from "drizzle-orm";
 import {
   grievanceDeadlines,
   claims,
   notifications,
-  organizationMembers,
-  type InsertGrievanceDeadline,
   type GrievanceDeadline,
 } from "@/db/schema";
-import { addDays, addBusinessDays, differenceInDays, isPast, isBefore } from "date-fns";
+import { addDays, addBusinessDays, differenceInDays } from "date-fns";
 
 // ============================================================================
 // TYPES
@@ -148,7 +146,7 @@ export const DEFAULT_DEADLINE_RULES: DeadlineCalculationRule[] = [
  */
 export async function createDeadline(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   deadlineType: DeadlineType,
   options: {
     referenceDate?: Date;
@@ -162,7 +160,7 @@ export async function createDeadline(
   try {
     // Get claim details
     const claim = await db.query.claims.findFirst({
-      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, tenantId)),
+      where: and(eq(claims.claimId, claimId), eq(claims.organizationId, organizationId)),
     });
 
     if (!claim) {
@@ -224,22 +222,22 @@ return {
  */
 export async function createGrievanceStepDeadlines(
   claimId: string,
-  tenantId: string,
+  organizationId: string,
   filingDate: Date,
-  incidentDate: Date
+  _incidentDate: Date
 ): Promise<{ success: boolean; deadlineIds: string[]; error?: string }> {
   try {
     const deadlineIds: string[] = [];
 
     // Step 1 Response deadline (from filing date)
-    const step1Result = await createDeadline(claimId, tenantId, "step_1_response", {
+    const step1Result = await createDeadline(claimId, organizationId, "step_1_response", {
       referenceDate: filingDate,
     });
     if (step1Result.deadlineId) deadlineIds.push(step1Result.deadlineId);
 
     // Appeal deadline (10 days after Step 1 expected response)
     if (step1Result.dueDate) {
-      const appealResult = await createDeadline(claimId, tenantId, "appeal_deadline", {
+      const appealResult = await createDeadline(claimId, organizationId, "appeal_deadline", {
         referenceDate: step1Result.dueDate,
       });
       if (appealResult.deadlineId) deadlineIds.push(appealResult.deadlineId);
@@ -248,7 +246,7 @@ export async function createGrievanceStepDeadlines(
     // Investigation completion deadline
     const investigationResult = await createDeadline(
       claimId,
-      tenantId,
+      organizationId,
       "investigation_completion",
       {
         referenceDate: filingDate,
@@ -271,7 +269,7 @@ return {
  */
 export async function completeDeadline(
   deadlineId: string,
-  tenantId: string,
+  organizationId: string,
   completedBy: string,
   notes?: string
 ): Promise<{ success: boolean; error?: string }> {
@@ -405,7 +403,7 @@ return {
  * Get upcoming deadlines for a tenant
  */
 export async function getUpcomingDeadlines(
-  tenantId: string,
+  organizationId: string,
   daysAhead: number = 30
 ): Promise<DeadlineAlert[]> {
   try {
@@ -421,7 +419,7 @@ export async function getUpcomingDeadlines(
     });
 
     return deadlines.map((d) => createDeadlineAlert(d));
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -429,7 +427,7 @@ return [];
 /**
  * Get overdue deadlines for a tenant
  */
-export async function getOverdueDeadlines(tenantId: string): Promise<DeadlineAlert[]> {
+export async function getOverdueDeadlines(_organizationId: string): Promise<DeadlineAlert[]> {
   try {
     const today = new Date();
 
@@ -442,7 +440,7 @@ export async function getOverdueDeadlines(tenantId: string): Promise<DeadlineAle
     });
 
     return deadlines.map((d) => createDeadlineAlert(d));
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -452,7 +450,7 @@ return [];
  */
 export async function getGrievanceDeadlines(
   claimId: string,
-  tenantId: string
+  _organizationId: string
 ): Promise<GrievanceDeadline[]> {
   try {
     const deadlines = await db.query.grievanceDeadlines.findMany({
@@ -461,7 +459,7 @@ export async function getGrievanceDeadlines(
     });
 
     return deadlines;
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -469,9 +467,9 @@ return [];
 /**
  * Check and escalate missed deadlines
  */
-export async function escalateMissedDeadlines(tenantId: string): Promise<number> {
+export async function escalateMissedDeadlines(organizationId: string): Promise<number> {
   try {
-    const overdueDeadlines = await getOverdueDeadlines(tenantId);
+    const overdueDeadlines = await getOverdueDeadlines(organizationId);
     let escalatedCount = 0;
 
     for (const alert of overdueDeadlines) {
@@ -490,7 +488,7 @@ export async function escalateMissedDeadlines(tenantId: string): Promise<number>
     }
 
     return escalatedCount;
-  } catch (error) {
+  } catch (_error) {
 return 0;
   }
 }
@@ -534,8 +532,8 @@ function createDeadlineAlert(deadline: GrievanceDeadline): DeadlineAlert {
  */
 async function scheduleReminders(
   deadlineId: string,
-  dueDate: Date,
-  reminderSchedule: number[]
+  _dueDate: Date,
+  _reminderSchedule: number[]
 ): Promise<void> {
   try {
     const deadline = await db.query.grievanceDeadlines.findFirst({
@@ -550,7 +548,7 @@ async function scheduleReminders(
     // Note: Recipient information would need to come from the related grievance
     // This is a simplified version that just updates the deadline
     // For now, we skip creating notification records
-  } catch (error) {
+  } catch (_error) {
 }
 }
 
@@ -569,7 +567,7 @@ async function cancelDeadlineReminders(deadlineId: string): Promise<void> {
           eq(notifications.status, "scheduled")
         )
       );
-  } catch (error) {
+  } catch (_error) {
 }
 }
 
@@ -590,7 +588,7 @@ async function sendEscalationNotification(alert: DeadlineAlert): Promise<void> {
     // 1. Query the grievance by deadline.grievanceId
     // 2. Get the organizationId and assignedTo from the grievance
     // 3. Create notifications for relevant users
-  } catch (error) {
+  } catch (_error) {
 }
 }
 

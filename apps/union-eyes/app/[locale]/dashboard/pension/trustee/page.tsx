@@ -1,5 +1,7 @@
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import TrusteePortal from '@/components/pension/TrusteePortal';
 import { Shield, AlertCircle, Clock } from 'lucide-react';
@@ -21,10 +23,7 @@ export default function TrusteePortalPage() {
     try {
       setLoading(true);
       
-      // In production, fetch current user's trustee status
-      // For now, check if user has trustee role or is assigned to a trust board
-      
-      // Mock check - replace with actual API call
+      // Fetch current user's trustee status from the pension trustees API
       const response = await fetch('/api/pension/trustees?activeOnly=true');
       
       if (response.ok) {
@@ -40,7 +39,7 @@ export default function TrusteePortalPage() {
           setIsTrustee(false);
         }
       }
-    } catch (err) {
+    } catch (_err) {
 setError('Unable to verify trustee status. Please try again later.');
     } finally {
       setLoading(false);
@@ -50,7 +49,7 @@ setError('Unable to verify trustee status. Please try again later.');
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-100">
           <div className="text-center">
             <Clock className="w-12 h-12 mx-auto mb-4 animate-spin text-muted-foreground" />
             <p className="text-muted-foreground">Verifying trustee credentials...</p>
@@ -135,27 +134,27 @@ setError('Unable to verify trustee status. Please try again later.');
             <h3 className="text-lg font-semibold mb-4">Trustee Responsibilities</h3>
             <div className="space-y-3 text-sm">
               <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 <p>Fiduciary duty to plan members and beneficiaries</p>
               </div>
               <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 <p>Oversight of plan investments and asset management</p>
               </div>
               <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 <p>Review and approval of benefit claims and distributions</p>
               </div>
               <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 <p>Ensure compliance with pension legislation and regulations</p>
               </div>
               <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 <p>Regular meeting attendance and participation in governance decisions</p>
               </div>
               <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 <p>Review of actuarial valuations and funding requirements</p>
               </div>
             </div>

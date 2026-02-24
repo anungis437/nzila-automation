@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Retry Pattern with Exponential Backoff
  * 
@@ -230,7 +229,8 @@ export function retry(options?: RetryOptions) {
     const originalMethod = descriptor.value;
     const policy = new RetryPolicy({
       ...options,
-      name: options?.name || `${target.constructor.name}.${propertyKey}`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      name: options?.name || `${(target as any).constructor.name}.${propertyKey}`,
     });
 
     descriptor.value = async function (...args: unknown[]) {

@@ -1,10 +1,13 @@
-import React from 'react';
+"use client";
+
+
+export const dynamic = 'force-dynamic';
 /**
  * Organizations List Page
  * View and manage the organizational hierarchy
  */
-"use client";
 
+import React from 'react';
 import { useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
@@ -15,19 +18,17 @@ import {
   Users,
   MapPin,
   Search,
-  Filter,
   Plus,
   MoreVertical,
   Edit,
   Trash2,
   Eye,
   Network,
-  ChevronRight,
   Loader2,
   AlertCircle,
   GitBranch,
   Building,
-  Home
+  Layers,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,12 +61,14 @@ import { OrganizationBreadcrumb } from "@/components/organization/organization-b
 import { OrganizationTree } from "@/components/organization/organization-tree";
 import { BulkOperations } from "@/components/organization/bulk-operations";
 import { BulkImportOrganizations } from "@/components/admin/bulk-import-organizations";
+ 
 import type { Organization, OrganizationType, OrganizationStatus } from "@/types/organization";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 // Organization type configurations
 const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactElement; color: string }> = {
+  platform: { label: "Platform", icon: <Layers className="w-4 h-4" />, color: "text-rose-700 bg-rose-100 border-rose-200" },
   congress: { label: "Congress", icon: <Globe className="w-4 h-4" />, color: "text-blue-700 bg-blue-100 border-blue-200" },
   federation: { label: "Federation", icon: <Network className="w-4 h-4" />, color: "text-purple-700 bg-purple-100 border-purple-200" },
   union: { label: "Union", icon: <Building2 className="w-4 h-4" />, color: "text-green-700 bg-green-100 border-green-200" },
@@ -90,7 +93,7 @@ interface OrganizationWithStats extends Organization {
 
 export default function OrganizationsPage() {
   const router = useRouter();
-  const { organizationId, organization } = useOrganization();
+  const { organizationId, organization: _organization } = useOrganization();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -130,7 +133,7 @@ export default function OrganizationsPage() {
       if (!response.ok) throw new Error("Failed to archive organization");
       
       mutate();
-    } catch (error) {
+    } catch (_error) {
 alert("Failed to archive organization");
     }
   };
@@ -257,7 +260,7 @@ alert("Failed to archive organization");
             </div>
             
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-full sm:w-45">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -272,7 +275,7 @@ alert("Failed to archive organization");
             </Select>
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-full sm:w-45">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>

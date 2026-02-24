@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Automated Billing Scheduler
  * 
@@ -81,7 +80,7 @@ export class BillingScheduler {
 
       logger.info(`Found ${orgs.length} organizations configured for ${frequency} billing`);
 
-      const results = [];
+      const results: BillingSchedulerResult['results'] = [];
       let successful = 0;
       let failed = 0;
       let skipped = 0;
@@ -251,7 +250,7 @@ export class BillingScheduler {
    */
   private static async notifyBillingCompleted(
     organizationId: string,
-    result: unknown
+    result: { transactionsCreated?: number; totalAmount?: number }
   ): Promise<void> {
     const recipients = await this.getBillingRecipients(organizationId);
     if (recipients.length === 0) {
@@ -328,6 +327,7 @@ export class BillingScheduler {
     const [org] = await db
       .select({ id: organizations.id, slug: organizations.slug, email: organizations.email })
       .from(organizations)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .where(or(eq(organizations.id, organizationId as any), eq(organizations.slug, organizationId)))
       .limit(1);
 

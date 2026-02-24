@@ -24,7 +24,6 @@ import { predictChurnRisk } from '@/lib/ml/models/churn-prediction-model';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 interface ChurnPrediction {
   memberId: string;

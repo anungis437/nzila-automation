@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * General Ledger Service
  * 
@@ -6,15 +5,13 @@
  * Implements double-entry bookkeeping principles and audit trail logging
  */
 
-import { db } from "@/database";
+import { db } from "@/db";
 import {
   chartOfAccounts,
   glTransactionLog,
   glTrialBalance,
-  glAccountMappings,
-  costCenters,
 } from "@/db/schema/domains/finance";
-import { eq, and, gte, lte, isNull } from "drizzle-orm";
+import { eq, and, lte, isNull } from "drizzle-orm";
 import { createAuditLog } from "./audit-service";
 import { logger } from "@/lib/logger";
 
@@ -343,6 +340,7 @@ export async function generateTrialBalance(
       .insert(glTrialBalance)
       .values({
         organizationId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         chartOfAccountsId: null as any, // Null for combined TB
         periodEndDate,
         debitTotal: totalDebits.toString(),
@@ -512,7 +510,7 @@ export async function getUnreconciledTransactions(
       transactionNumber: tx.transactionNumber,
       debitAmount: Number(tx.debitAmount),
       creditAmount: Number(tx.creditAmount),
-      isPosted: tx.isPosted,
+      isPosted: tx.isPosted ?? false,
       createdAt: tx.createdAt,
     }));
   } catch (error) {
@@ -521,6 +519,7 @@ export async function getUnreconciledTransactions(
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   postGLTransaction,
   reverseGLTransaction,

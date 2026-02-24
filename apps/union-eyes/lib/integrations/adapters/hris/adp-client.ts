@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * ADP Workforce Now API Client
  * 
@@ -8,9 +7,8 @@
  * @see https://developers.adp.com/articles/api/workforce-now-api
  */
 
-import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { AuthenticationError, RateLimitError, IntegrationError } from '../../types';
+import { AuthenticationError, RateLimitError, IntegrationError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -154,7 +152,7 @@ export class ADPClient {
         const error = await response.text();
         throw new AuthenticationError(
           `ADP authentication failed: ${error}`,
-          'ADP'
+          IntegrationProvider.ADP
         );
       }
 
@@ -170,7 +168,7 @@ export class ADPClient {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
         `ADP authentication error: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'ADP'
+        IntegrationProvider.ADP
       );
     }
   }
@@ -213,7 +211,8 @@ export class ADPClient {
       if (response.status === 429) {
         const retryAfter = response.headers.get('Retry-After');
         throw new RateLimitError(
-          'ADP',
+          'ADP rate limit exceeded',
+          IntegrationProvider.ADP,
           parseInt(retryAfter || '60', 10)
         );
       }
@@ -222,7 +221,7 @@ export class ADPClient {
         const error = await response.text();
         throw new IntegrationError(
           `ADP API error (${response.status}): ${error}`,
-          'ADP'
+          IntegrationProvider.ADP
         );
       }
 
@@ -233,7 +232,7 @@ export class ADPClient {
       }
       throw new IntegrationError(
         `ADP request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'ADP'
+        IntegrationProvider.ADP
       );
     }
   }
@@ -270,7 +269,7 @@ export class ADPClient {
     );
     
     if (!response.workers || response.workers.length === 0) {
-      throw new IntegrationError(`Worker ${associateOID} not found`, 'ADP');
+      throw new IntegrationError(`Worker ${associateOID} not found`, IntegrationProvider.ADP);
     }
 
     return response.workers[0];

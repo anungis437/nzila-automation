@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Smart Onboarding & Hierarchy Discovery Utilities
  * 
@@ -22,7 +21,7 @@ import { cacheGet, cacheSet } from '@/lib/services/cache-service';
 // TYPES
 // =============================================================================
 
-type Organization = InferSelectModel<typeof organizations>;
+type _Organization = InferSelectModel<typeof organizations>;
 
 export interface FederationSuggestion {
   id: string;
@@ -83,7 +82,8 @@ export async function autoDetectParentFederation(
 ): Promise<FederationSuggestion[]> {
   try {
     // Query for federations in the same province/sector
-    const filters: unknown[] = [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filters: any[] = [
       or(
         eq(organizations.organizationType, 'federation'),
         eq(organizations.organizationType, 'congress')
@@ -177,7 +177,8 @@ export async function suggestRelevantClauses(
     }
 
     const hierarchyPath = org.hierarchyPath || [];
-    const filters: unknown[] = [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filters: any[] = [
       // Only public/federation/congress level clauses
       inArray(sharedClauseLibrary.sharingLevel, ['public', 'federation', 'congress']),
     ];
@@ -255,7 +256,8 @@ export async function suggestRelevantClauses(
         clauseId: clause.id,
         clauseTitle: clause.clauseTitle,
         clauseType: clause.clauseType,
-        sourceOrgName: clause.sourceOrganization?.name || 'Unknown',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sourceOrgName: (clause.sourceOrganization as any)?.name || 'Unknown',
         sharingLevel: clause.sharingLevel,
         relevanceScore,
         relevanceReasons,
@@ -292,7 +294,8 @@ export async function findPeerOrganizations(
       throw new Error('Organization not found');
     }
 
-    const filters: unknown[] = [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filters: any[] = [
       eq(organizations.status, 'active'),
     ];
 

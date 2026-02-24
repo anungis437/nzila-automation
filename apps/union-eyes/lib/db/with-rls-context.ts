@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Database RLS Context Middleware
  * 
@@ -27,7 +26,6 @@ import { auth } from '@/lib/api-auth-guard';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { logger } from '@/lib/logger';
 
 /**
  * Execute database operation with automatic RLS context
@@ -55,7 +53,7 @@ export async function withRLSContext<T>(
   operation: () => Promise<T>
 ): Promise<T>;
 export async function withRLSContext<T>(
-  operation: (tx: NodePgDatabase<unknown>) => Promise<T>
+  operation: (tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>
 ): Promise<T>;
 export async function withRLSContext<T>(
   context: Record<string, unknown>,
@@ -63,26 +61,34 @@ export async function withRLSContext<T>(
 ): Promise<T>;
 export async function withRLSContext<T>(
   context: Record<string, unknown>,
-  operation: (tx: NodePgDatabase<unknown>) => Promise<T>
+  operation: (tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>
 ): Promise<T>;
 export async function withRLSContext<T>(
   contextOrOperation:
     | Record<string, unknown>
-    | ((tx: NodePgDatabase<unknown>) => Promise<T>)
+    | ((tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>)
     | (() => Promise<T>),
   maybeOperation?:
-    | ((tx: NodePgDatabase<unknown>) => Promise<T>)
+    | ((tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>)
     | (() => Promise<T>)
 ): Promise<T> {
   const operation = (
     typeof contextOrOperation === 'function' ? contextOrOperation : maybeOperation!
-  ) as (tx: NodePgDatabase<unknown>) => Promise<T>;
+  ) as (tx: NodePgDatabase<Record<string, unknown>>) => Promise<T>;
 
   // Get authenticated user from Clerk
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   
   if (!userId) {
     throw new Error('Unauthorized: No authenticated user found. User must be logged in via Clerk.');
+  }
+
+  // NzilaOS PR-UE-02: Require org context for all RLS-guarded operations
+  if (!orgId) {
+    throw new Error(
+      'Organization context required: No active organization found. ' +
+      'User must have an active Org selected in Clerk.'
+    );
   }
 
   // Execute in transaction to ensure context is properly scoped
@@ -93,9 +99,14 @@ export async function withRLSContext<T>(
     // current_setting('app.current_user_id', true)
     // NOTE: SET LOCAL does not accept parameterized values ($1); use set_config() instead
     await tx.execute(sql`SELECT set_config('app.current_user_id', ${userId}, true)`);
+
+    // NzilaOS PR-UE-02: Set org context for RLS policies
+    // This makes the org ID available to all RLS policies as:
+    // current_setting('app.current_org_id', true)
+    await tx.execute(sql`SELECT set_config('app.current_org_id', ${orgId}, true)`);
     
-    // Execute the operation with user context set
-    const result = await operation(tx);
+    // Execute the operation with user + org context set
+    const result = await operation(tx as unknown as NodePgDatabase<Record<string, unknown>>);
     
     // Transaction commit automatically clears local config variables
     return result;
@@ -131,7 +142,8 @@ export async function withRLSContext<T>(
  */
 export async function withExplicitUserContext<T>(
   userId: string,
-  operation: () => Promise<T>
+  operation: () => Promise<T>,
+  orgId?: string,
 ): Promise<T> {
   if (!userId) {
     throw new Error('Invalid user ID: Cannot set RLS context with empty user ID');
@@ -139,6 +151,10 @@ export async function withExplicitUserContext<T>(
 
   return await db.transaction(async (tx) => {
     await tx.execute(sql`SELECT set_config('app.current_user_id', ${userId}, true)`);
+    // NzilaOS PR-UE-02: Set org context when provided
+    if (orgId) {
+      await tx.execute(sql`SELECT set_config('app.current_org_id', ${orgId}, true)`);
+    }
     const result = await operation();
     return result;
   });
@@ -178,6 +194,8 @@ export async function withSystemContext<T>(
   return await db.transaction(async (tx) => {
     // Explicitly clear any existing user context
     await tx.execute(sql`SELECT set_config('app.current_user_id', '', true)`);
+    // NzilaOS PR-UE-02: Explicitly clear org context for system operations
+    await tx.execute(sql`SELECT set_config('app.current_org_id', '', true)`);
     const result = await operation();
     return result;
   });
@@ -205,21 +223,32 @@ export async function withSystemContext<T>(
  *   });
  * }
  */
-export async function validateRLSContext(): Promise<string> {
+export async function validateRLSContext(): Promise<{ userId: string; orgId: string }> {
   try {
-    const result = await db.execute<{ current_setting: string }>(
-      sql`SELECT current_setting('app.current_user_id', true) as current_setting`
+    const result = await db.execute<{ user_id: string; org_id: string }>(
+      sql`SELECT 
+        current_setting('app.current_user_id', true) as user_id,
+        current_setting('app.current_org_id', true) as org_id`
     );
     
-    const userId = result[0]?.current_setting;
+    const userId = result[0]?.user_id;
+    const orgId = result[0]?.org_id;
     
     if (!userId || userId === '') {
       throw new Error('RLS context validation failed: app.current_user_id is not set');
     }
+
+    // NzilaOS PR-UE-02: Org context is now mandatory
+    if (!orgId || orgId === '') {
+      throw new Error('RLS context validation failed: app.current_org_id is not set');
+    }
     
-    return userId;
+    return { userId, orgId };
   } catch (error) {
     // Log security violation
+    if (error instanceof Error && error.message.includes('RLS context validation')) {
+      throw error;
+    }
 throw new Error(
       'RLS context not set. Database queries must be wrapped in withRLSContext(). ' +
       'See: docs/security/RLS_AUTH_RBAC_ALIGNMENT.md'
@@ -252,7 +281,7 @@ export async function getCurrentRLSContext(): Promise<string | null> {
     
     const userId = result[0]?.current_setting;
     return userId && userId !== '' ? userId : null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }

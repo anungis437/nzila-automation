@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Social Media Service - Phase 10
  * 
  * Unified service for managing social media integrations across
@@ -14,10 +14,7 @@ import { LinkedInAPIClient, createLinkedInClient } from './linkedin-api-client';
 import { createClient } from '@supabase/supabase-js';
 import type {
   SocialAccount,
-  SocialPost,
-  NewSocialPost,
   SocialPlatform,
-  SocialPostStatus,
   SocialPostType,
 } from '@/db/schema/social-media-schema';
 
@@ -290,10 +287,15 @@ export class SocialMediaService {
             if (content.media_urls && content.media_urls.length > 0) {
               mediaIds = [];
               for (const url of content.media_urls) {
+                // Validate media URL to prevent SSRF
+                const parsed = new URL(url);
+                if (!['http:', 'https:'].includes(parsed.protocol)) {
+                  throw new Error(`Blocked media URL scheme: ${parsed.protocol}`);
+                }
                 // Fetch and upload media
                 const mediaResponse = await fetch(url);
                 const mediaBuffer = Buffer.from(await mediaResponse.arrayBuffer());
-                const mediaType = mediaResponse.headers.get('content-type') as unknown;
+                const mediaType = mediaResponse.headers.get('content-type') as 'image/jpeg' | 'image/png' | 'image/gif' | 'video/mp4';
                 const media = await twitterClient.uploadMedia(mediaBuffer, mediaType);
                 mediaIds.push(media.media_id_string);
               }
@@ -399,7 +401,8 @@ export class SocialMediaService {
       throw new Error(`Post not found: ${postId}`);
     }
 
-    const typedPost = post as unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const typedPost = post as any;
     const client = await this.getClient(typedPost.account_id);
 
     try {
@@ -407,7 +410,7 @@ export class SocialMediaService {
         case 'facebook':
         case 'instagram': {
           const metaClient = client as MetaAPIClient;
-          await metaClient.deletePost(typedPost.platform_post_id, (typedPost.account as unknown).access_token);
+          await metaClient.deletePost(typedPost.platform_post_id, typedPost.account.access_token);
           break;
         }
 
@@ -461,7 +464,7 @@ export class SocialMediaService {
       switch (typedAccount.platform) {
         case 'facebook': {
           const metaClient = client as MetaAPIClient;
-          const insights = await metaClient.getPageInsights(
+          const _insights = await metaClient.getPageInsights(
             typedAccount.platformUserId,
             typedAccount.accessToken,
             [
@@ -482,7 +485,7 @@ export class SocialMediaService {
 
         case 'instagram': {
           const metaClient = client as MetaAPIClient;
-          const insights = await metaClient.getInstagramInsights(
+          const _insights = await metaClient.getInstagramInsights(
             typedAccount.platformUserId,
             ['impressions', 'reach', 'follower_count'],
             'day',
@@ -502,7 +505,7 @@ export class SocialMediaService {
 
         case 'linkedin': {
           const linkedInClient = client as LinkedInAPIClient;
-          const stats = await linkedInClient.getOrganizationStatistics(
+          const _stats = await linkedInClient.getOrganizationStatistics(
             typedAccount.platformUserId,
             startDate,
             endDate
@@ -606,7 +609,7 @@ throw error;
           reset_at: resetAt,
           is_limited: remaining < limit * 0.1,
         });
-      } catch (error) {
+      } catch (_error) {
 }
     }
 

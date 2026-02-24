@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Redemption Service
  * Handles member redemption lifecycle
@@ -7,10 +6,9 @@
 import { db } from '@/db';
 import {
   rewardRedemptions,
-  type NewRewardRedemption,
   type RewardRedemption,
 } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, count } from 'drizzle-orm';
 import { applyLedgerEntry } from './wallet-service';
 
 export interface InitiateRedemptionOptions {
@@ -350,8 +348,8 @@ export async function listUserRedemptions(
   });
 
   // Get total count
-  const [{ count }] = await db
-    .select({ count: db.$count() })
+  const [{ total: totalCount }] = await db
+    .select({ total: count() })
     .from(rewardRedemptions)
     .where(
       and(
@@ -362,7 +360,7 @@ export async function listUserRedemptions(
 
   return {
     redemptions,
-    total: count,
+    total: totalCount,
   };
 }
 
@@ -385,14 +383,14 @@ export async function listOrgRedemptions(
     offset,
   });
 
-  const [{ count }] = await db
-    .select({ count: db.$count() })
+  const [{ total: totalCount }] = await db
+    .select({ total: count() })
     .from(rewardRedemptions)
     .where(eq(rewardRedemptions.orgId, orgId));
 
   return {
     redemptions,
-    total: count,
+    total: totalCount,
   };
 }
 

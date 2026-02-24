@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Pilot Applications Management Page
  * 
@@ -11,11 +10,13 @@
  * - Email notifications (future)
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/db';
 import { pilotApplications } from '@/db/schema/domains/marketing';
 import { desc, eq } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -37,7 +38,7 @@ import PilotApplicationActions from '@/components/admin/pilot-application-action
 
 interface AdminPilotApplicationsPageProps {
   searchParams: {
-    status?: 'pending' | 'approved' | 'active' | 'completed' | 'rejected';
+    status?: 'submitted' | 'review' | 'approved' | 'active' | 'completed' | 'declined';
   };
 }
 
@@ -60,18 +61,18 @@ export default async function AdminPilotApplicationsPage({
   // Calculate statistics
   const stats = {
     total: applications.length,
-    pending: applications.filter((a) => a.status === 'pending').length,
+    pending: applications.filter((a) => a.status === 'submitted' || a.status === 'review').length,
     approved: applications.filter((a) => a.status === 'approved').length,
     active: applications.filter((a) => a.status === 'active').length,
     completed: applications.filter((a) => a.status === 'completed').length,
-    rejected: applications.filter((a) => a.status === 'rejected').length,
+    rejected: applications.filter((a) => a.status === 'declined').length,
   };
 
   // Calculate average readiness score
   const avgReadiness =
     applications.length > 0
       ? Math.round(
-          applications.reduce((sum, a) => sum + (a.readinessScore || 0), 0) /
+          applications.reduce((sum, a) => sum + Number(a.readinessScore || 0), 0) /
             applications.length
         )
       : 0;
@@ -187,14 +188,14 @@ export default async function AdminPilotApplicationsPage({
                       </div>
                       <Badge
                         variant={
-                          (application.readinessLevel || 'medium') === 'high'
+                          Number(application.readinessScore || 0) >= 80
                             ? 'default'
-                            : (application.readinessLevel || 'medium') === 'medium'
+                            : Number(application.readinessScore || 0) >= 50
                             ? 'secondary'
                             : 'outline'
                         }
                       >
-                        {application.readinessLevel || 'unknown'}
+                        {Number(application.readinessScore || 0) >= 80 ? 'high' : Number(application.readinessScore || 0) >= 50 ? 'medium' : 'low'}
                       </Badge>
                     </div>
                   </TableCell>
@@ -204,7 +205,7 @@ export default async function AdminPilotApplicationsPage({
                         application.status === 'approved' ||
                         application.status === 'active'
                           ? 'default'
-                          : application.status === 'pending'
+                          : application.status === 'submitted' || application.status === 'review'
                           ? 'secondary'
                           : application.status === 'completed'
                           ? 'outline'
@@ -218,7 +219,8 @@ export default async function AdminPilotApplicationsPage({
                     {format(new Date(application.submittedAt), 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell>
-                    <PilotApplicationActions application={application} />
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <PilotApplicationActions application={application as any} />
                   </TableCell>
                 </TableRow>
               ))}

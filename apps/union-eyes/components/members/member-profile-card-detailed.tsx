@@ -16,7 +16,6 @@
 
 import * as React from "react";
 import {
-  User,
   Mail,
   Phone,
   MapPin,
@@ -104,7 +103,7 @@ export function MemberProfileCardDetailed({
   return (
     <Card className={cn("overflow-hidden", className)}>
       {/* Header with gradient */}
-      <div className="h-20 bg-gradient-to-r from-blue-500 to-blue-600" />
+      <div className="h-20 bg-linear-to-r from-blue-500 to-blue-600" />
 
       <CardHeader className="relative pb-0">
         <div className="flex items-start justify-between">

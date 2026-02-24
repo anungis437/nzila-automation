@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getInternalDocBySlug, getAllInternalDocSlugs } from '@/lib/docs'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,7 +44,7 @@ export default async function InternalDocPage({ params }: Props) {
 
         <div
           className="prose prose-gray max-w-none"
-          dangerouslySetInnerHTML={{ __html: doc.htmlContent }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(doc.htmlContent) }}
         />
       </article>
     </div>

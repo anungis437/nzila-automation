@@ -1,9 +1,12 @@
+"use client";
+
+
+export const dynamic = 'force-dynamic';
 import React from 'react';
 /**
  * Members Directory
  * View and manage union member contacts and information
  */
-"use client";
 
 import { useState } from "react";
 import useSWR from "swr";
@@ -11,9 +14,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from 'next-intl';
 import { useUser } from "@clerk/nextjs";
 import { useOrganizationId } from "@/lib/hooks/use-organization";
-import { 
-  Users, 
-  Search, 
+import {
+  Users,
+  Search,
   Filter,
   Mail,
   Phone,
@@ -25,15 +28,15 @@ import {
   MessageSquare,
   FileText,
   ChevronDown,
-  ChevronUp,
   UserPlus,
   Download,
   MoreVertical,
   Clock,
   TrendingUp,
   Loader2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
+ 
 import { Card, CardContent } from "@/components/ui/card";
 
 type MemberRole = "member" | "steward" | "officer" | "admin" | "super_admin";
@@ -83,7 +86,7 @@ export default function MembersPage() {
   
   // Fetch members from API with organization-aware cache key
   // Including organizationId in the key ensures fresh data when switching organizations
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate: _mutate } = useSWR(
     user && organizationId ? `/api/organization/members?organization=${organizationId}` : null,
     fetcher,
     { 
@@ -102,6 +105,7 @@ export default function MembersPage() {
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
 
   // Extract members from API response
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const members: Member[] = data?.success ? data.data.members.map((m: any) => ({
     id: m.id,
     name: m.name,
@@ -152,7 +156,7 @@ export default function MembersPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
           <p className="text-lg text-gray-600">{t('members.loadingMembers')}</p>
@@ -164,7 +168,7 @@ export default function MembersPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center">
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('members.errorLoadingMembers')}</h2>
@@ -181,7 +185,7 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -459,7 +463,7 @@ export default function MembersPage() {
                           <div className="flex items-start justify-between">
                             <div className="flex items-start gap-4 flex-1">
                               {/* Avatar */}
-                              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                              <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold shrink-0">
                                 {member.name.split(' ').map(n => n[0]).join('')}
                               </div>
 
@@ -633,10 +637,10 @@ export default function MembersPage() {
           transition={{ delay: 0.6 }}
           className="mt-8"
         >
-          <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
+          <Card className="bg-linear-to-r from-blue-50 to-cyan-50 border-blue-200">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import ScrollReveal from '@/components/public/ScrollReveal';
 import AnimatedCounter from '@/components/public/AnimatedCounter';
 import SectionHeading from '@/components/public/SectionHeading';
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 
 const verticals = [
   {
+    slug: 'fintech',
     name: 'Fintech',
     photo: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800',
     alt: 'Financial trading terminal with stock charts and candlestick patterns',
@@ -26,22 +28,25 @@ const verticals = [
     tam: '$100B+', entities: '617', status: '3 platforms',
   },
   {
+    slug: 'agrotech',
     name: 'Agrotech',
     photo: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800',
     alt: 'Aerial view of green agricultural farmland with organized crop rows',
-    platforms: ['CORA', 'PonduOps'],
-    description: 'Farm management, supply chain, IoT integration, and agricultural market intelligence.',
+    platforms: ['CORA (CA)', 'PonduOps (DRC/CA)'],
+    description: 'Farm management, supply chain, IoT integration, and agricultural market intelligence. CORA is built on Canadian data; PonduOps serves the DRC and Central African market.',
     tam: '$8.6B', entities: '300', status: '2 platforms',
   },
   {
+    slug: 'uniontech',
     name: 'Uniontech',
     photo: 'https://images.unsplash.com/photo-1529070538774-1795d8de2dff?w=800',
     alt: 'Labor union workers raising hands together in solidarity',
     platforms: ['Union Eyes'],
-    description: 'Union management, pension forecasting, grievance tracking, and labor organizing.',
+    description: 'Union management, pension forecasting, grievance tracking, and labour organising.',
     tam: '$50B', entities: '4,773', status: 'Flagship',
   },
   {
+    slug: 'legaltech',
     name: 'Legaltech',
     photo: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
     alt: 'Scales of justice on a desk alongside legal reference books',
@@ -50,6 +55,7 @@ const verticals = [
     tam: '$13B+', entities: '814', status: '2 platforms',
   },
   {
+    slug: 'edtech',
     name: 'EdTech',
     photo: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800',
     alt: 'Students engaged in collaborative learning with digital devices',
@@ -58,6 +64,7 @@ const verticals = [
     tam: '$13B+', entities: '162', status: '2 platforms',
   },
   {
+    slug: 'commerce',
     name: 'Commerce',
     photo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800',
     alt: 'Customer completing a digital payment at a modern retail checkout',
@@ -66,6 +73,7 @@ const verticals = [
     tam: '$25B', entities: '508', status: '3 platforms',
   },
   {
+    slug: 'entertainment',
     name: 'Entertainment',
     photo: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800',
     alt: 'DJ performing live with colorful stage lights and sound equipment',
@@ -74,6 +82,7 @@ const verticals = [
     tam: '$50B', entities: '83', status: 'Production Ready',
   },
   {
+    slug: 'healthtech',
     name: 'Healthtech',
     photo: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800',
     alt: 'Healthcare professional using a digital tablet for patient diagnostics',
@@ -82,6 +91,7 @@ const verticals = [
     tam: '$20B', entities: '150', status: 'Legacy',
   },
   {
+    slug: 'insurtech',
     name: 'Insurtech',
     photo: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
     alt: 'Business professional signing insurance policy documents at a desk',
@@ -90,6 +100,7 @@ const verticals = [
     tam: '$30B', entities: '79', status: 'In Development',
   },
   {
+    slug: 'justice',
     name: 'Justice',
     photo: 'https://images.unsplash.com/photo-1589578527966-fdac0f44566c?w=800',
     alt: 'Symbolic raised fist representing social justice and equity advocacy',
@@ -112,7 +123,7 @@ export default function Verticals() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/70 to-navy/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-navy/80 via-navy/70 to-navy/90" />
         <div className="absolute inset-0 bg-mesh opacity-40" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
@@ -128,7 +139,7 @@ export default function Verticals() {
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Diverse sectors united by a common mission: building ethical AI technology that
+              Diverse sectors united by a common mission: building ethical, B Corp-aligned AI technology that
               serves real human needs across healthcare, finance, justice, and beyond.
             </p>
           </ScrollReveal>
@@ -160,7 +171,8 @@ export default function Verticals() {
           <div className="grid md:grid-cols-2 gap-8">
             {verticals.map((v, i) => (
               <ScrollReveal key={v.name} delay={i * 0.05}>
-                <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover-lift h-full flex flex-col">
+                <Link href={`/verticals/${v.slug}`} className="block h-full">
+                <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover-lift h-full flex flex-col cursor-pointer">
                   {/* Photo header */}
                   <div className="relative h-48 overflow-hidden">
                     <Image
@@ -170,7 +182,7 @@ export default function Verticals() {
                       className="object-cover"
                       sizes="(max-width:768px) 100vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-navy/80 to-transparent" />
                     <div className="absolute bottom-4 left-5 right-5">
                       <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-bold text-white">{v.name}</h2>
@@ -209,9 +221,13 @@ export default function Verticals() {
                           </span>
                         ))}
                       </div>
+                      <span className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-electric">
+                        Explore capabilities →
+                      </span>
                     </div>
                   </div>
                 </div>
+                </Link>
               </ScrollReveal>
             ))}
           </div>

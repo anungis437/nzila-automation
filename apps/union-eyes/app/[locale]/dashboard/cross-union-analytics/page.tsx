@@ -1,8 +1,8 @@
-﻿// @ts-nocheck
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+
+export const dynamic = 'force-dynamic';
+import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,8 +34,11 @@ export default function CrossUnionAnalyticsPage() {
   const [organizationLevel, setOrganizationLevel] = useState<string>("all");
   
   // Data states
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [clauseStats, setClauseStats] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [precedentStats, setPrecedentStats] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [orgActivity, setOrgActivity] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +76,7 @@ export default function CrossUnionAnalyticsPage() {
         setClauseStats(clauseData);
         setPrecedentStats(precedentData);
         setOrgActivity(orgData);
-      } catch (error) {
+      } catch (_error) {
 } finally {
         setIsLoading(false);
       }
@@ -168,7 +171,7 @@ export default function CrossUnionAnalyticsPage() {
       </Card>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="clauses">Clause Library</TabsTrigger>
@@ -236,6 +239,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Clause Types Distribution"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 clauseStats?.clauseTypeDistribution?.map((item: any) => ({
                   name: item.clauseType,
                   value: item.count,
@@ -248,6 +252,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Precedent Outcomes"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 precedentStats?.outcomeDistribution?.map((item: any) => ({
                   name: item.outcome,
                   value: item.count,
@@ -263,6 +268,7 @@ export default function CrossUnionAnalyticsPage() {
           <ActivityFeed
             title="Recent Cross-Organization Activity"
             activities={
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               clauseStats?.recentActivity?.map((activity: any) => ({
                 id: activity.id,
                 accessType: activity.accessType,
@@ -317,6 +323,7 @@ export default function CrossUnionAnalyticsPage() {
             <TopItemsList
               title="Most Cited Clauses"
               items={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 clauseStats?.mostCited?.map((clause: any) => ({
                   id: clause.id,
                   title: clause.clauseTitle,
@@ -335,6 +342,7 @@ export default function CrossUnionAnalyticsPage() {
             <TopItemsList
               title="Most Viewed Clauses"
               items={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 clauseStats?.mostViewed?.map((clause: any) => ({
                   id: clause.id,
                   title: clause.clauseTitle,
@@ -357,6 +365,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Clause Types"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 clauseStats?.clauseTypeDistribution?.map((item: any) => ({
                   name: item.clauseType,
                   value: item.count,
@@ -368,6 +377,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Sector Distribution"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 clauseStats?.sectorDistribution?.map((item: any) => ({
                   name: item.sector || "Unknown",
                   value: item.count,
@@ -418,6 +428,7 @@ export default function CrossUnionAnalyticsPage() {
             <TopItemsList
               title="Most Cited Precedents"
               items={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 precedentStats?.mostCited?.map((precedent: any) => ({
                   id: precedent.id,
                   title: `${precedent.caseNumber}: ${precedent.caseTitle}`,
@@ -436,6 +447,7 @@ export default function CrossUnionAnalyticsPage() {
             <TopItemsList
               title="Most Viewed Precedents"
               items={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 precedentStats?.mostViewed?.map((precedent: any) => ({
                   id: precedent.id,
                   title: `${precedent.caseNumber}: ${precedent.caseTitle}`,
@@ -458,6 +470,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Outcome Distribution"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 precedentStats?.outcomeDistribution?.map((item: any) => ({
                   name: item.outcome,
                   value: item.count,
@@ -469,6 +482,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Grievance Types"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 precedentStats?.grievanceTypeDistribution?.map((item: any) => ({
                   name: item.grievanceType,
                   value: item.count,
@@ -486,6 +500,7 @@ export default function CrossUnionAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {precedentStats?.topArbitrators?.slice(0, 10).map((arb: any, index: number) => (
                   <div
                     key={index}
@@ -551,6 +566,7 @@ export default function CrossUnionAnalyticsPage() {
             <TopItemsList
               title="Most Active Organizations"
               items={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 orgActivity?.mostActiveOrgs?.map((org: any) => ({
                   id: org.organizationId,
                   title: org.organizationName,
@@ -569,6 +585,7 @@ export default function CrossUnionAnalyticsPage() {
             <TopItemsList
               title="Top Resource Contributors"
               items={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 orgActivity?.topContributors?.map((org: any) => ({
                   id: org.organizationId,
                   title: org.organizationName,
@@ -591,6 +608,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Access Type Breakdown"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 orgActivity?.accessTypeBreakdown?.map((item: any) => ({
                   name: item.accessType,
                   value: item.count,
@@ -602,6 +620,7 @@ export default function CrossUnionAnalyticsPage() {
             <DistributionChart
               title="Organization Level Activity"
               data={
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 orgActivity?.orgLevelBreakdown?.map((item: any) => ({
                   name: item.organizationLevel,
                   value: item.totalAccesses,

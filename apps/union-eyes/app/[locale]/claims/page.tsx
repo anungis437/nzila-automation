@@ -1,4 +1,7 @@
-﻿// @ts-nocheck
+"use client";
+
+export const dynamic = 'force-dynamic';
+
 /**
  * Claims Management Page
  * 
@@ -40,7 +43,7 @@ export default function ClaimsPage() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "list" | "submit")}>
         <TabsList>
           <TabsTrigger value="list">My Claims</TabsTrigger>
           <TabsTrigger value="submit">Submit Claim</TabsTrigger>
@@ -57,7 +60,7 @@ export default function ClaimsPage() {
           <ClaimFormWizard
             memberId="current-member-id"
             organizationId="current-organization-id"
-            onSubmit={async (data) => {
+            onSubmit={async (_data) => {
 // Handle claim submission
               setActiveTab("list");
             }}
@@ -89,7 +92,7 @@ export default function ClaimsPage() {
             createdAt: new Date(),
             updatedAt: new Date(),
           }}
-          onStatusChange={(status) => undefined}
+          onStatusChange={(_status) => undefined}
         />
       )}
     </div>

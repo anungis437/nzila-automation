@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Metrics Reporting Dashboard
  * 
@@ -11,15 +10,17 @@
  * - Movement insights participation
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/db';
 import {
   pilotApplications,
-  pilotMetrics,
   caseStudies,
   testimonials,
   dataAggregationConsent,
-} from '@/db/schema';
-import { sql, gte, eq } from 'drizzle-orm';
+} from '@/db/schema/domains/marketing';
+import { gte } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -51,7 +52,7 @@ export default async function AdminMetricsReportPage() {
   const avgReadiness =
     allPilots.length > 0
       ? Math.round(
-          allPilots.reduce((sum, a) => sum + (a.readinessScore || 0), 0) /
+          allPilots.reduce((sum, a) => sum + Number(a.readinessScore || 0), 0) /
             allPilots.length
         )
       : 0;
@@ -59,7 +60,7 @@ export default async function AdminMetricsReportPage() {
   // Case studies metrics
   const allCaseStudies = await db.select().from(caseStudies);
   const publishedCaseStudies = allCaseStudies.filter(
-    (cs) => cs.publishStatus === 'published'
+    (cs) => cs.publishedAt !== null
   );
 
   // Testimonials metrics
@@ -67,17 +68,17 @@ export default async function AdminMetricsReportPage() {
   const recentTestimonials = await db
     .select()
     .from(testimonials)
-    .where(gte(testimonials.submittedAt, thirtyDaysAgo));
+    .where(gte(testimonials.createdAt, thirtyDaysAgo));
   
   const approvedTestimonials = allTestimonials.filter(
-    (t) => t.status === 'approved'
+    (t) => t.approvedAt !== null
   );
 
   // Movement insights metrics
   const allConsents = await db.select().from(dataAggregationConsent);
-  const activeConsents = allConsents.filter((c) => c.status === 'active');
+  const activeConsents = allConsents.filter((c) => c.consentGiven);
   const recentConsents = allConsents.filter(
-    (c) => new Date(c.grantedAt) >= thirtyDaysAgo
+    (c) => new Date(c.consentDate) >= thirtyDaysAgo
   );
 
   const consentAdoptionRate =
@@ -155,7 +156,7 @@ export default async function AdminMetricsReportPage() {
             <div className="grid gap-4 md:grid-cols-5">
               <StatusCard
                 label="Pending"
-                count={allPilots.filter((p) => p.status === 'pending').length}
+                count={allPilots.filter((p) => p.status === 'submitted' || p.status === 'review').length}
                 variant="warning"
               />
               <StatusCard
@@ -175,7 +176,7 @@ export default async function AdminMetricsReportPage() {
               />
               <StatusCard
                 label="Rejected"
-                count={allPilots.filter((p) => p.status === 'rejected').length}
+                count={allPilots.filter((p) => p.status === 'declined').length}
                 variant="destructive"
               />
             </div>
@@ -188,7 +189,7 @@ export default async function AdminMetricsReportPage() {
         <CardHeader>
           <CardTitle>Case Studies Performance</CardTitle>
           <CardDescription>
-            Content performance and engagement (views/downloads coming soon)
+            Content performance and engagement metrics
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -204,7 +205,7 @@ export default async function AdminMetricsReportPage() {
             <div>
               <div className="text-sm text-muted-foreground">Draft</div>
               <div className="text-3xl font-bold">
-                {allCaseStudies.filter((cs) => cs.publishStatus === 'draft').length}
+                {allCaseStudies.filter((cs) => cs.publishedAt === null).length}
               </div>
             </div>
           </div>
@@ -258,11 +259,11 @@ export default async function AdminMetricsReportPage() {
             />
             <FunnelStep
               label="Featured"
-              count={allTestimonials.filter((t) => t.isFeatured).length}
+              count={allTestimonials.filter((t) => t.featured).length}
               percentage={
                 approvedTestimonials.length > 0
                   ? Math.round(
-                      (allTestimonials.filter((t) => t.isFeatured).length /
+                      (allTestimonials.filter((t) => t.featured).length /
                         approvedTestimonials.length) *
                         100
                     )
@@ -307,7 +308,7 @@ export default async function AdminMetricsReportPage() {
               <div>
                 <div className="text-sm text-muted-foreground">Revoked</div>
                 <div className="text-3xl font-bold">
-                  {allConsents.filter((c) => c.status === 'revoked').length}
+                  {allConsents.filter((c) => !c.consentGiven).length}
                 </div>
               </div>
               <div>

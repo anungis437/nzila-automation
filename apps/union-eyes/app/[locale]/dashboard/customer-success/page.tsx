@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Customer Success Dashboard
  * For Customer Success Director - User success, retention, and growth
@@ -7,10 +6,13 @@
  * @dashboard_path /dashboard/customer-success
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   CustomerHealthScoresWidget,

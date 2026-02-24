@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Feature Flags Admin Panel
  * 
@@ -229,7 +228,7 @@ function FlagCard({
         </div>
       </CardHeader>
       
-      {(flag.percentage !== null || flag.allowedOrganizations || flag.tags) && (
+      {(flag.percentage !== null || flag.allowedTenants || flag.tags) && (
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             {flag.percentage !== null && flag.percentage !== undefined && (

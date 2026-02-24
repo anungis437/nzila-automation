@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * New Member Form
  * 
@@ -7,13 +6,15 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Select,
   SelectContent,

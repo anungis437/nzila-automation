@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Engagement Scoring System
  * Calculates and tracks member engagement scores across all communication channels
@@ -7,7 +6,7 @@
 
 import { db } from '@/db';
 import { profiles, smsMessages, newsletterEngagement, surveyResponses, pollVotes, pushDeliveries, organizationMembers } from '@/db/schema';
-import { eq, gte, and, sql, desc } from 'drizzle-orm';
+import { eq, gte, and, sql } from 'drizzle-orm';
 import { subDays, subMonths, differenceInDays } from 'date-fns';
 
 // =============================================
@@ -108,7 +107,7 @@ const REENGAGEMENT_THRESHOLDS = {
  */
 export async function calculateEngagementScore(
   profileId: string,
-  tenantId: string,
+  organizationId: string,
   lookbackDays = 90
 ): Promise<EngagementScore> {
   const cutoffDate = subDays(new Date(), lookbackDays);
@@ -124,7 +123,7 @@ export async function calculateEngagementScore(
     .from(smsMessages)
     .where(
       and(
-        eq(smsMessages.organizationId, tenantId),
+        eq(smsMessages.organizationId, organizationId),
         eq(smsMessages.userId, profileId),
         gte(smsMessages.sentAt, cutoffDate)
       )
@@ -157,7 +156,7 @@ export async function calculateEngagementScore(
     .from(surveyResponses)
     .where(
       and(
-        eq(surveyResponses.tenantId, tenantId),
+        eq(surveyResponses.organizationId, organizationId),
         eq(surveyResponses.userId, profileId),
         gte(surveyResponses.startedAt, cutoffDate)
       )
@@ -173,7 +172,7 @@ export async function calculateEngagementScore(
     .from(pollVotes)
     .where(
       and(
-        eq(pollVotes.tenantId, tenantId),
+        eq(pollVotes.organizationId, organizationId),
         eq(pollVotes.userId, profileId),
         gte(pollVotes.votedAt, cutoffDate)
       )
@@ -243,7 +242,7 @@ export async function calculateEngagementScore(
   }
 
   // Calculate trend
-  const previousScore = await calculatePreviousScore(profileId, tenantId, lookbackDays);
+  const previousScore = await calculatePreviousScore(profileId, organizationId, lookbackDays);
   let trend: EngagementScore['trend'] = 'stable';
   let trendPercentage = 0;
 
@@ -279,7 +278,7 @@ export async function calculateEngagementScore(
  */
 async function calculatePreviousScore(
   profileId: string,
-  tenantId: string,
+  organizationId: string,
   lookbackDays: number
 ): Promise<number> {
   const previousCutoffStart = subDays(new Date(), lookbackDays * 2);
@@ -291,7 +290,7 @@ async function calculatePreviousScore(
     .from(smsMessages)
     .where(
       and(
-        eq(smsMessages.organizationId, tenantId),
+        eq(smsMessages.organizationId, organizationId),
         eq(smsMessages.userId, profileId),
         gte(smsMessages.sentAt, previousCutoffStart),
         sql`${smsMessages.sentAt} < ${previousCutoffEnd}`
@@ -316,7 +315,7 @@ async function calculatePreviousScore(
     .from(surveyResponses)
     .where(
       and(
-        eq(surveyResponses.tenantId, tenantId),
+        eq(surveyResponses.organizationId, organizationId),
         eq(surveyResponses.userId, profileId),
         gte(surveyResponses.startedAt, previousCutoffStart),
         sql`${surveyResponses.startedAt} < ${previousCutoffEnd}`
@@ -329,7 +328,7 @@ async function calculatePreviousScore(
     .from(pollVotes)
     .where(
       and(
-        eq(pollVotes.tenantId, tenantId),
+        eq(pollVotes.organizationId, organizationId),
         eq(pollVotes.userId, profileId),
         gte(pollVotes.votedAt, previousCutoffStart),
         sql`${pollVotes.votedAt} < ${previousCutoffEnd}`
@@ -345,18 +344,18 @@ async function calculatePreviousScore(
  * Calculate engagement scores for all profiles in a tenant
  */
 export async function calculateAllEngagementScores(
-  tenantId: string,
+  organizationId: string,
   lookbackDays = 90
 ): Promise<EngagementScore[]> {
   // Get all members for tenant (organization)
   const allProfiles = await db
     .select({ id: organizationMembers.userId })
     .from(organizationMembers)
-    .where(eq(organizationMembers.organizationId, tenantId));
+    .where(eq(organizationMembers.organizationId, organizationId));
 
   // Calculate scores in parallel
   const scores = await Promise.all(
-    allProfiles.map((profile) => calculateEngagementScore(profile.id, tenantId, lookbackDays))
+    allProfiles.map((profile) => calculateEngagementScore(profile.id, organizationId, lookbackDays))
   );
 
   return scores.sort((a, b) => b.totalScore - a.totalScore);
@@ -367,11 +366,11 @@ export async function calculateAllEngagementScores(
  */
 export async function getEngagementHistory(
   profileId: string,
-  tenantId: string,
+  organizationId: string,
   months = 6
 ): Promise<EngagementHistory[]> {
   const history: EngagementHistory[] = [];
-  const startDate = subMonths(new Date(), months);
+  const _startDate = subMonths(new Date(), months);
 
   // Calculate score for each month
   for (let i = 0; i < months; i++) {
@@ -384,7 +383,7 @@ export async function getEngagementHistory(
       .from(smsMessages)
       .where(
         and(
-          eq(smsMessages.organizationId, tenantId),
+          eq(smsMessages.organizationId, organizationId),
           eq(smsMessages.userId, profileId),
           gte(smsMessages.sentAt, monthStart),
           sql`${smsMessages.sentAt} < ${monthEnd}`
@@ -409,7 +408,7 @@ export async function getEngagementHistory(
       .from(surveyResponses)
       .where(
         and(
-          eq(surveyResponses.tenantId, tenantId),
+          eq(surveyResponses.organizationId, organizationId),
           eq(surveyResponses.userId, profileId),
           gte(surveyResponses.startedAt, monthStart),
           sql`${surveyResponses.startedAt} < ${monthEnd}`
@@ -422,7 +421,7 @@ export async function getEngagementHistory(
       .from(pollVotes)
       .where(
         and(
-          eq(pollVotes.tenantId, tenantId),
+          eq(pollVotes.organizationId, organizationId),
           eq(pollVotes.userId, profileId),
           gte(pollVotes.votedAt, monthStart),
           sql`${pollVotes.votedAt} < ${monthEnd}`
@@ -470,9 +469,9 @@ export async function getEngagementHistory(
  * Identify profiles that need re-engagement
  */
 export async function identifyReEngagementTargets(
-  tenantId: string
+  organizationId: string
 ): Promise<ReEngagementTrigger[]> {
-  const scores = await calculateAllEngagementScores(tenantId);
+  const scores = await calculateAllEngagementScores(organizationId);
   const triggers: ReEngagementTrigger[] = [];
 
   for (const score of scores) {
@@ -554,10 +553,10 @@ export async function identifyReEngagementTargets(
  * Get top engaged members
  */
 export async function getTopEngagedMembers(
-  tenantId: string,
+  organizationId: string,
   limit = 50
 ): Promise<(EngagementScore & { memberName: string; email: string })[]> {
-  const scores = await calculateAllEngagementScores(tenantId);
+  const scores = await calculateAllEngagementScores(organizationId);
 
   // Get profile details for top members
   const topScores = scores.slice(0, limit);

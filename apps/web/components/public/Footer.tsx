@@ -2,6 +2,11 @@
 
 import Link from 'next/link';
 
+const CONSOLE_URL = process.env.NEXT_PUBLIC_CONSOLE_URL ?? 'http://localhost:3001';
+const PARTNERS_URL = process.env.NEXT_PUBLIC_PARTNERS_URL ?? 'http://localhost:3002';
+const UNION_EYES_URL = process.env.NEXT_PUBLIC_UNION_EYES_URL ?? 'http://localhost:3003';
+const ABR_URL = process.env.NEXT_PUBLIC_ABR_URL ?? 'http://localhost:3004';
+
 const footerLinks = {
   Company: [
     { name: 'About Us', href: '/about' },
@@ -22,11 +27,18 @@ const footerLinks = {
   ],
 };
 
+const appLinks = [
+  { name: 'Console', href: CONSOLE_URL, external: true },
+  { name: 'Partner Portal', href: PARTNERS_URL, external: true },
+  { name: 'Union Eyes', href: UNION_EYES_URL, external: true },
+  { name: 'ABR Insights', href: ABR_URL, external: true },
+];
+
 export default function Footer() {
   return (
     <footer className="bg-navy text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-6">
@@ -69,6 +81,26 @@ export default function Footer() {
               </ul>
             </div>
           ))}
+
+          {/* Apps Column */}
+          <div>
+            <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Apps</h4>
+            <ul className="space-y-3">
+              {appLinks.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors text-sm inline-flex items-center gap-1"
+                  >
+                    {link.name}
+                    <span className="text-gray-600 text-xs">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 

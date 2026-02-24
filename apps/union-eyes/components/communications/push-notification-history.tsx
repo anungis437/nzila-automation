@@ -14,7 +14,7 @@
  * - Resend failed notifications
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,16 +47,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { 
-  Bell, 
-  MoreVertical, 
-  TrendingUp, 
-  Users, 
-  Eye, 
+import {
+  MoreVertical,
+  TrendingUp,
+  Eye,
   MousePointerClick,
   Send,
   Calendar,
 } from 'lucide-react';
+ 
 import { format, formatDistanceToNow } from 'date-fns';
 
 interface PushNotification {
@@ -84,49 +83,42 @@ interface PushNotificationHistoryProps {
   onViewDetails?: (notificationId: string) => void;
 }
 
-// Mock data
-const mockNotifications: PushNotification[] = [
-  {
-    id: '1',
-    title: 'Contract Vote Today',
-    body: 'Don\'t forget to cast your vote on the new contract proposal by 5 PM.',
-    targetAudience: 'all',
-    sentAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    stats: { sent: 1234, delivered: 1198, opened: 856, clicked: 432, failed: 36 },
-    status: 'sent',
-    priority: 'high',
-  },
-  {
-    id: '2',
-    title: 'New Grievance Update',
-    body: 'Case #2024-045 has been updated. View the latest status.',
-    targetAudience: 'segment',
-    targetSegment: 'active',
-    sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
-    stats: { sent: 543, delivered: 532, opened: 387, clicked: 198, failed: 11 },
-    status: 'sent',
-    priority: 'normal',
-  },
-  {
-    id: '3',
-    title: 'Upcoming Union Meeting',
-    body: 'Monthly meeting scheduled for next Tuesday at 7 PM. RSVP now.',
-    targetAudience: 'all',
-    scheduledAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-    sentAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-    stats: { sent: 0, delivered: 0, opened: 0, clicked: 0, failed: 0 },
-    status: 'scheduled',
-    priority: 'normal',
-  },
-];
-
 export function PushNotificationHistory({
-  notifications = mockNotifications,
+  notifications: propNotifications,
   onResend,
-  onViewDetails,
+  onViewDetails: _onViewDetails,
 }: PushNotificationHistoryProps) {
+  const [fetchedNotifications, setFetchedNotifications] = useState<PushNotification[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedNotification, setSelectedNotification] = useState<PushNotification | null>(null);
+  const [loading, setLoading] = useState(!propNotifications);
+
+  const fetchNotifications = useCallback(async () => {
+    if (propNotifications) return;
+    try {
+      setLoading(true);
+      const res = await fetch('/api/v2/communications/push/history');
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setFetchedNotifications(items.map((n: any) => ({
+          ...n,
+          sentAt: new Date(n.sentAt ?? n.sent_at),
+          scheduledAt: n.scheduledAt ?? n.scheduled_at ? new Date(n.scheduledAt ?? n.scheduled_at) : undefined,
+          stats: n.stats ?? { sent: 0, delivered: 0, opened: 0, clicked: 0, failed: 0 },
+        })));
+      }
+    } catch {
+      // API not available
+    } finally {
+      setLoading(false);
+    }
+  }, [propNotifications]);
+
+  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+
+  const notifications = propNotifications ?? fetchedNotifications;
 
   const filteredNotifications = notifications.filter((notif) => {
     return statusFilter === 'all' || notif.status === statusFilter;

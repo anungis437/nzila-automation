@@ -53,7 +53,7 @@ export interface ImpactMetricInput {
 // CASE STUDIES
 // ============================================================================
 
-export type OrganizationType = 'clc' | 'local' | 'federation' | 'regional' | 'national';
+export type OrganizationType = 'clc' | 'local' | 'federation' | 'regional' | 'national' | 'platform' | 'congress' | 'union' | 'region' | 'district';
 export type CaseStudyCategory = 'pilot' | 'success-story' | 'before-after' | 'transformation';
 
 export interface CaseStudyMetric {
@@ -62,6 +62,7 @@ export interface CaseStudyMetric {
   after: number;
   unit: string;
   improvement?: string; // e.g., "-60%", "+120%"
+  type?: string;
 }
 
 export interface CaseStudyTestimonial {
@@ -90,6 +91,16 @@ export interface CaseStudy {
   publishedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  // Extended fields for case study pages
+  status?: string;
+  jurisdiction?: string;
+  sector?: string;
+  memberCount?: number;
+  anonymized?: boolean;
+  quote?: string;
+  results?: string[];
+  lessonsLearned?: string[];
+  replicability?: string[];
 }
 
 export interface CaseStudyInput {
@@ -132,6 +143,7 @@ export interface PilotApplication {
   submittedAt: Date;
   reviewedAt?: Date;
   approvedAt?: Date;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   responses: Record<string, any>;
   notes?: string;
 }
@@ -148,6 +160,7 @@ export interface PilotApplicationInput {
   currentSystem?: string;
   challenges: string[];
   goals: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   responses: Record<string, any>;
 }
 
@@ -194,6 +207,7 @@ export interface RecognitionEvent {
   description: string;
   date: Date;
   relatedCaseId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
 }
 
@@ -282,6 +296,7 @@ export interface TrustMetricDetail {
   verification: boolean;
   lastCheck: Date;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
 }
 

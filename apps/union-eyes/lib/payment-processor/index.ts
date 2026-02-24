@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Processor Abstraction Layer - Main Export
  * 

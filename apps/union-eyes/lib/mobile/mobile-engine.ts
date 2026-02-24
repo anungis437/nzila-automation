@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * UnionEyes Mobile Engine
  * 
@@ -27,6 +26,7 @@ import { promisify } from 'util';
 import { brotliCompress, deflate, gzip } from 'zlib';
 
 let firebaseAdmin: typeof import('firebase-admin') | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let firebaseApp: any = null;
 
 const gzipAsync = promisify(gzip);
@@ -41,7 +41,7 @@ async function getFirebaseMessaging() {
   if (!firebaseAdmin) {
     try {
       firebaseAdmin = await import('firebase-admin');
-    } catch (error) {
+    } catch (_error) {
       logger.warn('firebase-admin not installed. Mobile push notifications will be disabled.');
       return null;
     }
@@ -217,7 +217,7 @@ export class MobileNotificationService {
         body: payload.body,
         data: payload.data || {},
         priority: payload.priority || 'normal',
-        badge: payload.badge ? String(payload.badge) : undefined,
+        badge: payload.badge ?? undefined,
         sound: payload.sound,
         status: 'pending',
         scheduledAt: new Date(),
@@ -507,7 +507,7 @@ export class MobileOfflineSyncEngine {
    */
   async queueOperation(
     deviceId: string,
-    operation: Omit<OfflineSyncRecord, 'id' | 'timestamp' | 'status'>
+    operation: Omit<OfflineSyncRecord, 'id' | 'timestamp' | 'status' | 'deviceId'>
   ): Promise<string> {
     const [record] = await db
       .insert(mobileSyncQueue)
@@ -583,7 +583,7 @@ export class MobileOfflineSyncEngine {
   /**
    * Check for conflicts with server data
    */
-  private async checkConflict(record: typeof mobileSyncQueue.$inferSelect): Promise<boolean> {
+  private async checkConflict(_record: typeof mobileSyncQueue.$inferSelect): Promise<boolean> {
     // STUB: Would compare timestamps or version vectors
     return false;
   }

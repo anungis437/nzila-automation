@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Deep Linker Library
  * 
@@ -228,8 +227,10 @@ export async function handleDeepLink(url: string): Promise<boolean> {
   }
 
   // Navigate to the parsed route
-  if (typeof window !== 'undefined' && (window as unknown).navigate) {
-    (window as unknown).navigate(parsed.route, parsed.params, parsed.query);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== 'undefined' && (window as any).navigate) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).navigate(parsed.route, parsed.params, parsed.query);
     return true;
   }
 
@@ -244,9 +245,11 @@ export function registerDeepLinkHandlers(): void {
   if (typeof window === 'undefined') return;
 
   // Handle universal links (iOS)
-  if ((navigator as unknown).registerProtocolHandler) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((navigator as any).registerProtocolHandler) {
     try {
-      (navigator as unknown).registerProtocolHandler(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (navigator as any).registerProtocolHandler(
         'unioneyes',
         `${window.location.origin}/deep-link?url=%s`,
         'Union Eyes'

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Edit Case Page
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft, Save } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { api } from '@/lib/api/index';
 
 interface CaseFormData {
   memberId: string;
@@ -57,25 +59,27 @@ export default function EditCasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchCase();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const fetchCase = async () => {
     try {
-      const data = await api.cases.get(params.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = await api.cases.get(params.id) as Record<string, any>;
       
-      // Mock data
+      // Populate form from API response
       setFormData({
-        memberId: 'MEM-123',
-        type: 'disciplinary',
-        priority: 'high',
-        title: 'Unfair Suspension',
-        description: 'Member was suspended without proper investigation...',
-        status: 'investigation',
-        incidentDate: '2024-02-01',
-        location: 'Production Floor A',
-        witnesses: 'John Doe, Jane Smith',
-        desiredOutcome: 'Reinstatement with back pay',
-        assignedTo: 'steward-1',
+        memberId: data.memberId ?? data.member_id ?? '',
+        type: data.type ?? '',
+        priority: data.priority ?? 'medium',
+        title: data.title ?? '',
+        description: data.description ?? '',
+        status: data.status ?? 'filed',
+        incidentDate: data.incidentDate ?? data.incident_date ?? '',
+        location: data.location ?? '',
+        witnesses: data.witnesses ?? '',
+        desiredOutcome: data.desiredOutcome ?? data.desired_outcome ?? '',
+        assignedTo: data.assignedTo ?? data.assigned_to ?? '',
       });
     } catch (error) {
       logger.error('Error fetching case', error);

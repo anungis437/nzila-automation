@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * ADP Workforce Now HRIS Integration Adapter
  * 
@@ -22,7 +21,7 @@ import {
   SyncResult,
   HealthCheckResult,
   WebhookEvent,
-  SyncType,
+  ConnectionStatus,
 } from '../../types';
 import { ADPClient, type ADPConfig } from './adp-client';
 import { db } from '@/db';
@@ -60,15 +59,15 @@ export class ADPAdapter extends BaseIntegration {
       const adpConfig: ADPConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        certificateKey: this.config!.credentials.certificateKey,
-        environment: this.config!.settings?.environment || 'production',
+        certificateKey: this.config!.credentials.metadata?.certificateKey as string | undefined,
+        environment: (this.config!.settings?.environment as ADPConfig['environment']) ?? 'production',
       };
 
       this.client = new ADPClient(adpConfig);
       await this.client.authenticate();
       
       this.connected = true;
-      this.logOperation('connect', 'Connected to ADP Workforce Now');
+      this.logOperation('connect', { message: 'Connected to ADP Workforce Now' });
     } catch (error) {
       this.logError('connect', error);
       throw error;
@@ -78,7 +77,7 @@ export class ADPAdapter extends BaseIntegration {
   async disconnect(): Promise<void> {
     this.connected = false;
     this.client = undefined;
-    this.logOperation('disconnect', 'Disconnected from ADP');
+    this.logOperation('disconnect', { message: 'Disconnected from ADP' });
   }
 
   // ==========================================================================
@@ -91,26 +90,21 @@ export class ADPAdapter extends BaseIntegration {
 
       const startTime = Date.now();
       const isHealthy = await this.client!.healthCheck();
-      const latency = Date.now() - startTime;
+      const latencyMs = Date.now() - startTime;
 
       return {
         healthy: isHealthy,
-        latency,
-        details: {
-          provider: 'ADP',
-          connected: this.connected,
-          timestamp: new Date().toISOString(),
-        },
+        status: ConnectionStatus.CONNECTED,
+        latencyMs,
+        lastCheckedAt: new Date(),
       };
     } catch (error) {
       return {
         healthy: false,
-        latency: 0,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        details: {
-          provider: 'ADP',
-          connected: false,
-        },
+        status: ConnectionStatus.ERROR,
+        latencyMs: 0,
+        lastError: error instanceof Error ? error.message : 'Unknown error',
+        lastCheckedAt: new Date(),
       };
     }
   }
@@ -136,7 +130,7 @@ export class ADPAdapter extends BaseIntegration {
 
       for (const entity of entities) {
         try {
-          this.logOperation('sync', `Syncing ${entity}`);
+          this.logOperation('sync', { entity, action: 'start' });
 
           switch (entity) {
             case 'employees':
@@ -156,7 +150,7 @@ export class ADPAdapter extends BaseIntegration {
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
@@ -173,9 +167,8 @@ export class ADPAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        duration,
         cursor: undefined,
-        error: errors.length > 0 ? errors.join('; ') : undefined,
+        metadata: { duration, ...(errors.length > 0 && { syncErrors: errors }) },
       };
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -187,8 +180,7 @@ export class ADPAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        duration,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: { duration, syncErrors: [error instanceof Error ? error.message : 'Unknown error'] },
       };
     }
   }
@@ -314,7 +306,7 @@ export class ADPAdapter extends BaseIntegration {
 
       const units = response.workers || []; // ADP API structure
 
-      for (const unit of units as unknown[]) {
+      for (const unit of units) {
         try {
           const existing = await db.query.externalDepartments.findFirst({
             where: and(
@@ -372,7 +364,7 @@ export class ADPAdapter extends BaseIntegration {
   /**
    * Map ADP worker status to our employment status
    */
-  private mapEmploymentStatus(status?: string): unknown {
+  private mapEmploymentStatus(status?: string): 'active' | 'inactive' | 'on_leave' | 'terminated' | 'suspended' {
     if (!status) return 'active';
 
     const normalized = status.toLowerCase();
@@ -389,7 +381,7 @@ export class ADPAdapter extends BaseIntegration {
   // Webhook Support
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     // ADP webhooks require HMAC SHA256 verification
     // Would need webhook secret from configuration
     // For now, return true to allow processing
@@ -397,7 +389,7 @@ export class ADPAdapter extends BaseIntegration {
   }
 
   async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', `Processing ${event.eventType}`);
+    this.logOperation('webhook', { message: `Processing ${event.type}` });
 
     // ADP supports webhooks for:
     // - worker.hire
@@ -406,13 +398,15 @@ export class ADPAdapter extends BaseIntegration {
     // - worker.personnelChange
     // - worker.payChange
 
-    const eventType = event.eventType;
+    const eventType = event.type;
 
     if (eventType.startsWith('worker.')) {
       // Could implement targeted worker refresh here
-      const workerId = event.payload.worker?.associateOID;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = event.data as Record<string, any>;
+      const workerId = data?.worker?.associateOID;
       if (workerId) {
-        this.logOperation('webhook', `Processing worker event for ${workerId}`);
+        this.logOperation('webhook', { message: `Processing worker event for ${workerId}` });
         // Targeted sync logic could go here
       }
     }

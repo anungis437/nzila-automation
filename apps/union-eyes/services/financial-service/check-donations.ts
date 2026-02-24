@@ -1,5 +1,10 @@
+ 
 /**
  * Check Donations Table Structure
+ *
+ * NzilaOS-GATE: ADMIN-ONLY diagnostic script.
+ * This script inspects information_schema metadata and does NOT access Org-scoped data.
+ * Raw postgres is permitted here per PR-UE-01 allowlist.
  */
 
 import postgres from 'postgres';
@@ -17,7 +22,7 @@ const columns = await sql`
     AND table_name = 'donations'
     ORDER BY ordinal_position
   `;
-columns.forEach(col => {
+columns.forEach(_col => {
 });
   
   await sql.end();

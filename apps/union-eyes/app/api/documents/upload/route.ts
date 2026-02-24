@@ -1,14 +1,13 @@
-﻿// @ts-nocheck
 /**
  * Document Upload API Route
  * POST /api/documents/upload - Upload document files
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { createDocument } from "@/lib/services/document-service";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from "@/lib/rate-limiter";
 import { put } from "@vercel/blob";
 
@@ -35,14 +34,13 @@ const ALLOWED_MIME_TYPES_LIST = [
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * Maximum file size: 50MB
  */
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-const documentUploadSchema = z.object({
+const _documentUploadSchema = z.object({
   file: z.object({
     name: z.string().min(1, "File name is required"),
     size: z.number().max(MAX_FILE_SIZE, "File size exceeds 50MB limit"),
@@ -76,7 +74,7 @@ const documentUploadSchema = z.object({
  * - accessLevel: string (optional)
  */
 export const POST = withRoleAuth('member', async (request, context) => {
-  const { userId, organizationId } = context;
+  const { userId, organizationId } = context as { userId: string; organizationId: string };
 
   try {
     // Rate limiting
@@ -91,10 +89,10 @@ export const POST = withRoleAuth('member', async (request, context) => {
         userId,
         endpoint: '/api/documents/upload',
         method: 'POST',
-        eventType: 'rate_limit_exceeded',
+        eventType: 'unauthorized_access',
         severity: 'medium',
-        dataType: 'DOCUMENTS',
         details: { 
+          dataType: 'DOCUMENTS',
           resetIn: rateLimitResult.resetIn 
         },
       });
@@ -134,8 +132,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'File is required' },
+        details: { dataType: 'DOCUMENTS', reason: 'File is required' },
       });
       return standardErrorResponse(
       ErrorCode.MISSING_REQUIRED_FIELD,
@@ -151,8 +148,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'organizationId is required' },
+        details: { dataType: 'DOCUMENTS', reason: 'organizationId is required' },
       });
       return standardErrorResponse(
       ErrorCode.MISSING_REQUIRED_FIELD,
@@ -167,10 +163,9 @@ export const POST = withRoleAuth('member', async (request, context) => {
         userId,
         endpoint: '/api/documents/upload',
         method: 'POST',
-        eventType: 'authorization_failed',
+        eventType: 'unauthorized_access',
         severity: 'high',
-        dataType: 'DOCUMENTS',
-        details: { reason: 'Organization ID mismatch' },
+        details: { dataType: 'DOCUMENTS', reason: 'Organization ID mismatch' },
       });
       return standardErrorResponse(
       ErrorCode.FORBIDDEN,
@@ -187,8 +182,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
         details: { 
+          dataType: 'DOCUMENTS',
           reason: 'File too large',
           fileSize: file.size,
           maxSize: MAX_FILE_SIZE 
@@ -201,7 +196,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
     }
 
     // Validate MIME type
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    if (!(ALLOWED_MIME_TYPES_LIST as readonly string[]).includes(file.type)) {
       logApiAuditEvent({
         timestamp: new Date().toISOString(),
         userId,
@@ -209,8 +204,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
         method: 'POST',
         eventType: 'validation_failed',
         severity: 'low',
-        dataType: 'DOCUMENTS',
         details: { 
+          dataType: 'DOCUMENTS',
           reason: 'Invalid file type',
           fileType: file.type 
         },
@@ -261,8 +256,8 @@ export const POST = withRoleAuth('member', async (request, context) => {
       method: 'POST',
       eventType: 'success',
       severity: 'medium',
-      dataType: 'DOCUMENTS',
       details: {
+        dataType: 'DOCUMENTS',
         organizationId: organizationIdFromForm,
         documentId: document.id,
         fileName: file.name,
@@ -278,10 +273,9 @@ export const POST = withRoleAuth('member', async (request, context) => {
       userId,
       endpoint: '/api/documents/upload',
       method: 'POST',
-      eventType: 'server_error',
+      eventType: 'validation_failed',
       severity: 'high',
-      dataType: 'DOCUMENTS',
-      details: { error: error instanceof Error ? error.message : 'Unknown error' },
+      details: { dataType: 'DOCUMENTS', error: error instanceof Error ? error.message : 'Unknown error' },
     });
 return standardErrorResponse(
       ErrorCode.INTERNAL_ERROR,

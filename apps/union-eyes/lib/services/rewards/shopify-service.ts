@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Shopify Integration Service
  * 
@@ -110,10 +109,10 @@ export async function fetchCuratedCollections(
   try {
     // Check if org has specific Shopify config
     const orgConfig = await db.query.shopifyConfig.findFirst({
-      where: eq(shopifyConfig.org_id, orgId),
+      where: eq(shopifyConfig.orgId, orgId),
     });
 
-    const allowedCollections = orgConfig?.allowed_collections || ['rewards'];
+    const allowedCollections = (orgConfig?.allowedCollections as string[] | null) || ['rewards'];
 
     // Fetch collections via Storefront API
     const collections: ShopifyCollection[] = [];
@@ -226,16 +225,19 @@ async function fetchCollectionByHandle(
     title: collection.title,
     description: collection.description,
     handle: collection.handle,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     products: collection.products.edges.map((edge: any) => ({
       id: edge.node.id,
       title: edge.node.title,
       description: edge.node.description,
       handle: edge.node.handle,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       images: edge.node.images.edges.map((imgEdge: any) => ({
         url: imgEdge.node.url,
         altText: imgEdge.node.altText,
       })),
       priceRange: edge.node.priceRange,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       variants: edge.node.variants.edges.map((variantEdge: any) => ({
         id: variantEdge.node.id,
         title: variantEdge.node.title,
@@ -297,6 +299,7 @@ async function createPriceRule(
   amount: number,
   currency: string,
   title: string
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   const response = await fetch(`${ADMIN_API_URL}/price_rules.json`, {
     method: 'POST',
@@ -340,6 +343,7 @@ async function createPriceRule(
 async function createDiscountCodeForPriceRule(
   priceRuleId: string,
   code: string
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   const response = await fetch(
     `${ADMIN_API_URL}/price_rules/${priceRuleId}/discount_codes.json`,
@@ -418,6 +422,7 @@ export async function createCheckoutSession(
  * 
  * @returns Shop information or null if connection fails
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function testShopifyConnection(): Promise<any | null> {
   try {
     const response = await fetch(`${ADMIN_API_URL}/shop.json`, {
@@ -522,11 +527,13 @@ export async function getProductByHandle(
       title: product.title,
       description: product.description,
       handle: product.handle,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       images: product.images.edges.map((edge: any) => ({
         url: edge.node.url,
         altText: edge.node.altText,
       })),
       priceRange: product.priceRange,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       variants: product.variants.edges.map((edge: any) => ({
         id: edge.node.id,
         title: edge.node.title,

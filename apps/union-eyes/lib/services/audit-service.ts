@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Audit Service
  * 
@@ -8,7 +7,7 @@
 
 import { db } from '@/db';
 import { auditLogs } from '@/db/schema/audit-security-schema';
-import { eq, desc, and, gte, lte, like, sql } from 'drizzle-orm';
+import { eq, desc, and, gte, lte } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '@/lib/logger';
 
@@ -19,6 +18,7 @@ export interface AuditLogEntry {
   resourceType: string;
   resourceId: string;
   description?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
   ipAddress?: string;
   userAgent?: string;
@@ -44,17 +44,15 @@ export async function createAuditLog(entry: AuditLogEntry): Promise<string> {
   
   try {
     await db.insert(auditLogs).values({
-      id,
+      auditId: id,
       organizationId: entry.organizationId,
       userId: entry.userId,
       action: entry.action,
       resourceType: entry.resourceType,
       resourceId: entry.resourceId,
-      description: entry.description,
-      metadata: entry.metadata ? JSON.stringify(entry.metadata) : undefined,
+      metadata: entry.metadata ?? undefined,
       ipAddress: entry.ipAddress,
       userAgent: entry.userAgent,
-      timestamp: new Date(),
     });
 
     logger.info('Created audit log', {
@@ -219,13 +217,14 @@ export async function archiveOldAuditLogs(
         lte(auditLogs.createdAt, beforeDate),
         eq(auditLogs.archived, false) // Only archive non-archived logs
       )
-    );
+    )
+    .returning();
 
   logger.info('Archived audit logs', {
-    count: result.rowCount,
+    count: result.length,
     beforeDate: beforeDate.toISOString(),
   });
-  return result.rowCount || 0;
+  return result.length;
 }
 
 /**
@@ -233,8 +232,8 @@ export async function archiveOldAuditLogs(
  * This function is disabled to prevent accidental data loss.
  */
 export async function deleteOldAuditLogs(
-  organizationId: string,
-  beforeDate: Date
+  _organizationId: string,
+  _beforeDate: Date
 ): Promise<number> {
   throw new Error(
     'PR #11: Direct audit log deletion is disabled. Use archiveOldAuditLogs() instead. ' +
@@ -253,14 +252,13 @@ export async function exportAuditLogs(
     limit: 10000, // Maximum export size
   });
 
-  const exportData = entries.map(entry => ({
-    id: entry.id,
-    timestamp: entry.timestamp,
+  const _exportData = entries.map(entry => ({
+    id: entry.auditId,
+    timestamp: entry.createdAt,
     userId: entry.userId,
     action: entry.action,
     resourceType: entry.resourceType,
     resourceId: entry.resourceId,
-    description: entry.description,
     ipAddress: entry.ipAddress,
   }));
 
@@ -282,6 +280,7 @@ export function auditOperation(
   resourceType: string,
   resourceId: string,
   description?: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>
 ) {
   return createAuditLog({

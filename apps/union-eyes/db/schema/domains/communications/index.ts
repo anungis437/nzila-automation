@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Communications Domain
  * 
@@ -35,3 +34,6 @@ export * from './public-content';
 // Phase 4: Communications & Organizing
 export * from './campaigns';
 export * from './organizer-workflows';
+
+// Explicit re-exports to resolve ambiguities
+export { campaignStatusEnum } from './campaigns';

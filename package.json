@@ -7,6 +7,7 @@
     "dev": "turbo dev",
     "dev:web": "turbo dev --filter=@nzila/web",
     "dev:console": "turbo dev --filter=@nzila/console",
+    "dev:docker": "turbo dev --filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --continue",
     "build": "turbo build",
     "build:web": "turbo build --filter=@nzila/web",
     "build:console": "turbo build --filter=@nzila/console",
@@ -38,5 +39,14 @@
     "turbo": "^2.8.10",
     "typescript": "^5",
     "vitest": "^4.0.18"
+  },
+  "pnpm": {
+    "overrides": {
+      "tar": ">=7.5.9",
+      "minimatch": ">=10.2.2",
+      "cjs-module-lexer": ">=2.2.0",
+      "jspdf": ">=4.2.0",
+      "@firebase/util": ">=1.10.3"
+    }
   }
 }

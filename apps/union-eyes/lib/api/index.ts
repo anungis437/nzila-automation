@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Internal API Interface
  * 
@@ -6,7 +5,9 @@
  * Used by client components to communicate with backend
  */
 
-interface RequestOptions {
+const logger = { error: console.error };
+
+interface _RequestOptions {
   params?: Record<string, string | number | boolean | undefined>;
   headers?: Record<string, string>;
 }

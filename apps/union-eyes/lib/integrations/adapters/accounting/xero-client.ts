@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Xero API Client
  * 
@@ -19,7 +18,7 @@
  * - 5000 requests per day
  */
 
-import { IntegrationError, AuthenticationError, RateLimitError } from '../../types';
+import { IntegrationError, AuthenticationError, RateLimitError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -160,7 +159,7 @@ export class XeroClient {
    */
   async authenticate(): Promise<void> {
     if (!this.refreshToken && !this.config.refreshToken) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.XERO);
     }
 
     await this.refreshAccessToken();
@@ -172,7 +171,7 @@ export class XeroClient {
   private async refreshAccessToken(): Promise<void> {
     const token = this.refreshToken || this.config.refreshToken;
     if (!token) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.XERO);
     }
 
     try {
@@ -194,7 +193,7 @@ export class XeroClient {
 
       if (!response.ok) {
         const error = await response.text();
-        throw new AuthenticationError(`Token refresh failed: ${error}`);
+        throw new AuthenticationError(`Token refresh failed: ${error}`, IntegrationProvider.XERO);
       }
 
       const data: XeroTokenResponse = await response.json();
@@ -209,7 +208,8 @@ export class XeroClient {
     } catch (error) {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
-        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown'}`
+        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown'}`,
+        IntegrationProvider.XERO
       );
     }
   }
@@ -244,7 +244,7 @@ export class XeroClient {
     const url = `${this.baseUrl}/${endpoint}`;
     const headers: HeadersInit = {
       Authorization: `Bearer ${this.accessToken}`,
-      'xero-tenant-id': this.config.organizationId /* was tenantId */,
+      'xero-tenant-id': this.config.tenantId,
       Accept: 'application/json',
       ...options.headers,
     };
@@ -263,6 +263,7 @@ export class XeroClient {
         );
         throw new RateLimitError(
           `Rate limit exceeded. Retry after ${retryAfter} seconds`,
+          IntegrationProvider.XERO,
           retryAfter
         );
       }
@@ -273,13 +274,14 @@ export class XeroClient {
           await this.refreshAccessToken();
           return this.request<T>(endpoint, options, retryCount + 1);
         }
-        throw new AuthenticationError('Authentication failed after retry');
+        throw new AuthenticationError('Authentication failed after retry', IntegrationProvider.XERO);
       }
 
       if (!response.ok) {
         const errorText = await response.text();
         throw new IntegrationError(
-          `Xero API error (${response.status}): ${errorText}`
+          `Xero API error (${response.status}): ${errorText}`,
+          IntegrationProvider.XERO
         );
       }
 
@@ -293,7 +295,8 @@ export class XeroClient {
         throw error;
       }
       throw new IntegrationError(
-        `Request failed: ${error instanceof Error ? error.message : 'Unknown'}`
+        `Request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
+        IntegrationProvider.XERO
       );
     }
   }
@@ -319,7 +322,7 @@ export class XeroClient {
 
     if (options.modifiedSince) {
       // Xero uses If-Modified-Since header
-      const modifiedHeader = options.modifiedSince.toUTCString();
+      const _modifiedHeader = options.modifiedSince.toUTCString();
     }
 
     let endpoint = 'Invoices';

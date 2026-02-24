@@ -57,8 +57,8 @@ const flagships = [
     entities: '80+',
     image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800',
     alt: 'CORA — AI-powered agricultural management platform with farm planning and IoT integration',
-    description: 'Agricultural management and supply-chain intelligence — farm planning, crop management, IoT integration, and AI-driven market intelligence.',
-    features: ['Farm Planning', 'Supply Chain', 'IoT Integration', 'Market Intelligence'],
+    description: 'Agricultural management and supply-chain intelligence built on verified Canadian agricultural data — farm planning, crop management, IoT integration, and market intelligence.',
+    features: ['Farm Planning (CA Data)', 'Supply Chain', 'IoT Integration', 'Market Intelligence'],
   },
 ];
 
@@ -70,7 +70,7 @@ const pipeline = [
   { name: 'Shop Quoter', vertical: 'Commerce', tam: '$5B', entities: '93', status: 'In Development' },
   { name: 'Trade OS', vertical: 'Trade', tam: '$15B', entities: '337', status: 'In Development' },
   { name: 'eExports', vertical: 'Trade', tam: '$3B', entities: '78', status: 'Django PoC' },
-  { name: 'PonduOps', vertical: 'Agrotech', tam: '$8B', entities: '220', status: 'Base44' },
+  { name: 'PonduOps', vertical: 'Agrotech (DRC/CA)', tam: '$8B', entities: '220', status: 'Base44' },
   { name: 'Insight CFO', vertical: 'Fintech', tam: '$2B', entities: '37', status: 'Base44' },
   { name: 'STSA / Lexora', vertical: 'Fintech', tam: '$5B', entities: '95', status: 'Base44' },
   { name: 'Memora', vertical: 'Healthtech', tam: '$20B', entities: '150', status: 'Legacy' },

@@ -1,25 +1,26 @@
-﻿// @ts-nocheck
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from 'next-intl';
-import { 
-  Vote, 
-  CheckCircle, 
-  Clock, 
+import {
+  Vote,
+  CheckCircle,
+  Clock,
   TrendingUp,
   Users,
   Calendar,
-  AlertCircle,
   ChevronDown,
   ChevronUp,
   Lock,
   Info,
-  BarChart3
+  BarChart3,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+ 
+import { Card, CardContent } from "@/components/ui/card";
 
 type VoteStatus = "active" | "upcoming" | "closed";
 type VoteType = "yes-no" | "multiple-choice" | "ranked";
@@ -48,10 +49,10 @@ interface Vote {
 }
 
 export default function VotingPage() {
-  const { user } = useUser();
+  const { user: _user } = useUser();
   const [votes, setVotes] = useState<Vote[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_isLoading, setIsLoading] = useState(true);
+  const [_error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<"active" | "upcoming" | "past">("active");
   const [expandedVote, setExpandedVote] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<Record<string, string>>({});
@@ -271,7 +272,7 @@ alert(err instanceof Error ? err.message : 'Failed to submit vote');
                           <motion.button
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                            className="mt-4 w-full px-6 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                           >
                             {isSubmitting === vote.id ? (
                               <>
@@ -318,8 +319,8 @@ alert(err instanceof Error ? err.message : 'Failed to submit vote');
                                   transition={{ duration: 0.8, delay: 0.2 }}
                                   className={`h-3 rounded-full ${
                                     option.percentage && option.percentage > 50 
-                                      ? "bg-gradient-to-r from-green-500 to-green-600" 
-                                      : "bg-gradient-to-r from-blue-500 to-blue-600"
+                                      ? "bg-linear-to-r from-green-500 to-green-600" 
+                                      : "bg-linear-to-r from-blue-500 to-blue-600"
                                   }`}
                                 ></motion.div>
                               </div>
@@ -359,7 +360,7 @@ alert(err instanceof Error ? err.message : 'Failed to submit vote');
   const t = useTranslations();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -437,7 +438,7 @@ alert(err instanceof Error ? err.message : 'Failed to submit vote');
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setSelectedTab(tab.key)}
+                onClick={() => setSelectedTab(tab.key as typeof selectedTab)}
                 className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
                   selectedTab === tab.key
                     ? "bg-blue-600 text-white shadow-lg"
@@ -522,7 +523,7 @@ alert(err instanceof Error ? err.message : 'Failed to submit vote');
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-8"
         >
-          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-lg">
+          <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-white shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-blue-600 text-white">

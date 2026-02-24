@@ -1,7 +1,6 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
-import type { CarbonValidationRequest, CarbonValidationResponse } from '@/lib/types/compliance-api-types';
+import type { CarbonValidationResponse } from '@/lib/types/compliance-api-types';
 import { withApiAuth } from '@/lib/api-auth-guard';
 import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-responses';
 
@@ -15,9 +14,15 @@ import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-respons
  * Validate carbon neutrality or sustainability claims
  */
 
+const carbonDataPointSchema = z.object({
+  metric: z.string().optional(),
+  value: z.number(),
+  unit: z.string().optional(),
+});
+
 const carbonValidateSchema = z.object({
-  claimType: z.unknown().optional(),
-  dataPoints: z.unknown().optional(),
+  claimType: z.string().optional(),
+  dataPoints: z.array(carbonDataPointSchema).optional(),
 });
 
 export const POST = withApiAuth(async (request: NextRequest) => {

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Alert Rules Management
  * 
@@ -392,8 +391,10 @@ export function validateAlertRule(rule: Partial<AlertRule>): AlertRuleValidation
     // Schema validation
     AlertRuleSchema.parse(rule);
   } catch (error) {
-    if (error.errors) {
-      errors.push(...error.errors.map((e: unknown) => `${e.path.join('.')}: ${e.message}`));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any).errors) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      errors.push(...(error as any).errors.map((e: any) => `${e.path.join('.')}: ${e.message}`));
     }
   }
 
@@ -489,7 +490,7 @@ export function createRuleFromTemplate(
     category: template.category,
     severity: template.severity,
     rule_type: template.rule_type,
-    conditions: template.default_conditions as unknown,
+    conditions: template.default_conditions as AlertRule['conditions'],
     recipients: template.recommended_recipients.map(channel => ({
       channel,
       target: '', // Must be filled in by user

@@ -1,8 +1,7 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrivacyRules, assessBreachNotification } from '@/lib/services/provincial-privacy-service';
-import type { PIPEDABreachRequest, PIPEDABreachAssessment } from '@/lib/types/compliance-api-types';
+import type { PIPEDABreachAssessment } from '@/lib/types/compliance-api-types';
 import { withApiAuth } from '@/lib/api-auth-guard';
 import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-responses';
 
@@ -19,9 +18,9 @@ import { ErrorCode, standardErrorResponse } from '@/lib/api/standardized-respons
 const emergencyPipedaSchema = z.object({
   memberId: z.string().uuid('Invalid memberId'),
   breachDate: z.string().datetime().optional(),
-  affectedDataTypes: z.unknown().optional(),
+  affectedDataTypes: z.array(z.string()).optional(),
   estimatedAffectedCount: z.number().int().positive(),
-  province: z.unknown().optional(),
+  province: z.string().optional(),
 });
 
 export const POST = withApiAuth(async (request: NextRequest) => {
@@ -54,21 +53,21 @@ export const POST = withApiAuth(async (request: NextRequest) => {
     }
 
     // Assess breach notification requirements
-    const assessment = await assessBreachNotification(
+    const _assessment = await assessBreachNotification(
       memberId,
       affectedDataTypes,
       new Date(breachDate)
     );
 
     // Get provincial rules
-    const rules = getPrivacyRules(province || 'FEDERAL');
+    const _rules = getPrivacyRules(province || 'FEDERAL');
 
     // Calculate minimum threshold (varies by province)
     const minimumThreshold = province === 'QC' ? 10 : 25; // QC has lower threshold
     const affectingMinimum = estimatedAffectedCount >= minimumThreshold;
 
     // Determine reporting channels
-    const reportingChannels = [];
+    const reportingChannels: string[] = [];
     if (affectingMinimum) {
       reportingChannels.push('Privacy Commissioner');
       if (province === 'QC') {
@@ -138,7 +137,7 @@ export const GET = withApiAuth(async (request: NextRequest) => {
       affectingMinimumThreshold: true,
       reportDeadline: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
       reportingChannels: [
-        rules.authority,
+        rules.contactAuthority,
         'Affected Members',
       ],
       message: `Breach notification requirements: Follow ${province} protocols`,

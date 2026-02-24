@@ -1,5 +1,7 @@
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useTranslations } from 'next-intl';
@@ -129,7 +131,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -141,7 +143,7 @@ export default function ProfilePage() {
 
         <div className="flex gap-6">
           {/* Sidebar Navigation */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-64 shrink-0">
             <Card className="p-4 bg-white/80 backdrop-blur-sm border-gray-200 sticky top-8">
               <nav className="space-y-2">
                 {settingsSections.map((section) => (
@@ -150,7 +152,7 @@ export default function ProfilePage() {
                     onClick={() => setActiveSection(section.id as SettingsSection)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
                       activeSection === section.id
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                        ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
@@ -192,7 +194,7 @@ export default function ProfilePage() {
                   <div className="space-y-6">
                     {/* Profile Picture */}
                     <div className="flex items-center gap-6">
-                      <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                      <div className="w-24 h-24 bg-linear-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
                         {settings.profile.name
                           .split(" ")
                           .map((n) => n[0])
@@ -1117,7 +1119,7 @@ export default function ProfilePage() {
         {/* Help Section */}
         <Card className="mt-8 p-6 bg-blue-50/80 backdrop-blur-sm border-blue-200">
           <div className="flex gap-4">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
               <Info className="w-5 h-5 text-blue-600" />
             </div>
             <div>

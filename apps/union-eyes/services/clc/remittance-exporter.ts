@@ -5,8 +5,8 @@
  */
 
 import { db } from '@/db';
-import { organizations, chartOfAccounts } from '@/db/schema';
-import { eq, and, inArray, sql } from 'drizzle-orm';
+import { _organizations } from '@/db/schema';
+import { sql } from 'drizzle-orm';
 
 // =====================================================================================
 // TYPES
@@ -284,6 +284,7 @@ export async function generateStatCanExport(
   ].join('|'));
 
   // Data records
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const org of organizations as any[]) {
     const affiliateCode = (org.clc_affiliate_code as string) || 'UNKNOWN';
     const orgType = mapOrgTypeToStatCan(org.organization_type as string);
@@ -326,6 +327,7 @@ export async function generateStatCanExport(
  */
 function mapOrgTypeToStatCan(orgType: string): string {
   const mapping: Record<string, string> = {
+    'platform': 'PLATFORM', // SaaS platform provider
     'congress': 'NAT-FED', // National federation
     'federation': 'PROV-FED', // Provincial federation
     'union': 'NAT-UNION', // National union

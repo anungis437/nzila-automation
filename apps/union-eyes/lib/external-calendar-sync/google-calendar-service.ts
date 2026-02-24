@@ -259,7 +259,7 @@ export async function importGoogleEvents(
           )
           .limit(1);
 
-        const eventData = mapGoogleEventToLocal(googleEvent, localCalendarId, localCalendar.organizationId /* was tenantId */);
+        const eventData = mapGoogleEventToLocal(googleEvent, localCalendarId, localCalendar.organizationId);
 
         if (existingEvent) {
           // Update existing event
@@ -276,7 +276,7 @@ export async function importGoogleEvents(
           await db.insert(calendarEvents).values(eventData);
           importedCount++;
         }
-      } catch (error) {
+      } catch (_error) {
 }
     }
 
@@ -381,13 +381,13 @@ throw error;
 /**
  * Map Google Calendar event to local event format
  */
-function mapGoogleEventToLocal(googleEvent: unknown, calendarId: string, tenantId: string) {
+function mapGoogleEventToLocal(googleEvent: unknown, calendarId: string, organizationId: string) {
   const startTime = googleEvent.start?.dateTime || googleEvent.start?.date;
   const endTime = googleEvent.end?.dateTime || googleEvent.end?.date;
   
   return {
     calendarId,
-    tenantId,
+    organizationId,
     title: googleEvent.summary || 'Untitled Event',
     description: googleEvent.description || null,
     location: googleEvent.location || null,
@@ -475,7 +475,7 @@ async function handleDeletedGoogleEvent(calendarId: string, googleEventId: strin
         })
         .where(eq(calendarEvents.id, event.id));
     }
-  } catch (error) {
+  } catch (_error) {
 }
 }
 
@@ -513,7 +513,7 @@ async function updateSyncToken(
         updatedAt: new Date(),
       })
       .where(eq(externalCalendarConnections.id, connectionId));
-  } catch (error) {
+  } catch (_error) {
 }
 }
 

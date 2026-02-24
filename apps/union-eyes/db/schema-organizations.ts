@@ -3,7 +3,7 @@
 // Phase 5A: CLC Multi-Tenancy Support
 // =====================================================
 
-import { pgTable, uuid, text, timestamp, integer, jsonb, boolean, date, pgEnum, index, uniqueIndex, check, type AnyPgColumn, varchar, numeric } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, integer, jsonb, boolean, date, pgEnum, index, uniqueIndex, type AnyPgColumn, varchar, numeric } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // =====================================================
@@ -11,6 +11,7 @@ import { relations } from 'drizzle-orm';
 // =====================================================
 
 export const organizationTypeEnum = pgEnum('organization_type', [
+  'platform',
   'congress',
   'federation',
   'union',

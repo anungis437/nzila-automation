@@ -8,21 +8,15 @@
 
 import { useState, useEffect } from "react";
 import { logger } from "@/lib/logger";
-import { 
-  Building2, 
-  MapPin, 
-  Users, 
-  Building, 
-  UserCheck, 
+import {
+  Building2,
+  MapPin,
+  Users,
+  Building,
   BarChart3,
-  Plus,
-  Search,
-  FileText
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { EmployerManagement } from "./EmployerManagement";
 import { WorksiteManagement } from "./WorksiteManagement";
 import { BargainingUnitManagement } from "./BargainingUnitManagement";
@@ -56,6 +50,7 @@ export function UnionStructureDashboard({ organizationId }: UnionStructureDashbo
 
   useEffect(() => {
     fetchStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organizationId]);
 
   const fetchStats = async () => {
@@ -63,11 +58,13 @@ export function UnionStructureDashboard({ organizationId }: UnionStructureDashbo
       setIsLoading(true);
       
       // Fetch counts from each entity endpoint
-      const [employers, worksites, units, committees] = await Promise.all([
+      const [employers, worksites, units, committees, stewards, members] = await Promise.all([
         fetch(`/api/employers?organizationId=${organizationId}`).then(r => r.json()),
         fetch(`/api/worksites?organizationId=${organizationId}`).then(r => r.json()),
         fetch(`/api/units?organizationId=${organizationId}`).then(r => r.json()),
         fetch(`/api/committees?organizationId=${organizationId}`).then(r => r.json()),
+        fetch(`/api/v2/stewards?organizationId=${organizationId}`).then(r => r.json()).catch(() => ({ data: [] })),
+        fetch(`/api/v2/organization/members?organizationId=${organizationId}`).then(r => r.json()).catch(() => ({ data: [] })),
       ]);
 
       setStats({
@@ -75,8 +72,8 @@ export function UnionStructureDashboard({ organizationId }: UnionStructureDashbo
         worksitesCount: worksites.data?.length || 0,
         bargainingUnitsCount: units.data?.length || 0,
         committeesCount: committees.data?.length || 0,
-        stewardAssignmentsCount: 0, // TODO: Add steward assignments endpoint
-        totalMembers: 0, // TODO: Calculate from profiles
+        stewardAssignmentsCount: stewards.data?.length || stewards.results?.length || 0,
+        totalMembers: members.data?.length || members.total || members.count || 0,
       });
     } catch (error) {
       logger.error("Failed to fetch structure stats", error);
@@ -184,6 +181,7 @@ export function UnionStructureDashboard({ organizationId }: UnionStructureDashbo
             <CardHeader>
               <CardTitle>Organizational Structure</CardTitle>
               <CardDescription>
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 Visual representation of your union's organizational hierarchy
               </CardDescription>
             </CardHeader>

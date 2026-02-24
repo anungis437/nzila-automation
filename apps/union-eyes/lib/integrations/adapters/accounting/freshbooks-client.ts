@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * FreshBooks API Client
  * 
@@ -13,7 +12,7 @@
  * - Support for invoices, clients, payments, expenses
  */
 
-import { IntegrationError, AuthenticationError, RateLimitError } from '../../types';
+import { IntegrationError, AuthenticationError, RateLimitError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -49,6 +48,7 @@ export interface FreshBooksInvoice {
   v3_status: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface FreshBooksClient {
   id: number;
   userid: number;
@@ -98,6 +98,7 @@ interface FreshBooksTokenResponse {
 // FreshBooks Client
 // ============================================================================
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class FreshBooksClient {
   private config: FreshBooksConfig;
   private accessToken?: string;
@@ -119,7 +120,7 @@ export class FreshBooksClient {
 
   async authenticate(): Promise<void> {
     if (!this.refreshToken && !this.config.refreshToken) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.FRESHBOOKS);
     }
 
     await this.refreshAccessToken();
@@ -128,7 +129,7 @@ export class FreshBooksClient {
   private async refreshAccessToken(): Promise<void> {
     const token = this.refreshToken || this.config.refreshToken;
     if (!token) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.FRESHBOOKS);
     }
 
     try {
@@ -147,7 +148,7 @@ export class FreshBooksClient {
 
       if (!response.ok) {
         const error = await response.text();
-        throw new AuthenticationError(`Token refresh failed: ${error}`);
+        throw new AuthenticationError(`Token refresh failed: ${error}`, IntegrationProvider.FRESHBOOKS);
       }
 
       const data: FreshBooksTokenResponse = await response.json();
@@ -161,7 +162,8 @@ export class FreshBooksClient {
     } catch (error) {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
-        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown'}`
+        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown'}`,
+        IntegrationProvider.FRESHBOOKS
       );
     }
   }
@@ -198,7 +200,7 @@ export class FreshBooksClient {
       });
 
       if (response.status === 429) {
-        throw new RateLimitError('FreshBooks', 60);
+        throw new RateLimitError('FreshBooks rate limit exceeded', IntegrationProvider.FRESHBOOKS, 60);
       }
 
       if (response.status === 401) {
@@ -210,7 +212,7 @@ export class FreshBooksClient {
         const errorText = await response.text();
         throw new IntegrationError(
           `FreshBooks API error (${response.status}): ${errorText}`,
-          'FRESHBOOKS'
+          IntegrationProvider.FRESHBOOKS
         );
       }
 
@@ -225,7 +227,7 @@ export class FreshBooksClient {
       }
       throw new IntegrationError(
         `Request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'FRESHBOOKS'
+        IntegrationProvider.FRESHBOOKS
       );
     }
   }

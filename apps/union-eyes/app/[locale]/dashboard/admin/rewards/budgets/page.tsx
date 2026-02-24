@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -8,7 +9,6 @@ import Link from 'next/link';
 import { listBudgetEnvelopes, getBudgetUsageSummary } from '@/actions/rewards-actions';
 import { BudgetsList } from '@/components/rewards/admin/budgets-list';
 import { CreateBudgetDialog } from '@/components/rewards/admin/create-budget-dialog';
-import { BudgetUsageChart } from '@/components/rewards/admin/budget-usage-chart';
 
 export const metadata: Metadata = {
   title: 'Budget Management | Admin',
@@ -25,7 +25,7 @@ export default async function AdminBudgetsPage() {
   const t = await getTranslations('rewards.admin.budgets');
 
   // Fetch budgets and usage summary
-  const budgetsResult = await listBudgetEnvelopes({});
+  const budgetsResult = await listBudgetEnvelopes('');
   const usageSummaryResult = await getBudgetUsageSummary();
 
   const budgets = budgetsResult.success ? budgetsResult.data || [] : [];
@@ -56,6 +56,7 @@ export default async function AdminBudgetsPage() {
 
       {/* Budget Usage Overview */}
       <div className="grid gap-4 md:grid-cols-3">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {usageSummary.map((summary: any) => {
           const usagePercent = summary.amount_allocated > 0
             ? (summary.amount_used / summary.amount_allocated) * 100

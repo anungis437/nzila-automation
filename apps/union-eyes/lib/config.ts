@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Configuration and Environment Variable Management (PR #5)
  * 
@@ -174,7 +173,7 @@ export function validateRequiredSecrets(requiredSecrets: string[]): void {
  * @returns The current environment
  */
 export function getEnvironment(): 'development' | 'staging' | 'production' | 'test' {
-  const env = process.env.NODE_ENV || 'development';
+  const env = (process.env.NODE_ENV as string) || 'development';
   
   if (env === 'test' || env === 'staging' || env === 'production') {
     return env;

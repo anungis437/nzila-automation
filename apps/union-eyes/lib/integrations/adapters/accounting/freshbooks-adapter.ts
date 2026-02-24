@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * FreshBooks Integration Adapter
  * 
@@ -59,9 +58,9 @@ export class FreshBooksAdapter extends BaseIntegration {
       const fbConfig: FreshBooksConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        accountId: this.config!.settings?.accountId || '',
+        accountId: (this.config!.settings?.accountId as string) || '',
         refreshToken: this.config!.credentials.refreshToken,
-        environment: this.config!.settings?.environment || 'production',
+        environment: (this.config!.settings?.environment as 'production' | 'sandbox') || 'production',
       };
 
       this.client = new FreshBooksClient(fbConfig);
@@ -122,7 +121,7 @@ export class FreshBooksAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     this.ensureConnected();
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     let recordsProcessed = 0;
     let recordsCreated = 0;
     let recordsUpdated = 0;
@@ -251,8 +250,8 @@ export class FreshBooksAdapter extends BaseIntegration {
             invoiceNumber: invoice.invoice_number,
             customerId: invoice.customerid.toString(),
             customerName: invoice.organization,
-            invoiceDate: new Date(invoice.create_date),
-            dueDate: new Date(invoice.due_date),
+            invoiceDate: invoice.create_date,
+            dueDate: invoice.due_date,
             totalAmount: parseFloat(invoice.amount.amount).toFixed(2),
             balanceAmount: parseFloat(invoice.outstanding.amount).toFixed(2),
             status: statusMap[invoice.status] || 'unknown',
@@ -317,7 +316,7 @@ export class FreshBooksAdapter extends BaseIntegration {
           const paymentData = {
             customerId: payment.invoiceid.toString(),
             customerName: payment.type, // FreshBooks doesn&apos;t provide customer name in payment
-            paymentDate: new Date(payment.date),
+            paymentDate: payment.date,
             amount: parseFloat(payment.amount.amount).toFixed(2),
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -490,7 +489,7 @@ export class FreshBooksAdapter extends BaseIntegration {
   // Webhook Support
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     // FreshBooks webhook verification
     return true; // Simplified
   }

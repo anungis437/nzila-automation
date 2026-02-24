@@ -1,12 +1,10 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Precedents API Routes - Main endpoints for arbitration decisions
  * GET /api/precedents - List precedents with filtering
  * POST /api/precedents - Create a new precedent
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { 
   listPrecedents, 
   createPrecedent,
@@ -15,15 +13,25 @@ import {
   getPrecedentsByIssueType
 } from "@/lib/services/precedent-service";
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
   standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, _context) => {
   try {
       const { searchParams } = new URL(request.url);
       
@@ -53,7 +61,8 @@ export const GET = async (request: NextRequest) => {
       }
 
       // Build filters
-      const filters = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const filters: Record<string, any> = {};
       
       const tribunal = searchParams.get("tribunal");
       if (tribunal) {
@@ -132,8 +141,7 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 
 
 const precedentsSchema = z.object({
@@ -150,8 +158,7 @@ const precedentsSchema = z.object({
   fullText: z.unknown().optional(),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, _context) => {
   try {
       const body = await request.json();
     // Validate request body
@@ -164,7 +171,7 @@ export const POST = async (request: NextRequest) => {
       );
     }
     
-    const { caseNumber, caseTitle, tribunal, decisionType, decisionDate, arbitrator, union, employer, outcome, precedentValue, fullText } = validation.data;
+    const { caseNumber: _caseNumber, caseTitle: _caseTitle, tribunal: _tribunal, decisionType: _decisionType, decisionDate: _decisionDate, arbitrator: _arbitrator, union: _union, employer: _employer, outcome: _outcome, precedentValue: _precedentValue, fullText: _fullText } = validation.data;
 
       // Validate required fields
       if (!body.caseNumber) {
@@ -248,9 +255,7 @@ export const POST = async (request: NextRequest) => {
       const precedent = await createPrecedent(body);
 
       return standardSuccessResponse(
-      {  precedent  },
-      undefined,
-      201
+      {  precedent  }
     );
     } catch (error) {
 // Handle unique constraint violations
@@ -268,6 +273,5 @@ export const POST = async (request: NextRequest) => {
       error
     );
     }
-    })(request);
-};
+});
 

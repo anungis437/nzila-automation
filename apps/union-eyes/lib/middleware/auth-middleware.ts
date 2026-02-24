@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Standardized Authentication Middleware
  * 
@@ -20,7 +19,7 @@
  *   }
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { Session } from '@clerk/nextjs/server';
 
 // Dynamically import auth to handle different Clerk versions
@@ -149,28 +148,29 @@ return null;
       }
 
       // Extract user information from session
-      const userId = (session as unknown).userId;
+      const userId = (session as unknown as Record<string, unknown>).userId as string | undefined;
       if (!userId) {
         return null;
       }
 
       // Get user details from session
-      const sessionData = session as unknown;
+      const sessionData = session as unknown as Record<string, unknown>;
       
       // Extract user roles from Clerk metadata
-      const roles = (sessionData?.publicMetadata?.roles as string[]) || ['member'];
-      const organizationId = (sessionData?.publicMetadata?.organizationId as string) || '';
+      const publicMetadata = sessionData?.publicMetadata as Record<string, unknown> | undefined;
+      const roles = (publicMetadata?.roles as string[]) || ['member'];
+      const organizationId = (publicMetadata?.organizationId as string) || '';
 
       return {
         id: userId,
-        email: sessionData?.emailAddresses?.[0]?.emailAddress || null,
-        firstName: sessionData?.firstName || null,
-        lastName: sessionData?.lastName || null,
+        email: ((sessionData?.emailAddresses as Array<{ emailAddress: string }> | undefined)?.[0]?.emailAddress) || null,
+        firstName: (sessionData?.firstName as string) || null,
+        lastName: (sessionData?.lastName as string) || null,
         roles,
         organizationId,
-        metadata: sessionData?.publicMetadata,
+        metadata: publicMetadata as Record<string, unknown>,
       };
-    } catch (error) {
+    } catch (_error) {
 return null;
     }
   }

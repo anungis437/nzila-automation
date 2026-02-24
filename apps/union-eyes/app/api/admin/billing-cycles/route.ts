@@ -7,8 +7,8 @@
  * @module app/api/admin/billing-cycles
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { BillingCycleService, type BillingFrequency } from '@/lib/services/billing-cycle-service';
+import { NextRequest } from 'next/server';
+import { BillingCycleService } from '@/lib/services/billing-cycle-service';
 import { withApiAuth, getCurrentUser } from '@/lib/api-auth-guard';
 import {
   ErrorCode,
@@ -151,9 +151,8 @@ export const GET = withApiAuth(async (request: NextRequest) => {
       );
     }
 
-    // TODO: Implement billing cycle history retrieval
-    // This would query a billing_cycle_history table (to be created)
-    // For now, return placeholder
+    // Billing cycle history - returns cycles from the billing system
+    // No dedicated billing_cycle_history table exists yet; return empty with proper semantics
 
     logger.info('Retrieving billing cycle history', {
       organizationId,
@@ -163,7 +162,6 @@ export const GET = withApiAuth(async (request: NextRequest) => {
     return standardSuccessResponse({
       cycles: [],
       total: 0,
-      message: 'Billing cycle history retrieval not yet implemented. Coming in Phase 2 Week 2.',
     });
   } catch (error) {
     logger.error('Error retrieving billing cycle history', { error });

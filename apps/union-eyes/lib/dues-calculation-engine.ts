@@ -1,12 +1,9 @@
-﻿// @ts-nocheck
 import { db } from '@/db';
 import {
   duesRules,
   memberDuesAssignments,
   duesTransactions,
   members,
-  type DuesRule,
-  type MemberDuesAssignment,
 } from '@/services/financial-service/src/db/schema';
 import { eq, and, sql, lte, gte, or, isNull, desc } from 'drizzle-orm';
 
@@ -36,6 +33,8 @@ interface DuesCalculationResult {
     rate?: number;
     hours?: number;
     tier?: string;
+    flatAmount?: number;
+    formula?: string;
   };
 }
 
@@ -97,7 +96,7 @@ return null;
 
     // Calculate based on rule type
     let amount: number;
-    let breakdown: unknown = {};
+    let breakdown: DuesCalculationResult['breakdown'] = { baseAmount: 0 };
 
     switch (rule.calculationType) {
       case 'flat_rate':
@@ -125,12 +124,12 @@ return null;
       case 'tiered':
         const tierResult = this.calculateTieredDues(rule, memberData);
         amount = tierResult.amount;
-        breakdown = tierResult.breakdown;
+        breakdown = tierResult.breakdown as DuesCalculationResult['breakdown'];
         break;
 
       case 'formula':
         amount = this.calculateFormulaDues(rule, memberData);
-        breakdown = { baseAmount: amount, formula: rule.customFormula };
+        breakdown = { baseAmount: amount, formula: rule.customFormula ?? undefined };
         break;
 
       default:
@@ -242,7 +241,7 @@ return null;
       const substituted = this.replaceFormulaVariables(rule.customFormula, context);
       const result = this.evaluateSafeFormula(substituted);
       return Number.isFinite(result) ? result : 0;
-    } catch (error) {
+    } catch (_error) {
 return 0;
     }
   }
@@ -381,7 +380,7 @@ return 0;
         hourlyRate: hourlyRate || undefined,
         hoursWorked: hoursWorked || undefined,
       };
-    } catch (error) {
+    } catch (_error) {
 return undefined;
     }
   }
@@ -389,7 +388,7 @@ return undefined;
   /**
    * Calculate due date based on billing frequency
    */
-  private static calculateDueDate(periodEnd: Date, frequency: string): Date {
+  private static calculateDueDate(periodEnd: Date, _frequency: string): Date {
     const dueDate = new Date(periodEnd);
     
     // Due date is typically 15 days after period end
@@ -524,7 +523,7 @@ throw error;
           .set({
             lateFeeAmount: lateFee.toString(),
             totalAmount: newTotal.toString(),
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(duesTransactions.id, transaction.id));
       }

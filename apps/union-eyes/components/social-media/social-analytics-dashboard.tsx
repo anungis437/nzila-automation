@@ -8,10 +8,9 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,19 +20,13 @@ import {
   Instagram,
   Linkedin,
   TrendingUp,
-  TrendingDown,
   Users,
-  Eye,
   Heart,
   MessageCircle,
   Share2,
-  BarChart3,
   Clock,
-  MapPin,
-  Calendar,
   Download,
-  Filter,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 // ================================================================
@@ -84,128 +77,6 @@ interface BestPostingTime {
 }
 
 // ================================================================
-// SAMPLE DATA
-// ================================================================
-
-const platformMetrics: PlatformMetrics[] = [
-  {
-    platform: 'facebook',
-    followers: 12500,
-    followerChange: 320,
-    engagement: 2840,
-    engagementRate: 4.8,
-    reach: 45200,
-    impressions: 78500,
-    posts: 24
-  },
-  {
-    platform: 'twitter',
-    followers: 8300,
-    followerChange: 180,
-    engagement: 1650,
-    engagementRate: 3.2,
-    reach: 32100,
-    impressions: 51200,
-    posts: 42
-  },
-  {
-    platform: 'instagram',
-    followers: 15200,
-    followerChange: 450,
-    engagement: 4280,
-    engagementRate: 6.5,
-    reach: 52800,
-    impressions: 95300,
-    posts: 18
-  },
-  {
-    platform: 'linkedin',
-    followers: 4200,
-    followerChange: 95,
-    engagement: 620,
-    engagementRate: 2.1,
-    reach: 12500,
-    impressions: 29400,
-    posts: 12
-  }
-];
-
-const topPosts: TopPost[] = [
-  {
-    id: '1',
-    platform: 'instagram',
-    content: 'Meet Sarah, shop steward and 12-year member. "This union changed my life. I went from barely making ends meet to owning my home." 💪 #MemberSpotlight',
-    publishedAt: new Date('2025-01-15T14:00:00'),
-    likes: 892,
-    comments: 43,
-    shares: 67,
-    impressions: 12300,
-    engagementRate: 8.1
-  },
-  {
-    id: '2',
-    platform: 'facebook',
-    content: 'VICTORY! Our members voted 95% YES on the new contract! Better wages, stronger benefits, and job security for all. This is what solidarity looks like. #UnionStrong',
-    publishedAt: new Date('2025-01-12T10:00:00'),
-    likes: 745,
-    comments: 128,
-    shares: 234,
-    impressions: 15600,
-    engagementRate: 7.1
-  },
-  {
-    id: '3',
-    platform: 'twitter',
-    content: 'Breaking: New contract ratified! We won:\n✅ 15% wage increase\n✅ Full healthcare coverage\n✅ Job security protections\n✅ Retirement benefits\n\nThis is the power of organized labor. #1u',
-    publishedAt: new Date('2025-01-12T10:15:00'),
-    likes: 562,
-    comments: 89,
-    shares: 187,
-    impressions: 11200,
-    engagementRate: 7.5
-  }
-];
-
-const audienceDemographics: AudienceDemographic[] = [
-  { 
-    ageRange: '18-24', 
-    percentage: 12,
-    gender: { male: 45, female: 52, other: 3 }
-  },
-  { 
-    ageRange: '25-34', 
-    percentage: 28,
-    gender: { male: 48, female: 49, other: 3 }
-  },
-  { 
-    ageRange: '35-44', 
-    percentage: 32,
-    gender: { male: 52, female: 46, other: 2 }
-  },
-  { 
-    ageRange: '45-54', 
-    percentage: 18,
-    gender: { male: 54, female: 44, other: 2 }
-  },
-  { 
-    ageRange: '55+', 
-    percentage: 10,
-    gender: { male: 58, female: 40, other: 2 }
-  }
-];
-
-const bestPostingTimes: BestPostingTime[] = [
-  { dayOfWeek: 'Monday', hour: 10, engagementRate: 5.2, postsCount: 12 },
-  { dayOfWeek: 'Monday', hour: 18, engagementRate: 6.1, postsCount: 8 },
-  { dayOfWeek: 'Tuesday', hour: 9, engagementRate: 4.8, postsCount: 10 },
-  { dayOfWeek: 'Wednesday', hour: 12, engagementRate: 5.5, postsCount: 15 },
-  { dayOfWeek: 'Wednesday', hour: 19, engagementRate: 7.2, postsCount: 11 },
-  { dayOfWeek: 'Thursday', hour: 14, engagementRate: 5.9, postsCount: 9 },
-  { dayOfWeek: 'Friday', hour: 11, engagementRate: 6.8, postsCount: 13 },
-  { dayOfWeek: 'Friday', hour: 17, engagementRate: 7.5, postsCount: 14 }
-];
-
-// ================================================================
 // HELPER FUNCTIONS
 // ================================================================
 
@@ -223,7 +94,7 @@ const getPlatformColor = (platform: SocialPlatform): string => {
   const colors = {
     facebook: 'bg-blue-600',
     twitter: 'bg-sky-500',
-    instagram: 'bg-gradient-to-tr from-purple-600 via-pink-600 to-orange-500',
+    instagram: 'bg-linear-to-tr from-purple-600 via-pink-600 to-orange-500',
     linkedin: 'bg-blue-700'
   };
   return colors[platform];
@@ -242,6 +113,34 @@ const formatNumber = (num: number): string => {
 export default function SocialAnalyticsDashboard() {
   const [dateRange, setDateRange] = useState<DateRange>('30d');
   const [selectedPlatform, setSelectedPlatform] = useState<SocialPlatform | 'all'>('all');
+  const [platformMetrics, setPlatformMetrics] = useState<PlatformMetrics[]>([]);
+  const [topPosts, setTopPosts] = useState<TopPost[]>([]);
+  const [audienceDemographics, setAudienceDemographics] = useState<AudienceDemographic[]>([]);
+  const [bestPostingTimes, setBestPostingTimes] = useState<BestPostingTime[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAnalytics = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/social-media/analytics?range=${dateRange}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.platformMetrics ?? data.platform_metrics) setPlatformMetrics(data.platformMetrics ?? data.platform_metrics);
+        if (data.topPosts ?? data.top_posts) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setTopPosts((data.topPosts ?? data.top_posts).map((p: any) => ({ ...p, publishedAt: new Date(p.publishedAt ?? p.published_at) })));
+        }
+        if (data.audienceDemographics ?? data.audience_demographics) setAudienceDemographics(data.audienceDemographics ?? data.audience_demographics);
+        if (data.bestPostingTimes ?? data.best_posting_times) setBestPostingTimes(data.bestPostingTimes ?? data.best_posting_times);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [dateRange]);
+
+  useEffect(() => { fetchAnalytics(); }, [fetchAnalytics]);
 
   const filteredMetrics = selectedPlatform === 'all' 
     ? platformMetrics 
@@ -250,7 +149,11 @@ export default function SocialAnalyticsDashboard() {
   const totalFollowers = platformMetrics.reduce((sum, m) => sum + m.followers, 0);
   const totalEngagement = platformMetrics.reduce((sum, m) => sum + m.engagement, 0);
   const totalReach = platformMetrics.reduce((sum, m) => sum + m.reach, 0);
-  const avgEngagementRate = platformMetrics.reduce((sum, m) => sum + m.engagementRate, 0) / platformMetrics.length;
+  const avgEngagementRate = platformMetrics.length > 0 ? platformMetrics.reduce((sum, m) => sum + m.engagementRate, 0) / platformMetrics.length : 0;
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">

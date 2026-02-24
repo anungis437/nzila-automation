@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AutoPay Utilities
  * Helper functions for managing automatic payment settings
@@ -9,8 +8,10 @@
 import { db } from '@/db/db';
 import { autoPaySettings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
 import { stripe } from '@/lib/stripe';
-import type * as Stripe from 'stripe';
+// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
+import type Stripe from 'stripe';
 
 export interface AutoPaySettingsData {
   userId: string;
@@ -54,7 +55,7 @@ export async function getStripeCustomer(stripeCustomerId: string) {
       return null;
     }
     return customer as Stripe.Customer;
-  } catch (error) {
+  } catch (_error) {
 return null;
   }
 }
@@ -70,7 +71,7 @@ export async function getStripePaymentMethod(paymentMethodId: string) {
   try {
     const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
     return paymentMethod;
-  } catch (error) {
+  } catch (_error) {
 return null;
   }
 }

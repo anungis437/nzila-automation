@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Campaign Service
  * 
@@ -61,6 +60,7 @@ export interface AudienceResolutionResult {
     email?: string;
     phone?: string;
     name?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: Record<string, any>;
   }>;
   totalCount: number;
@@ -134,13 +134,16 @@ export class CampaignService {
     let query = db
       .select()
       .from(campaigns)
-      .where(eq(campaigns.organizationId, organizationId));
+      .where(eq(campaigns.organizationId, organizationId))
+      .$dynamic();
 
     if (status) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       query = query.where(eq(campaigns.status, status as any));
     }
 
     if (channel) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       query = query.where(eq(campaigns.channel, channel as any));
     }
 
@@ -198,7 +201,8 @@ export class CampaignService {
       })
       .from(organizationMembers)
       .leftJoin(users, eq(organizationMembers.userId, users.userId))
-      .where(eq(organizationMembers.organizationId, organizationId));
+      .where(eq(organizationMembers.organizationId, organizationId))
+      .$dynamic();
 
     if (segmentFilters?.status?.length) {
       baseQuery = baseQuery.where(inArray(organizationMembers.status, segmentFilters.status));
@@ -369,6 +373,7 @@ export class CampaignService {
           status: 'sent',
           completedAt: new Date(),
           stats: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ...(campaign.stats as any),
             queued,
           },
@@ -411,6 +416,7 @@ export class CampaignService {
       email?: string;
       phone?: string;
       name?: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       metadata?: Record<string, any>;
     },
   ): Promise<MessageLog> {
@@ -472,7 +478,7 @@ export class CampaignService {
    * Send a single message
    */
   private async sendMessage(message: MessageLog): Promise<void> {
-    const startTime = Date.now();
+    const _startTime = Date.now();
 
     try {
       let providerMessageId: string | undefined;
@@ -553,11 +559,11 @@ export class CampaignService {
 
     switch (channel) {
       case 'email':
-        return preferences.emailEnabled;
+        return preferences.emailEnabled ?? false;
       case 'sms':
-        return preferences.smsEnabled;
+        return preferences.smsEnabled ?? false;
       case 'push':
-        return preferences.pushEnabled;
+        return preferences.pushEnabled ?? false;
       default:
         return false;
     }
@@ -595,6 +601,7 @@ export class CampaignService {
       throw new Error('Campaign not found');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const stats = campaign.stats as any;
     const total = stats.sent || 0;
 

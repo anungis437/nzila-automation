@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { getCreditStatus } from "@/actions/credits-actions";
-import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarIcon, RefreshCwIcon } from "lucide-react";
 
@@ -36,7 +35,7 @@ export function CreditUsageDisplay() {
         setLoading(true);
         const status = await getCreditStatus();
         setCreditStatus(status);
-      } catch (error) {
+      } catch (_error) {
 } finally {
         setLoading(false);
       }
@@ -66,7 +65,7 @@ export function CreditUsageDisplay() {
     : 'Free';
   
   // Custom progress bar colors using the purple from whop-pricing-card
-  const progressClasses = "h-2.5 rounded-full bg-gradient-to-r from-purple-500 to-purple-700";
+  const progressClasses = "h-2.5 rounded-full bg-linear-to-r from-purple-500 to-purple-700";
 
   return (
     <Card className="border-white/60 bg-white/80 shadow-sm overflow-hidden">

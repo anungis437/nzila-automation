@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Case Timeline Service
  * PR-4: Visibility Scopes (dual-surface enforcement)
@@ -28,6 +27,7 @@ export type TimelineEvent = {
   message: string;
   createdBy: string;
   visibilityScope: VisibilityScope;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: any;
 };
 
@@ -179,6 +179,7 @@ export async function addCaseEvent(payload: {
   createdBy: string;
   isInternal?: boolean;
   visibilityScope?: VisibilityScope;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: any;
 }): Promise<string> {
   // Auto-determine scope if not explicitly provided
@@ -236,6 +237,15 @@ export function getVisibleScopesForRole(role: string): VisibilityScope[] {
     case 'officer':
     case 'staff':
       return ['member', 'staff'];
+    case 'admin':
+    case 'administrator':
+      return ['member', 'staff', 'admin'];
+    case 'system':
+      return ['member', 'staff', 'admin', 'system'];
+    default:
+      return ['member']; // Safe default
+  }
+}
 
 // ============================================================================
 // PR #13: SIGNAL RECOMPUTATION AFTER TIMELINE CHANGES
@@ -296,7 +306,9 @@ async function recomputeSignalsForCase(claimId: string): Promise<void> {
     title: claimData.description || 'Untitled',
     memberId: claimData.memberId,
     memberName,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     currentState: claimData.status as any, // Map claim status to case state
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     priority: (claimData.priority as any) || 'medium',
     createdAt: claimData.createdAt!,
     lastUpdated: claimData.updatedAt || claimData.createdAt!,
@@ -333,7 +345,7 @@ async function recomputeSignalsForCase(claimId: string): Promise<void> {
           if (assignedOfficer?.email) {
             const notificationService = new NotificationService();
             await notificationService.send({
-              organizationId: claimData.organizationId || claimData.organizationId /* was tenantId */,
+              organizationId: claimData.organizationId,
               recipientId: claimData.assignedTo,
               recipientEmail: assignedOfficer.email,
               type: 'email',
@@ -369,10 +381,9 @@ async function recomputeSignalsForCase(claimId: string): Promise<void> {
   try {
     // Store signals as JSON metadata in claim_updates table
     await db.insert(claimUpdates).values({
-      organizationId: claimData.organizationId,
       claimId,
       updateType: 'signal_recompute',
-      updateText: `Recomputed ${signals.length} signal(s)`,
+      message: `Recomputed ${signals.length} signal(s)`,
       createdBy: 'system',
       visibilityScope: 'admin',
       metadata: {
@@ -411,13 +422,3 @@ function mapUpdateTypeToTimelineType(
       return 'other';
   }
 }
-    case 'admin':
-    case 'administrator':
-      return ['member', 'staff', 'admin'];
-    case 'system':
-      return ['member', 'staff', 'admin', 'system'];
-    default:
-      return ['member']; // Safe default
-  }
-}
-

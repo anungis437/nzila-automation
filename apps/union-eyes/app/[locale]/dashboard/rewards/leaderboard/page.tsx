@@ -1,11 +1,11 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { db } from '@/db';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 import { getTranslations } from 'next-intl/server';
 import { Leaderboard } from '@/components/rewards/leaderboard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { sql } from 'drizzle-orm';
 import { recognitionAwards, rewardWalletLedger } from '@/db/schema/recognition-rewards-schema';
@@ -70,22 +70,26 @@ async function getLeaderboardData(orgId: string, period: 'all-time' | 'monthly' 
     LIMIT 20
   `;
 
-  const topReceivers = await db.execute(topReceiversQuery);
-  const topGivers = await db.execute(topGiversQuery);
+  // NzilaOS: All DB queries wrapped in RLS context for org isolation (PR-UE-01)
+  const { topReceivers, topGivers } = await withRLSContext(async (tx) => {
+    const topReceivers = await tx.execute(topReceiversQuery);
+    const topGivers = await tx.execute(topGiversQuery);
+    return { topReceivers, topGivers };
+  });
 
   return {
     topReceivers: (topReceivers as Array<Record<string, unknown>>).map((row) => ({
-      userId: row.user_id,
-      name: row.name || 'Unknown User',
-      avatar: row.avatar,
+      userId: String(row.user_id),
+      name: String(row.name || 'Unknown User'),
+      avatar: row.avatar as string | undefined,
       totalCredits: Number(row.total_credits),
       awardsReceived: Number(row.awards_received),
       rank: Number(row.rank),
     })),
     topGivers: (topGivers as Array<Record<string, unknown>>).map((row) => ({
-      userId: row.user_id,
-      name: row.name || 'Unknown User',
-      avatar: row.avatar,
+      userId: String(row.user_id),
+      name: String(row.name || 'Unknown User'),
+      avatar: row.avatar as string | undefined,
       totalCredits: Number(row.total_credits),
       awardsGiven: Number(row.awards_given),
       awardsReceived: 0,  // Not queried for givers leaderboard

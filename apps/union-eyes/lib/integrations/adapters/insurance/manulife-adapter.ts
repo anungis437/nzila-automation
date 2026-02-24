@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Manulife Financial Integration Adapter
  * 
@@ -66,7 +65,7 @@ export class ManulifeAdapter extends BaseIntegration {
       const manulifeConfig: ManulifeConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        policyGroupId: this.config!.settings?.policyGroupId || '',
+        policyGroupId: (this.config!.settings?.policyGroupId as string) || '',
         refreshToken: this.config!.credentials.refreshToken,
         environment: 'production',
       };
@@ -80,7 +79,7 @@ export class ManulifeAdapter extends BaseIntegration {
       }
       
       this.connected = true;
-      this.logOperation('connect', 'Connected to Manulife');
+      this.logOperation('connect', { message: 'Connected to Manulife' });
     } catch (error) {
       this.logError('connect', error);
       throw error;
@@ -90,7 +89,7 @@ export class ManulifeAdapter extends BaseIntegration {
   async disconnect(): Promise<void> {
     this.connected = false;
     this.client = undefined;
-    this.logOperation('disconnect', 'Disconnected from Manulife');
+    this.logOperation('disconnect', { message: 'Disconnected from Manulife' });
   }
 
   // ==========================================================================
@@ -129,7 +128,7 @@ export class ManulifeAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     this.ensureConnected();
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     let recordsProcessed = 0;
     let recordsCreated = 0;
     let recordsUpdated = 0;
@@ -142,7 +141,7 @@ export class ManulifeAdapter extends BaseIntegration {
 
       for (const entity of entities) {
         try {
-          this.logOperation('sync', `Syncing ${entity}`);
+          this.logOperation('sync', { message: `Syncing ${entity}` });
 
           switch (entity) {
             case 'claims':
@@ -178,11 +177,12 @@ export class ManulifeAdapter extends BaseIntegration {
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
-          errors.push({ entity, error: errorMsg });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          errors.push({ entity, error: errorMsg } as any);
           this.logError('sync', error, { entity });
         }
       }
@@ -205,7 +205,8 @@ export class ManulifeAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        errors: [{ entity: 'sync', error: error instanceof Error ? error.message : 'Unknown error' }],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        errors: [{ entity: 'sync', error: error instanceof Error ? error.message : 'Unknown error' }] as any,
       };
     }
   }
@@ -245,13 +246,13 @@ export class ManulifeAdapter extends BaseIntegration {
             employeeName: claim.employeeName,
             policyNumber: claim.policyNumber,
             claimType: claim.claimType,
-            serviceDate: new Date(claim.serviceDate),
-            submissionDate: new Date(claim.submissionDate),
-            processedDate: claim.processedDate ? new Date(claim.processedDate) : null,
-            claimAmount: claim.claimAmount,
-            approvedAmount: claim.approvedAmount,
-            paidAmount: claim.paidAmount || null,
-            deniedAmount: claim.deniedAmount || null,
+            serviceDate: claim.serviceDate,
+            submissionDate: claim.submissionDate,
+            processedDate: claim.processedDate || null,
+            claimAmount: claim.claimAmount != null ? String(claim.claimAmount) : '0',
+            approvedAmount: claim.approvedAmount != null ? String(claim.approvedAmount) : null,
+            paidAmount: claim.paidAmount != null ? String(claim.paidAmount) : null,
+            deniedAmount: claim.deniedAmount != null ? String(claim.deniedAmount) : null,
             status: claim.status,
             denialReason: claim.denialReason || null,
             providerId: claim.providerId || null,
@@ -318,10 +319,10 @@ export class ManulifeAdapter extends BaseIntegration {
             policyNumber: policy.policyNumber,
             policyType: policy.policyType,
             employeeId: policy.employeeId,
-            effectiveDate: new Date(policy.effectiveDate),
-            terminationDate: policy.terminationDate ? new Date(policy.terminationDate) : null,
-            coverageAmount: policy.coverageAmount,
-            premium: policy.premium,
+            effectiveDate: policy.effectiveDate,
+            terminationDate: policy.terminationDate || null,
+            coverageAmount: policy.coverageAmount != null ? String(policy.coverageAmount) : null,
+            premium: policy.premium != null ? String(policy.premium) : null,
             status: policy.status,
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -452,11 +453,11 @@ export class ManulifeAdapter extends BaseIntegration {
             employeeId: util.employeeId,
             policyId: util.policyId,
             benefitType: util.benefitType,
-            periodStart: new Date(util.periodStart),
-            periodEnd: new Date(util.periodEnd),
-            maximumBenefit: util.maximumBenefit,
-            utilized: util.utilized,
-            remaining: util.remaining,
+            periodStart: util.periodStart,
+            periodEnd: util.periodEnd,
+            maximumBenefit: util.maximumBenefit != null ? String(util.maximumBenefit) : null,
+            utilized: util.utilized != null ? String(util.utilized) : null,
+            remaining: util.remaining != null ? String(util.remaining) : null,
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
           };
@@ -495,11 +496,11 @@ export class ManulifeAdapter extends BaseIntegration {
   // Webhook Support (Not Supported)
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     return false;
   }
 
-  async processWebhook(event: WebhookEvent): Promise<void> {
-    this.logOperation('webhook', 'Manulife does not support webhooks');
+  async processWebhook(_event: WebhookEvent): Promise<void> {
+    this.logOperation('webhook', { message: 'Manulife does not support webhooks' });
   }
 }

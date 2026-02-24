@@ -2,7 +2,12 @@
  * Client-side RBAC Hooks
  * Union Claims Management System
  * 
- * React hooks for checking user roles and permissions on the client side
+ * React hooks for checking user roles and permissions on the client side.
+ *
+ * INV-04 NOTE: Server-side authorization is enforced by @nzila/os-core/policy
+ * `authorize()`.  These client hooks exist only for UI gating — they do NOT
+ * replace server-side checks.  All mutations and data access MUST call
+ * `authorizeRoute()` or `withAuthorizedRoute()` from the policy adapter.
  */
 
 "use client";
@@ -72,7 +77,7 @@ export function useUserRole() {
           // Default to member if API fails
           setRole(UserRole.MEMBER);
         }
-      } catch (error) {
+      } catch (_error) {
 setRole(UserRole.MEMBER); // Default to member on error
       } finally {
         setLoading(false);

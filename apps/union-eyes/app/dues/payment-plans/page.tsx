@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Plans Page
  * 
@@ -7,13 +6,15 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -50,7 +51,7 @@ export default function PaymentPlansPage() {
   const fetchPaymentPlans = async () => {
     try {
       const data = await api.dues.paymentPlans.list();
-      setPlans(data);
+      setPlans(data as PaymentPlan[]);
     } catch (error) {
       logger.error('Error fetching payment plans:', error);
     } finally {

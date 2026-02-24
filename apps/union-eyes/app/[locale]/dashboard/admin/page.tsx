@@ -1,5 +1,7 @@
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from 'next-intl';
 import { motion } from "framer-motion";
@@ -11,7 +13,6 @@ import {
   Shield,
   BarChart3,
   Database,
-  Mail,
   Building2,
   FileText,
   Search,
@@ -19,11 +20,9 @@ import {
   Edit,
   Trash2,
   Check,
-  X,
   AlertCircle,
   Activity,
   Download,
-  Upload,
   RefreshCw,
   Info,
   Sparkles,
@@ -71,9 +70,11 @@ export default function AdminPage() {
     useState<AdminSection>("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [systemStats, setSystemStats] = useState<any>(null);
   const [users, setUsers] = useState<SystemUser[]>([]);
   const [organizations, setOrganizations] = useState<LocalSection[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [activity, setActivity] = useState<any[]>([]);
 
   // Load data from API
@@ -86,6 +87,7 @@ export default function AdminPage() {
     } else if (activeSection === "locals") {
       loadOrganizations();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSection]);
 
   // Debounced search
@@ -99,6 +101,7 @@ export default function AdminPage() {
     }, 500);
 
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   const loadSystemStats = async () => {
@@ -108,7 +111,7 @@ export default function AdminPage() {
       if (data.success) {
         setSystemStats(data.data);
       }
-    } catch (error) {
+    } catch (_error) {
 }
   };
 
@@ -119,7 +122,7 @@ export default function AdminPage() {
       if (data.success) {
         setActivity(data.data);
       }
-    } catch (error) {
+    } catch (_error) {
 }
   };
 
@@ -133,7 +136,7 @@ export default function AdminPage() {
       if (data.success) {
         setUsers(data.data);
       }
-    } catch (error) {
+    } catch (_error) {
 toast.error("Failed to load users");
     } finally {
       setLoading(false);
@@ -150,6 +153,7 @@ toast.error("Failed to load users");
       if (data.success) {
         // Map to LocalSection format
         setOrganizations(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.data.map((org: any) => ({
             id: org.id,
             number: org.slug,
@@ -163,7 +167,7 @@ toast.error("Failed to load users");
           }))
         );
       }
-    } catch (error) {
+    } catch (_error) {
 toast.error("Failed to load organizations");
     } finally {
       setLoading(false);
@@ -185,7 +189,7 @@ toast.error("Failed to load organizations");
       } else {
         toast.error(data.error || "Failed to remove user");
       }
-    } catch (error) {
+    } catch (_error) {
 toast.error("Failed to remove user");
     }
   };
@@ -204,7 +208,7 @@ toast.error("Failed to remove user");
       } else {
         toast.error(data.error || "Failed to update user");
       }
-    } catch (error) {
+    } catch (_error) {
 toast.error("Failed to update user");
     }
   };
@@ -221,7 +225,7 @@ toast.error("Failed to update user");
       } else {
         toast.error(data.error || "Failed to clear cache");
       }
-    } catch (error) {
+    } catch (_error) {
 toast.error("Failed to clear cache");
     } finally {
       setLoading(false);
@@ -240,7 +244,7 @@ toast.error("Failed to clear cache");
       } else {
         toast.error(data.error || "Failed to optimize database");
       }
-    } catch (error) {
+    } catch (_error) {
 toast.error("Failed to optimize database");
     } finally {
       setLoading(false);
@@ -411,14 +415,14 @@ toast.error("Failed to optimize database");
     member: { label: t('admin.roles.member'), color: "bg-gray-100 text-gray-700" },
   };
 
-  const filteredLocals = localSections.filter(
+  const _filteredLocals = localSections.filter(
     (local) =>
       local.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       local.number.includes(searchQuery) ||
       local.region.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredUsers = systemUsers.filter(
+  const _filteredUsers = systemUsers.filter(
     (user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -426,7 +430,7 @@ toast.error("Failed to optimize database");
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-gray-50 to-zinc-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -448,7 +452,7 @@ toast.error("Failed to optimize database");
               onClick={() => setActiveSection(section.id as AdminSection)}
               className={`p-4 rounded-lg transition-all ${
                 activeSection === section.id
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                  ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
                   : "bg-white text-gray-700 hover:shadow-md border border-gray-200"
               }`}
             >
@@ -594,7 +598,7 @@ toast.error("Failed to optimize database");
                 <h2 className="text-2xl font-bold text-gray-900">
                   {t('admin.users.title')}
                 </h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
+                <button className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
                   <Plus className="w-4 h-4" />
                   {t('admin.users.addUser')}
                 </button>
@@ -695,7 +699,7 @@ toast.error("Failed to optimize database");
                               <button 
                                 className="p-1 text-blue-600 hover:bg-blue-50 rounded" 
                                 aria-label="Edit user"
-                                onClick={() => toast.info("Edit user functionality - coming soon")}
+                                onClick={() => window.location.href = `/dashboard/admin/users/${user.id}/edit`}
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
@@ -730,7 +734,7 @@ toast.error("Failed to optimize database");
                 <h2 className="text-2xl font-bold text-gray-900">
                   {t('admin.locals.title')}
                 </h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
+                <button className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:shadow-lg transition-all">
                   <Plus className="w-4 h-4" />
                   {t('admin.locals.addLocal')}
                 </button>
@@ -764,7 +768,7 @@ toast.error("Failed to optimize database");
                   {organizations.map((local) => (
                   <Card
                     key={local.id}
-                    className="p-5 bg-gradient-to-br from-white to-gray-50 border-gray-200 hover:shadow-lg transition-all"
+                    className="p-5 bg-linear-to-br from-white to-gray-50 border-gray-200 hover:shadow-lg transition-all"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div>
@@ -1275,7 +1279,7 @@ toast.error("Failed to optimize database");
                   <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                     <div className="space-y-3">
                       <div className="flex items-start gap-3 pb-3 border-b border-gray-200">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                           <Activity className="w-4 h-4 text-blue-600" />
                         </div>
                         <div className="flex-1">
@@ -1286,7 +1290,7 @@ toast.error("Failed to optimize database");
                       </div>
 
                       <div className="flex items-start gap-3 pb-3 border-b border-gray-200">
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
                           <Settings className="w-4 h-4 text-purple-600" />
                         </div>
                         <div className="flex-1">
@@ -1297,7 +1301,7 @@ toast.error("Failed to optimize database");
                       </div>
 
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                           <Users className="w-4 h-4 text-green-600" />
                         </div>
                         <div className="flex-1">
@@ -1352,25 +1356,25 @@ toast.error("Failed to optimize database");
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <ul className="space-y-2 text-sm text-gray-700">
                       <li className="flex items-start gap-2">
-                        <Database className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        <Database className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                         <div>
                           <strong>audit_logs</strong> - Comprehensive activity tracking with old/new values
                         </div>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Database className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        <Database className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                         <div>
                           <strong>security_events</strong> - Security-specific events with risk scores
                         </div>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Database className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        <Database className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                         <div>
                           <strong>failed_login_attempts</strong> - Brute force detection and monitoring
                         </div>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Database className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        <Database className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                         <div>
                           <strong>rate_limit_events</strong> - API rate limiting tracking
                         </div>
@@ -1397,7 +1401,7 @@ toast.error("Failed to optimize database");
 
               {/* Report Categories */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <button className="p-6 border-2 border-blue-200 rounded-lg hover:border-blue-400 transition-all text-left bg-gradient-to-br from-blue-50 to-white">
+                <button className="p-6 border-2 border-blue-200 rounded-lg hover:border-blue-400 transition-all text-left bg-linear-to-br from-blue-50 to-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Users className="w-6 h-6 text-blue-600" />
@@ -1407,7 +1411,7 @@ toast.error("Failed to optimize database");
                   <p className="text-sm text-gray-600">Track membership statistics, demographics, and engagement</p>
                 </button>
 
-                <button className="p-6 border-2 border-green-200 rounded-lg hover:border-green-400 transition-all text-left bg-gradient-to-br from-green-50 to-white">
+                <button className="p-6 border-2 border-green-200 rounded-lg hover:border-green-400 transition-all text-left bg-linear-to-br from-green-50 to-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                       <BarChart3 className="w-6 h-6 text-green-600" />
@@ -1417,7 +1421,7 @@ toast.error("Failed to optimize database");
                   <p className="text-sm text-gray-600">User activity, system usage, and peak time analysis</p>
                 </button>
 
-                <button className="p-6 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-all text-left bg-gradient-to-br from-purple-50 to-white">
+                <button className="p-6 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-all text-left bg-linear-to-br from-purple-50 to-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                       <Shield className="w-6 h-6 text-purple-600" />
@@ -1481,28 +1485,28 @@ toast.error("Failed to optimize database");
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Report Builder Features</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Visual Query Builder</p>
                       <p className="text-sm text-gray-600">Drag-and-drop interface for report creation</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Multiple Export Formats</p>
                       <p className="text-sm text-gray-600">CSV, PDF, and Excel output support</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Scheduled Reports</p>
                       <p className="text-sm text-gray-600">Automatic generation and email delivery</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Custom Filters</p>
                       <p className="text-sm text-gray-600">Filter by date range, organization, role, and more</p>
@@ -1629,7 +1633,7 @@ toast.error("Failed to optimize database");
                         if (data.success) {
                           toast.success("Database health check complete");
 }
-                      } catch (error) {
+                      } catch (_error) {
                         toast.error("Failed to fetch database health");
                       }
                     }}
@@ -1682,21 +1686,21 @@ toast.error("Failed to optimize database");
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Backup & Recovery</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Automated Daily Backups</p>
                       <p className="text-gray-600">Azure PostgreSQL provides automatic full backups</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Point-in-Time Recovery</p>
                       <p className="text-gray-600">Restore to any point within 7-35 day retention window</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">Geo-Redundant Storage</p>
                       <p className="text-gray-600">Backups replicated to paired Azure region</p>
@@ -1740,7 +1744,7 @@ toast.error("Failed to optimize database");
         {/* Help Section */}
         <Card className="mt-8 p-6 bg-orange-50/80 backdrop-blur-sm border-orange-200">
           <div className="flex gap-4">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
               <Info className="w-5 h-5 text-orange-600" />
             </div>
             <div>

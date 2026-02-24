@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * QuickBooks Online API Client
  * 
@@ -8,9 +7,8 @@
  * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/
  */
 
-import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { AuthenticationError, RateLimitError, IntegrationError } from '../../types';
+import { AuthenticationError, RateLimitError, IntegrationError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -56,7 +54,6 @@ export interface QuickBooksInvoice {
   }>;
   TotalAmt: number;
   Balance: number;
-  DueDate?: string;
   TxnStatus?: string;
 }
 
@@ -102,9 +99,10 @@ export interface QuickBooksAccount {
   Active: boolean;
 }
 
-export interface QuickBooksPaginatedResponse<T> {
+export interface QuickBooksPaginatedResponse<_T> {
   QueryResponse: {
-    [key: string]: T[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
     startPosition: number;
     maxResults: number;
     totalCount?: number;
@@ -141,7 +139,7 @@ export class QuickBooksClient {
     if (!this.refreshToken) {
       throw new AuthenticationError(
         'QuickBooks refresh token required',
-        'QUICKBOOKS'
+        IntegrationProvider.QUICKBOOKS
       );
     }
 
@@ -166,7 +164,7 @@ export class QuickBooksClient {
         const error = await response.text();
         throw new AuthenticationError(
           `QuickBooks authentication failed: ${error}`,
-          'QUICKBOOKS'
+          IntegrationProvider.QUICKBOOKS
         );
       }
 
@@ -184,7 +182,7 @@ export class QuickBooksClient {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
         `QuickBooks authentication error: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'QUICKBOOKS'
+        IntegrationProvider.QUICKBOOKS
       );
     }
   }
@@ -233,14 +231,14 @@ export class QuickBooksClient {
 
       // Handle rate limiting (QuickBooks uses 429)
       if (response.status === 429) {
-        throw new RateLimitError('QuickBooks', 60);
+        throw new RateLimitError('QuickBooks rate limit exceeded', IntegrationProvider.QUICKBOOKS, 60);
       }
 
       if (!response.ok) {
         const error = await response.text();
         throw new IntegrationError(
           `QuickBooks API error (${response.status}): ${error}`,
-          'QUICKBOOKS'
+          IntegrationProvider.QUICKBOOKS
         );
       }
 
@@ -251,7 +249,7 @@ export class QuickBooksClient {
       }
       throw new IntegrationError(
         `QuickBooks request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'QUICKBOOKS'
+        IntegrationProvider.QUICKBOOKS
       );
     }
   }
@@ -272,11 +270,12 @@ export class QuickBooksClient {
     
     if (options?.modifiedSince) {
       const dateStr = options.modifiedSince.toISOString().split('T')[0];
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) throw new Error('Invalid date format');
       query += ` WHERE MetaData.LastUpdatedTime > '${dateStr}'`;
     }
 
-    const limit = options?.limit || 100;
-    const offset = options?.offset || 0;
+    const limit = Math.max(1, Math.min(Math.floor(Number(options?.limit) || 100), 1000));
+    const offset = Math.max(0, Math.floor(Number(options?.offset) || 0));
     query += ` MAXRESULTS ${limit} STARTPOSITION ${offset + 1}`;
 
     const response = await this.request<QuickBooksPaginatedResponse<QuickBooksInvoice>>(
@@ -300,8 +299,8 @@ export class QuickBooksClient {
     limit?: number;
     offset?: number;
   }): Promise<{ customers: QuickBooksCustomer[]; hasMore: boolean }> {
-    const limit = options?.limit || 100;
-    const offset = options?.offset || 0;
+    const limit = Math.max(1, Math.min(Math.floor(Number(options?.limit) || 100), 1000));
+    const offset = Math.max(0, Math.floor(Number(options?.offset) || 0));
     
     const query = `SELECT * FROM Customer MAXRESULTS ${limit} STARTPOSITION ${offset + 1}`;
 
@@ -331,11 +330,12 @@ export class QuickBooksClient {
     
     if (options?.modifiedSince) {
       const dateStr = options.modifiedSince.toISOString().split('T')[0];
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) throw new Error('Invalid date format');
       query += ` WHERE MetaData.LastUpdatedTime > '${dateStr}'`;
     }
 
-    const limit = options?.limit || 100;
-    const offset = options?.offset || 0;
+    const limit = Math.max(1, Math.min(Math.floor(Number(options?.limit) || 100), 1000));
+    const offset = Math.max(0, Math.floor(Number(options?.offset) || 0));
     query += ` MAXRESULTS ${limit} STARTPOSITION ${offset + 1}`;
 
     const response = await this.request<QuickBooksPaginatedResponse<QuickBooksPayment>>(
@@ -359,8 +359,8 @@ export class QuickBooksClient {
     limit?: number;
     offset?: number;
   }): Promise<{ accounts: QuickBooksAccount[]; hasMore: boolean }> {
-    const limit = options?.limit || 100;
-    const offset = options?.offset || 0;
+    const limit = Math.max(1, Math.min(Math.floor(Number(options?.limit) || 100), 1000));
+    const offset = Math.max(0, Math.floor(Number(options?.offset) || 0));
     
     const query = `SELECT * FROM Account MAXRESULTS ${limit} STARTPOSITION ${offset + 1}`;
 

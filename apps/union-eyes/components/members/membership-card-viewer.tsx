@@ -116,6 +116,7 @@ export function MembershipCardViewer({
             <CardContent className="h-full p-8 text-white relative">
               {/* Union Logo */}
               {cardData.unionLogo && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={cardData.unionLogo}
                   alt="Union Logo"
@@ -137,6 +138,7 @@ export function MembershipCardViewer({
               {/* Member Photo */}
               {cardData.photoUrl && (
                 <div className="absolute bottom-8 left-8 w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={cardData.photoUrl}
                     alt="Member"
@@ -189,7 +191,7 @@ export function MembershipCardViewer({
               transform: "rotateY(180deg)",
             }}
           >
-            <CardContent className="h-full p-8 flex flex-col items-center justify-center space-y-6 bg-gradient-to-br from-gray-50 to-gray-100">
+            <CardContent className="h-full p-8 flex flex-col items-center justify-center space-y-6 bg-linear-to-br from-gray-50 to-gray-100">
               {/* QR Code */}
               <div className="bg-white p-6 rounded-lg shadow-inner">
                 <div className="w-48 h-48 flex items-center justify-center bg-gray-200 rounded">

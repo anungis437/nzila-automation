@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Scheduled Jobs Configuration for Analytics
  * 
@@ -58,11 +57,11 @@ const cacheWarmingJob: JobConfig = {
     try {
       // Get all active tenants
       const tenants = await db
-        .selectDistinct({ tenantId: claims.organizationId })
+        .selectDistinct({ organizationId: claims.organizationId })
         .from(claims);
 
-      for (const { tenantId } of tenants) {
-        await warmAnalyticsCache(tenantId);
+      for (const { organizationId } of tenants) {
+        await warmAnalyticsCache(organizationId);
       }
 
       logger.info('CRON: Cache warming completed', { tenantCount: tenants.length });
@@ -187,7 +186,7 @@ export function initializeAnalyticsJobs() {
     const cron = require('node-cron');
     
     enabledJobs.forEach(job => {
-      const task = cron.schedule(job.schedule, async () => {
+      const _task = cron.schedule(job.schedule, async () => {
         logger.info('CRON: Starting job', { jobName: job.name });
         try {
           await job.handler();

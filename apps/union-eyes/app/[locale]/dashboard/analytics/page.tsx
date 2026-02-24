@@ -1,7 +1,9 @@
-import React from 'react';
 "use client";
 
-import { useState } from "react";
+
+export const dynamic = 'force-dynamic';
+import React from 'react';
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +14,8 @@ import {
   Users,
   FileText,
   CheckCircle,
-  XCircle,
   Clock,
   Calendar,
-  DollarSign,
   AlertTriangle,
   Award,
   Briefcase,
@@ -54,7 +54,7 @@ interface CategoryBreakdown {
 export default function AnalyticsPage() {
   const t = useTranslations();
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
-  const [selectedCategory, setSelectedCategory] = useState<MetricCategory>("cases");
+  const [_selectedCategory, _setSelectedCategory] = useState<MetricCategory>("cases");
 
   const timeRangeLabels: Record<TimeRange, string> = {
     "7d": t('analytics.last7Days'),
@@ -64,90 +64,55 @@ export default function AnalyticsPage() {
     "all": t('analytics.allTime'),
   };
 
-  // Mock metrics data
-  const metrics: Metric[] = [
-    {
-      label: t('analytics.totalCases'),
-      value: "847",
-      change: 12.5,
-      changeLabel: t('analytics.changeFromLastPeriod', { change: '+12.5%' }),
-      icon: <FileText className="w-5 h-5" />,
-      color: "text-blue-600 bg-blue-100",
-    },
-    {
-      label: t('analytics.activeMembers'),
-      value: "1,234",
-      change: 8.2,
-      changeLabel: t('analytics.changeFromLastPeriod', { change: '+8.2%' }),
-      icon: <Users className="w-5 h-5" />,
-      color: "text-green-600 bg-green-100",
-    },
-    {
-      label: t('analytics.resolutionRate'),
-      value: "87.3%",
-      change: 5.1,
-      changeLabel: t('analytics.changeFromLastPeriod', { change: '+5.1%' }),
-      icon: <CheckCircle className="w-5 h-5" />,
-      color: "text-purple-600 bg-purple-100",
-    },
-    {
-      label: t('analytics.avgResolutionTime'),
-      value: "12.4 days",
-      change: -15.3,
-      changeLabel: t('analytics.changeFromLastPeriod', { change: '-15.3%' }),
-      icon: <Clock className="w-5 h-5" />,
-      color: "text-orange-600 bg-orange-100",
-    },
-    {
-      label: t('analytics.memberSatisfaction'),
-      value: "92.1%",
-      change: 3.7,
-      changeLabel: t('analytics.changeFromLastPeriod', { change: '+3.7%' }),
-      icon: <Award className="w-5 h-5" />,
-      color: "text-pink-600 bg-pink-100",
-    },
-    {
-      label: t('analytics.grievancesFiled'),
-      value: "34",
-      change: -8.5,
-      changeLabel: t('analytics.changeFromLastPeriod', { change: '-8.5%' }),
-      icon: <AlertTriangle className="w-5 h-5" />,
-      color: "text-red-600 bg-red-100",
-    },
-  ];
+  // Metrics from API
+  const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [categoryBreakdown, setCategoryBreakdown] = useState<CategoryBreakdown[]>([]);
+  const [topStewards, setTopStewards] = useState<{ name: string; cases: number; resolved: number; rate: number }[]>([]);
+  const [quickStats, setQuickStats] = useState({ openCases: 0, resolved: 0, avgResponseHrs: 0, activeStewards: 0, openPct: '0%', resolvedPct: '0%', stewardPct: '0%' });
 
-  // Mock chart data
-  const chartData: ChartDataPoint[] = [
-    { month: "Jan", cases: 67, resolved: 58, pending: 9 },
-    { month: "Feb", cases: 72, resolved: 65, pending: 7 },
-    { month: "Mar", cases: 81, resolved: 70, pending: 11 },
-    { month: "Apr", cases: 78, resolved: 68, pending: 10 },
-    { month: "May", cases: 85, resolved: 75, pending: 10 },
-    { month: "Jun", cases: 92, resolved: 82, pending: 10 },
-  ];
+  const loadAnalytics = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/v2/analytics/overview?range=${timeRange}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.metrics && Array.isArray(data.metrics)) {
+          setMetrics(data.metrics.map((m: Record<string, unknown>) => ({
+            label: (m.label as string) ?? '',
+            value: String(m.value ?? 0),
+            change: Number(m.change ?? 0),
+            changeLabel: (m.changeLabel as string) ?? '',
+            icon: <BarChart3 className="w-5 h-5" />,
+            color: (m.color as string) ?? 'text-blue-600 bg-blue-100',
+          })));
+        }
+        if (data.chartData) setChartData(data.chartData);
+        if (data.categoryBreakdown) setCategoryBreakdown(data.categoryBreakdown);
+        if (data.topStewards) setTopStewards(data.topStewards);
+        if (data.quickStats) {
+          const qs = data.quickStats;
+          setQuickStats({
+            openCases: qs.openCases ?? 0,
+            resolved: qs.resolved ?? 0,
+            avgResponseHrs: qs.avgResponseHrs ?? 0,
+            activeStewards: qs.activeStewards ?? 0,
+            openPct: qs.openPct ?? '0%',
+            resolvedPct: qs.resolvedPct ?? '0%',
+            stewardPct: qs.stewardPct ?? '0%',
+          });
+        }
+      }
+    } catch { /* API not available */ }
+  }, [timeRange]);
 
-  // Mock category breakdown
-  const categoryBreakdown: CategoryBreakdown[] = [
-    { category: "Wages & Hours", count: 234, percentage: 27.6, color: "bg-blue-500" },
-    { category: "Safety & Health", count: 187, percentage: 22.1, color: "bg-green-500" },
-    { category: "Discrimination", count: 156, percentage: 18.4, color: "bg-purple-500" },
-    { category: "Benefits", count: 143, percentage: 16.9, color: "bg-orange-500" },
-    { category: "Discipline", count: 89, percentage: 10.5, color: "bg-pink-500" },
-    { category: "Other", count: 38, percentage: 4.5, color: "bg-gray-400" },
-  ];
-
-  // Top performing stewards
-  const topStewards = [
-    { name: "Sarah Johnson", cases: 48, resolved: 45, rate: 93.8 },
-    { name: "Mike Chen", cases: 42, resolved: 38, rate: 90.5 },
-    { name: "Emily Davis", cases: 37, resolved: 32, rate: 86.5 },
-    { name: "David Martinez", cases: 35, resolved: 30, rate: 85.7 },
-  ];
+  useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   const maxCaseValue = Math.max(...chartData.map(d => d.cases));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50">
       <div className="p-6 md:p-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -156,7 +121,7 @@ export default function AnalyticsPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+            <div className="p-2 bg-linear-to-br from-indigo-500 to-purple-600 rounded-lg">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">{t('analytics.title')}</h1>
@@ -362,7 +327,7 @@ export default function AnalyticsPage() {
                 <div className="space-y-4">
                   {topStewards.map((steward, index) => (
                     <div key={steward.name} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full text-white font-bold text-sm">
+                      <div className="flex items-center justify-center w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full text-white font-bold text-sm">
                         #{index + 1}
                       </div>
                       <div className="flex-1">
@@ -400,23 +365,23 @@ export default function AnalyticsPage() {
                       <FileText className="w-4 h-4 text-blue-600" />
                       <span className="text-sm text-blue-700 font-medium">{t('analytics.openCases')}</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-900">124</p>
-                    <p className="text-xs text-blue-600 mt-1">{t('analytics.ofTotal', { percentage: '14.6%' })}</p>
+                    <p className="text-2xl font-bold text-blue-900">{quickStats.openCases}</p>
+                    <p className="text-xs text-blue-600 mt-1">{t('analytics.ofTotal', { percentage: quickStats.openPct })}</p>
                   </div>
                   <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle className="w-4 h-4 text-green-600" />
                       <span className="text-sm text-green-700 font-medium">{t('analytics.resolved')}</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">723</p>
-                    <p className="text-xs text-green-600 mt-1">{t('analytics.ofTotal', { percentage: '85.4%' })}</p>
+                    <p className="text-2xl font-bold text-green-900">{quickStats.resolved}</p>
+                    <p className="text-xs text-green-600 mt-1">{t('analytics.ofTotal', { percentage: quickStats.resolvedPct })}</p>
                   </div>
                   <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
                     <div className="flex items-center gap-2 mb-2">
                       <Clock className="w-4 h-4 text-orange-600" />
                       <span className="text-sm text-orange-700 font-medium">{t('analytics.avgResponse')}</span>
                     </div>
-                    <p className="text-2xl font-bold text-orange-900">2.1 hrs</p>
+                    <p className="text-2xl font-bold text-orange-900">{quickStats.avgResponseHrs} hrs</p>
                     <p className="text-xs text-orange-600 mt-1">{t('analytics.within24hTarget')}</p>
                   </div>
                   <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
@@ -424,8 +389,8 @@ export default function AnalyticsPage() {
                       <Users className="w-4 h-4 text-purple-600" />
                       <span className="text-sm text-purple-700 font-medium">{t('analytics.activeStewards')}</span>
                     </div>
-                    <p className="text-2xl font-bold text-purple-900">18</p>
-                    <p className="text-xs text-purple-600 mt-1">{t('analytics.ofMembers', { percentage: '1.5%' })}</p>
+                    <p className="text-2xl font-bold text-purple-900">{quickStats.activeStewards}</p>
+                    <p className="text-xs text-purple-600 mt-1">{t('analytics.ofMembers', { percentage: quickStats.stewardPct })}</p>
                   </div>
                 </div>
               </CardContent>
@@ -440,7 +405,7 @@ export default function AnalyticsPage() {
           transition={{ delay: 1.2 }}
           className="mt-6"
         >
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200 shadow-lg">
+          <Card className="bg-linear-to-br from-indigo-50 to-purple-50 border-indigo-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-indigo-100 rounded-lg">

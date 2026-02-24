@@ -13,6 +13,8 @@
 
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -72,22 +74,25 @@ export default function IncidentsPage() {
 
   useEffect(() => {
     if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
       loadStats();
     }
   }, [organizationId, dateRange]);
 
   const loadStats = async () => {
     try {
-      // In production: fetch from API
-      // Example: const response = await fetch(`/api/health-safety/incidents/stats?organizationId=${organizationId}&period=${dateRange}`);
-      setStats({
-        total: 45,
-        reported: 8,
-        investigating: 12,
-        resolved: 20,
-        closed: 5,
-        avgResolutionTime: 4.5,
-      });
+      const res = await fetch(`/api/v2/health-safety/incidents/stats?organizationId=${organizationId}&period=${dateRange}`);
+      if (res.ok) {
+        const json = await res.json();
+        setStats({
+          total: json.total ?? 0,
+          reported: json.reported ?? 0,
+          investigating: json.investigating ?? 0,
+          resolved: json.resolved ?? 0,
+          closed: json.closed ?? 0,
+          avgResolutionTime: json.avgResolutionTime ?? json.avg_resolution_time ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load incident statistics");
@@ -116,7 +121,7 @@ export default function IncidentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Page Header */}
         <motion.div
@@ -153,7 +158,7 @@ export default function IncidentsPage() {
                 Export
               </Button>
               <Link href="/dashboard/health-safety/incidents/new">
-                <Button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                <Button className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
                   <Plus className="h-4 w-4" />
                   Report Incident
                 </Button>

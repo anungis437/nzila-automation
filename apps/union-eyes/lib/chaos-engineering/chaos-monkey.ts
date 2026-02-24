@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Chaos Engineering Framework
  * 
@@ -14,6 +13,7 @@
  *   chaos.injectLatency({ probability: 0.1, minMs: 100, maxMs: 500 });
  */
 
+ 
 import { logger } from '@/lib/logger';
 
 export interface ChaosConfig {
@@ -199,10 +199,11 @@ export class ChaosMonkey {
    */
   private exhaustCpu(durationMs: number): void {
     const startTime = Date.now();
-    let sum = 0;
+     
+    let _sum = 0;
 
     while (Date.now() - startTime < durationMs) {
-      sum += Math.random() * Math.random();
+      _sum += Math.random() * Math.random();
     }
   }
 
@@ -235,7 +236,7 @@ export class ChaosMonkey {
  */
 export const chaos = new ChaosMonkey({
   enabled: process.env.CHAOS_ENABLED === 'true',
-  environment: (process.env.NODE_ENV as unknown) || 'development',
+  environment: (process.env.NODE_ENV || 'development') as ChaosConfig['environment'],
   seed: process.env.CHAOS_SEED ? parseInt(process.env.CHAOS_SEED) : undefined,
 });
 

@@ -1,11 +1,14 @@
+"use client";
+
+
+export const dynamic = 'force-dynamic';
 import React from 'react';
 /**
  * Agreements Page
  * View and search collective bargaining agreements and contracts
  */
-"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from 'next-intl';
@@ -24,7 +27,8 @@ import {
   Eye,
   TrendingUp
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+ 
+import { Card, CardContent } from "@/components/ui/card";
 
 type AgreementStatus = "active" | "expired" | "pending";
 type AgreementType = "collective-bargaining" | "side-letter" | "mou" | "policy" | "amendment";
@@ -44,99 +48,6 @@ interface Agreement {
   keyTerms: string[];
   summary: string;
 }
-
-const mockAgreements: Agreement[] = [
-  {
-    id: "CBA-2025",
-    title: "2025-2028 Collective Bargaining Agreement",
-    type: "collective-bargaining",
-    status: "active",
-    effectiveDate: "2025-01-01",
-    expirationDate: "2028-12-31",
-    description: "Primary collective bargaining agreement covering wages, benefits, working conditions, and grievance procedures for all union members.",
-    fileSize: "2.4 MB",
-    pageCount: 156,
-    lastUpdated: "2025-01-15",
-    version: "1.0",
-    keyTerms: ["Wage Increases", "Healthcare", "Vacation", "Seniority", "Grievance Procedure"],
-    summary: "Includes 3% annual wage increases, expanded healthcare coverage, additional vacation days for senior members, and updated safety protocols."
-  },
-  {
-    id: "SL-2025-001",
-    title: "Remote Work Side Letter Agreement",
-    type: "side-letter",
-    status: "active",
-    effectiveDate: "2025-03-01",
-    expirationDate: "2026-02-28",
-    description: "Supplemental agreement establishing remote work policies, equipment provisions, and performance expectations.",
-    fileSize: "485 KB",
-    pageCount: 12,
-    lastUpdated: "2025-03-01",
-    version: "1.0",
-    keyTerms: ["Remote Work", "Equipment", "Scheduling", "Communication"],
-    summary: "Allows eligible members to work remotely up to 3 days per week with company-provided equipment and internet stipend."
-  },
-  {
-    id: "MOU-2024-003",
-    title: "Safety Protocol Memorandum of Understanding",
-    type: "mou",
-    status: "active",
-    effectiveDate: "2024-06-15",
-    expirationDate: "2026-06-14",
-    description: "Agreement on workplace safety procedures, protective equipment requirements, and incident reporting protocols.",
-    fileSize: "892 KB",
-    pageCount: 28,
-    lastUpdated: "2024-06-15",
-    version: "2.1",
-    keyTerms: ["Safety Equipment", "Training", "Incident Reporting", "OSHA Compliance"],
-    summary: "Updated safety standards including mandatory quarterly training, enhanced PPE requirements, and streamlined incident reporting."
-  },
-  {
-    id: "CBA-2022",
-    title: "2022-2024 Collective Bargaining Agreement",
-    type: "collective-bargaining",
-    status: "expired",
-    effectiveDate: "2022-01-01",
-    expirationDate: "2024-12-31",
-    description: "Previous collective bargaining agreement (superseded by 2025-2028 CBA).",
-    fileSize: "2.1 MB",
-    pageCount: 142,
-    lastUpdated: "2024-12-31",
-    version: "3.2",
-    keyTerms: ["Historical Reference"],
-    summary: "Previous agreement maintained for reference purposes. Members should refer to the current 2025-2028 CBA for active terms."
-  },
-  {
-    id: "POLICY-2025-001",
-    title: "Paid Family Leave Policy",
-    type: "policy",
-    status: "active",
-    effectiveDate: "2025-01-01",
-    expirationDate: "2025-12-31",
-    description: "Policy outlining paid family leave benefits, eligibility requirements, and application procedures.",
-    fileSize: "320 KB",
-    pageCount: 8,
-    lastUpdated: "2025-01-01",
-    version: "1.0",
-    keyTerms: ["Family Leave", "Parental Leave", "Benefits", "Eligibility"],
-    summary: "Provides up to 12 weeks of paid family leave for birth, adoption, or care of a family member with serious health condition."
-  },
-  {
-    id: "AMD-2025-001",
-    title: "Wage Scale Amendment 2025",
-    type: "amendment",
-    status: "pending",
-    effectiveDate: "2025-07-01",
-    expirationDate: "2028-12-31",
-    description: "Proposed amendment to adjust wage scales based on cost of living increases and market analysis.",
-    fileSize: "156 KB",
-    pageCount: 4,
-    lastUpdated: "2025-05-10",
-    version: "0.9 (Draft)",
-    keyTerms: ["Wage Adjustment", "COLA", "Market Rate"],
-    summary: "Proposes additional 2% wage adjustment for all classifications effective July 1, 2025. Pending membership ratification."
-  }
-];
 
 const typeConfig: Record<AgreementType, { label: string; color: string; icon: React.ReactElement }> = {
   "collective-bargaining": { 
@@ -186,12 +97,28 @@ const statusConfig: Record<AgreementStatus, { label: string; icon: React.ReactEl
 
 export default function AgreementsPage() {
   const t = useTranslations();
-  const { user } = useUser();
-  const [agreements] = useState<Agreement[]>(mockAgreements);
+  const { user: _user } = useUser();
+  const [agreements, setAgreements] = useState<Agreement[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<AgreementType | "all">("all");
   const [selectedStatus, setSelectedStatus] = useState<AgreementStatus | "all">("all");
   const [expandedAgreement, setExpandedAgreement] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAgreements = async () => {
+      try {
+        const res = await fetch('/api/v2/agreements');
+        if (res.ok) {
+          const json = await res.json();
+          const items = Array.isArray(json) ? json : json?.agreements ?? json?.data ?? [];
+          if (items.length > 0) setAgreements(items);
+        }
+      } catch {
+        // API not available — use fallback data
+      }
+    };
+    fetchAgreements();
+  }, []);
 
   // Filter agreements
   const filteredAgreements = agreements.filter(agreement => {
@@ -212,7 +139,7 @@ export default function AgreementsPage() {
   const totalDocs = agreements.reduce((sum, a) => sum + a.pageCount, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -575,10 +502,10 @@ export default function AgreementsPage() {
           transition={{ delay: 0.5 }}
           className="mt-8"
         >
-          <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+          <Card className="bg-linear-to-r from-purple-50 to-blue-50 border-purple-200">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center shrink-0">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">

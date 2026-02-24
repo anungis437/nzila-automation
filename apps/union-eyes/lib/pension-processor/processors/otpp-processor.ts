@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * OTPP Processor
  * Ontario Teachers' Pension Plan integration
@@ -15,13 +14,11 @@ import type {
   PensionableEarnings,
   ContributionCalculation,
   ContributionRates,
-  ContributionPeriod,
   AnnualPensionStatement,
   PensionPlanConfig,
   ContributionRemittance,
-  EmploymentStatus,
 } from '../types';
-import { PensionProcessorError } from '../types';
+import { PensionProcessorError, ContributionPeriod } from '../types';
 
 /**
  * OTPP contribution rates by year
@@ -137,7 +134,7 @@ export class OTTPProcessor extends BasePensionProcessor {
 
     // Check if approaching maximum contribution
     const newYTDEmployeeContribution = ytdContributions.plus(employeeContribution);
-    const newYTDEmployerContribution = ytdContributions.plus(employerContribution);
+    const _newYTDEmployerContribution = ytdContributions.plus(employerContribution);
 
     if (newYTDEmployeeContribution.greaterThan(rates.yearlyMaximumContribution)) {
       this.logWarn('Approaching maximum contribution limit', {
@@ -399,11 +396,11 @@ export class OTTPProcessor extends BasePensionProcessor {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays <= 7) return 'weekly';
-    if (diffDays <= 14) return 'bi_weekly';
-    if (diffDays <= 16) return 'semi_monthly';
-    if (diffDays <= 31) return 'monthly';
-    if (diffDays <= 92) return 'quarterly';
-    return 'annual';
+    if (diffDays <= 7) return ContributionPeriod.WEEKLY;
+    if (diffDays <= 14) return ContributionPeriod.BI_WEEKLY;
+    if (diffDays <= 16) return ContributionPeriod.SEMI_MONTHLY;
+    if (diffDays <= 31) return ContributionPeriod.MONTHLY;
+    if (diffDays <= 92) return ContributionPeriod.QUARTERLY;
+    return ContributionPeriod.ANNUAL;
   }
 }

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Feature Flags System
  * 
@@ -14,7 +13,7 @@
 import { cache } from 'react';
 import { db } from '@/db';
 import { featureFlags } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
 export type FlagType = 'boolean' | 'percentage' | 'tenant' | 'user';
@@ -95,7 +94,7 @@ export class TenantFlag {
     private defaultEnabled: boolean = false
   ) {}
 
-  isEnabledForTenant(tenantId: string): boolean {
+  isEnabledForTenant(organizationId: string): boolean {
     const config = getFeatureConfig(this.name);
     if (!config?.enabled) return false;
     
@@ -103,28 +102,28 @@ export class TenantFlag {
       return this.defaultEnabled;
     }
     
-    return config.allowedTenants.includes(tenantId);
+    return config.allowedTenants.includes(organizationId);
   }
 
-  async enableForTenant(tenantId: string): Promise<void> {
+  async enableForTenant(organizationId: string): Promise<void> {
     const config = getFeatureConfig(this.name) || { allowedTenants: [] };
     const tenants = config.allowedTenants || [];
     
-    if (!tenants.includes(tenantId)) {
+    if (!tenants.includes(organizationId)) {
       await updateFeatureFlag(this.name, {
         enabled: true,
-        allowedTenants: [...tenants, tenantId]
+        allowedTenants: [...tenants, organizationId]
       });
     }
   }
 
-  async disableForTenant(tenantId: string): Promise<void> {
+  async disableForTenant(organizationId: string): Promise<void> {
     const config = getFeatureConfig(this.name);
     if (!config?.allowedTenants) return;
 
     await updateFeatureFlag(this.name, {
       enabled: true,
-      allowedTenants: config.allowedTenants.filter(id => id !== tenantId)
+      allowedTenants: config.allowedTenants.filter(id => id !== organizationId)
     });
   }
 }
@@ -162,7 +161,7 @@ export const refreshFeatureFlags = cache(async () => {
         type: flag.type as FlagType,
         enabled: flag.enabled,
         percentage: flag.percentage || undefined,
-        allowedTenants: flag.allowedTenants as string[] | undefined,
+        allowedTenants: flag.allowedOrganizations as string[] | undefined,
         allowedUsers: flag.allowedUsers as string[] | undefined,
         description: flag.description || undefined,
       });

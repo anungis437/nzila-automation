@@ -1,8 +1,8 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { db } from '@/db';
 import { getBalance } from '@/lib/services/rewards/wallet-service';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +25,7 @@ export default async function RedeemCreditsPage() {
   const t = await getTranslations('rewards');
 
   // Fetch current balance
-  const balance = await getBalance(db, userId, orgId);
+  const balance = await getBalance(orgId, userId);
 
   // Check if Shopify is enabled
   const shopifyEnabled = process.env.SHOPIFY_ENABLED === 'true';
@@ -51,7 +51,8 @@ export default async function RedeemCreditsPage() {
           {t('redeem.balanceTitle', { defaultValue: 'Available Balance' })}
         </AlertTitle>
         <AlertDescription>
-          {t('redeem.balanceMessage', {
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {(t as any)('redeem.balanceMessage', {
             defaultValue: 'You have {balance} credits available to redeem',
             values: { balance: balance.toLocaleString() },
           })}

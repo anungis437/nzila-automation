@@ -1,4 +1,7 @@
-﻿// @ts-nocheck
+"use client";
+
+export const dynamic = 'force-dynamic';
+
 /**
  * Member Management Page
  * 
@@ -15,7 +18,7 @@
 import * as React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Plus, Upload, Download } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { MemberListTableAdvanced } from "@/components/members/member-list-table-advanced";
 import { MemberOnboardingWizard } from "@/components/members/member-onboarding-wizard";
 import { MemberEngagementDashboard } from "@/components/members/member-engagement-dashboard";
@@ -46,7 +49,7 @@ export default function MembersPage() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
         <TabsList>
           <TabsTrigger value="list">All Members</TabsTrigger>
           <TabsTrigger value="onboard">Onboard Member</TabsTrigger>
@@ -57,7 +60,7 @@ export default function MembersPage() {
         <TabsContent value="list">
           <MemberListTableAdvanced
             members={[]}
-            onView={(member) => {
+            onView={(_member) => {
               // Navigate to member detail page
 }}
           />
@@ -65,7 +68,7 @@ export default function MembersPage() {
 
         <TabsContent value="onboard">
           <MemberOnboardingWizard
-            onComplete={async (data) => {
+            onComplete={async (_data) => {
 setActiveTab("list");
             }}
             onCancel={() => setActiveTab("list")}
@@ -94,7 +97,7 @@ setActiveTab("list");
         <TabsContent value="bulk">
           <BulkMemberOperations
             selectedMemberIds={[]}
-            onOperationComplete={(operation, results) => {
+            onOperationComplete={(_operation, _results) => {
 setActiveTab("list");
             }}
           />

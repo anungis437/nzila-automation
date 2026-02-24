@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Canonical Authentication Module
  * 
@@ -47,6 +46,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser as clerkCurrentUser } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/db';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { organizationMembers } from '@/db/schema';
 import { users } from '@/db/schema/domains/member';
 import {
@@ -204,7 +204,7 @@ export interface AuthUser {
   firstName: string | null;
   lastName: string | null;
   imageUrl: string | null;
-  tenantId: string | null; // Legacy compatibility
+  legacyTenantId: string | null; // Legacy tenant ID from Clerk user metadata (publicMetadata.tenantId / privateMetadata.tenantId)
   role: string | null;
   organizationId: string | null;
   metadata: Record<string, unknown>;
@@ -248,7 +248,7 @@ interface ScopeCheckResult {
 /**
  * Permission check result
  */
-interface PermissionCheckResult {
+interface _PermissionCheckResult {
   allowed: boolean;
   grantMethod?: 'role' | 'exception' | 'override';
   matchingRole?: MemberRoleWithDetails;
@@ -259,6 +259,7 @@ interface PermissionCheckResult {
  * Base context type with common authentication fields
  */
 export interface BaseAuthContext {
+  [key: string]: unknown;
   params?: Record<string, unknown>;
   organizationId?: string;
   userId?: string;
@@ -326,6 +327,7 @@ export interface ApiGuardOptions {
  * imports these constants from api-auth-guard.ts.
  */
 export { PUBLIC_API_ROUTES, CRON_API_ROUTES, isPublicRoute, isCronRoute } from './public-routes';
+import { isPublicRoute, isCronRoute } from './public-routes';
 
 /**
  * Verify cron secret header
@@ -379,7 +381,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       firstName: user.firstName || null,
       lastName: user.lastName || null,
       imageUrl: user.imageUrl || null,
-      tenantId: legacyTenantId,
+      legacyTenantId,
       role: (publicMetadata.role as string) || (privateMetadata.role as string) || 'member',
       organizationId: resolvedOrganizationId,
       metadata: { ...publicMetadata },
@@ -391,8 +393,10 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     
     // Throw standardized error (doesn&apos;t leak system details)
     const authError = new Error('Service temporarily unavailable');
-    (authError as unknown).statusCode = 503;
-    (authError as unknown).code = 'AUTH_SERVICE_ERROR';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (authError as any).statusCode = 503;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (authError as any).code = 'AUTH_SERVICE_ERROR';
     throw authError;
   }
 }
@@ -400,7 +404,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 /**
  * Get user from request context
  */
-export async function getUserFromRequest(request: NextRequest): Promise<AuthUser | null> {
+export async function getUserFromRequest(_request: NextRequest): Promise<AuthUser | null> {
   return getCurrentUser();
 }
 
@@ -427,7 +431,7 @@ export async function getUserContext(): Promise<UnifiedUserContext | null> {
     return null;
   }
 
-  let membership = null;
+  let membership: Awaited<ReturnType<typeof db.query.organizationMembers.findFirst>> = undefined;
 
   if (orgId) {
     membership = await db.query.organizationMembers.findFirst({
@@ -570,7 +574,7 @@ export async function isSystemAdmin(userIdOverride?: string): Promise<boolean> {
 
     return user?.isSystemAdmin ?? false;
   } catch (error) {
-    logger.error('[Auth] Error checking system admin status', error instanceof Error ? error : new Error(String(error)), { userId });
+    logger.error('[Auth] Error checking system admin status', error instanceof Error ? error : new Error(String(error)), { userId: userIdOverride });
     return false;
   }
 }
@@ -681,7 +685,7 @@ export async function hasRoleInOrganization(
     
     return userRoleLevel >= requiredRoleLevel;
   } catch (error) {
-    logger.error('[Auth] Error checking organization role', error instanceof Error ? error : new Error(String(error)), { userId, organizationId });
+    logger.error('[Auth] Error checking organization role', error instanceof Error ? error : new Error(String(error)), { organizationId });
     return false;
   }
 }
@@ -760,7 +764,7 @@ export function withRoleAuth<TContext extends Record<string, unknown> = BaseAuth
     let user: AuthUser | null = null;
     try {
       user = await getCurrentUser();
-    } catch (error) {
+    } catch (_error) {
       return NextResponse.json(
         { error: 'Unauthorized: Authentication required' },
         { status: 401 }
@@ -874,6 +878,7 @@ export function withSystemAdminAuth<TContext extends Record<string, unknown> = B
  * });
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withEnhancedRoleAuth<T = any>(
   minRoleLevel: number,
   handler: (request: NextRequest, context: EnhancedRoleContext) => Promise<NextResponse<T>>,
@@ -885,7 +890,7 @@ export function withEnhancedRoleAuth<T = any>(
     isSensitive?: boolean;
   } = {}
 ) {
-  return withApiAuth(async (request: NextRequest, baseContext: unknown) => {
+  return withApiAuth(async (request: NextRequest, _baseContext: unknown) => {
     const startTime = Date.now();
     const authResult = await auth();
     const userId = authResult?.userId;
@@ -1022,6 +1027,7 @@ export function withEnhancedRoleAuth<T = any>(
  * });
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withPermission<T = any>(
   requiredPermission: string,
   handler: (request: NextRequest, context: EnhancedRoleContext) => Promise<NextResponse<T>>,
@@ -1033,7 +1039,7 @@ export function withPermission<T = any>(
     allowExceptions?: boolean;
   } = {}
 ) {
-  return withApiAuth(async (request: NextRequest, baseContext: unknown) => {
+  return withApiAuth(async (request: NextRequest, _baseContext: unknown) => {
     const startTime = Date.now();
     const authResult = await auth();
     const userId = authResult?.userId;
@@ -1143,6 +1149,7 @@ export function withPermission<T = any>(
  * });
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withScopedRoleAuth<T = any>(
   roleCode: string,
   scopeType: string,
@@ -1154,7 +1161,7 @@ export function withScopedRoleAuth<T = any>(
     isSensitive?: boolean;
   } = {}
 ) {
-  return withApiAuth(async (request: NextRequest, baseContext: unknown) => {
+  return withApiAuth(async (request: NextRequest, _baseContext: unknown) => {
     const startTime = Date.now();
     const authResult = await auth();
     const userId = authResult?.userId;
@@ -1384,11 +1391,12 @@ async function logAuditDenial(
   executionTimeMs: number,
   isSensitive?: boolean
 ): Promise<void> {
+  const ctx = context as Record<string, unknown>;
   await logPermissionCheck({
-    actorId: context.memberId || context.userId || 'unknown',
+    actorId: (ctx.memberId as string) || (ctx.userId as string) || 'unknown',
     action,
     resourceType,
-    organizationId: context.organizationId,
+    organizationId: ctx.organizationId as string,
     granted: false,
     denialReason: reason,
     executionTimeMs,
@@ -1594,6 +1602,29 @@ export async function getServerSession() {
     },
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   };
+}
+
+/**
+ * Require that the current user has at least the given role (by hierarchy level).
+ *
+ * Uses `getRoleLevel()` from roles.ts so that e.g.
+ *   `await requireMinRole('platform_lead')` passes for app_owner, coo, cto, platform_lead
+ *   but rejects support_agent, member, etc.
+ */
+export async function requireMinRole(minRole: string): Promise<UnifiedUserContext> {
+  const user = await requireUser();
+  const { getRoleLevel  } = await import('./auth/roles');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const minLevel = getRoleLevel(minRole as any);
+  const userLevel = Math.max(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...user.roles.map((r: string) => getRoleLevel(r as any)),
+    0,
+  );
+  if (userLevel < minLevel) {
+    throw new Error(`Forbidden: Requires at least ${minRole} role (level ${minLevel})`);
+  }
+  return user;
 }
 
 /**

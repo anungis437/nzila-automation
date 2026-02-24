@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Domain-Driven Database Schema
  * 
@@ -48,3 +47,31 @@ export * from "../schema-organizations";
 
 // Union Structure (Organizational hierarchy and operational structure)
 export * from "./union-structure-schema";
+
+// ============================================================================
+// EXPLICIT RE-EXPORTS (Resolve cross-domain ambiguities)
+// ============================================================================
+
+// consentStatusEnum - compliance is the canonical source for consent management
+export { consentStatusEnum } from "./domains/compliance";
+
+// GrievanceType - claims is the canonical source for grievances
+export { type GrievanceType } from "./domains/claims";
+
+// employmentStatusEnum - member domain is the canonical source
+export { employmentStatusEnum } from "./domains/member";
+
+// mlPredictions - ML domain is the canonical source for predictions
+export { mlPredictions } from "./domains/ml";
+
+// campaignStatusEnum - communications is the canonical source
+export { campaignStatusEnum } from "./domains/communications";
+
+// Finance-owned schemas that also appear in infrastructure/erp
+export { accountTypeEnum, chartOfAccounts, chartOfAccountsRelations, glAccountMappings } from "./domains/finance";
+
+// syncStatusEnum - infrastructure is the canonical source
+export { syncStatusEnum } from "./domains/infrastructure";
+
+// Steward assignments - union-structure-schema is the canonical source
+export { stewardAssignments, stewardAssignmentsRelations, type StewardAssignment } from "./union-structure-schema";

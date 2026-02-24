@@ -1,5 +1,7 @@
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 /**
  * Billing Cycle Management
  * 
@@ -15,6 +17,7 @@
  */
 
 import { useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -93,6 +96,7 @@ function formatDate(date: string): string {
 // =============================================================================
 
 function GenerateBillingCycleDialog() {
+  const { orgId } = useAuth();
   const [open, setOpen] = useState(false);
   const [frequency, setFrequency] = useState<string>('monthly');
   const [generating, setGenerating] = useState(false);
@@ -107,7 +111,7 @@ function GenerateBillingCycleDialog() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organizationId: 'YOUR_ORG_ID', // TODO: Get from context
+          organizationId: orgId ?? '',
           frequency,
         }),
       });
@@ -134,7 +138,7 @@ function GenerateBillingCycleDialog() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organizationId: 'YOUR_ORG_ID', // TODO: Get from context
+          organizationId: orgId ?? '',
           frequency,
           dryRun,
         }),

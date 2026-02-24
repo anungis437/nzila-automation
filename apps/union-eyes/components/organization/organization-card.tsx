@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 /**
  * Organization Card Component
@@ -16,11 +15,11 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import type { Organization, OrganizationType, OrganizationStatus } from "@/types/organization";
 
 // Organization type configurations
 const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactElement; color: string }> = {
+  platform: { label: "Platform", icon: <Globe className="w-4 h-4" />, color: "text-gray-700 bg-gray-100 border-gray-200" },
   congress: { label: "Congress", icon: <Globe className="w-4 h-4" />, color: "text-blue-700 bg-blue-100 border-blue-200" },
   federation: { label: "Federation", icon: <Network className="w-4 h-4" />, color: "text-purple-700 bg-purple-100 border-purple-200" },
   union: { label: "Union", icon: <Building2 className="w-4 h-4" />, color: "text-green-700 bg-green-100 border-green-200" },
@@ -114,9 +113,11 @@ export function OrganizationCard({
         </div>
 
         {/* Description */}
-        {organization.description && (
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {(organization as any).description && (
           <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-            {organization.description}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {(organization as any).description}
           </p>
         )}
 

@@ -1,16 +1,12 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from 'drizzle-orm';
-import { logger } from '@/lib/logger';
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
-import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { db } from '@/db';
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * GET /api/ml/monitoring/alerts
@@ -44,7 +40,7 @@ import {
  *   }
  * }
  */
-export const GET = withRoleAuth(20, async (request: NextRequest, context) => {
+export const GET = withRoleAuth('member', async (request: NextRequest, context) => {
   const { userId, organizationId } = context;
 
   // Rate limit monitoring reads
@@ -205,7 +201,7 @@ const mlMonitoringAlertsSchema = z.object({
   alertId: z.string().uuid('Invalid alertId'),
 });
 
-export const POST = withRoleAuth(20, async (request: NextRequest, context) => {
+export const POST = withRoleAuth('member', async (request: NextRequest, context) => {
   const { userId, organizationId } = context;
   const organizationScopeId = organizationId || userId;
   

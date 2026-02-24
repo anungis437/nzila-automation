@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Arrears Management Page
  * 
@@ -7,12 +6,14 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -62,7 +63,7 @@ export default function ArrearsPage() {
 
   const fetchMembersInArrears = async () => {
     try {
-      const data = await api.dues.arrears.list();
+      const data = await api.dues.arrears.list() as unknown as { members: MemberInArrears[] };
       setMembers(data.members || []);
     } catch (error) {
       logger.error('Error fetching arrears:', error);
@@ -76,7 +77,8 @@ export default function ArrearsPage() {
     if (!selectedMember || !paymentAmount) return;
 
     try {
-      await api.dues.arrears.recordPayment(selectedMember.id, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (api.dues.arrears.recordPayment as any)(selectedMember.id, {
         amount: parseFloat(paymentAmount),
         notes,
       });

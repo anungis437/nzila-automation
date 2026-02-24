@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Case Detail Page
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -25,8 +26,15 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  FileText, User, Calendar, Clock, AlertCircle, 
-  Upload, Download, Edit, MessageSquare, CheckCircle
+  FileText,
+  User,
+  Calendar,
+  AlertCircle,
+  Upload,
+  Download,
+  Edit,
+  MessageSquare,
+  CheckCircle,
 } from 'lucide-react';
 
 interface CaseDetail {
@@ -63,7 +71,7 @@ interface Evidence {
 }
 
 export default function CaseDetailPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
+  const _router = useRouter();
   const [caseDetail, setCaseDetail] = useState<CaseDetail | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [evidence, setEvidence] = useState<Evidence[]>([]);
@@ -72,6 +80,7 @@ export default function CaseDetailPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchCaseDetail();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const fetchCaseDetail = async () => {
@@ -82,9 +91,9 @@ export default function CaseDetailPage({ params }: { params: { id: string } }) {
         api.cases.evidence.list(params.id),
       ]);
       
-      setCaseDetail(caseData);
-      setTimeline(timelineData);
-      setEvidence(evidenceData);
+      setCaseDetail(caseData as CaseDetail);
+      setTimeline(timelineData as TimelineEvent[]);
+      setEvidence(evidenceData as Evidence[]);
     } catch (error) {
       logger.error('Error fetching case', error);
     } finally {
@@ -100,7 +109,7 @@ export default function CaseDetailPage({ params }: { params: { id: string } }) {
       setNote('');
       // Refresh timeline to show new note
       const timelineData = await api.cases.timeline(params.id);
-      setTimeline(timelineData);
+      setTimeline(timelineData as TimelineEvent[]);
     } catch (error) {
       logger.error('Error adding note', error);
     }

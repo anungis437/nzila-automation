@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workday API Client
  * 
@@ -7,9 +6,8 @@
  * @see https://community.workday.com/sites/default/files/file-hosting/restapi/index.html
  */
 
-import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { AuthenticationError, RateLimitError, IntegrationError } from '../../types';
+import { AuthenticationError, RateLimitError, IntegrationError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -121,7 +119,7 @@ export class WorkdayClient {
         const error = await response.text();
         throw new AuthenticationError(
           `Workday authentication failed: ${error}`,
-          'WORKDAY'
+          IntegrationProvider.WORKDAY
         );
       }
 
@@ -131,14 +129,14 @@ export class WorkdayClient {
       this.tokenExpiresAt = new Date(Date.now() + data.expires_in * 1000);
 
       logger.info('Workday authentication successful', {
-        tenantId: this.config.organizationId /* was tenantId */,
+        tenantId: this.config.tenantId,
         expiresAt: this.tokenExpiresAt,
       });
     } catch (error) {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
         `Workday authentication error: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'WORKDAY'
+        IntegrationProvider.WORKDAY
       );
     }
   }
@@ -181,7 +179,8 @@ export class WorkdayClient {
       if (response.status === 429) {
         const retryAfter = response.headers.get('Retry-After');
         throw new RateLimitError(
-          'Workday',
+          'Workday rate limit exceeded',
+          IntegrationProvider.WORKDAY,
           parseInt(retryAfter || '60', 10)
         );
       }
@@ -190,7 +189,7 @@ export class WorkdayClient {
         const error = await response.text();
         throw new IntegrationError(
           `Workday API error (${response.status}): ${error}`,
-          'WORKDAY'
+          IntegrationProvider.WORKDAY
         );
       }
 
@@ -201,7 +200,7 @@ export class WorkdayClient {
       }
       throw new IntegrationError(
         `Workday request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'WORKDAY'
+        IntegrationProvider.WORKDAY
       );
     }
   }
@@ -222,12 +221,14 @@ export class WorkdayClient {
     if (options?.limit) params.set('limit', options.limit.toString());
     if (options?.offset) params.set('offset', options.offset.toString());
 
-    const response = await this.request<unknown>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await this.request<Record<string, any>>(
       `/workers?${params.toString()}`
     );
 
     return {
-      data: response.data.map((worker: unknown) => this.mapWorkerToEmployee(worker)),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: response.data.map((worker: Record<string, any>) => this.mapWorkerToEmployee(worker)),
       total: response.total || response.data.length,
       cursor: response.next_cursor,
     };
@@ -237,14 +238,16 @@ export class WorkdayClient {
    * Get a single employee by ID
    */
   async getEmployee(employeeId: string): Promise<WorkdayEmployee> {
-    const response = await this.request<unknown>(`/workers/${employeeId}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await this.request<Record<string, any>>(`/workers/${employeeId}`);
     return this.mapWorkerToEmployee(response);
   }
 
   /**
    * Map Workday worker to our employee format
    */
-  private mapWorkerToEmployee(worker: unknown): WorkdayEmployee {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapWorkerToEmployee(worker: Record<string, any>): WorkdayEmployee {
     return {
       id: worker.id,
       employeeID: worker.descriptor || worker.id,
@@ -280,17 +283,20 @@ export class WorkdayClient {
     if (options?.limit) params.set('limit', options.limit.toString());
     if (options?.offset) params.set('offset', options.offset.toString());
 
-    const response = await this.request<unknown>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await this.request<Record<string, any>>(
       `/jobProfiles?${params.toString()}`
     );
 
     return {
-      data: response.data.map((profile: unknown) => this.mapJobProfileToPosition(profile)),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: response.data.map((profile: Record<string, any>) => this.mapJobProfileToPosition(profile)),
       total: response.total || response.data.length,
     };
   }
 
-  private mapJobProfileToPosition(profile: unknown): WorkdayPosition {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapJobProfileToPosition(profile: Record<string, any>): WorkdayPosition {
     return {
       id: profile.id,
       title: profile.descriptor || profile.id,
@@ -315,17 +321,20 @@ export class WorkdayClient {
     if (options?.limit) params.set('limit', options.limit.toString());
     if (options?.offset) params.set('offset', options.offset.toString());
 
-    const response = await this.request<unknown>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await this.request<Record<string, any>>(
       `/organizations?${params.toString()}`
     );
 
     return {
-      data: response.data.map((org: unknown) => this.mapOrgToDepartment(org)),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: response.data.map((org: Record<string, any>) => this.mapOrgToDepartment(org)),
       total: response.total || response.data.length,
     };
   }
 
-  private mapOrgToDepartment(org: unknown): WorkdayDepartment {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapOrgToDepartment(org: Record<string, any>): WorkdayDepartment {
     return {
       id: org.id,
       name: org.descriptor || org.id,
@@ -349,7 +358,8 @@ export class WorkdayClient {
     try {
       await this.ensureAuthenticated();
       // Simple request to verify connectivity
-      await this.request<unknown>('/workers?limit=1');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await this.request<Record<string, any>>('/workers?limit=1');
       return true;
     } catch (error) {
       logger.error('Workday health check failed', {

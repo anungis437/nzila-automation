@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CLC Partnership Service
  * 
@@ -21,7 +20,7 @@ import {
   clcSyncLog,
   clcOAuthTokens 
 } from '@/db/schema/clc-partnership-schema';
-import { eq, and, desc, gte } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
 // =============================================================================

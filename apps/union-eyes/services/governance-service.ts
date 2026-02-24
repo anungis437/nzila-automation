@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Governance Service - Fully Transformed for Django REST API
  * All 11 methods implemented using Django backend endpoints
@@ -13,15 +12,6 @@ import { auth } from '@clerk/nextjs/server';
 // Type imports only - no runtime database access
 import type {
   NewGoldenShare,
-  GoldenShare,
-  NewReservedMatterVote,
-  ReservedMatterVote,
-  NewMissionAudit,
-  MissionAudit,
-  NewGovernanceEvent,
-  GovernanceEvent,
-  NewCouncilElection,
-  CouncilElection,
 } from '@/db/schema/domains/governance';
 
 export class GovernanceService {
@@ -54,7 +44,7 @@ export class GovernanceService {
         headers: await this.getAuthHeaders(),
         body: JSON.stringify({
           certificateNumber: data.certificateNumber,
-          issueDate: data.issueDate.toISOString().split('T')[0],
+          issueDate: typeof data.issueDate === 'string' ? data.issueDate : (data.issueDate as unknown as Date).toISOString().split('T')[0],
           councilMembers: data.councilMembers,
         }),
       }
@@ -292,7 +282,9 @@ export class GovernanceService {
     electionYear: number;
     electionDate: Date;
     positionsAvailable: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     candidates: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     winners: any[];
     totalVotes?: number;
     participationRate?: number;

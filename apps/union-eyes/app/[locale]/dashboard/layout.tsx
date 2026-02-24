@@ -4,73 +4,23 @@
  * and applies the dashboard-specific styling
  */
 import React, { ReactNode } from "react";
-import { getProfileByUserId, updateProfile } from "@/db/queries/profiles-queries";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar";
-import { revalidatePath } from "next/cache";
 import CancellationPopup from "@/components/cancellation-popup";
 import WelcomeMessagePopup from "@/components/welcome-message-popup";
 import PaymentSuccessPopup from "@/components/payment-success-popup";
 import { OrganizationSelector } from "@/components/organization/organization-selector";
 import { OrganizationBreadcrumb } from "@/components/organization/organization-breadcrumb";
 import LanguageSwitcher from "@/components/language-switcher";
-import { cookies } from "next/headers";
-import type { SelectProfile } from "@/db/schema/domains/member";
 import { logger } from "@/lib/logger";
-import { getUserRoleInOrganization, getOrganizationIdForUser } from "@/lib/organization-utils";
+import { getOrganizationIdForUser } from "@/lib/organization-utils";
+import { getUserRole } from "@/lib/auth/rbac-server";
 import { db } from "@/db/db";
 import { profiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { ExpiredCreditsChecker } from "@/components/billing/expired-credits-checker";
-
-/**
- * Check if a free user with an expired billing cycle needs their credits downgraded
- * This function handles users who canceled their subscription but still have pro-level credits
- * When their billing cycle ends, we reduce their credit allowance to the free tier level
- */
-async function checkExpiredSubscriptionCredits(profile: SelectProfile | null): Promise<SelectProfile | null> {
-  if (!profile) return profile;
-
-  // Only check free users with billing cycle info (canceled subscriptions)
-  if (profile.membership === "free" && profile.billingCycleEnd) {
-    const billingCycleEnd = new Date(profile.billingCycleEnd);
-    const now = new Date();
-    
-    // If billing cycle ended and they still have pro-level credits
-    if (now > billingCycleEnd && (profile.usageCredits || 0) > 5) {
-      logger.info(`User ${profile.userId} has expired billing cycle, downgrading credits to free tier`);
-      
-      // Set up the update data
-      const updateData: any = {
-        usageCredits: 5,
-        usedCredits: 0,  // Reset to 0 for a clean slate
-        status: "canceled" // Update status to reflect canceled subscription
-      };
-      
-      // If they don&apos;t have a nextCreditRenewal date, set one
-      if (!profile.nextCreditRenewal) {
-        const nextRenewal = new Date();
-        nextRenewal.setDate(nextRenewal.getDate() + 28); // 4 weeks from now
-        updateData.nextCreditRenewal = nextRenewal;
-      }
-      
-      // We keep the billingCycleEnd to remember when they canceled
-      // but we&apos;ll no longer check it after this point
-      
-      // Update profile with free tier credit limit
-      const updatedProfile = await updateProfile(profile.userId, updateData);
-      
-      // Revalidate pages that display credit information
-      revalidatePath("/dashboard");
-      revalidatePath("/notes");
-      
-      return updatedProfile;
-    }
-  }
-  
-  return profile;
-}
+// Credits system disabled — platform does not require credits
+// import { ExpiredCreditsChecker } from "@/components/billing/expired-credits-checker";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   // Fetch user profile once at the layout level
@@ -124,14 +74,14 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const user = await currentUser();
   const userEmail = user?.emailAddresses?.[0]?.emailAddress || "";
   
-  // Get user's organization and role
+  // Get user's organization and role via proper RBAC chain
   const organizationId = await getOrganizationIdForUser(userId);
-  const userRole = await getUserRoleInOrganization(userId, organizationId) || 'member';
+  const userRole = await getUserRole(userId, organizationId);
   
-  logger.debug('User role fetched from organizationMembers', {
+  logger.debug('User role resolved via RBAC', {
     userId,
     organizationId,
-    role: userRole
+    role: userRole,
   });
   
   // Log profile details for debugging
@@ -145,7 +95,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   return (
     <div className="flex h-screen bg-gray-50 relative overflow-hidden">
-      <ExpiredCreditsChecker />
+      {/* Credits system disabled — no credit checks needed */}
       {/* Show welcome message popup - component handles visibility logic */}
       <WelcomeMessagePopup profile={profile} />
         
@@ -169,7 +119,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         {/* Main content area with organization selector */}
         <div className="flex-1 overflow-auto relative">
           {/* Organization selector and breadcrumb in header - sticky at top */}
-          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center min-h-[60px]">
+          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center min-h-15">
             <OrganizationBreadcrumb />
             <div className="flex items-center gap-3">
               <LanguageSwitcher />

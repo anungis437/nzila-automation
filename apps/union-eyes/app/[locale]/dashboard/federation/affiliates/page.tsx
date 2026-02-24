@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -60,7 +61,7 @@ async function getAffiliateData(federationId: string) {
   try {
     // Fetch all member unions and locals
     const affiliates = await db.query.organizations.findMany({
-      where: (organizations, { eq }) => eq(organizations.parentOrganizationId, federationId),
+      where: (organizations, { eq }) => eq(organizations.parentId, federationId),
       orderBy: (organizations, { asc }) => [asc(organizations.name)],
     });
 
@@ -68,7 +69,7 @@ async function getAffiliateData(federationId: string) {
     const totalAffiliates = affiliates.length;
     const locals = affiliates.filter(a => a.organizationType === 'local');
     const unions = affiliates.filter(a => a.organizationType === 'union');
-    const chapters = affiliates.filter(a => a.organizationType === 'chapter');
+    const chapters = affiliates.filter(a => a.organizationType === 'local');
 
     return {
       affiliates,
@@ -271,7 +272,7 @@ export default async function FederationAffiliatesPage({
             </div>
           ) : (
             <div className="space-y-4">
-              {data.affiliates.map((affiliate: AffiliateData) => (
+              {(data.affiliates as unknown as AffiliateData[]).map((affiliate: AffiliateData) => (
                 <div 
                   key={affiliate.id} 
                   className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"

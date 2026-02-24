@@ -1,14 +1,10 @@
-import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { PaymentStatusAlert } from "@/components/payment/payment-status-alert";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/utilities/providers";
 import LayoutWrapper from "@/components/layout-wrapper";
 import { ClerkProvider } from "@clerk/nextjs";
-import { auth, currentUser } from "@clerk/nextjs/server";
 import * as Sentry from '@sentry/nextjs';
 import type { Metadata } from "next";
-import { createProfileAction } from "@/actions/profiles-actions";
-import { claimPendingProfile } from "@/actions/whop-actions";
 import { OrganizationProvider } from "@/contexts/organization-context";
 import { CookieConsentProvider } from "@/components/gdpr/cookie-consent-provider";
 import { Poppins } from 'next/font/google';
@@ -39,8 +35,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={poppins.className} suppressHydrationWarning>
         <ClerkProvider
-          signInUrl="/en-CA/login"
-          signUpUrl="/en-CA/signup"
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
           signInFallbackRedirectUrl="/en-CA/dashboard"
           signUpFallbackRedirectUrl="/en-CA/dashboard"
         >

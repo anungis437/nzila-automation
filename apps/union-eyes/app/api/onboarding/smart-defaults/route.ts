@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Smart Defaults API
  * 
@@ -10,17 +9,18 @@
  * - Suggested integrations
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withRoleAuth } from '@/lib/role-middleware';
 import { getSmartDefaults } from '@/lib/utils/smart-onboarding';
 import { logger } from '@/lib/logger';
+ 
 import {
   ErrorCode,
   standardErrorResponse,
 } from '@/lib/api/standardized-responses';
 
 export const GET = withRoleAuth('member', async (request, context) => {
-  const { userId, organizationId } = context;
+  const { userId, organizationId: _organizationId } = context;
 
   try {
     const { searchParams } = new URL(request.url);
@@ -47,7 +47,7 @@ export const GET = withRoleAuth('member', async (request, context) => {
 
   } catch (error) {
     logger.error('Smart defaults generation failed', { error });
-    return standardErrorResponse(ErrorCode.INTERNAL_ERROR);
+    return standardErrorResponse(ErrorCode.INTERNAL_ERROR, 'Internal server error');
   }
 });
 

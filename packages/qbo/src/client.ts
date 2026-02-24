@@ -86,6 +86,14 @@ export function createQboClient(tokenSet: QboTokenSet): QboClient {
     realmId: tokenSet.realmId,
 
     async query<T>(entity: string, whereClause = ''): Promise<T[]> {
+      // Validate entity name to prevent injection (only alphanumeric allowed)
+      if (!/^[A-Za-z]+$/.test(entity)) {
+        throw new Error(`Invalid QBO entity name: ${entity}`)
+      }
+      // Sanitize whereClause: only allow safe QBO query operators
+      if (whereClause && !/^(WHERE\s+[\w.]+\s*(=|>|<|>=|<=|LIKE|IN)\s*('[^']*'|\d+|(\('[^']*'(,\s*'[^']*')*\)))\s*(AND\s+[\w.]+\s*(=|>|<|>=|<=|LIKE|IN)\s*('[^']*'|\d+|(\('[^']*'(,\s*'[^']*')*\))))*)*$/i.test(whereClause.trim())) {
+        throw new Error('Invalid QBO query WHERE clause')
+      }
       const sql = `SELECT * FROM ${entity}${whereClause ? ` ${whereClause}` : ''} MAXRESULTS 1000`
       const url = `${base}/query?query=${encodeURIComponent(sql)}&minorversion=73`
 

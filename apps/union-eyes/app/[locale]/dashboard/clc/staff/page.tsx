@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -367,17 +368,38 @@ export default async function CLCStaffDashboardPage() {
           </p>
         </div>
         <CLCApprovalWorkflow
-          organizationId={orgId}
-          onApprove={async (id) => {
-            'use server';
-            // TODO: Implement approval logic
-            logger.info('Approved:', id);
-          }}
-          onReject={async (id) => {
-            'use server';
-            // TODO: Implement rejection logic
-            logger.info('Rejected:', id);
-          }}
+          {...{
+            organizationId: orgId,
+            onApprove: async (id: string) => {
+              'use server';
+              const { revalidatePath } = await import('next/cache');
+              const { logger: log } = await import('@/lib/logger');
+              try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/v2/clc/remittances/${id}/approve`, { method: 'POST' });
+                if (!res.ok) throw new Error(`Approve failed: ${res.status}`);
+                log.info('Approved remittance', { id });
+              } catch (error) {
+                log.error('Failed to approve remittance', { id, error });
+                throw error;
+              }
+              revalidatePath('/dashboard/clc/staff');
+            },
+            onReject: async (id: string) => {
+              'use server';
+              const { revalidatePath } = await import('next/cache');
+              const { logger: log } = await import('@/lib/logger');
+              try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/v2/clc/remittances/${id}/reject`, { method: 'POST' });
+                if (!res.ok) throw new Error(`Reject failed: ${res.status}`);
+                log.info('Rejected remittance', { id });
+              } catch (error) {
+                log.error('Failed to reject remittance', { id, error });
+                throw error;
+              }
+              revalidatePath('/dashboard/clc/staff');
+            },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any}
         />
       </div>
 
@@ -400,7 +422,8 @@ export default async function CLCStaffDashboardPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {metrics.recentActivity.map((activity: { description: string; timestamp: string }, index: number) => (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {(metrics.recentActivity as any[]).map((activity: { description: string; timestamp: string; status: string }, index: number) => (
                 <div key={index} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent transition-colors">
                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <Database className="h-4 w-4 text-primary" />

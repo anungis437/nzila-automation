@@ -8,19 +8,18 @@
 
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
+ 
 import {
   Facebook,
   Twitter,
@@ -31,13 +30,13 @@ import {
   Send,
   Image as ImageIcon,
   Video,
-  Link as LinkIcon,
+  Link as _LinkIcon,
   Hash,
   AtSign,
   Smile,
   MapPin,
   X,
-  Upload,
+  Upload as _Upload,
   Clock,
   Save,
   Eye,
@@ -76,7 +75,7 @@ interface HashtagSuggestion {
   relevance: number;
 }
 
-interface PostPreview {
+interface _PostPreview {
   platform: SocialPlatform;
   content: string;
   media: MediaFile[];
@@ -85,54 +84,8 @@ interface PostPreview {
 }
 
 // ================================================================
-// SAMPLE DATA
+// QUICK SCHEDULE OPTIONS
 // ================================================================
-
-const availableAccounts: SocialAccount[] = [
-  {
-    id: '1',
-    platform: 'facebook',
-    username: 'local123union',
-    displayName: 'Local 123 UFCW',
-    characterLimit: 63206,
-    supportsTypes: ['text', 'image', 'video', 'link', 'carousel']
-  },
-  {
-    id: '2',
-    platform: 'twitter',
-    username: '@local123',
-    displayName: 'Local 123',
-    characterLimit: 280,
-    supportsTypes: ['text', 'image', 'video', 'link']
-  },
-  {
-    id: '3',
-    platform: 'instagram',
-    username: 'local123union',
-    displayName: 'Local 123 UFCW',
-    characterLimit: 2200,
-    supportsTypes: ['image', 'video', 'carousel', 'story', 'reel']
-  },
-  {
-    id: '4',
-    platform: 'linkedin',
-    username: 'local-123-ufcw',
-    displayName: 'Local 123 UFCW',
-    characterLimit: 3000,
-    supportsTypes: ['text', 'image', 'video', 'link']
-  }
-];
-
-const hashtagSuggestions: HashtagSuggestion[] = [
-  { tag: 'UnionStrong', popularity: 95, relevance: 100 },
-  { tag: '1u', popularity: 88, relevance: 95 },
-  { tag: 'UnionPower', popularity: 82, relevance: 90 },
-  { tag: 'OrganizedLabor', popularity: 75, relevance: 85 },
-  { tag: 'WorkersRights', popularity: 78, relevance: 80 },
-  { tag: 'FairWages', popularity: 70, relevance: 75 },
-  { tag: 'UnionJobs', popularity: 68, relevance: 70 },
-  { tag: 'Solidarity', popularity: 85, relevance: 95 }
-];
 
 const quickScheduleOptions = [
   { label: 'Now', date: new Date() },
@@ -161,7 +114,7 @@ const getPlatformColor = (platform: SocialPlatform): string => {
   const colors = {
     facebook: 'bg-blue-600',
     twitter: 'bg-sky-500',
-    instagram: 'bg-gradient-to-tr from-purple-600 via-pink-600 to-orange-500',
+    instagram: 'bg-linear-to-tr from-purple-600 via-pink-600 to-orange-500',
     linkedin: 'bg-blue-700',
     youtube: 'bg-red-600',
     tiktok: 'bg-black'
@@ -186,7 +139,9 @@ const extractMentions = (text: string): string[] => {
 // ================================================================
 
 export default function SocialMediaPostComposer() {
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>(['1', '2', '3']);
+  const [availableAccounts, setAvailableAccounts] = useState<SocialAccount[]>([]);
+  const [hashtagSuggestions, setHashtagSuggestions] = useState<HashtagSuggestion[]>([]);
+  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [postType, setPostType] = useState<PostType>('text');
   const [content, setContent] = useState('');
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
@@ -194,15 +149,50 @@ export default function SocialMediaPostComposer() {
   const [location, setLocation] = useState('');
   const [scheduledDate, setScheduledDate] = useState<Date>();
   const [showHashtagSuggestions, setShowHashtagSuggestions] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [_showEmojiPicker, _setShowEmojiPicker] = useState(false);
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
   const [useAIOptimization, setUseAIOptimization] = useState(true);
   const [previewPlatform, setPreviewPlatform] = useState<SocialPlatform>('facebook');
+  const [_loading, setLoading] = useState(true);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const fetchAccounts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/v2/social-media/accounts');
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const accounts = items.map((a: any) => ({
+          id: String(a.id),
+          platform: a.platform,
+          username: a.username,
+          displayName: a.displayName ?? a.display_name ?? a.username,
+          characterLimit: a.characterLimit ?? a.character_limit,
+          supportsTypes: a.supportsTypes ?? a.supports_types ?? ['text', 'image'],
+        }));
+        setAvailableAccounts(accounts);
+        if (accounts.length > 0) setSelectedAccounts(accounts.map((a: SocialAccount) => a.id));
+      }
+      // Fetch hashtag suggestions
+      const hashRes = await fetch('/api/v2/social-media/hashtag-suggestions');
+      if (hashRes.ok) {
+        const data = await hashRes.json();
+        setHashtagSuggestions(Array.isArray(data) ? data : data?.results ?? data?.data ?? []);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAccounts(); }, [fetchAccounts]);
   
   const hashtags = extractHashtags(content);
-  const mentions = extractMentions(content);
+  const _mentions = extractMentions(content);
   const selectedAccountsData = availableAccounts.filter(a => selectedAccounts.includes(a.id));
   
   // Character limits for selected platforms
@@ -342,7 +332,7 @@ export default function SocialMediaPostComposer() {
               </div>
 
               {/* AI Content Generation */}
-              <div className="flex items-center justify-between p-4 border rounded-lg bg-gradient-to-r from-purple-50 to-blue-50">
+              <div className="flex items-center justify-between p-4 border rounded-lg bg-linear-to-r from-purple-50 to-blue-50">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-purple-600" />
                   <div>
@@ -459,6 +449,7 @@ export default function SocialMediaPostComposer() {
                     {mediaFiles.map(media => (
                       <div key={media.id} className="relative group">
                         {media.type === 'image' ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={media.preview}
                             alt="Upload preview"
@@ -595,7 +586,7 @@ export default function SocialMediaPostComposer() {
 
               <div className="border rounded-lg p-4 bg-white">
                 <div className="flex items-start gap-3 mb-3">
-                  <div className={`w-10 h-10 rounded-full ${getPlatformColor(previewPlatform)} flex-shrink-0`} />
+                  <div className={`w-10 h-10 rounded-full ${getPlatformColor(previewPlatform)} shrink-0`} />
                   <div className="flex-1">
                     <div className="font-medium text-sm">
                       {selectedAccountsData.find(a => a.platform === previewPlatform)?.displayName}
@@ -609,6 +600,7 @@ export default function SocialMediaPostComposer() {
                 {mediaFiles.length > 0 && (
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     {mediaFiles.slice(0, 4).map(media => (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         key={media.id}
                         src={media.preview}

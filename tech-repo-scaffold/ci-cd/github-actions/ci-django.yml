@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trivy scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.34.1 # pin to release tag, not mutable @master
         with:
           scan-type: fs
           scan-ref: backend/

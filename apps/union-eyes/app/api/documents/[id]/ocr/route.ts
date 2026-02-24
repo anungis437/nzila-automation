@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Document OCR Processing API Route
  * POST /api/documents/[id]/ocr - Process document with OCR
@@ -7,12 +6,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { processDocumentOCR } from "@/lib/services/document-service";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * POST /api/documents/[id]/ocr
@@ -22,8 +21,8 @@ export const POST = async (
   request: NextRequest,
   { params }: { params: { id: string } }
 ) => {
-  return withRoleAuth(20, async (request, context) => {
-    const { userId, organizationId } = context;
+  return withRoleAuth('steward', async (request, context) => {
+    const { userId, organizationId: _organizationId } = context as { userId: string; organizationId: string };
 
   try {
         const result = await processDocumentOCR(params.id);
@@ -43,7 +42,7 @@ export const POST = async (
           timestamp: new Date().toISOString(), userId,
           endpoint: `/api/documents/${params.id}/ocr`,
           method: 'POST',
-          eventType: 'server_error',
+          eventType: 'validation_failed',
           severity: 'high',
           details: { documentId: params.id, error: error instanceof Error ? error.message : 'Unknown error' },
         });

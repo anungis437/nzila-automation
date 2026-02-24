@@ -5,6 +5,9 @@
  * Part of Phase 0.2 - Admin Console UI
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from "react";
 import Link from "next/link";
 import { Users, Plus, Search, Shield, Ban, CheckCircle, UserCog } from "lucide-react";
@@ -27,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAdminUsers, getAdminTenants } from "@/actions/admin-actions";
+import { getAdminTenants } from "@/actions/admin-actions";
 import { UserRoleSelect } from "@/components/admin/user-role-select";
 
 interface PageProps {
@@ -37,32 +40,29 @@ interface PageProps {
 
 async function UsersTable({ 
   searchQuery, 
-  tenantId, 
+  organizationId, 
   role 
 }: { 
   searchQuery?: string; 
-  tenantId?: string; 
+  organizationId?: string; 
   role?: "member" | "steward" | "officer" | "admin";
 }) {
-  // This will need RLS context - for now using a mock approach
-  // In production, this would be called from an API route with proper RLS
-  const tx = null as unknown; // TODO: Get transaction from RLS-protected API route
-  
-  // Mock data for demonstration - replace with actual API call
-  const users = await Promise.resolve([
-    {
-      id: "user-1",
-      name: "John Doe",
-      email: "john@example.com",
-      role: "admin" as const,
-      tenantId: "tenant-1",
-      tenantName: "Local 123",
-      status: "active" as const,
-      lastLogin: "2026-02-12T10:30:00Z",
-      joinedAt: "2025-01-15T08:00:00Z",
-    },
-    // More mock data...
-  ]);
+  // Fetch users from API
+  let users: { id: string; name: string; email: string; role: "member" | "steward" | "officer" | "admin"; organizationId: string; tenantName: string; status: string; lastLogin: string; joinedAt: string; }[] = [];
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (organizationId) params.set('organizationId', organizationId);
+    if (role) params.set('role', role);
+    const res = await fetch(`${baseUrl}/api/v2/admin/users?${params.toString()}`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      users = Array.isArray(json) ? json : json?.users ?? json?.data ?? [];
+    }
+  } catch {
+    // API not available — empty state
+  }
 
   if (users.length === 0) {
     return (
@@ -71,7 +71,7 @@ async function UsersTable({
           <Users className="h-12 w-12 text-gray-400 mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No users found</h3>
           <p className="text-sm text-gray-600 mb-4">
-            {searchQuery || tenantId || role 
+            {searchQuery || organizationId || role 
               ? "Try adjusting your filters" 
               : "No users match the criteria"}
           </p>
@@ -109,7 +109,7 @@ async function UsersTable({
               <TableCell>
                 <UserRoleSelect
                   userId={user.id}
-                  tenantId={user.tenantId}
+                  organizationId={user.organizationId}
                   currentRole={user.role}
                 />
               </TableCell>
@@ -275,7 +275,7 @@ export default async function UsersPage({ params, searchParams }: PageProps) {
       <Suspense fallback={<TableSkeleton />}>
         <UsersTable 
           searchQuery={searchQuery} 
-          tenantId={selectedTenant} 
+          organizationId={selectedTenant} 
           role={selectedRole} 
         />
       </Suspense>
@@ -284,15 +284,16 @@ export default async function UsersPage({ params, searchParams }: PageProps) {
 }
 
 async function UserStats() {
-  // Mock stats - replace with actual data
-  const stats = {
-    total: 1234,
-    active: 1150,
-    admins: 24,
-    officers: 89,
-    stewards: 145,
-    members: 976,
-  };
+  // Fetch user stats from API
+  let stats = { total: 0, active: 0, admins: 0, officers: 0, stewards: 0, members: 0 };
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/admin/users/stats`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      stats = { ...stats, ...data };
+    }
+  } catch { /* API not available */ }
 
   return (
     <div className="grid gap-4 md:grid-cols-5">

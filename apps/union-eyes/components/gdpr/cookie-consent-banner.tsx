@@ -22,7 +22,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Cookie, Shield, Settings } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 
 interface CookiePreferences {
   essential: boolean;
@@ -60,9 +59,10 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
         const saved = JSON.parse(consentData);
         setPreferences(saved.preferences);
         applyConsent(saved.preferences);
-      } catch (e) {
+      } catch (_e) {
 }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const applyConsent = (prefs: CookiePreferences) => {
@@ -84,7 +84,9 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
 
   const enableAnalytics = () => {
     // Initialize analytics (e.g., Google Analytics)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== "undefined" && (window as any).gtag) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).gtag("consent", "update", {
         analytics_storage: "granted",
       });
@@ -92,7 +94,9 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
   };
 
   const disableAnalytics = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== "undefined" && (window as any).gtag) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).gtag("consent", "update", {
         analytics_storage: "denied",
       });
@@ -100,7 +104,9 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
   };
 
   const enableMarketing = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== "undefined" && (window as any).gtag) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).gtag("consent", "update", {
         ad_storage: "granted",
         ad_user_data: "granted",
@@ -110,7 +116,9 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
   };
 
   const disableMarketing = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== "undefined" && (window as any).gtag) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).gtag("consent", "update", {
         ad_storage: "denied",
         ad_user_data: "denied",
@@ -120,7 +128,7 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
   };
 
   const saveConsent = async (prefs: CookiePreferences) => {
-    const consentId = localStorage.getItem("cookie_consent_id") || uuidv4();
+    const consentId = localStorage.getItem("cookie_consent_id") || crypto.randomUUID();
     const consentData = {
       consentId,
       preferences: prefs,
@@ -148,7 +156,7 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
           userAgent: navigator.userAgent,
         }),
       });
-    } catch (error) {
+    } catch (_error) {
 }
 
     applyConsent(prefs);
@@ -196,7 +204,7 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
           <div className="container max-w-7xl mx-auto p-4 md:p-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <div className="flex items-start gap-3 flex-1">
-                <Cookie className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                <Cookie className="w-6 h-6 text-primary mt-1 shrink-0" />
                 <div>
                   <h3 className="font-semibold text-lg mb-1">
                     We value your privacy
@@ -410,8 +418,9 @@ export function useCookieConsent() {
     if (consentData) {
       try {
         const { preferences: saved } = JSON.parse(consentData);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPreferences(saved);
-      } catch (e) {
+      } catch (_e) {
 }
     }
   }, []);
@@ -426,7 +435,7 @@ export function useCookieConsent() {
         const data = JSON.parse(consentData);
         data.preferences = updated;
         localStorage.setItem("cookie_consent", JSON.stringify(data));
-      } catch (e) {
+      } catch (_e) {
 }
     }
   };

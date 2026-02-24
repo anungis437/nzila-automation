@@ -1,9 +1,11 @@
-﻿// @ts-nocheck
 /**
  * Admin Case Study Editor Page
  * 
  * Create or edit case studies with markdown editor and preview.
  */
+
+
+export const dynamic = 'force-dynamic';
 
 import { db } from '@/db';
 import { caseStudies } from '@/db/schema/domains/marketing';
@@ -24,7 +26,8 @@ export default async function CaseStudyEditorPage({ params }: CaseStudyEditorPag
   const { slug } = params;
   const isNew = slug === 'new';
 
-  let caseStudy = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let caseStudy: any = null;
 
   if (!isNew) {
     [caseStudy] = await db

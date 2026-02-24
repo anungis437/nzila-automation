@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * System Status API Endpoint
  * 
@@ -6,7 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { getSystemStatus } from '@/lib/monitoring';
+import { getSystemStatus } from '@/lib/monitoring/status-page';
 import {
   ErrorCode,
   standardErrorResponse,
@@ -26,8 +25,8 @@ export async function GET() {
     const statusCode = status.status === 'down' ? 503 : 200;
     
     return NextResponse.json(status, { status: statusCode });
-  } catch (error) {
-    return standardErrorResponse(ErrorCode.SERVICE_UNAVAILABLE);
+  } catch (_error) {
+    return standardErrorResponse(ErrorCode.SERVICE_UNAVAILABLE, 'Service unavailable');
   }
 }
 

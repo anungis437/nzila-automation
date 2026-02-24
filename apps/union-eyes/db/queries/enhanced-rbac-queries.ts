@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Enhanced RBAC Database Queries
  * 
@@ -11,7 +10,7 @@
  */
 
 import { db } from '@/db/db';
-import { eq, and, or, gte, lte, isNull, inArray, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
 // ============================================================================
@@ -130,7 +129,9 @@ export interface AuditLogEntry {
   userAgent?: string;
   sessionId?: string;
   requestId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   oldValues?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   newValues?: any;
   changedFields?: string[];
   recordHash: string;
@@ -156,6 +157,7 @@ export async function getAllRoleDefinitions(): Promise<RoleDefinition[]> {
     WHERE is_active = TRUE 
     ORDER BY role_level DESC
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -167,6 +169,7 @@ export async function getRoleDefinitionByCode(roleCode: string): Promise<RoleDef
     SELECT * FROM role_definitions 
     WHERE role_code = ${roleCode} AND is_active = TRUE
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result[0] as any || null;
 }
 
@@ -179,6 +182,7 @@ export async function getRoleDefinitionsByLevel(minLevel: number): Promise<RoleD
     WHERE role_level >= ${minLevel} AND is_active = TRUE
     ORDER BY role_level DESC
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -214,6 +218,7 @@ export async function createRoleDefinition(
     )
     RETURNING *
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result[0] as any;
 }
 
@@ -228,13 +233,13 @@ export async function getMemberRoles(
   memberId: string,
   organizationId: string
 ): Promise<MemberRoleWithDetails[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM v_active_member_roles
     WHERE member_id = ${memberId} 
       AND organization_id = ${organizationId}
     ORDER BY role_level DESC
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -245,7 +250,6 @@ export async function getMemberHighestRoleLevel(
   memberId: string,
   organizationId: string
 ): Promise<number> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT COALESCE(MAX(rd.role_level), 0) as max_level
     FROM member_roles mr
@@ -265,7 +269,6 @@ export async function getMemberEffectivePermissions(
   memberId: string,
   organizationId: string
 ): Promise<string[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT DISTINCT jsonb_array_elements_text(rd.permissions) as permission
     FROM member_roles mr
@@ -275,6 +278,7 @@ export async function getMemberEffectivePermissions(
       AND mr.status = 'active'
       AND (mr.end_date IS NULL OR mr.end_date >= CURRENT_DATE)
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result.map((row: any) => row.permission);
 }
 
@@ -288,7 +292,6 @@ export async function memberHasRole(
   scopeType?: string,
   scopeValue?: string
 ): Promise<boolean> {
-  const tenantId = organizationId;
   let query = sql`
     SELECT EXISTS(
       SELECT 1 FROM member_roles
@@ -322,7 +325,6 @@ export async function memberHasRoleLevel(
   scopeType?: string,
   scopeValue?: string
 ): Promise<boolean> {
-  const tenantId = organizationId;
   let query = sql`
     SELECT EXISTS(
       SELECT 1 FROM member_roles mr
@@ -372,7 +374,6 @@ export async function assignMemberRole(
     requiresApproval?: boolean;
   } = {}
 ): Promise<MemberRole> {
-  const tenantId = organizationId;
   const startDate = options.startDate || new Date();
   const assignmentType = options.assignmentType || 'appointed';
   const scopeType = options.scopeType || 'global';
@@ -395,6 +396,7 @@ export async function assignMemberRole(
     )
     RETURNING *
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result[0] as any;
 }
 
@@ -413,6 +415,7 @@ export async function updateMemberRole(
 ): Promise<MemberRole> {
   // Build UPDATE query dynamically using sql template
   let query = sql`UPDATE member_roles SET `;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setClauses: any[] = [];
   
   if (updates.endDate !== undefined) {
@@ -444,6 +447,7 @@ export async function updateMemberRole(
   
   const result = await db.execute(query);
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result[0] as any;
 }
 
@@ -475,7 +479,6 @@ export async function getExpiringRoles(
   organizationId: string,
   daysAhead: number = 90
 ): Promise<MemberRoleWithDetails[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM v_active_member_roles
     WHERE organization_id = ${organizationId}
@@ -484,6 +487,7 @@ export async function getExpiringRoles(
       AND end_date >= CURRENT_DATE
     ORDER BY end_date
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -493,14 +497,15 @@ export async function getExpiringRoles(
 export async function getUpcomingElections(
   organizationId: string,
   daysAhead: number = 180
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM v_upcoming_elections
     WHERE organization_id = ${organizationId}
       AND next_election_date <= CURRENT_DATE + ${daysAhead}
     ORDER BY next_election_date
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -530,7 +535,6 @@ export async function getMemberPermissionExceptions(
   memberId: string,
   organizationId: string
 ): Promise<PermissionException[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM permission_exceptions
     WHERE member_id = ${memberId}
@@ -541,6 +545,7 @@ export async function getMemberPermissionExceptions(
       AND (usage_limit IS NULL OR usage_count < usage_limit)
     ORDER BY effective_date DESC
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -554,7 +559,6 @@ export async function memberHasPermissionException(
   resourceType?: string,
   resourceId?: string
 ): Promise<boolean> {
-  const tenantId = organizationId;
   let query = sql`
     SELECT EXISTS(
       SELECT 1 FROM permission_exceptions
@@ -598,7 +602,6 @@ export async function grantPermissionException(
     usageLimit?: number;
   } = {}
 ): Promise<PermissionException> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     INSERT INTO permission_exceptions (
       member_id, organization_id, permission, resource_type, resource_id,
@@ -610,6 +613,7 @@ export async function grantPermissionException(
     )
     RETURNING *
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result[0] as any;
 }
 
@@ -672,7 +676,6 @@ export async function logPermissionCheck(entry: {
   executionTimeMs?: number;
   isSensitive?: boolean;
 }): Promise<void> {
-  const tenantId = organizationId;
   // Calculate hash for this record
   const recordData = JSON.stringify({
     timestamp: new Date(),
@@ -736,7 +739,6 @@ export async function getMemberAuditLogs(
     deniedOnly?: boolean;
   } = {}
 ): Promise<AuditLogEntry[]> {
-  const tenantId = organizationId;
   const limit = options.limit || 100;
   const offset = options.offset || 0;
   
@@ -761,6 +763,7 @@ export async function getMemberAuditLogs(
   query = sql`${query} ORDER BY timestamp DESC LIMIT ${limit} OFFSET ${offset}`;
   
   const result = await db.execute(query);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -773,7 +776,6 @@ export async function getResourceAuditLogs(
   organizationId: string,
   limit: number = 50
 ): Promise<AuditLogEntry[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM rbac_audit_log
     WHERE resource_type = ${resourceType}
@@ -782,6 +784,7 @@ export async function getResourceAuditLogs(
     ORDER BY timestamp DESC
     LIMIT ${limit}
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -792,7 +795,6 @@ export async function getDeniedAccessAttempts(
   organizationId: string,
   hours: number = 24
 ): Promise<AuditLogEntry[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM rbac_audit_log
     WHERE organization_id = ${organizationId}
@@ -800,6 +802,7 @@ export async function getDeniedAccessAttempts(
       AND timestamp >= NOW() - INTERVAL '${hours} hours'
     ORDER BY timestamp DESC
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -809,7 +812,6 @@ export async function getDeniedAccessAttempts(
 export async function getSensitiveActionsForReview(
   organizationId: string
 ): Promise<AuditLogEntry[]> {
-  const tenantId = organizationId;
   const result = await db.execute(sql`
     SELECT * FROM rbac_audit_log
     WHERE organization_id = ${organizationId}
@@ -817,6 +819,7 @@ export async function getSensitiveActionsForReview(
       AND reviewed_at IS NULL
     ORDER BY timestamp DESC
   `);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as any[];
 }
 
@@ -828,7 +831,6 @@ export async function verifyAuditLogIntegrity(
   startDate?: Date,
   endDate?: Date
 ): Promise<{ valid: boolean; totalRecords: number; invalidRecords: number }> {
-  const tenantId = organizationId;
   let query = sql`
     WITH log_chain AS (
       SELECT 
@@ -854,6 +856,7 @@ export async function verifyAuditLogIntegrity(
   `;
   
   const result = await db.execute(query);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const row = result[0] as any;
   
   return {
@@ -863,4 +866,4 @@ export async function verifyAuditLogIntegrity(
   };
 }
 
-
+

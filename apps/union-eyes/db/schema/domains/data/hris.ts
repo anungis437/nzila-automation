@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * HRIS Integration Schema
  * 
@@ -74,10 +73,7 @@ export const externalEmployees = pgTable('external_employees', {
   rawData: text('raw_data'), // JSONB of full external record
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, (table) => ({
-  // Unique constraint: one employee per organization per provider
-  uniqueExternalEmployee: undefined,
-}));
+});
 
 // Add unique index manually
 // CREATE UNIQUE INDEX external_employees_org_provider_external_id_idx 

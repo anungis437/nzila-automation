@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Role-Based Access Control (RBAC) System
  * Union Claims Management System with CLC Integration
@@ -858,6 +857,178 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_CBA,
     Permission.VIEW_ANALYTICS,
   ],
+
+  // ========================================================
+  // LOCAL UNION EXECUTIVES
+  // ========================================================
+
+  [UserRole.PRESIDENT]: [
+    // Union President - executive authority
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.INVITE_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.MANAGE_VOTING,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.EDIT_CBA,
+    Permission.CREATE_CBA,
+    Permission.SIGN_CBA,
+    Permission.VIEW_FINANCIAL,
+    Permission.APPROVE_FINANCIAL,
+    Permission.APPOINT_COMMITTEES,
+    Permission.MANAGE_ELECTIONS,
+    Permission.DELEGATE_AUTHORITY,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+    Permission.VIEW_ADMIN_PANEL,
+  ],
+
+  [UserRole.VICE_PRESIDENT]: [
+    // Vice President - supports president
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.INVITE_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.MANAGE_VOTING,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.EDIT_CBA,
+    Permission.VIEW_FINANCIAL,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+  ],
+
+  [UserRole.SECRETARY_TREASURER]: [
+    // Secretary-Treasurer - financial authority
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.VIEW_FINANCIAL,
+    Permission.EDIT_FINANCIAL,
+    Permission.APPROVE_FINANCIAL,
+    Permission.MANAGE_FINANCES,
+    Permission.AUDIT_FINANCES,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+  ],
+
+  // ========================================================
+  // SENIOR REPRESENTATIVES
+  // ========================================================
+
+  [UserRole.CHIEF_STEWARD]: [
+    // Chief Steward - claim oversight
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.ASSIGN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+    Permission.VIEW_ANALYTICS,
+    Permission.VIEW_ADVANCED_ANALYTICS,
+  ],
+
+  [UserRole.OFFICER]: [
+    // Union Officer - general duties
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_ALL_CLAIMS,
+    Permission.APPROVE_CLAIM,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_MEMBER,
+    Permission.INVITE_MEMBER,
+    Permission.VIEW_VOTING,
+    Permission.CREATE_VOTE,
+    Permission.CAST_VOTE,
+    Permission.VIEW_VOTE_RESULTS,
+    Permission.VIEW_CBA,
+    Permission.VIEW_ANALYTICS,
+  ],
+
+  // ========================================================
+  // FRONT-LINE REPRESENTATIVES
+  // ========================================================
+
+  [UserRole.STEWARD]: [
+    // Steward - front-line representation
+    Permission.VIEW_ALL_CLAIMS,
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.ASSIGN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+    Permission.VIEW_ANALYTICS,
+  ],
+
+  [UserRole.BARGAINING_COMMITTEE]: [
+    // Bargaining Committee Member - CBA focused
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.VIEW_ALL_MEMBERS,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+    Permission.EDIT_CBA,
+    Permission.CONTRACT_ADMINISTRATION,
+    Permission.VIEW_ANALYTICS,
+  ],
+
+  // ========================================================
+  // SPECIALIZED REPRESENTATIVES
+  // ========================================================
+
+  [UserRole.HEALTH_SAFETY_REP]: [
+    // Health & Safety Representative
+    Permission.VIEW_OWN_CLAIMS,
+    Permission.CREATE_CLAIM,
+    Permission.EDIT_OWN_CLAIMS,
+    Permission.VIEW_HEALTH_SAFETY_CLAIMS,
+    Permission.CREATE_HEALTH_SAFETY_CLAIM,
+    Permission.MANAGE_HEALTH_SAFETY,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.VIEW_VOTING,
+    Permission.CAST_VOTE,
+    Permission.VIEW_CBA,
+  ],
   
   [UserRole.MEMBER]: [
     // Members have limited access to their own data
@@ -1064,21 +1235,44 @@ export function getAccessibleNavItems(role: UserRole, adminMode: boolean = false
  */
 export function getRoleLevel(role: UserRole): number {
   const levels: Record<UserRole, number> = {
+    // Nzila platform operations (highest tier)
+    [UserRole.APP_OWNER]: 250,
+    [UserRole.COO]: 240,
+    [UserRole.CTO]: 235,
+    [UserRole.PLATFORM_LEAD]: 220,
+    [UserRole.CUSTOMER_SUCCESS_DIRECTOR]: 215,
+    [UserRole.SECURITY_MANAGER]: 212,
+    [UserRole.COMPLIANCE_MANAGER]: 211,
+    [UserRole.SUPPORT_MANAGER]: 210,
+    [UserRole.DATA_ANALYTICS_MANAGER]: 208,
+    [UserRole.BILLING_MANAGER]: 206,
+    [UserRole.INTEGRATION_MANAGER]: 204,
+    [UserRole.CONTENT_MANAGER]: 202,
+    [UserRole.TRAINING_COORDINATOR]: 201,
+    [UserRole.SUPPORT_AGENT]: 195,
+    [UserRole.DATA_ANALYST]: 193,
+    [UserRole.BILLING_SPECIALIST]: 191,
+    [UserRole.INTEGRATION_SPECIALIST]: 190,
+    // System administration
     [UserRole.SYSTEM_ADMIN]: 200,
+    // CLC / Federation / National
     [UserRole.CLC_EXECUTIVE]: 190,
     [UserRole.CLC_STAFF]: 180,
     [UserRole.FED_EXECUTIVE]: 170,
     [UserRole.FED_STAFF]: 160,
     [UserRole.NATIONAL_OFFICER]: 150,
+    // Local union leadership
     [UserRole.ADMIN]: 140,
     [UserRole.PRESIDENT]: 130,
     [UserRole.VICE_PRESIDENT]: 120,
     [UserRole.SECRETARY_TREASURER]: 110,
+    // Representatives
     [UserRole.CHIEF_STEWARD]: 90,
     [UserRole.OFFICER]: 80,
     [UserRole.STEWARD]: 50,
     [UserRole.BARGAINING_COMMITTEE]: 40,
     [UserRole.HEALTH_SAFETY_REP]: 30,
+    // Base membership
     [UserRole.MEMBER]: 20,
     // Legacy roles
     [UserRole.CONGRESS_STAFF]: 180,      // Maps to CLC_STAFF

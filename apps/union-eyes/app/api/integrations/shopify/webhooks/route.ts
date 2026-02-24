@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import {
   verifyShopifySignature,
@@ -94,6 +93,9 @@ export async function POST(request: NextRequest) {
     );
     }
 
+    // 4. Parse webhook payload
+    const payload = JSON.parse(rawBody) as Record<string, unknown>;
+
     // 5. Route by topic with idempotency
     const result = await processWebhookIdempotent(
       'shopify',
@@ -120,9 +122,7 @@ export async function POST(request: NextRequest) {
 
     // 6. Return success
     return standardSuccessResponse(
-      {  status: 'ok', result  },
-      undefined,
-      200
+      { status: 'ok', result }
     );
 
   } catch (error) {
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
 async function handleOrderPaid(payload: Record<string, unknown>) {
   const orderId = String(payload.id);
   const orderNumber = payload.order_number;
-  const discountCodes = payload.discount_codes || [];
+  const discountCodes = (payload.discount_codes || []) as Array<{ code: string; amount?: string }>;
 
   logger.info('[Webhook] orders/paid', { orderId, orderNumber, discountCodes });
 
@@ -170,7 +170,7 @@ async function handleOrderPaid(payload: Record<string, unknown>) {
       order_number: orderNumber,
       total_price: payload.total_price,
       currency: payload.currency,
-      line_items: payload.line_items?.map((item: Record<string, unknown>) => ({
+      line_items: (payload.line_items as Array<Record<string, unknown>> | undefined)?.map((item) => ({
         product_id: item.product_id,
         variant_id: item.variant_id,
         title: item.title,
@@ -178,10 +178,10 @@ async function handleOrderPaid(payload: Record<string, unknown>) {
         price: item.price,
       })),
       customer: {
-        id: payload.customer?.id,
-        email: payload.customer?.email,
-        first_name: payload.customer?.first_name,
-        last_name: payload.customer?.last_name,
+        id: (payload.customer as Record<string, unknown> | undefined)?.id,
+        email: (payload.customer as Record<string, unknown> | undefined)?.email,
+        first_name: (payload.customer as Record<string, unknown> | undefined)?.first_name,
+        last_name: (payload.customer as Record<string, unknown> | undefined)?.last_name,
       },
       paid_at: payload.created_at,
     }
@@ -203,7 +203,7 @@ async function handleOrderPaid(payload: Record<string, unknown>) {
 async function handleOrderFulfilled(payload: Record<string, unknown>) {
   const orderId = String(payload.id);
   const orderNumber = payload.order_number;
-  const fulfillments = payload.fulfillments || [];
+  const fulfillments = (payload.fulfillments || []) as Array<Record<string, unknown>>;
 
   logger.info('[Webhook] orders/fulfilled', { orderId, orderNumber, fulfillments: fulfillments.length });
 
@@ -249,7 +249,7 @@ async function handleOrderFulfilled(payload: Record<string, unknown>) {
 async function handleRefundCreated(payload: Record<string, unknown>) {
   const refundId = String(payload.id);
   const orderId = String(payload.order_id);
-  const refundLineItems = payload.refund_line_items || [];
+  const refundLineItems = (payload.refund_line_items || []) as Array<Record<string, unknown>>;
 
   logger.info('[Webhook] refunds/create', { refundId, orderId, lineItems: refundLineItems.length });
 
@@ -263,7 +263,7 @@ async function handleRefundCreated(payload: Record<string, unknown>) {
 
   // Calculate total refund amount (in cents/minor units)
   const totalRefund = refundLineItems.reduce((sum: number, item: Record<string, unknown>) => {
-    return sum + parseFloat(item.subtotal || 0);
+    return sum + parseFloat(String(item.subtotal || 0));
   }, 0);
 
   // Process refund (returns credits to wallet)
@@ -299,19 +299,15 @@ async function handleRefundCreated(payload: Record<string, unknown>) {
  * Returns 200 OK to verify webhook endpoint is reachable.
  * Shopify may check this during webhook setup.
  */
-export async function GET(request: NextRequest) {
-  return standardSuccessResponse(
-      {  
-      status: 'ok', 
-      endpoint: 'shopify-webhooks',
-      supported_topics: [
-        'orders/paid',
-        'orders/fulfilled',
-        'refunds/create'
-      ]
-     },
-      undefined,
-      200
-    );
+export async function GET(_request: NextRequest) {
+  return standardSuccessResponse({
+    status: 'ok',
+    endpoint: 'shopify-webhooks',
+    supported_topics: [
+      'orders/paid',
+      'orders/fulfilled',
+      'refunds/create'
+    ]
+  });
 }
 

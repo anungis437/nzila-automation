@@ -97,6 +97,7 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           severity: CRITICAL
+          scanners: vuln            # Secret scanning is handled by Gitleaks + TruffleHog
           skip-dirs: 'node_modules,.pnpm-store'
 
       # ── Step 2: SARIF upload for GitHub Security tab (non-blocking) ──────
@@ -112,6 +113,7 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
           severity: CRITICAL,HIGH
+          scanners: vuln            # Secret scanning is handled by Gitleaks + TruffleHog
           skip-dirs: 'node_modules,.pnpm-store'
 
       - name: Upload filesystem SARIF

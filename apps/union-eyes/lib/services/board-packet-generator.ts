@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Board Packet Generator Service
  * 
@@ -8,15 +7,11 @@
 import { db } from '@/db';
 import {
   boardPackets,
-  boardPacketSections,
   boardPacketDistributions,
-  type NewBoardPacket,
-  type NewBoardPacketSection,
 } from '@/db/schema/board-packet-schema';
-import { strikeActions } from '@/db/schema/domains/strike-fund';
-import { eq, and, gte, lte, desc, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
-import { Document, Page, StyleSheet, Text, pdf } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
 import { getEmailService } from '@/lib/services/messaging/email-service';
 import { logger } from '@/lib/logger';
@@ -79,7 +74,9 @@ export class BoardPacketGenerator {
           title: data.title,
           packetType,
           organizationId: data.organizationId,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           periodStart: data.periodStart.toISOString().split('T')[0] as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           periodEnd: data.periodEnd.toISOString().split('T')[0] as any,
           fiscalYear,
           fiscalQuarter: packetType === 'quarterly' || packetType === 'annual' ? fiscalQuarter : null,
@@ -112,21 +109,14 @@ export class BoardPacketGenerator {
     periodEnd: Date
   ) {
     // Query financial data (simplified - would integrate with finance module)
+    // Query strike activity data (simplified - uses raw SQL since strike_actions may not have a schema table)
     const strikeActivityResult = await db
-      .select({
-        totalAmount: sql<number>`SUM(${strikeActions.amount})::numeric`,
-        count: sql<number>`COUNT(*)::int`,
-      })
-      .from(strikeActions)
-      .where(
-        and(
-          eq(strikeActions.organizationId, organizationId),
-          gte(strikeActions.actionDate, periodStart),
-          lte(strikeActions.actionDate, periodEnd)
-        )
+      .execute(
+        sql`SELECT COALESCE(SUM(amount)::numeric, 0) as "totalAmount", COUNT(*)::int as "count" FROM strike_actions WHERE organization_id = ${organizationId} AND action_date >= ${periodStart} AND action_date <= ${periodEnd}`
       );
     
-    const strikeActivity = strikeActivityResult[0] || { totalAmount: 0, count: 0 };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const strikeActivity = (strikeActivityResult as any)[0] || { totalAmount: 0, count: 0 };
     
     return {
       period: {
@@ -386,6 +376,7 @@ export class BoardPacketGenerator {
         emailService.send({
           to: recipient.recipientEmail,
           subject: `Board Packet: ${packet.title}`,
+          body: `Board Packet: ${packet.title} - Period: ${packet.periodStart} to ${packet.periodEnd}`,
           html: `
             <h2>${packet.title}</h2>
             <p>Hello ${recipient.recipientName},</p>
@@ -411,6 +402,7 @@ export class BoardPacketGenerator {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async generatePDF(packet: any): Promise<{ pdfBuffer: Buffer; pdfUrl: string }> {
     const styles = StyleSheet.create({
       page: { padding: 32, fontSize: 12 },
@@ -433,7 +425,7 @@ export class BoardPacketGenerator {
       )
     );
 
-    const pdfBuffer = await pdf(doc).toBuffer();
+    const pdfBuffer = await renderToBuffer(doc);
     const pdfUrl = `data:application/pdf;base64,${pdfBuffer.toString('base64')}`;
 
     return { pdfBuffer, pdfUrl };

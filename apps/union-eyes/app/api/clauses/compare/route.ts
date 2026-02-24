@@ -1,36 +1,35 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Clause Comparison API Route
  * POST /api/clauses/compare - Compare multiple clauses
  * GET /api/clauses/compare - List saved comparisons
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { 
   compareClauses,
   saveClauseComparison 
 } from "@/lib/services/clause-service";
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth, type BaseAuthContext } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const clausesCompareSchema = z.object({
-  clauseIds: z.string().uuid('Invalid clauseIds'),
-  analysisType: z.boolean().optional().default("all"),
-  save: z.unknown().optional().default(false),
-  comparisonName: z.boolean().optional(),
+  clauseIds: z.array(z.string().uuid('Invalid clauseId')),
+  analysisType: z.enum(['all', 'similarities', 'differences', 'best_practices']).optional().default("all"),
+  save: z.boolean().optional().default(false),
+  comparisonName: z.string().optional(),
   organizationId: z.string().uuid('Invalid organizationId'),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('member', async (request, context: BaseAuthContext) => {
     const { userId, organizationId: contextOrganizationId } = context;
+    if (!userId) {
+      return standardErrorResponse(ErrorCode.AUTH_REQUIRED, 'Unauthorized');
+    }
 
   try {
       const body = await request.json();
@@ -119,5 +118,4 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});

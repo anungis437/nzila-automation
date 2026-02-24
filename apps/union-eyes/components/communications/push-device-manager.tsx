@@ -14,7 +14,7 @@
  * - Export device lists
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,59 +75,44 @@ interface PushDeviceManagerProps {
   onExport?: () => void;
 }
 
-// Mock data for development
-const mockDevices: Device[] = [
-  {
-    id: '1',
-    userId: 'user1',
-    userName: 'John Doe',
-    fcmToken: 'fcm_token_abc123...',
-    platform: 'ios',
-    appVersion: '2.3.1',
-    osVersion: 'iOS 17.2',
-    deviceModel: 'iPhone 14 Pro',
-    isActive: true,
-    lastActiveAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), // 30 days ago
-  },
-  {
-    id: '2',
-    userId: 'user2',
-    userName: 'Jane Smith',
-    fcmToken: 'fcm_token_def456...',
-    platform: 'android',
-    appVersion: '2.3.0',
-    osVersion: 'Android 14',
-    deviceModel: 'Samsung Galaxy S23',
-    isActive: true,
-    lastActiveAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60), // 60 days ago
-  },
-  {
-    id: '3',
-    userId: 'user3',
-    userName: 'Bob Johnson',
-    fcmToken: 'fcm_token_ghi789...',
-    platform: 'ios',
-    appVersion: '2.2.5',
-    osVersion: 'iOS 16.5',
-    deviceModel: 'iPhone 13',
-    isActive: false,
-    lastActiveAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45), // 45 days ago
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 180), // 180 days ago
-  },
-];
-
 export function PushDeviceManager({
-  devices = mockDevices,
+  devices: propDevices,
   onRemoveDevice,
   onRemoveMultiple,
   onExport,
 }: PushDeviceManagerProps) {
+  const [fetchedDevices, setFetchedDevices] = useState<Device[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [platformFilter, setPlatformFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedDevices, setSelectedDevices] = useState<Set<string>>(new Set());
+  const [_loading, setLoading] = useState(!propDevices);
+
+  const fetchDevices = useCallback(async () => {
+    if (propDevices) return;
+    try {
+      setLoading(true);
+      const res = await fetch('/api/v2/communications/push/devices');
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setFetchedDevices(items.map((d: any) => ({
+          ...d,
+          lastActiveAt: new Date(d.lastActiveAt ?? d.last_active_at),
+          createdAt: new Date(d.createdAt ?? d.created_at),
+        })));
+      }
+    } catch {
+      // API not available
+    } finally {
+      setLoading(false);
+    }
+  }, [propDevices]);
+
+  useEffect(() => { fetchDevices(); }, [fetchDevices]);
+
+  const devices = propDevices ?? fetchedDevices;
 
   // Filter devices
   const filteredDevices = devices.filter((device) => {

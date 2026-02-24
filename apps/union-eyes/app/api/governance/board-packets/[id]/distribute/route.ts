@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Board Packet Distribution API
  * 
@@ -9,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { boardPacketGenerator } from '@/lib/services/board-packet-generator';
 import { logger } from '@/lib/logger';
+import { auth } from '@clerk/nextjs/server';
 
 // Validation schema for distribution
 const distributePacketSchema = z.object({
@@ -29,6 +29,11 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const packetId = params.id;
     const body = await req.json();
     
@@ -49,7 +54,7 @@ export async function POST(
         sent: distributions.length,
       },
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
     logger.error('Error distributing board packet:', error);
     
     if (error instanceof z.ZodError) {
@@ -60,7 +65,7 @@ export async function POST(
     }
     
     return NextResponse.json(
-      { error: 'Failed to distribute board packet', details: error.message },
+      { error: 'Failed to distribute board packet', details: (error as Error).message },
       { status: 500 }
     );
   }

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AI Chatbot Schema
  * 
@@ -154,7 +153,9 @@ export const chatMessages = pgTable(
     functionCalls: jsonb("function_calls").$type<
       Array<{
         name: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         arguments: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         result: any;
       }>
     >(),
@@ -407,9 +408,10 @@ export const aiUsageMetrics = pgTable(
     tokensTotal: integer("tokens_total").notNull().default(0),
     estimatedCost: decimal("estimated_cost", { precision: 10, scale: 6 }).notNull().default("0"),
     requestId: text("request_id"),
-    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    userId: text("user_id").references(() => users.userId, { onDelete: "set null" }),
     sessionId: uuid("session_id"),
     latencyMs: integer("latency_ms"),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: jsonb("metadata").$type<Record<string, any>>().default({}),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },

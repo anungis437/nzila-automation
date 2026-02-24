@@ -3,7 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Target, Calendar, Users, CheckCircle } from "lucide-react";
+import { Target, Calendar, Users, CheckCircle, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 interface StrategicGoal {
   id: string;
@@ -21,51 +22,47 @@ interface StrategicPlanningBoardProps {
 }
 
 export default function StrategicPlanningBoard({ goals }: StrategicPlanningBoardProps) {
-  // Mock data
-  const defaultGoals: StrategicGoal[] = [
-    {
-      id: "1",
-      title: "Increase Membership by 15%",
-      description: "Target 200 new members through organizing campaigns",
-      category: "membership",
-      progress: 45,
-      dueDate: "2026-12-31",
-      owner: "Organizing Committee",
-      status: "on-track"
-    },
-    {
-      id: "2",
-      title: "Improve Grievance Resolution Time",
-      description: "Reduce average resolution time from 45 to 30 days",
-      category: "operations",
-      progress: 30,
-      dueDate: "2026-06-30",
-      owner: "Chief Steward",
-      status: "at-risk"
-    },
-    {
-      id: "3",
-      title: "Build Strike Fund to $500K",
-      description: "Increase member contributions and fundraising",
-      category: "financial",
-      progress: 75,
-      dueDate: "2026-09-30",
-      owner: "Secretary-Treasurer",
-      status: "on-track"
-    },
-    {
-      id: "4",
-      title: "Launch Member Portal",
-      description: "Digital platform for member services and communications",
-      category: "operations",
-      progress: 90,
-      dueDate: "2026-03-31",
-      owner: "Technology Committee",
-      status: "on-track"
-    }
-  ];
+  const [fetchedGoals, setFetchedGoals] = useState<StrategicGoal[]>([]);
+  const [loading, setLoading] = useState(!goals);
 
-  const activeGoals = goals || defaultGoals;
+  const fetchGoals = useCallback(async () => {
+    if (goals) return;
+    try {
+      setLoading(true);
+      const res = await fetch("/api/v2/executive/strategic-goals");
+      if (res.ok) {
+        const json = await res.json();
+        const items = Array.isArray(json) ? json : json?.goals ?? json?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setFetchedGoals(items.map((g: any) => ({
+          id: g.id ?? "",
+          title: g.title ?? "",
+          description: g.description ?? "",
+          category: g.category ?? "operations",
+          progress: g.progress ?? 0,
+          dueDate: g.due_date ?? g.dueDate ?? "",
+          owner: g.owner ?? "",
+          status: g.status ?? "on-track",
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [goals]);
+
+  useEffect(() => { fetchGoals(); }, [fetchGoals]);
+
+  const activeGoals = goals || fetchedGoals;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   const getCategoryIcon = (category: string) => {
     switch (category) {

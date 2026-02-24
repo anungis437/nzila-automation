@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 "use client";
 
 import { useState, useEffect } from "react";
@@ -120,7 +119,8 @@ export function BargainingUnitManagement({
   const { toast } = useToast();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: "",
       unitNumber: "",
@@ -154,7 +154,7 @@ export function BargainingUnitManagement({
       if (!response.ok) throw new Error("Failed to fetch bargaining units");
       const data = await response.json();
       setUnits(data.data || []);
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: "Failed to load bargaining units",
@@ -197,6 +197,7 @@ export function BargainingUnitManagement({
     fetchUnits();
     fetchEmployers();
     fetchWorksites();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organizationId]);
 
   const handleCreate = () => {
@@ -226,7 +227,9 @@ export function BargainingUnitManagement({
     form.reset({
       name: unit.name,
       unitNumber: unit.unitNumber || "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       unitType: unit.unitType as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       status: unit.status as any,
       employerId: unit.employerId,
       worksiteId: unit.worksiteId || undefined,
@@ -261,7 +264,7 @@ export function BargainingUnitManagement({
 
       await fetchUnits();
       onUpdate?.();
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: "Failed to delete bargaining unit",

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Xero Integration Adapter
  * 
@@ -61,8 +60,8 @@ export class XeroAdapter extends BaseIntegration {
       const xeroConfig: XeroConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        tenantId: this.config!.settings?.organizationId /* was tenantId */ || '',
-        environment: this.config!.settings?.environment || 'production',
+        tenantId: (this.config!.settings?.organizationId as string) || '',
+        environment: (this.config!.settings?.environment as 'production' | 'sandbox') || 'production',
         refreshToken: this.config!.credentials.refreshToken,
       };
 
@@ -125,7 +124,7 @@ export class XeroAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     this.ensureConnected();
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     let recordsProcessed = 0;
     let recordsCreated = 0;
     let recordsUpdated = 0;
@@ -247,8 +246,8 @@ export class XeroAdapter extends BaseIntegration {
             invoiceNumber: xeroInvoice.InvoiceNumber,
             customerId: xeroInvoice.Contact.ContactID,
             customerName: xeroInvoice.Contact.Name,
-            invoiceDate: new Date(xeroInvoice.DateString),
-            dueDate: xeroInvoice.DueDateString ? new Date(xeroInvoice.DueDateString) : null,
+            invoiceDate: xeroInvoice.DateString,
+            dueDate: xeroInvoice.DueDateString ?? null,
             totalAmount: xeroInvoice.Total.toFixed(2),
             balanceAmount: xeroInvoice.AmountDue.toFixed(2),
             status: xeroInvoice.Status.toLowerCase(),
@@ -333,7 +332,7 @@ export class XeroAdapter extends BaseIntegration {
           const paymentData = {
             customerId: xeroPayment.Invoice.InvoiceID, // Using invoice ID as reference
             customerName,
-            paymentDate: new Date(xeroPayment.Date),
+            paymentDate: xeroPayment.Date,
             amount: xeroPayment.Amount.toFixed(2),
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
@@ -502,7 +501,7 @@ export class XeroAdapter extends BaseIntegration {
   // Webhook Support
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     // Xero uses HMAC SHA256 for webhook verification
     // Implementation would verify X-Xero-Signature header
     return true; // Simplified for now
@@ -512,7 +511,7 @@ export class XeroAdapter extends BaseIntegration {
     this.logOperation('webhook', { eventType: event.type, message: `Processing ${event.type}` });
 
     // Xero sends webhook events for various entity changes
-    const payload = event.data as unknown;
+    const payload = event.data as { events?: Array<{ resourceUrl: string; eventCategory: string }> };
     
     if (payload.events) {
       for (const evt of payload.events) {

@@ -13,6 +13,8 @@
 
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -76,22 +78,25 @@ export default function HazardsPage() {
 
   useEffect(() => {
     if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
       loadStats();
     }
   }, [organizationId]);
 
   const loadStats = async () => {
     try {
-      // In production: fetch from API
-      // Example: const response = await fetch(`/api/health-safety/hazards/stats?organizationId=${organizationId}`);
-      setStats({
-        total: 32,
-        open: 8,
-        inProgress: 12,
-        resolved: 12,
-        critical: 3,
-        avgResolutionTime: 5.2,
-      });
+      const res = await fetch(`/api/v2/health-safety/hazards/stats?organizationId=${organizationId}`);
+      if (res.ok) {
+        const json = await res.json();
+        setStats({
+          total: json.total ?? 0,
+          open: json.open ?? 0,
+          inProgress: json.inProgress ?? json.in_progress ?? 0,
+          resolved: json.resolved ?? 0,
+          critical: json.critical ?? 0,
+          avgResolutionTime: json.avgResolutionTime ?? json.avg_resolution_time ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load hazard statistics");
@@ -104,8 +109,10 @@ export default function HazardsPage() {
 
   const handleReportSubmit = async () => {
     try {
-      // In production: submit to API
-      // const response = await fetch('/api/health-safety/hazards', { method: 'POST', body: JSON.stringify(data) });
+      await fetch('/api/v2/health-safety/hazards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
       toast.success("Hazard report submitted successfully");
       setShowReportForm(false);
       loadStats();
@@ -134,7 +141,7 @@ export default function HazardsPage() {
 
   if (showReportForm) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+      <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -167,7 +174,7 @@ export default function HazardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Page Header */}
         <motion.div
@@ -205,7 +212,7 @@ export default function HazardsPage() {
               </Button>
               <Button
                 onClick={() => setShowReportForm(true)}
-                className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
+                className="flex items-center gap-2 bg-linear-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
               >
                 <Plus className="h-4 w-4" />
                 Report Hazard

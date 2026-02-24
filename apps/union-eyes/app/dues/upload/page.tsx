@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Upload Remittance Page
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import { logger } from '@/lib/logger';
 
 type UploadStep = 'details' | 'upload' | 'processing' | 'complete';
@@ -44,7 +45,7 @@ export default function UploadRemittancePage() {
     periodEnd: '',
     file: null,
   });
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgress, _setUploadProgress] = useState(0);
   const [processingResults, setProcessingResults] = useState({
     totalRows: 0,
     validRows: 0,
@@ -70,7 +71,8 @@ export default function UploadRemittancePage() {
       formDataObj.append('periodStart', formData.periodStart);
       formDataObj.append('periodEnd', formData.periodEnd);
       
-      const result = await api.dues.remittances.upload(formDataObj);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await (api.dues.remittances.upload as any)(formDataObj) as Record<string, any>;
       
       setProcessingResults({
         totalRows: result.totalRows || 0,

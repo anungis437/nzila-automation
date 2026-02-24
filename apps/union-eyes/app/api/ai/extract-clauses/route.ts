@@ -1,5 +1,3 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * AI Clause Extraction API Route
  * 
@@ -7,17 +5,16 @@ import { logApiAuditEvent } from "@/lib/middleware/api-security";
  * Extract clauses from CBA PDFs using AI
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { extractClausesFromPDF, batchExtractClauses } from '@/lib/services/ai/clause-extraction-service';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
-import { checkEntitlement, consumeCredits, getCreditCost } from '@/lib/services/entitlements';
+import { checkEntitlement } from '@/lib/services/entitlements';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const aiExtractClausesSchema = z.object({
@@ -30,7 +27,7 @@ const aiExtractClausesSchema = z.object({
 });
 
 export const POST = withRoleAuth('member', async (request, context) => {
-  const user = { id: context.userId, organizationId: context.organizationId };
+  const _user = { id: context.userId, organizationId: context.organizationId };
 
     // CRITICAL: Rate limit AI calls (expensive OpenAI API)
     const rateLimitResult = await checkRateLimit(
@@ -49,7 +46,7 @@ export const POST = withRoleAuth('member', async (request, context) => {
     }
 
     // CRITICAL: Check subscription entitlement for AI extract-clauses
-    const entitlement = await checkEntitlement(context.organizationId!, 'ai_extract_clauses');
+    const entitlement = await checkEntitlement(context.organizationId as string, 'ai_extract_clauses');
     if (!entitlement.allowed) {
       return NextResponse.json(
         { 

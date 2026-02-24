@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * AI Insights Generator
  * Q1 2025 - Advanced Analytics
@@ -72,7 +71,7 @@ export async function generateInsights(
       if (priorityDiff !== 0) return priorityDiff;
       return b.confidence - a.confidence;
     });
-  } catch (error) {
+  } catch (_error) {
 return [];
   }
 }
@@ -235,7 +234,8 @@ async function generateTrendInsights(
         affectedMetrics: [trend.analysisType],
         estimatedImpact: trendStrength > 0.85 ? 'High' : 'Medium',
         confidence: trendStrength,
-        dataPoints: (trend.visualizationData as unknown)?.dataPoints || []
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataPoints: (trend.visualizationData as any)?.dataPoints || []
       });
     }
 
@@ -256,7 +256,8 @@ async function generateTrendInsights(
         affectedMetrics: [trend.analysisType],
         estimatedImpact: 'High',
         confidence: 0.8,
-        dataPoints: (trend.visualizationData as unknown)?.dataPoints || []
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataPoints: (trend.visualizationData as any)?.dataPoints || []
       });
     }
 
@@ -277,7 +278,8 @@ async function generateTrendInsights(
         affectedMetrics: [trend.analysisType],
         estimatedImpact: 'Medium',
         confidence: trendStrength,
-        dataPoints: (trend.visualizationData as unknown)?.dataPoints || []
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataPoints: (trend.visualizationData as any)?.dataPoints || []
       });
     }
   }
@@ -326,7 +328,8 @@ async function generateAnomalyInsights(
         affectedMetrics: [analysis.analysisType],
         estimatedImpact: 'High',
         confidence: 0.9,
-        dataPoints: (analysis.visualizationData as unknown)?.dataPoints || []
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataPoints: (analysis.visualizationData as any)?.dataPoints || []
       });
     }
   }
@@ -362,10 +365,10 @@ async function generatePredictionInsights(
 
   for (const [metricType, preds] of Object.entries(predictionsByMetric)) {
     const sortedPreds = preds.sort(
-      (a, b) => new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime()
+      (a, b) => new Date(a.predictionDate).getTime() - new Date(b.predictionDate).getTime()
     );
     const values = sortedPreds.map((p) => Number(p.predictedValue));
-    const confidences = sortedPreds.map((p) => Number(p.confidenceScore || '0'));
+    const confidences = sortedPreds.map((p) => Number(p.confidence || '0'));
     const avgConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length;
 
     // Trend in predictions
@@ -384,9 +387,9 @@ async function generatePredictionInsights(
         estimatedImpact: Math.abs(changePercent) > 30 ? 'High' : 'Medium',
         confidence: avgConfidence,
         dataPoints: sortedPreds.map((p) => ({
-          date: p.targetDate,
+          date: p.predictionDate,
           value: p.predictedValue,
-          confidence: p.confidenceScore
+          confidence: p.confidence
         }))
       });
     }

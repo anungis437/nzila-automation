@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Workday HRIS Integration Adapter
  * 
@@ -22,6 +21,7 @@ import {
   HealthCheckResult,
   WebhookEvent,
   SyncType,
+  ConnectionStatus,
 } from '../../types';
 import { WorkdayClient, type WorkdayConfig } from './workday-client';
 import { db } from '@/db';
@@ -59,8 +59,8 @@ export class WorkdayAdapter extends BaseIntegration {
       const workdayConfig: WorkdayConfig = {
         clientId: this.config!.credentials.clientId!,
         clientSecret: this.config!.credentials.clientSecret!,
-        tenantId: this.config!.settings?.organizationId /* was tenantId */ || '',
-        environment: this.config!.settings?.environment || 'production',
+        tenantId: (this.config!.settings?.organizationId as string) || '',
+        environment: (this.config!.settings?.environment as 'production' | 'sandbox') || 'production',
         refreshToken: this.config!.credentials.refreshToken,
       };
 
@@ -68,7 +68,7 @@ export class WorkdayAdapter extends BaseIntegration {
       await this.client.authenticate();
       
       this.connected = true;
-      this.logOperation('connect', 'Connected to Workday');
+      this.logOperation('connect', { message: 'Connected to Workday' });
     } catch (error) {
       this.logError('connect', error);
       throw error;
@@ -78,7 +78,7 @@ export class WorkdayAdapter extends BaseIntegration {
   async disconnect(): Promise<void> {
     this.connected = false;
     this.client = undefined;
-    this.logOperation('disconnect', 'Disconnected from Workday');
+    this.logOperation('disconnect', { message: 'Disconnected from Workday' });
   }
 
   // ==========================================================================
@@ -89,26 +89,22 @@ export class WorkdayAdapter extends BaseIntegration {
     try {
       this.ensureConnected();
 
+      const startTime = Date.now();
       const isHealthy = await this.client!.healthCheck();
 
       return {
         healthy: isHealthy,
-        latency: 0, // Could measure actual latency
-        details: {
-          provider: 'Workday',
-          connected: this.connected,
-          timestamp: new Date().toISOString(),
-        },
+        status: ConnectionStatus.CONNECTED,
+        latencyMs: Date.now() - startTime,
+        lastCheckedAt: new Date(),
       };
     } catch (error) {
       return {
         healthy: false,
-        latency: 0,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        details: {
-          provider: 'Workday',
-          connected: false,
-        },
+        status: ConnectionStatus.ERROR,
+        latencyMs: 0,
+        lastError: error instanceof Error ? error.message : 'Unknown error',
+        lastCheckedAt: new Date(),
       };
     }
   }
@@ -132,7 +128,7 @@ export class WorkdayAdapter extends BaseIntegration {
 
       for (const entity of entities) {
         try {
-          this.logOperation('sync', `Syncing ${entity}`);
+          this.logOperation('sync', { message: `Syncing ${entity}` });
 
           switch (entity) {
             case 'employees':
@@ -160,7 +156,7 @@ export class WorkdayAdapter extends BaseIntegration {
               break;
 
             default:
-              this.logOperation('sync', `Unknown entity: ${entity}`);
+              this.logOperation('sync', { message: `Unknown entity: ${entity}` });
           }
         } catch (error) {
           const errorMsg = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown'}`;
@@ -177,9 +173,8 @@ export class WorkdayAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        duration,
         cursor: undefined, // Would track for incremental
-        error: errors.length > 0 ? errors.join('; ') : undefined,
+        metadata: { duration, ...(errors.length > 0 ? { errorMessages: errors } : {}) },
       };
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -191,8 +186,7 @@ export class WorkdayAdapter extends BaseIntegration {
         recordsCreated,
         recordsUpdated,
         recordsFailed,
-        duration,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: { duration, error: error instanceof Error ? error.message : 'Unknown error' },
       };
     }
   }
@@ -247,7 +241,7 @@ export class WorkdayAdapter extends BaseIntegration {
                 department: workdayEmployee.department,
                 location: workdayEmployee.location,
                 hireDate: workdayEmployee.hireDate ? new Date(workdayEmployee.hireDate) : null,
-                employmentStatus: workdayEmployee.employmentStatus as unknown,
+                employmentStatus: workdayEmployee.employmentStatus as 'active' | 'inactive' | 'terminated' | 'suspended' | 'on_leave' | null,
                 workSchedule: workdayEmployee.workSchedule,
                 supervisorId: workdayEmployee.supervisor?.id,
                 supervisorName: workdayEmployee.supervisor?.name,
@@ -271,7 +265,7 @@ export class WorkdayAdapter extends BaseIntegration {
               department: workdayEmployee.department,
               location: workdayEmployee.location,
               hireDate: workdayEmployee.hireDate ? new Date(workdayEmployee.hireDate) : null,
-              employmentStatus: workdayEmployee.employmentStatus as unknown,
+              employmentStatus: workdayEmployee.employmentStatus as 'active' | 'inactive' | 'terminated' | 'suspended' | 'on_leave' | null,
               workSchedule: workdayEmployee.workSchedule,
               supervisorId: workdayEmployee.supervisor?.id,
               supervisorName: workdayEmployee.supervisor?.name,
@@ -304,7 +298,7 @@ export class WorkdayAdapter extends BaseIntegration {
   /**
    * Sync positions from Workday
    */
-  private async syncPositions(syncType: SyncType): Promise<{
+  private async syncPositions(_syncType: SyncType): Promise<{
     processed: number;
     created: number;
     updated: number;
@@ -377,7 +371,7 @@ export class WorkdayAdapter extends BaseIntegration {
   /**
    * Sync departments from Workday
    */
-  private async syncDepartments(syncType: SyncType): Promise<{
+  private async syncDepartments(_syncType: SyncType): Promise<{
     processed: number;
     created: number;
     updated: number;
@@ -451,12 +445,12 @@ export class WorkdayAdapter extends BaseIntegration {
   // Webhook Support (Not Available)
   // ==========================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     // Workday doesn&apos;t support webhooks in most plans
     return false;
   }
 
-  async processWebhook(event: WebhookEvent): Promise<void> {
+  async processWebhook(_event: WebhookEvent): Promise<void> {
     throw new Error('Workday does not support webhooks');
   }
 }

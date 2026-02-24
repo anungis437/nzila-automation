@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Feature Flags Admin API
  * 
@@ -6,16 +5,15 @@
  * PATCH /api/admin/feature-flags - Toggle a flag
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getAllFeatureFlags, toggleFeatureFlag } from '@/lib/feature-flags';
 import { z } from 'zod';
 import { logApiAuditEvent } from '@/lib/middleware/api-security';
-import { withAdminAuth } from '@/lib/api-auth-guard';
+import { withAdminAuth, type BaseAuthContext } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,7 +29,7 @@ const toggleFlagSchema = z.object({
 /**
  * Get all feature flags
  */
-export const GET = withAdminAuth(async (request, context) => {
+export const GET = withAdminAuth(async (request, context: BaseAuthContext) => {
   const { userId } = context;
 
   const flags = await getAllFeatureFlags();
@@ -51,15 +49,14 @@ export const GET = withAdminAuth(async (request, context) => {
 /**
  * Toggle a feature flag
  */
-export const PATCH = withAdminAuth(async (request, context) => {
+export const PATCH = withAdminAuth(async (request, context: BaseAuthContext) => {
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
     return standardErrorResponse(
       ErrorCode.VALIDATION_ERROR,
-      'Invalid JSON in request body',
-      error
+      'Invalid JSON in request body'
     );
   }
 
@@ -68,7 +65,7 @@ export const PATCH = withAdminAuth(async (request, context) => {
     return standardErrorResponse(
       ErrorCode.VALIDATION_ERROR,
       'Invalid request body',
-      error
+      parsed.error
     );
   }
 
@@ -112,4 +109,4 @@ throw error;
     }
 });
 
-
+

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Distributed Tracing Service
  * 
@@ -275,7 +274,8 @@ export function trace(spanName?: string) {
     const originalMethod = descriptor.value;
     
     descriptor.value = function (...args: unknown[]) {
-      const name = spanName || `${target.constructor.name}.${propertyKey}`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const name = spanName || `${(target as any).constructor.name}.${propertyKey}`;
       const tracing = tracingService;
       
       tracing.startSpan(name);

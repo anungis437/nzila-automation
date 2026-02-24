@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * A/B Testing Admin Dashboard
  * 
@@ -7,12 +6,15 @@
  * Manage and monitor A/B tests for marketing optimization
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Flask,
+  FlaskConical,
   Play,
   Pause,
   CheckCircle2,
@@ -23,8 +25,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-// Mock data for demonstration (in production, fetch from database)
-const mockTests = [
+// Default A/B test data (overridden by API fetch in component)
+const _defaultTests = [
   {
     id: 'test-1',
     name: 'Pilot Application Email Subject',
@@ -123,7 +125,21 @@ const mockTests = [
   },
 ];
 
-export default function ABTestingDashboardPage() {
+export default async function ABTestingDashboardPage() {
+  // Fetch A/B tests from API (falls back to defaults)
+  let mockTests = [..._defaultTests];
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/admin/ab-testing`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      const items = Array.isArray(json) ? json : json?.tests ?? json?.data ?? [];
+      if (items.length > 0) mockTests = items;
+    }
+  } catch {
+    // API not available — use fallback data
+  }
+
   const activeTests = mockTests.filter((t) => t.status === 'active').length;
   const completedTests = mockTests.filter((t) => t.status === 'completed').length;
   const draftTests = mockTests.filter((t) => t.status === 'draft').length;
@@ -155,7 +171,7 @@ export default function ABTestingDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
-                <Flask className="h-8 w-8 text-blue-600" />
+                <FlaskConical className="h-8 w-8 text-blue-600" />
                 <p className="text-3xl font-bold text-gray-900">{activeTests}</p>
               </div>
             </CardContent>
@@ -251,25 +267,25 @@ export default function ABTestingDashboardPage() {
           <CardContent>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
                   <strong>Test one variable at a time</strong> - Isolate what drives the change
                 </div>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
                   <strong>Wait for statistical significance</strong> - Don&apos;t stop tests early (aim for 95%+ confidence)
                 </div>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
                   <strong>Define success metrics upfront</strong> - Know what conversion means for each test
                 </div>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
                   <strong>Document and share learnings</strong> - Help the labor movement learn from your tests
                 </div>
@@ -285,7 +301,7 @@ export default function ABTestingDashboardPage() {
 /**
  * Test Card Component
  */
-function TestCard({ test }: { test: typeof mockTests[0] }) {
+function TestCard({ test }: { test: typeof _defaultTests[0] }) {
   const progress = (test.currentSampleSize / test.targetSampleSize) * 100;
   const bestVariant = test.variants.reduce((best, current) =>
     current.conversionRate > best.conversionRate ? current : best
@@ -324,7 +340,7 @@ function TestCard({ test }: { test: typeof mockTests[0] }) {
             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
               <span>Type: {test.type}</span>
               <span>|</span>
-              <span>Started: {test.startDate.toLocaleDateString()}</span>
+              <span>Started: {test.startDate?.toLocaleDateString()}</span>
               {test.endDate && (
                 <>
                   <span>|</span>

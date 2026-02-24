@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Transfer Pricing & Currency Enforcement Service
  *
@@ -9,8 +8,6 @@
  * - Ensures cross-border transactions are properly documented
  */
 
-import { db } from '@/db/client';
-import { eq } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
 export interface Invoice {

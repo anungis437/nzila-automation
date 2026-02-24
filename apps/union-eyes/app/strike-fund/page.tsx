@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Strike Fund Dashboard
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { Progress } from '@/components/ui/progress';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 import {
   Table,
   TableBody,
@@ -66,8 +67,8 @@ export default function StrikeFundDashboardPage() {
         api.strikeFund.applications.list(),
       ]);
       
-      setStats(dashboardData);
-      setApplications(applicationsData);
+      setStats(dashboardData as StrikeFundStats);
+      setApplications(applicationsData as Application[]);
     } catch (error) {
       logger.error('Error fetching strike fund data', error);
     } finally {

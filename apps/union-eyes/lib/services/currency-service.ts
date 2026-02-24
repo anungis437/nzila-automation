@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Currency & Transfer Pricing Service
  * 
@@ -123,15 +122,15 @@ export class CurrencyService {
         where: and(
           eq(exchangeRates.fromCurrency, 'USD'),
           eq(exchangeRates.toCurrency, 'CAD'),
-          eq(exchangeRates.source, 'BOC'),
+          eq(exchangeRates.rateSource, 'BOC'),
           lte(exchangeRates.effectiveDate, date)
         ),
         orderBy: (rates, { desc }) => [desc(rates.effectiveDate)],
       });
 
       if (cachedRate) {
-        logger.info('Using cached BOC rate', { rate: cachedRate.rate });
-        return cachedRate.rate;
+        logger.info('Using cached BOC rate', { rate: cachedRate.exchangeRate });
+        return parseFloat(cachedRate.exchangeRate);
       }
 
       // Fallback to default rate (would fetch from BOC API in production)
@@ -152,7 +151,7 @@ export class CurrencyService {
     fromCurrency: Currency,
     toCurrency: Currency,
     date: Date,
-    rateType: 'noon' | 'closing' = 'noon'
+    _rateType: 'noon' | 'closing' = 'noon'
   ): Promise<{
     amount: number;
     rate: number;
@@ -229,27 +228,19 @@ export class CurrencyService {
     // Record transaction
     const [transaction] = await db.insert(crossBorderTransactions).values({
       id: data.transactionId,
-      fromPartyId: data.fromPartyId,
-      fromPartyName: data.fromPartyName,
       fromPartyType: data.fromPartyType,
       fromCountryCode: data.fromCountryCode,
-      toPartyId: data.toPartyId,
-      toPartyName: data.toPartyName,
       toPartyType: data.toPartyType,
       toCountryCode: data.toCountryCode,
-      originalAmount: data.originalAmount,
+      amountCents: Math.round(data.originalAmount * 100),
       originalCurrency: data.originalCurrency,
       cadEquivalentCents: Math.round(cadConversion.amount * 100),
-      cadEquivalent: cadConversion.amount,
-      exchangeRateUsed: cadConversion.rate,
-      exchangeRateDate: cadConversion.effectiveDate,
-      transactionCategory: data.transactionCategory,
+      transactionType: data.transactionCategory,
       transactionDate: data.transactionDate,
-      armLengthPrice: data.armLengthPrice,
-      armLengthVariance: armLengthCheck.variance,
-      transferPricingMethod: data.transferPricingMethod,
-      relatedParty: data.relatedParty,
-      status: 'pending',
+      counterpartyName: data.toPartyName,
+      requiresT106: data.relatedParty,
+      craReportingStatus: 'pending',
+      description: `Parties: ${data.fromPartyName} \u2192 ${data.toPartyName} | Method: ${data.transferPricingMethod} | Arm's length: ${data.armLengthPrice} (variance: ${(armLengthCheck.variance * 100).toFixed(2)}%)`,
     }).returning();
 
     logger.info('Cross-border transaction recorded', {
@@ -284,19 +275,19 @@ export class CurrencyService {
       where: and(
         gte(crossBorderTransactions.transactionDate, startDate),
         lte(crossBorderTransactions.transactionDate, endDate),
-        eq(crossBorderTransactions.relatedParty, true),
-        gte(crossBorderTransactions.cadEquivalent, this.T106_THRESHOLD)
+        eq(crossBorderTransactions.requiresT106, true),
+        gte(crossBorderTransactions.cadEquivalentCents, this.T106_THRESHOLD * 100)
       ),
-      orderBy: (tx, { desc }) => [desc(tx.cadEquivalent)],
+      orderBy: (tx, { desc }) => [desc(tx.cadEquivalentCents)],
     });
 
     const t106Transactions: T106Transaction[] = transactions.map((t) => ({
       id: t.id,
-      nonResidentName: t.toPartyName || 'Related Party',
+      nonResidentName: t.counterpartyName || 'Related Party',
       nonResidentCountry: t.toCountryCode || 'US',
-      transactionType: this.mapTransactionType(t.transactionCategory || 'service'),
-      amountCAD: t.cadEquivalent || 0,
-      transferPricingMethod: t.transferPricingMethod || 'Comparable Uncontrolled Price (CUP)'
+      transactionType: this.mapTransactionType(t.transactionType || 'service'),
+      amountCAD: (t.cadEquivalentCents || 0) / 100,
+      transferPricingMethod: 'Comparable Uncontrolled Price (CUP)'
     }));
 
     const totalAmount = t106Transactions.reduce((sum, t) => sum + t.amountCAD, 0);
@@ -380,8 +371,9 @@ export class CurrencyService {
       if (tx.id) {
         await db.update(crossBorderTransactions)
           .set({ 
-            status: 'reported',
-            t106ConfirmationNumber: confirmationNumber,
+            craReportingStatus: 'filed',
+            t106Filed: true,
+            t106FilingDate: now,
             updatedAt: now
           })
           .where(eq(crossBorderTransactions.id, tx.id));
@@ -437,7 +429,7 @@ export class CurrencyService {
   /**
    * Get transfer pricing compliance summary
    */
-  async getComplianceSummary(taxYear: number, businessNumber: string): Promise<{
+  async getComplianceSummary(taxYear: number, _businessNumber: string): Promise<{
     taxYear: number;
     totalCrossBorderTransactions: number;
     relatedPartyTransactions: number;

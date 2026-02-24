@@ -18,7 +18,7 @@ export function WalletBalanceCard({ balance }: WalletBalanceCardProps) {
   const t = useTranslations('rewards.wallet');
 
   return (
-    <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+    <Card className="border-2 border-primary bg-linear-to-br from-primary/5 to-primary/10">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

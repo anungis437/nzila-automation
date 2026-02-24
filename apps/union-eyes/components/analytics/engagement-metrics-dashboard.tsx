@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import {
   TrendingUp,
-  TrendingDown,
   Users,
   AlertTriangle,
   Award,
@@ -20,6 +19,7 @@ import {
   Search,
   Activity,
   Target,
+  Loader2,
 } from "lucide-react";
 
 // Types
@@ -65,7 +65,8 @@ interface LifecycleStageMetrics {
   color: string;
 }
 
-// Sample data
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Sample data (module-level defaults, shadowed by API-driven state in component)
 const SCORE_DISTRIBUTION: ScoreDistributionBucket[] = [
   { range: "0-20", count: 42, percentage: 8.4, color: "bg-red-500" },
   { range: "21-40", count: 68, percentage: 13.6, color: "bg-orange-500" },
@@ -174,6 +175,7 @@ const ACTIVITY_HEATMAP: ActivityHeatmapCell[] = [
   { day: "Fri", hour: 16, activityCount: 38 },
   { day: "Fri", hour: 17, activityCount: 32 },
 ];
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
@@ -181,6 +183,45 @@ const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 export default function EngagementMetricsDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateRange, setDateRange] = useState("last_30_days");
+
+  // API-driven data (shadows module-level defaults)
+  const [SCORE_DISTRIBUTION, setScoreDistribution] = useState<ScoreDistributionBucket[]>([]);
+  const [TOP_ENGAGED_MEMBERS, setTopEngagedMembers] = useState<EngagementMember[]>([]);
+  const [AT_RISK_MEMBERS, setAtRiskMembers] = useState<EngagementMember[]>([]);
+  const [TREND_DATA, setTrendData] = useState<TrendDataPoint[]>([]);
+  const [LIFECYCLE_STAGES, setLifecycleStages] = useState<LifecycleStageMetrics[]>([]);
+  const [ACTIVITY_HEATMAP, setActivityHeatmap] = useState<ActivityHeatmapCell[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchEngagement = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/analytics/engagement?range=${dateRange}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.scoreDistribution) setScoreDistribution(json.scoreDistribution);
+        if (json.topEngagedMembers) setTopEngagedMembers(json.topEngagedMembers);
+        if (json.atRiskMembers) setAtRiskMembers(json.atRiskMembers);
+        if (json.trendData) setTrendData(json.trendData);
+        if (json.lifecycleStages) setLifecycleStages(json.lifecycleStages);
+        if (json.activityHeatmap) setActivityHeatmap(json.activityHeatmap);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [dateRange]);
+
+  useEffect(() => { fetchEngagement(); }, [fetchEngagement]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   // Calculate summary metrics
   const totalMembers = SCORE_DISTRIBUTION.reduce((sum, bucket) => sum + bucket.count, 0);
@@ -201,7 +242,7 @@ export default function EngagementMetricsDashboard() {
   };
 
   // Get lifecycle stage styling
-  const getLifecycleStageStyle = (stage: LifecycleStage) => {
+  const _getLifecycleStageStyle = (stage: LifecycleStage) => {
     const stageData = LIFECYCLE_STAGES.find((s) => s.stage === stage);
     return stageData?.color || "bg-gray-500";
   };

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Sage Intacct API Client
  * 
@@ -15,7 +14,7 @@
  * - Support for invoices, customers, payments, GL accounts
  */
 
-import { IntegrationError, AuthenticationError, RateLimitError } from '../../types';
+import { IntegrationError, AuthenticationError, IntegrationProvider } from '../../types';
 
 // ============================================================================
 // Types
@@ -72,7 +71,7 @@ export interface SageIntacctAccount {
   STATUS: string;
 }
 
-interface SageIntacctResponse {
+interface _SageIntacctResponse {
   response: {
     control?: {
       status: string;
@@ -133,14 +132,14 @@ export class SageIntacctClient {
       });
 
       if (!response.ok) {
-        throw new AuthenticationError('Sage Intacct authentication failed');
+        throw new AuthenticationError('Sage Intacct authentication failed', IntegrationProvider.SAGE_INTACCT);
       }
 
       const text = await response.text();
       const sessionId = this.extractSessionId(text);
 
       if (!sessionId) {
-        throw new AuthenticationError('Failed to extract session ID');
+        throw new AuthenticationError('Failed to extract session ID', IntegrationProvider.SAGE_INTACCT);
       }
 
       this.sessionId = sessionId;
@@ -149,7 +148,8 @@ export class SageIntacctClient {
     } catch (error) {
       if (error instanceof AuthenticationError) throw error;
       throw new AuthenticationError(
-        `Authentication failed: ${error instanceof Error ? error.message : 'Unknown'}`
+        `Authentication failed: ${error instanceof Error ? error.message : 'Unknown'}`,
+        IntegrationProvider.SAGE_INTACCT
       );
     }
   }
@@ -252,7 +252,7 @@ export class SageIntacctClient {
       if (!response.ok) {
         throw new IntegrationError(
           `Sage Intacct API error: ${response.status}`,
-          'SAGE_INTACCT'
+          IntegrationProvider.SAGE_INTACCT
         );
       }
 
@@ -262,7 +262,7 @@ export class SageIntacctClient {
       if (error instanceof IntegrationError) throw error;
       throw new IntegrationError(
         `Request failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-        'SAGE_INTACCT'
+        IntegrationProvider.SAGE_INTACCT
       );
     }
   }
@@ -274,7 +274,7 @@ export class SageIntacctClient {
     // Check for errors
     const errorMatch = xml.match(/<description2>([^<]+)<\/description2>/);
     if (errorMatch) {
-      throw new IntegrationError(`Sage Intacct error: ${errorMatch[1]}`, 'SAGE_INTACCT');
+      throw new IntegrationError(`Sage Intacct error: ${errorMatch[1]}`, IntegrationProvider.SAGE_INTACCT);
     }
 
     // Extract data elements
@@ -319,7 +319,7 @@ export class SageIntacctClient {
       </function>`;
 
     const data = await this.request(functionXml);
-    const invoices = this.parseInvoices(data);
+    const invoices = this.parseInvoices(data as string);
 
     return {
       invoices,
@@ -377,7 +377,7 @@ export class SageIntacctClient {
       </function>`;
 
     const data = await this.request(functionXml);
-    const customers = this.parseCustomers(data);
+    const customers = this.parseCustomers(data as string);
 
     return {
       customers,
@@ -432,7 +432,7 @@ export class SageIntacctClient {
       </function>`;
 
     const data = await this.request(functionXml);
-    const payments = this.parsePayments(data);
+    const payments = this.parsePayments(data as string);
 
     return {
       payments,
@@ -488,7 +488,7 @@ export class SageIntacctClient {
       </function>`;
 
     const data = await this.request(functionXml);
-    const accounts = this.parseAccounts(data);
+    const accounts = this.parseAccounts(data as string);
 
     return {
       accounts,

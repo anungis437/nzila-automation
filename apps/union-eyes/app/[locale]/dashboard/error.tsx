@@ -23,7 +23,7 @@ export default function DashboardError({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4">
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white p-8 shadow-xl">
           <div className="mb-6 flex justify-center">

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Prometheus Metrics Collection
  * 
@@ -15,6 +14,8 @@
  * Access metrics at: GET /api/metrics
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - prom-client may not be installed
 import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
 
 // Create registry

@@ -48,7 +48,7 @@ export interface NotificationJobData {
 export interface ReportJobData {
   type: 'report';
   reportType: string;
-  tenantId: string;
+  organizationId: string;
   userId: string;
   parameters: Record<string, unknown>;
 }
@@ -251,7 +251,7 @@ export async function addReportJob(
   return enqueue(
     'generate-report',
     {
-      report_type: data.reportType, tenant_id: data.tenantId,
+      report_type: data.reportType, tenant_id: data.organizationId,
       user_id: data.userId, parameters: data.parameters,
     },
     { priority: options?.priority ?? 5, authToken: options?.authToken }

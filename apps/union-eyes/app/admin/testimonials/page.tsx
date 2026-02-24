@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Testimonials Management Page
  * 
@@ -11,11 +10,13 @@
  * - Featured testimonial selection
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/db';
 import { testimonials } from '@/db/schema/domains/marketing';
-import { desc, eq } from 'drizzle-orm';
+import { desc } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -32,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CheckCircle, XCircle, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { format } from 'date-fns';
 import TestimonialApprovalActions from '@/components/admin/testimonial-approval-actions';
 
@@ -47,26 +48,28 @@ export default async function AdminTestimonialsPage({
 }: AdminTestimonialsPageProps) {
   const { status } = searchParams;
 
-  // Build query
-  const query = status
-    ? eq(testimonials.status, status)
-    : undefined;
-
   // Fetch testimonials
-  const allTestimonials = await db
+  const allTestimonialsRaw = await db
     .select()
     .from(testimonials)
-    .where(query)
-    .orderBy(desc(testimonials.submittedAt))
+    .orderBy(desc(testimonials.createdAt))
     .limit(100);
+
+  // Derive approval status from approvedAt
+  const getApprovalStatus = (t: typeof allTestimonialsRaw[0]) =>
+    t.approvedAt ? 'approved' : 'pending';
+
+  const allTestimonials = status
+    ? allTestimonialsRaw.filter(t => getApprovalStatus(t) === status)
+    : allTestimonialsRaw;
 
   // Calculate statistics
   const stats = {
     total: allTestimonials.length,
-    pending: allTestimonials.filter((t) => t.status === 'pending').length,
-    approved: allTestimonials.filter((t) => t.status === 'approved').length,
-    rejected: allTestimonials.filter((t) => t.status === 'rejected').length,
-    featured: allTestimonials.filter((t) => t.isFeatured).length,
+    pending: allTestimonials.filter((t) => !t.approvedAt).length,
+    approved: allTestimonials.filter((t) => !!t.approvedAt).length,
+    rejected: 0,
+    featured: allTestimonials.filter((t) => t.featured).length,
   };
 
   return (
@@ -143,9 +146,9 @@ export default async function AdminTestimonialsPage({
               {allTestimonials.map((testimonial) => (
                 <TableRow key={testimonial.id}>
                   <TableCell className="font-medium">
-                    {testimonial.submitterName}
+                    {testimonial.author}
                   </TableCell>
-                  <TableCell>{testimonial.organizationName}</TableCell>
+                  <TableCell>{testimonial.organization}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{testimonial.role}</Badge>
                   </TableCell>
@@ -155,26 +158,25 @@ export default async function AdminTestimonialsPage({
                   <TableCell>
                     <Badge
                       variant={
-                        testimonial.status === 'approved'
+                        testimonial.approvedAt
                           ? 'default'
-                          : testimonial.status === 'pending'
-                          ? 'secondary'
-                          : 'destructive'
+                          : 'secondary'
                       }
                     >
-                      {testimonial.status}
+                      {testimonial.approvedAt ? 'approved' : 'pending'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {testimonial.isFeatured && (
+                    {testimonial.featured && (
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {format(new Date(testimonial.submittedAt), 'MMM d, yyyy')}
+                    {format(new Date(testimonial.createdAt), 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell>
-                    <TestimonialApprovalActions testimonial={testimonial} />
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <TestimonialApprovalActions testimonial={testimonial as any} />
                   </TableCell>
                 </TableRow>
               ))}

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Grievance Notification Service
  * 
@@ -6,11 +5,10 @@
  * Integrates with notification system for multi-channel delivery
  */
 
-import { db } from "@/database";
-import { profiles } from "@/db/schema/organization-members-schema";
-import { claims } from "@/db/schema/domains/claims";
+import { db } from "@/db";
+import { users } from "@/db/schema/user-management-schema";
 import { getNotificationService } from "./notification-service";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 
 // ============================================================================
@@ -253,11 +251,11 @@ export async function sendGrievanceDeadlineReminder(
           // Get phone number from officer profile
           const [officer] = await db
             .select({
-              phone: profiles.phone,
-              name: profiles.name,
+              phone: users.phone,
+              name: users.displayName,
             })
-            .from(profiles)
-            .where(eq(profiles.email, context.assignedOfficerEmail))
+            .from(users)
+            .where(eq(users.email, context.assignedOfficerEmail))
             .limit(1);
 
           if (officer?.phone) {
@@ -583,6 +581,7 @@ export async function sendSettlementProposalNotification(
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   sendGrievanceFiledNotification,
   sendGrievanceAssignedNotification,

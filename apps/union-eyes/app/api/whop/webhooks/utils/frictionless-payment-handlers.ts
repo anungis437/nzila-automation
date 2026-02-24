@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Frictionless Payment Handlers
  * 
@@ -19,6 +18,7 @@ import { convertTimestampToDate } from "./plan-utils";
 import { revalidateAfterPayment } from "./path-utils";
 import { eq } from "drizzle-orm";
 import { withSystemContext } from '@/lib/db/with-rls-context';
+import { db } from '@/db';
 import { profilesTable } from "@/db/schema/domains/member";
 import { pendingProfilesTable } from "@/db/schema/domains/member";
 import { v4 as uuidv4 } from "uuid";
@@ -33,8 +33,9 @@ export function isFrictionlessPayment(data: Record<string, unknown>): boolean {
   // Debug log the structure to make sure we know what we&apos;re working with
 // For payment.succeeded events, we need to check membership_metadata
   if (data.membership_metadata) {
-    const hasEmail = !!data.membership_metadata.email;
-    const isExplicitlyUnauthenticated = !!data.membership_metadata.isUnauthenticated;
+    const membershipMeta = data.membership_metadata as Record<string, unknown>;
+    const hasEmail = !!membershipMeta.email;
+    const isExplicitlyUnauthenticated = !!membershipMeta.isUnauthenticated;
 if (hasEmail || isExplicitlyUnauthenticated) {
 return true;
     }
@@ -42,9 +43,10 @@ return true;
   
   // For other events, check regular metadata
   if (data.metadata) {
-    const hasEmail = !!data.metadata.email;
-    const hasClerkUserId = !!data.metadata.clerkUserId;
-    const isExplicitlyUnauthenticated = !!data.metadata.isUnauthenticated;
+    const meta = data.metadata as Record<string, unknown>;
+    const hasEmail = !!meta.email;
+    const hasClerkUserId = !!meta.clerkUserId;
+    const isExplicitlyUnauthenticated = !!meta.isUnauthenticated;
 if ((hasEmail && !hasClerkUserId) || isExplicitlyUnauthenticated) {
 return true;
     }
@@ -62,6 +64,7 @@ return false;
  * @param eventId The event ID for logging
  * @returns Boolean indicating success
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function handleFrictionlessPayment(data: any | Record<string, unknown>, eventId: string): Promise<boolean> {
   try {
 // Extract email and token, checking both metadata and membership_metadata
@@ -98,13 +101,13 @@ return false;
       await updateProfile(existingProfile.userId, updateData);
 } else {
       // No existing regular profile - create a pending profile in the pending_profiles table
-await createOrUpdatePendingProfile(data, email, token, eventId);
+await createOrUpdatePendingProfile(data, email, token ?? undefined, eventId);
     }
     
     // Revalidate paths
     revalidateAfterPayment();
 return true;
-  } catch (error) {
+  } catch (_error) {
 return false;
   }
 }
@@ -118,13 +121,14 @@ return false;
  * @param token Optional token for purchase verification
  * @param eventId Event ID for logging
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createOrUpdatePendingProfile(data: any | Record<string, unknown>, email: string, token?: string, eventId?: string) {
-  const logPrefix = eventId ? `[Event ${eventId}]` : '[Profile Creation]';
+  const _logPrefix = eventId ? `[Event ${eventId}]` : '[Profile Creation]';
   
   try {
 // Calculate billing cycle details
     let billingCycleStart = new Date();
-    let billingCycleEnd = null;
+    let billingCycleEnd: Date | null = null;
     
     // Check if the webhook provides the cycle start/end dates
     if (data?.renewal_period_start) {
@@ -189,8 +193,8 @@ export async function createOrUpdatePendingProfile(data: any | Record<string, un
 // If there&apos;s an existing pending profile, update it, otherwise create a new one
     if (existingPendingProfile) {
       // Update existing pending profile using system context
-      await withSystemContext(async (tx) => {
-        await tx.update(pendingProfilesTable)
+      await withSystemContext(async () => {
+        await db.update(pendingProfilesTable)
           .set(pendingProfileData)
           .where(eq(pendingProfilesTable.email, email))
           .returning();
@@ -200,7 +204,7 @@ export async function createOrUpdatePendingProfile(data: any | Record<string, un
       await createPendingProfile(pendingProfileData);
 }
 return true;
-  } catch (error) {
+  } catch (_error) {
 return false;
   }
 }
@@ -213,8 +217,8 @@ return false;
  * @param data The webhook data
  */
 async function updateProfile(userId: string, data: Record<string, unknown>) {
-  await withSystemContext(async (tx) => {
-    await tx.update(profilesTable).set(data).where(eq(profilesTable.userId, userId)).returning();
+  await withSystemContext(async () => {
+    await db.update(profilesTable).set(data).where(eq(profilesTable.userId, userId)).returning();
   });
 }
 
@@ -225,18 +229,18 @@ async function updateProfile(userId: string, data: Record<string, unknown>) {
 function prepareProfileUpdateData(data: Record<string, unknown>) {
   // Calculate billing cycle details
   let billingCycleStart = new Date();
-  let billingCycleEnd = null;
+  let billingCycleEnd: Date | null = null;
   
   // Check if the webhook provides the cycle start/end dates
   if (data?.renewal_period_start) {
-    billingCycleStart = convertTimestampToDate(data.renewal_period_start);
+    billingCycleStart = convertTimestampToDate(data.renewal_period_start as number);
   }
   
   if (data?.renewal_period_end) {
-    billingCycleEnd = convertTimestampToDate(data.renewal_period_end);
+    billingCycleEnd = convertTimestampToDate(data.renewal_period_end as number);
   } else {
     // Calculate based on plan type
-    const planDuration = determinePlanType(data?.plan_id);
+    const planDuration = determinePlanType(data?.plan_id as string);
     billingCycleEnd = new Date(billingCycleStart);
     
     if (planDuration === "yearly") {
@@ -251,7 +255,7 @@ function prepareProfileUpdateData(data: Record<string, unknown>) {
   nextCreditRenewal.setDate(nextCreditRenewal.getDate() + CREDIT_RENEWAL_DAYS);
   
   // Determine plan duration based on the plan ID
-  const planDuration = determinePlanType(data?.plan_id);
+  const planDuration = determinePlanType(data?.plan_id as string);
   
   return {
     // Store Whop identifiers

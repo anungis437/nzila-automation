@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Payment Service for Dues Transactions
  * Handles payment lifecycle for member dues
@@ -20,9 +19,8 @@ import { eq, and } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import { Document, Page, StyleSheet, Text, pdf } from '@react-pdf/renderer';
 import React from 'react';
-import { PaymentProcessorType } from '@/lib/payment-processor/types';
+// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/payments-stripe
 import Stripe from 'stripe';
-import { Decimal } from 'decimal.js';
 import { sendPaymentConfirmation, sendPaymentFailure } from '@/lib/services/dues-notifications';
 
 // =============================================================================
@@ -232,6 +230,8 @@ export class PaymentService {
 
   /**
    * Handle successful payment
+   */
+
   private static async generateReceiptPdfUrl(params: {
     receiptNumber: string;
     memberName: string;
@@ -267,11 +267,12 @@ export class PaymentService {
       )
     );
 
-    const buffer = await pdf(doc).toBuffer();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const buffer = await (pdf(doc) as any).toBuffer();
     const base64 = buffer.toString('base64');
     return `data:application/pdf;base64,${base64}`;
   }
-   */
+
   static async handlePaymentSuccess(
     params: PaymentSuccessParams
   ): Promise<void> {
@@ -484,6 +485,7 @@ export class PaymentService {
   static async getTransactionByProcessorPaymentId(
     processorPaymentId: string,
     processorType: 'stripe' | 'paypal'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     try {
       const transaction = await db
@@ -513,6 +515,7 @@ export class PaymentService {
    */
   static async getTransactionBySessionId(
     sessionId: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     try {
       // Query by metadata (session ID stored in metadata)

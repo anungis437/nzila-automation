@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Admin Authentication Middleware
  * 
@@ -173,7 +172,7 @@ export function withAdminAuth<P extends Record<string, unknown>>(
   Component: React.ComponentType<P & { userId: string; organizationId?: string }>
 ): React.ComponentType<P> {
   // Type-only placeholder - actual implementation would require .tsx file
-  return Component as unknown;
+  return Component as unknown as React.ComponentType<P>;
 }
 
 /**
@@ -208,6 +207,7 @@ export async function hasGoldenSharePrivileges(
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   isUserAdmin,
   requireAdmin,

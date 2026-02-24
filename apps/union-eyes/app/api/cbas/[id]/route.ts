@@ -1,5 +1,3 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * CBA API Routes - Individual CBA operations
  * GET /api/cbas/[id] - Get CBA by ID with related data
@@ -7,7 +5,7 @@ import { logApiAuditEvent } from "@/lib/middleware/api-security";
  * DELETE /api/cbas/[id] - Delete CBA (soft delete)
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { 
   getCBAById, 
   updateCBA, 
@@ -17,16 +15,17 @@ import {
 import { getClausesByCBAId } from "@/lib/services/clause-service";
 import { getBargainingNotesByCBA } from "@/lib/services/bargaining-notes-service";
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import { logger } from "@/lib/logger";
 
+ 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, context) => {
+  const { params } = context as { params: { id: string } };
   try {
       const { id } = params;
       const { searchParams } = new URL(request.url);
@@ -48,7 +47,7 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
     );
       }
 
-      const response = { cba };
+      const response: Record<string, unknown> = { cba };
 
       // Optionally fetch clauses
       if (includeClauses) {
@@ -73,17 +72,15 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
       error
     );
     }
-    })(request, { params });
-};
+});
 
 
 const cbasSchema = z.object({
   status: z.unknown().optional(),
 });
 
-export const PATCH = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(20, async (request, context) => {
-    const { userId, organizationId } = context;
+export const PATCH = withRoleAuth('steward', async (request, context) => {
+    const { userId, organizationId: _organizationId, params } = context as { userId: string; organizationId: string; params: { id: string } };
 
   try {
       const { id } = params;
@@ -98,7 +95,7 @@ export const PATCH = async (request: NextRequest, { params }: { params: { id: st
       );
     }
     
-    const { status } = validation.data;
+    const { status: _status } = validation.data;
 
       // If only updating status, use specialized function
       if (body.status && Object.keys(body).length === 1) {
@@ -132,6 +129,7 @@ export const PATCH = async (request: NextRequest, { params }: { params: { id: st
       logger.error("Error updating CBA", error as Error);
       
       // Handle unique constraint violations
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((error as any)?.code === "23505") {
         return standardErrorResponse(
       ErrorCode.ALREADY_EXISTS,
@@ -146,11 +144,10 @@ export const PATCH = async (request: NextRequest, { params }: { params: { id: st
       error
     );
     }
-    })(request, { params });
-};
+});
 
-export const DELETE = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  return withRoleAuth(20, async (request, context) => {
+export const DELETE = withRoleAuth('steward', async (request, context) => {
+  const { params } = context as { params: { id: string } };
   try {
       const { id } = params;
       const { searchParams } = new URL(request.url);
@@ -196,5 +193,4 @@ export const DELETE = async (request: NextRequest, { params }: { params: { id: s
       error
     );
     }
-    })(request, { params });
-};
+});

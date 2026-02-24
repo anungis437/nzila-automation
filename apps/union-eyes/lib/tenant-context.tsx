@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 "use client";
 
 /**
@@ -9,13 +8,15 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+ 
 import { useAuth, useOrganization } from "@clerk/nextjs";
 
 // Tenant information interface
 export interface TenantInfo {
-  tenantId: string;
+  organizationId: string;
   name: string;
   slug: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   settings?: Record<string, any>;
   subscriptionTier?: string;
   features?: string[];
@@ -27,7 +28,7 @@ interface TenantContextType {
   tenants: TenantInfo[];
   isLoading: boolean;
   error: Error | null;
-  switchTenant: (tenantId: string) => Promise<void>;
+  switchTenant: (organizationId: string) => Promise<void>;
   refreshTenants: () => Promise<void>;
 }
 
@@ -47,7 +48,7 @@ interface TenantProviderProps {
  */
 export function TenantProvider({ children }: TenantProviderProps) {
   const { userId, isLoaded: authLoaded } = useAuth();
-  const { organization, isLoaded: orgLoaded } = useOrganization();
+  const { organization: _organization, isLoaded: orgLoaded } = useOrganization();
   
   const [currentTenant, setCurrentTenant] = useState<TenantInfo | null>(null);
   const [tenants, setTenants] = useState<TenantInfo[]>([]);
@@ -93,7 +94,7 @@ setError(err instanceof Error ? err : new Error("Unknown error"));
   /**
    * Switch to a different tenant
    */
-  const switchTenant = useCallback(async (tenantId: string) => {
+  const switchTenant = useCallback(async (organizationId: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -103,7 +104,7 @@ setError(err instanceof Error ? err : new Error("Unknown error"));
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tenantId }),
+        body: JSON.stringify({ organizationId }),
       });
 
       if (!response.ok) {
@@ -174,7 +175,7 @@ export function useTenant() {
  */
 export function useTenantId(): string | null {
   const { currentTenant } = useTenant();
-  return currentTenant?.organizationId /* was tenantId */ || null;
+  return currentTenant?.organizationId || null;
 }
 
 /**

@@ -9,17 +9,21 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+ 
 import { Heart, Shield, Eye, Users } from 'lucide-react';
 
 export type CalloutVariant = 'solidarity' | 'trust' | 'transparency' | 'human';
 
-interface HumanCenteredCalloutProps {
+export interface HumanCenteredCalloutProps {
   icon?: React.ReactNode;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  /** Alias for description — accepted for convenience */
+  message?: string;
   variant?: CalloutVariant;
   className?: string;
   children?: React.ReactNode;
+  compact?: boolean;
 }
 
 const variantStyles: Record<CalloutVariant, { bg: string; border: string; icon: string }> = {
@@ -56,12 +60,15 @@ export function HumanCenteredCallout({
   icon,
   title,
   description,
+  message,
   variant = 'human',
   className,
   children,
+  compact: _compact,
 }: HumanCenteredCalloutProps) {
   const styles = variantStyles[variant];
   const displayIcon = icon || defaultIcons[variant];
+  const displayDescription = description || message || '';
 
   return (
     <div
@@ -73,7 +80,7 @@ export function HumanCenteredCallout({
       )}
     >
       <div className="flex items-start gap-4">
-        <div className={cn('flex-shrink-0', styles.icon)}>
+        <div className={cn('shrink-0', styles.icon)}>
           {displayIcon}
         </div>
         <div className="flex-1 min-w-0">
@@ -81,7 +88,7 @@ export function HumanCenteredCallout({
             {title}
           </h3>
           <p className="text-slate-700 leading-relaxed">
-            {description}
+            {displayDescription}
           </p>
           {children && (
             <div className="mt-4">
@@ -115,7 +122,7 @@ export function HumanCenteredCalloutCompact({
         className
       )}
     >
-      <span className={cn('flex-shrink-0', styles.icon)}>
+      <span className={cn('shrink-0', styles.icon)}>
         {displayIcon}
       </span>
       <span className="text-sm font-medium text-slate-900">

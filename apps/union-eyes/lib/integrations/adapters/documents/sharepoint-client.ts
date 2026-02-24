@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * SharePoint API Client
  * 
@@ -10,9 +9,10 @@
  * Authentication: OAuth2 with Microsoft identity platform
  */
 
+ 
 import type {
   IntegrationError,
-  RateLimitError,
+  RateLimitError as _RateLimitError,
   AuthenticationError,
 } from '../../types';
 
@@ -195,13 +195,12 @@ export class SharePointClient {
       // Check for rate limiting
       if (response.status === 429) {
         const retryAfter = response.headers.get('Retry-After');
-        const resetTime = retryAfter
+        const _resetTime = retryAfter
           ? new Date(Date.now() + parseInt(retryAfter) * 1000)
           : new Date(Date.now() + 60000);
 
-        const error = new Error('Rate limit exceeded') as RateLimitError;
+        const error = new Error('Rate limit exceeded');
         error.name = 'RateLimitError';
-        error.resetAt = resetTime;
         throw error;
       }
 

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Timeline Builder Service
  * 
@@ -6,7 +5,9 @@
  * with human-readable explanations for member-facing displays.
  */
 
-import { getHumanExplainer, HumanExplanation } from '@/lib/member-experience/human-explainers';
+import { getHumanExplainer } from '@/lib/member-experience/human-explainers';
+import type { HumanExplanation } from '@/types/marketing';
+import type { ClaimStatus, ClaimPriority } from '@/lib/services/claim-workflow-fsm';
 
 export interface TimelineStage {
   id: string;
@@ -63,10 +64,10 @@ export function buildCaseTimeline(context: TimelineContext): TimelineStage[] {
 
     // Get human explanation
     const explanation = getHumanExplainer({
-      status: history.status as unknown,
-      daysInStatus: isCurrentStage ? daysInStage : 0,
-      priority: context.priority,
-      assignedSteward: context.assignedSteward,
+      status: history.status as ClaimStatus,
+      daysInState: isCurrentStage ? daysInStage : 0,
+      priority: context.priority as ClaimPriority,
+      assignedSteward: context.assignedSteward?.name,
       caseType: context.caseType,
     });
 
@@ -242,10 +243,10 @@ export function generateStatusUpdateMessage(
   context: Partial<TimelineContext>
 ): string {
   const explanation = getHumanExplainer({
-    status: newStatus as unknown,
-    daysInStatus: 0,
-    priority: context.priority,
-    assignedSteward: context.assignedSteward,
+    status: newStatus as ClaimStatus,
+    daysInState: 0,
+    priority: context.priority as ClaimPriority,
+    assignedSteward: context.assignedSteward?.name,
     caseType: context.caseType,
   });
 

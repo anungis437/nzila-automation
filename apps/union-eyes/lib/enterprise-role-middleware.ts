@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Enhanced RBAC Middleware for Enterprise Unions
  * 
@@ -52,11 +51,8 @@ import {
   getMemberRoles,
   getMemberHighestRoleLevel,
   getMemberEffectivePermissions,
-  memberHasRoleLevel,
-  memberHasPermissionException,
   logPermissionCheck,
   incrementExceptionUsage,
-  getRoleDefinitionByCode,
   type MemberRoleWithDetails,
 } from '@/db/queries/enhanced-rbac-queries';
 
@@ -108,6 +104,7 @@ interface PermissionCheckResult {
  * @param handler - Request handler receiving enhanced context
  * @param options - Additional options (scope checking, audit config)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withEnhancedRoleAuth<T = any>(
   minRoleLevel: number,
   handler: (request: NextRequest, context: EnhancedRoleContext) => Promise<NextResponse<T>>,
@@ -121,11 +118,13 @@ export function withEnhancedRoleAuth<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, orgContext: unknown) => {
     const startTime = Date.now();
-    const { organizationId, userId } = orgContext;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { organizationId, userId } = orgContext as any;
     
     try {
       // Get member from context (requires tenant middleware to populate this)
-      const memberId = (orgContext as unknown).memberId;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const memberId = (orgContext as any).memberId;
       if (!memberId) {
         await logAuditDenial(
           orgContext,
@@ -219,7 +218,7 @@ export function withEnhancedRoleAuth<T = any>(
       // Call handler with enhanced context
       return await handler(request, enhancedContext);
       
-    } catch (error) {
+    } catch (_error) {
 return NextResponse.json(
         { error: 'Authorization failed. Please try again.' },
         { status: 500 }
@@ -235,6 +234,7 @@ return NextResponse.json(
  * @param handler - Request handler
  * @param options - Additional options
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withPermission<T = any>(
   requiredPermission: string,
   handler: (request: NextRequest, context: EnhancedRoleContext) => Promise<NextResponse<T>>,
@@ -248,10 +248,12 @@ export function withPermission<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, orgContext: unknown) => {
     const startTime = Date.now();
-    const { organizationId, userId } = orgContext;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { organizationId, userId } = orgContext as any;
     
     try {
-      const memberId = (orgContext as unknown).memberId;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const memberId = (orgContext as any).memberId;
       if (!memberId) {
         await logAuditDenial(
           { organizationId, userId, memberId: '' },
@@ -332,7 +334,7 @@ export function withPermission<T = any>(
       // Call handler
       return await handler(request, enhancedContext);
       
-    } catch (error) {
+    } catch (_error) {
 return NextResponse.json(
         { error: 'Authorization failed.' },
         { status: 500 }
@@ -348,6 +350,7 @@ return NextResponse.json(
  * @param scopeType - Required scope type (e.g., "department")
  * @param handler - Request handler
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withScopedRoleAuth<T = any>(
   roleCode: string,
   scopeType: string,
@@ -361,10 +364,12 @@ export function withScopedRoleAuth<T = any>(
 ) {
   return withOrganizationAuth(async (request: NextRequest, orgContext: unknown) => {
     const startTime = Date.now();
-    const { organizationId, userId } = orgContext;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { organizationId, userId } = orgContext as any;
     
     try {
-      const memberId = (orgContext as unknown).memberId;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const memberId = (orgContext as any).memberId;
       if (!memberId) {
         await logAuditDenial(
           { organizationId, userId, memberId: '' },
@@ -440,7 +445,7 @@ export function withScopedRoleAuth<T = any>(
       
       return await handler(request, enhancedContext);
       
-    } catch (error) {
+    } catch (_error) {
 return NextResponse.json({ error: 'Authorization failed.' }, { status: 500 });
     }
   });
@@ -528,8 +533,9 @@ async function getPermissionExceptionId(
     query = sql`${query} LIMIT 1`;
     
     const result = await db.execute(query);
-    return result[0]?.id || null;
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (result as any[])[0]?.id || null;
+  } catch (_error) {
 return null;
   }
 }
@@ -539,7 +545,7 @@ return null;
  */
 async function checkMemberPermission(
   memberId: string,
-  tenantId: string,
+  organizationId: string,
   requiredPermission: string,
   memberPermissions: string[],
   resourceType?: string,
@@ -559,7 +565,7 @@ async function checkMemberPermission(
     // Check for exception first
     const exceptionId = await getPermissionExceptionId(
       memberId,
-      tenantId,
+      organizationId,
       requiredPermission,
       resourceType,
       resourceId
@@ -569,7 +575,7 @@ async function checkMemberPermission(
       // Increment usage count for the exception
       try {
         await incrementExceptionUsage(exceptionId);
-      } catch (error) {
+      } catch (_error) {
 // Don&apos;t fail the request if usage tracking fails
       }
       
@@ -598,10 +604,12 @@ async function logAuditDenial(
   isSensitive?: boolean
 ): Promise<void> {
   await logPermissionCheck({
-    actorId: context.memberId || context.userId || 'unknown',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    actorId: (context as any).memberId || (context as any).userId || 'unknown',
     action,
     resourceType,
-    organizationId: context.organizationId,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    organizationId: (context as any).organizationId,
     granted: false,
     denialReason: reason,
     executionTimeMs,

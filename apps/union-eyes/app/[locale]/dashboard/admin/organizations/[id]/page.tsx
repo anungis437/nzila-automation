@@ -1,12 +1,13 @@
-// @ts-nocheck
+"use client";
+
+
+export const dynamic = 'force-dynamic';
 import React from 'react';
 /**
  * Organization Detail Page
  * View detailed information about a specific organization
  */
-"use client";
 
-import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -24,24 +25,12 @@ import {
   AlertCircle,
   Loader2,
   TrendingUp,
-  Calendar,
-  Mail,
-  Phone,
-  ExternalLink,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { OrganizationBreadcrumb } from "@/components/organization/organization-breadcrumb";
 import { OrganizationAnalytics } from "@/components/organization/organization-analytics";
@@ -57,7 +46,8 @@ const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactEle
   union: { label: "Union", icon: <Building2 className="w-4 h-4" />, color: "text-green-700 bg-green-100 border-green-200" },
   local: { label: "Local", icon: <Users className="w-4 h-4" />, color: "text-orange-700 bg-orange-100 border-orange-200" },
   region: { label: "Region", icon: <MapPin className="w-4 h-4" />, color: "text-teal-700 bg-teal-100 border-teal-200" },
-  district: { label: "District", icon: <Network className="w-4 h-4" />, color: "text-indigo-700 bg-indigo-100 border-indigo-200" }
+  district: { label: "District", icon: <Network className="w-4 h-4" />, color: "text-indigo-700 bg-indigo-100 border-indigo-200" },
+  platform: { label: "Platform", icon: <Settings className="w-4 h-4" />, color: "text-purple-700 bg-purple-100 border-purple-200" }
 };
 
 const statusConfig: Record<OrganizationStatus, { label: string; color: string; dotColor: string }> = {
@@ -68,6 +58,7 @@ const statusConfig: Record<OrganizationStatus, { label: string; color: string; d
 };
 
 interface OrganizationWithDetails extends Organization {
+  description?: string;
   memberCount?: number;
   childCount?: number;
   activeClaims?: number;
@@ -94,7 +85,7 @@ export default function OrganizationDetailPage() {
   );
 
   // Fetch organization members
-  const { data: membersData, isLoading: membersLoading } = useSWR(
+  const { data: membersData, isLoading: _membersLoading } = useSWR(
     organizationId ? `/api/organizations/${organizationId}/members` : null,
     fetcher
   );
@@ -121,7 +112,7 @@ export default function OrganizationDetailPage() {
       if (!response.ok) throw new Error("Failed to archive organization");
       
       router.push("/dashboard/admin/organizations");
-    } catch (error) {
+    } catch (_error) {
 alert("Failed to archive organization");
     }
   };
@@ -436,6 +427,7 @@ alert("Failed to archive organization");
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 flex-wrap">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {ancestors.map((ancestor: any, index: number) => (
                     <div key={ancestor.id} className="flex items-center gap-2">
                       {index > 0 && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
@@ -496,6 +488,7 @@ alert("Failed to archive organization");
                 </div>
               ) : (
                 <div className="space-y-2">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {children.map((child: any) => {
                     const childTypeInfo = typeConfig[child.type as OrganizationType];
                     const childStatusInfo = statusConfig[child.status as OrganizationStatus];

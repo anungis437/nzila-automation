@@ -1,3 +1,9 @@
+ 
+/**
+ * NzilaOS-GATE: ADMIN-ONLY diagnostic script.
+ * This script inspects information_schema metadata and does NOT access Org-scoped data.
+ * Raw postgres is permitted here per PR-UE-01 allowlist.
+ */
 import postgres from 'postgres';
 import * as dotenv from 'dotenv';
 
@@ -36,17 +42,17 @@ return;
       AND table_name = 'stipend_disbursements'
       ORDER BY ordinal_position;
     `;
-columns.forEach(col => {
+columns.forEach(_col => {
 });
     
     // Check specifically for amount-related columns
     const amountColumns = columns.filter(col => 
       col.column_name.includes('amount')
     );
-amountColumns.forEach(col => {
+amountColumns.forEach(_col => {
 });
     
-  } catch (error) {
+  } catch (_error) {
 } finally {
     await sql.end();
   }

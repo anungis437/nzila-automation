@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Federation Campaign Tracker Component
  * 
@@ -29,18 +28,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+ 
+import {
   Megaphone,
-  Target,
+  Target as _Target,
   Users,
-  TrendingUp,
   Calendar,
-  DollarSign,
   Eye,
   Edit,
   Plus,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -84,6 +82,7 @@ export function FederationCampaignTracker({
 
   React.useEffect(() => {
     loadCampaigns();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [federationId]);
 
   async function loadCampaigns() {
@@ -103,7 +102,7 @@ export function FederationCampaignTracker({
       } else {
         throw new Error(data.error);
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: "Failed to load campaigns",
@@ -137,6 +136,7 @@ export function FederationCampaignTracker({
       solidarity: { variant: "default", label: "Solidarity" }
     };
     const config = variants[type];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <Badge variant={config.variant as any}>{config.label}</Badge>;
   };
 
@@ -195,7 +195,7 @@ export function FederationCampaignTracker({
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-45">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
@@ -208,7 +208,7 @@ export function FederationCampaignTracker({
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-45">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>

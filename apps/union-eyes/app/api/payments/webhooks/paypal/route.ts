@@ -1,10 +1,10 @@
 /**
- * PayPal Webhook Handler for Dues Payments (Placeholder)
+ * PayPal Webhook Handler for Dues Payments
  * Handles PayPal webhook events for payment processing
  * 
  * POST /api/payments/webhooks/paypal - Process PayPal webhooks
  * 
- * TODO: Implement when PayPal integration is added
+ * Verifies webhook signature, processes PAYMENT.CAPTURE events.
  * 
  * @module app/api/payments/webhooks/paypal
  */
@@ -12,7 +12,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { PaymentService } from '@/lib/services/payment-service';
-import { ErrorCode } from '@/lib/api/standardized-responses';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -86,6 +85,7 @@ async function verifyPayPalWebhook(
   return data.verification_status === 'SUCCESS';
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getTransactionIdFromPayPalEvent(resource: any): string | null {
   return (
     resource?.custom_id ||

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * External Communication System Schema
  * 
@@ -20,7 +19,7 @@ import {
   unique,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { organizations } from '../core';
+import { organizations } from '../schema-organizations';
 
 /**
  * Communication Channels/Teams

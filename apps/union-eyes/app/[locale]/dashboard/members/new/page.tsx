@@ -4,6 +4,8 @@
  */
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -86,7 +88,7 @@ export default function CreateMemberPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div

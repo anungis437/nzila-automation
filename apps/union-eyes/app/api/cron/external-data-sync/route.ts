@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * External Data Sync Cron Job
  * 
@@ -15,13 +14,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { wageEnrichmentService } from '@/lib/services/external-data/wage-enrichment-service';
+import { timingSafeEqual } from 'crypto';
+import { wageEnrichmentService, type SyncResult } from '@/lib/services/external-data/wage-enrichment-service';
 import { logger } from '@/lib/logger';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 // Common NOC codes for unionized occupations
 const COMMON_NOC_CODES = [
@@ -53,9 +52,13 @@ const COMMON_NOC_CODES = [
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
-  // Verify cron authorization
+  // Verify cron authorization (timing-safe comparison)
   const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const secret = authHeader?.replace('Bearer ', '') ?? '';
+  const expected = process.env.CRON_SECRET ?? '';
+  const secretBuf = Buffer.from(secret);
+  const expectedBuf = Buffer.from(expected);
+  if (secretBuf.length !== expectedBuf.length || !timingSafeEqual(secretBuf, expectedBuf)) {
     logger.warn('[CRON] Unauthorized external data sync attempt');
     return standardErrorResponse(
       ErrorCode.AUTH_REQUIRED,
@@ -70,10 +73,10 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
       syncType: 'scheduled',
       dataSources: {
-        wages: null,
-        unionDensity: null,
-        cola: null,
-        contributions: null,
+        wages: null as SyncResult | { success: boolean; error: string } | null,
+        unionDensity: null as SyncResult | { success: boolean; error: string } | null,
+        cola: null as SyncResult | { success: boolean; error: string } | null,
+        contributions: null as SyncResult | { success: boolean; error: string } | null,
       },
       summary: {
         totalProcessed: 0,
@@ -81,6 +84,7 @@ export async function GET(request: NextRequest) {
         totalUpdated: 0,
         totalFailed: 0,
         success: true,
+        duration: 0,
       },
       errors: [] as string[],
     };

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Sun Life Financial Group Benefits API Client
  * 
@@ -20,6 +19,7 @@ import {
   IntegrationError,
   RateLimitError,
   AuthenticationError,
+  IntegrationProvider,
 } from '../../types';
 import { logger } from '@/lib/logger';
 
@@ -132,7 +132,7 @@ export class SunLifeClient {
       logger.error('Sun Life authentication failed', error instanceof Error ? error : new Error(String(error)));
       throw new AuthenticationError(
         'Failed to authenticate with Sun Life',
-        error instanceof Error ? error : undefined
+        IntegrationProvider.SUNLIFE
       );
     }
   }
@@ -145,7 +145,7 @@ export class SunLifeClient {
   }> {
     const token = this.refreshToken || this.config.refreshToken;
     if (!token) {
-      throw new AuthenticationError('No refresh token available');
+      throw new AuthenticationError('No refresh token available', IntegrationProvider.SUNLIFE);
     }
 
     const response = await fetch(`${this.baseUrl}/oauth/token`, {
@@ -163,7 +163,7 @@ export class SunLifeClient {
 
     if (!response.ok) {
       const error = await response.text();
-      throw new AuthenticationError(`Token refresh failed: ${error}`);
+      throw new AuthenticationError(`Token refresh failed: ${error}`, IntegrationProvider.SUNLIFE);
     }
 
     return response.json();
@@ -208,7 +208,7 @@ export class SunLifeClient {
     });
 
     if (response.status === 429) {
-      throw new RateLimitError('Sun Life API rate limit exceeded');
+      throw new RateLimitError('Sun Life API rate limit exceeded', IntegrationProvider.SUNLIFE);
     }
 
     if (response.status === 401) {
@@ -225,7 +225,7 @@ export class SunLifeClient {
       });
 
       if (!retryResponse.ok) {
-        throw new AuthenticationError('Authentication failed after token refresh');
+        throw new AuthenticationError('Authentication failed after token refresh', IntegrationProvider.SUNLIFE);
       }
 
       return retryResponse.json();
@@ -235,7 +235,7 @@ export class SunLifeClient {
       const error = await response.text();
       throw new IntegrationError(
         `Sun Life API error: ${response.status} - ${error}`,
-        'SUNLIFE',
+        IntegrationProvider.SUNLIFE,
         'API_ERROR'
       );
     }

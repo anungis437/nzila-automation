@@ -1,6 +1,5 @@
 import { pgTable, text, timestamp, uuid, varchar, pgEnum, boolean } from "drizzle-orm/pg-core";
 import { organizations } from "../schema-organizations";
-import { users } from "./user-management-schema";
 
 // Enums
 export const memberCategoryEnum = pgEnum("member_category", [
@@ -20,6 +19,12 @@ export const organizationMembers = pgTable("organization_members", {
   role: text("role").notNull(),
   status: text("status").notNull(),
   
+  // Member Info
+  name: text("name"),
+  email: text("email"),
+  phone: text("phone"),
+  department: text("department"),
+  
   // Union Info
   membershipNumber: text("membership_number"),
   
@@ -31,9 +36,14 @@ export const organizationMembers = pgTable("organization_members", {
   exemptionApprovedBy: varchar("exemption_approved_by", { length: 255 }),
   exemptionApprovedAt: timestamp("exemption_approved_at", { withTimezone: true }),
   
+  // Full-text search
+  searchVector: text("search_vector"),
+  
   // Timestamps
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   joinedAt: timestamp("joined_at", { withTimezone: true }),
   updatedAt: timestamp("updated_at", { withTimezone: true }),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
 export type InsertOrganizationMember = typeof organizationMembers.$inferInsert;

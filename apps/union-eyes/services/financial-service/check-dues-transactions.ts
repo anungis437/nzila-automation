@@ -1,3 +1,9 @@
+ 
+/**
+ * NzilaOS-GATE: ADMIN-ONLY diagnostic script.
+ * This script inspects information_schema metadata and does NOT access Org-scoped data.
+ * Raw postgres is permitted here per PR-UE-01 allowlist.
+ */
 import postgres from 'postgres';
 import * as dotenv from 'dotenv';
 
@@ -24,15 +30,15 @@ async function checkDuesTransactions() {
       AND table_name = 'dues_transactions'
       ORDER BY ordinal_position;
     `;
-columns.forEach(col => {
+columns.forEach(_col => {
 });
     
     // Check for amount-related columns
     const amountCols = columns.filter(c => c.column_name.includes('amount'));
-amountCols.forEach(col => {
+amountCols.forEach(_col => {
 });
     
-  } catch (error) {
+  } catch (_error) {
 } finally {
     await sql.end();
   }

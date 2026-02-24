@@ -1,3 +1,7 @@
+"use client";
+
+export const dynamic = 'force-dynamic';
+
 /**
  * Voting & Elections Page
  * 
@@ -25,7 +29,34 @@ import { ElectionAuditLog } from "@/components/voting/election-audit-log";
 
 export default function VotingPage() {
   const [showBallotBuilder, setShowBallotBuilder] = React.useState(false);
-  const [activeElectionId, setActiveElectionId] = React.useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [elections, setElections] = React.useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [activeElection, setActiveElection] = React.useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [latestResults, setLatestResults] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    async function loadElections() {
+      try {
+        const res = await fetch('/api/v2/elections');
+        if (res.ok) {
+          const data = await res.json();
+          const items = Array.isArray(data) ? data : data?.elections ?? data?.data ?? [];
+          setElections(items);
+          const active = items.find((e: { status: string }) => e.status === 'active');
+          if (active) {
+            setActiveElection(active);
+          }
+          const completed = items.find((e: { status: string }) => e.status === 'completed');
+          if (completed) {
+            setLatestResults(completed);
+          }
+        }
+      } catch { /* API not available */ }
+    }
+    loadElections();
+  }, []);
 
   return (
     <div className="container mx-auto py-8 space-y-6">
@@ -53,35 +84,32 @@ export default function VotingPage() {
         </TabsList>
 
         <TabsContent value="active">
-          {activeElectionId ? (
+          {activeElection ? (
             <VoteCastingInterface
               ballot={{
-                id: activeElectionId,
-                title: "Sample Election",
-                description: "",
-                questions: [],
-                isAnonymous: false,
-                requiresVerification: false,
-                allowsAbstain: false,
+                id: activeElection.id,
+                title: activeElection.title ?? 'Election',
+                description: activeElection.description ?? '',
+                questions: activeElection.questions ?? [],
+                isAnonymous: activeElection.isAnonymous ?? false,
+                requiresVerification: activeElection.requiresVerification ?? false,
+                allowsAbstain: activeElection.allowsAbstain ?? false,
               }}
-              onSubmit={async (votes) => {
-setActiveElectionId(null);
+              onSubmit={async (_votes) => {
+                setActiveElection(null);
               }}
-              onCancel={() => setActiveElectionId(null)}
+              onCancel={() => setActiveElection(null)}
             />
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-600">No active elections at this time</p>
-              <Button variant="link" onClick={() => setActiveElectionId("demo-election")}>
-                View Sample Election
-              </Button>
             </div>
           )}
         </TabsContent>
 
         <TabsContent value="results">
           <ElectionResultsDashboard
-            results={{
+            results={latestResults ?? {
               id: "",
               title: "No Results",
               status: "upcoming",
@@ -97,24 +125,24 @@ setActiveElectionId(null);
 
         <TabsContent value="schedule">
           <ElectionScheduleCalendar
-            elections={[]}
-            onSelectElection={(election) => setActiveElectionId(election.id)}
+            elections={elections}
+            onSelectElection={(election) => setActiveElection(elections.find((e: { id: string }) => e.id === election.id) ?? null)}
           />
         </TabsContent>
 
         <TabsContent value="eligibility">
           <VoterEligibilityManager
-            electionId=""
-            electionTitle="Voter Eligibility"
-            members={[]}
+            electionId={activeElection?.id ?? ""}
+            electionTitle={activeElection?.title ?? "Voter Eligibility"}
+            members={activeElection?.eligibleMembers ?? []}
           />
         </TabsContent>
 
         <TabsContent value="audit">
           <ElectionAuditLog
-            electionId=""
-            electionTitle="Election Audit"
-            entries={[]}
+            electionId={activeElection?.id ?? ""}
+            electionTitle={activeElection?.title ?? "Election Audit"}
+            entries={activeElection?.auditEntries ?? []}
           />
         </TabsContent>
       </Tabs>
@@ -122,7 +150,7 @@ setActiveElectionId(null);
       {/* Ballot Builder Modal */}
       {showBallotBuilder && (
         <BallotBuilder
-          onSave={async (ballot) => {
+          onSave={async (_ballot) => {
 setShowBallotBuilder(false);
           }}
           onCancel={() => setShowBallotBuilder(false)}

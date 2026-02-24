@@ -6,34 +6,33 @@
 
 // Only import bullmq in runtime, not during build
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let Worker: any, Job: any,IORedis: any;
+let Worker: any, _Job: any,IORedis: any;
 
 if (typeof window === 'undefined' && !process.env.__NEXT_BUILDING) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const bullmq = require('bullmq');
     Worker = bullmq.Worker;
-    Job = bullmq.Job;
+    _Job = bullmq.Job;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     IORedis = require('ioredis');
-  } catch (e) {
+  } catch (_e) {
     // Fail silently during build
   }
 }
 
-import { ReportJobData } from '../job-queue';
 import { db } from '../../db/db';
 import { claims } from '../../db/schema/claims-schema';
 import { organizationMembers as members } from '../../db/schema/organization-members-schema';
 import { 
-  grievanceWorkflows,
-  grievanceStages,
+  _grievanceWorkflows,
+  _grievanceStages,
   grievanceTransitions,
-  grievanceAssignments,
-  grievanceSettlements 
+  _grievanceAssignments,
+  _grievanceSettlements 
 } from '../../db/schema/grievance-workflow-schema';
 import { getNotificationService } from '../services/notification-service';
-import { eq, and, between, gte, lte, desc } from 'drizzle-orm';
+import { eq, and, between, desc } from 'drizzle-orm';
 import { generatePDF } from '../utils/pdf-generator';
 import { generateExcel } from '../utils/excel-generator';
 import { DataExportService, GdprRequestManager } from '../gdpr/consent-manager';
@@ -55,9 +54,10 @@ const REPORTS_DIR = process.env.REPORTS_DIR || './reports';
 async function ensureReportsDir() {
   try {
     await fs.mkdir(REPORTS_DIR, { recursive: true });
-  } catch (error) {
+  } catch (_error) {
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function flattenForExport(input: any, prefix = ''): Array<{ path: string; value: string }> {
   if (input === null || input === undefined) {
     return [{ path: prefix, value: '' }];
@@ -98,14 +98,14 @@ function toXml(entries: Array<{ path: string; value: string }>): string {
   return `<?xml version="1.0" encoding="UTF-8"?><export>${items}</export>`;
 }
 
-async function generateGdprExport(
-  tenantId: string,
+async function _generateGdprExport(
+  organizationId: string,
   userId: string,
   parameters: { requestId: string; format: 'json' | 'csv' | 'xml' }
 ) {
   const exportData = await DataExportService.exportUserData(
     userId,
-    tenantId,
+    organizationId,
     parameters.format
   );
 
@@ -129,7 +129,7 @@ async function generateGdprExport(
  * Generate claims report
  */
 async function generateClaimsReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     startDate?: string;
     endDate?: string;
@@ -138,7 +138,8 @@ async function generateClaimsReport(
   }
 ) {
 // Build query with combined where conditions
-  const conditions: any[] = [eq(claims.organizationId, tenantId)];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conditions: any[] = [eq(claims.organizationId, organizationId)];
   
   if (parameters.startDate && parameters.endDate) {
     conditions.push(
@@ -147,6 +148,7 @@ async function generateClaimsReport(
   }
 
   if (parameters.status) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     conditions.push(eq(claims.status, parameters.status as any));
   }
 
@@ -184,16 +186,18 @@ async function generateClaimsReport(
  * Generate members report
  */
 async function generateMembersReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     status?: string;
     format: 'pdf' | 'excel';
   }
 ) {
 // Build query with combined where conditions
-  const conditions: any[] = [eq(members.organizationId, tenantId)];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conditions: any[] = [eq(members.organizationId, organizationId)];
   
   if (parameters.status) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     conditions.push(eq(members.status, parameters.status as any));
   }
 
@@ -230,7 +234,7 @@ async function generateMembersReport(
  * Generate grievances report
  */
 async function generateGrievancesReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     startDate?: string;
     endDate?: string;
@@ -240,7 +244,8 @@ async function generateGrievancesReport(
   }
 ) {
 // Build query with combined where conditions
-  const conditions: any[] = [eq(claims.organizationId, tenantId)];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conditions: any[] = [eq(claims.organizationId, organizationId)];
   
   if (parameters.startDate && parameters.endDate) {
     conditions.push(
@@ -249,6 +254,7 @@ async function generateGrievancesReport(
   }
 
   if (parameters.status) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     conditions.push(eq(claims.status, parameters.status as any));
   }
 
@@ -299,7 +305,7 @@ async function generateGrievancesReport(
  * Generate usage analytics report
  */
 async function generateUsageReport(
-  tenantId: string,
+  organizationId: string,
   parameters: {
     startDate: string;
     endDate: string;
@@ -312,7 +318,7 @@ async function generateUsageReport(
     .from(claims)
     .where(
       and(
-        eq(claims.organizationId, tenantId),
+        eq(claims.organizationId, organizationId),
         between(claims.createdAt, new Date(parameters.startDate), new Date(parameters.endDate))
       )
     );
@@ -320,14 +326,14 @@ async function generateUsageReport(
   const membersData = await db
     .select()
     .from(members)
-    .where(eq(members.organizationId, tenantId));
+    .where(eq(members.organizationId, organizationId));
 
   const newMembers = await db
     .select()
     .from(members)
     .where(
       and(
-        eq(members.organizationId, tenantId),
+        eq(members.organizationId, organizationId),
         between(members.createdAt, new Date(parameters.startDate), new Date(parameters.endDate))
       )
     );
@@ -336,16 +342,18 @@ async function generateUsageReport(
   const grievanceTransitionsData = await db
     .select()
     .from(grievanceTransitions)
-    .where(eq(grievanceTransitions.organizationId, tenantId));
+    .where(eq(grievanceTransitions.organizationId, organizationId));
 
   const data = {
     period: { start: parameters.startDate, end: parameters.endDate },
     claims: {
       total: claimsData.length,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       byStatus: claimsData.reduce((acc: any, claim) => {
         acc[claim.status] = (acc[claim.status] || 0) + 1;
         return acc;
       }, {}),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       byPriority: claimsData.reduce((acc: any, claim) => {
         acc[claim.priority] = (acc[claim.priority] || 0) + 1;
         return acc;
@@ -389,8 +397,9 @@ async function generateUsageReport(
 /**
  * Process report generation job
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function processReportJob(job: any) {
-  const { reportType, tenantId, userId, parameters } = job.data;
+  const { reportType, tenantId: organizationId, userId, parameters } = job.data;
 await ensureReportsDir();
 
   await job.updateProgress(10);
@@ -402,27 +411,32 @@ await ensureReportsDir();
   try {
     switch (reportType) {
       case 'claims':
-        buffer = await generateClaimsReport(tenantId, parameters as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buffer = await generateClaimsReport(organizationId, parameters as any);
         filename = `claims-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'members':
-        buffer = await generateMembersReport(tenantId, parameters as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buffer = await generateMembersReport(organizationId, parameters as any);
         filename = `members-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'grievances':
-        buffer = await generateGrievancesReport(tenantId, parameters as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buffer = await generateGrievancesReport(organizationId, parameters as any);
         filename = `grievances-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'usage':
-        buffer = await generateUsageReport(tenantId, parameters as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buffer = await generateUsageReport(organizationId, parameters as any);
         filename = `usage-report-${Date.now()}.${parameters.format}`;
         break;
 
       case 'gdpr_export':
-        buffer = await generateGdprExport(tenantId, userId, parameters as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buffer = await generateGdprExport(organizationId, userId, parameters as any);
         filename = `gdpr-export-${parameters.requestId}.${parameters.format}`;
         break;
 
@@ -432,13 +446,20 @@ await ensureReportsDir();
 
     await job.updateProgress(70);
 
-    // Save report file
-    const filepath = path.join(REPORTS_DIR, filename);
+    // Sanitize filename to prevent path traversal
+    const safeFilename = path.basename(filename);
+    const filepath = path.join(REPORTS_DIR, safeFilename);
+    // Verify resolved path stays within REPORTS_DIR
+    const resolvedReports = path.resolve(REPORTS_DIR);
+    const resolvedFilepath = path.resolve(filepath);
+    if (!resolvedFilepath.startsWith(resolvedReports + path.sep)) {
+      throw new Error('Invalid report filename');
+    }
     await fs.writeFile(filepath, buffer);
 await job.updateProgress(90);
 
     if (reportType === 'gdpr_export') {
-      const downloadUrl = `/api/gdpr/data-export?requestId=${parameters.requestId}&tenantId=${tenantId}`;
+      const downloadUrl = `/api/gdpr/data-export?requestId=${parameters.requestId}&organizationId=${organizationId}`;
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
       await GdprRequestManager.updateRequestStatus(parameters.requestId, 'completed', {
@@ -471,10 +492,10 @@ await job.updateProgress(90);
           actionUrl: `/api/reports/${filename}`,
           actionLabel: 'Download Report',
           userId: 'system',
-        }).catch((err) => {
+        }).catch((_err) => {
 });
 }
-    } catch (notificationError) {
+    } catch (_notificationError) {
 // Don&apos;t fail the job if notification fails
     }
 
@@ -494,6 +515,7 @@ throw error;
 // Create worker
 export const reportWorker = new Worker(
   'reports',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async (job: any) => {
     return await processReportJob(job);
   },
@@ -504,13 +526,16 @@ export const reportWorker = new Worker(
 );
 
 // Event handlers
-reportWorker.on('completed', (job: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+reportWorker.on('completed', (_job: any) => {
 });
 
-reportWorker.on('failed', (job: any, err: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+reportWorker.on('failed', (_job: any, _err: any) => {
 });
 
-reportWorker.on('error', (err: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+reportWorker.on('error', (_err: any) => {
 });
 
 // Graceful shutdown

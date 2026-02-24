@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * GraphQL API Endpoint
  * 
@@ -12,12 +11,9 @@
  */
 
 import { createYoga } from 'graphql-yoga';
+import { NextResponse } from 'next/server';
 import { schema } from '@/lib/graphql/schema';
-import { resolvers } from '@/lib/graphql/resolvers';
 import { withApiAuth } from '@/lib/api-auth-guard';
-import {
-  ErrorCode,
-} from '@/lib/api/standardized-responses';
 
 const yoga = createYoga({
   schema,
@@ -30,6 +26,6 @@ const yoga = createYoga({
   },
 });
 
-export const GET = withApiAuth(async (request, context) => yoga.fetch(request, context));
-export const POST = withApiAuth(async (request, context) => yoga.fetch(request, context));
+export const GET = withApiAuth(async (request, context) => yoga.fetch(request, context) as unknown as NextResponse);
+export const POST = withApiAuth(async (request, context) => yoga.fetch(request, context) as unknown as NextResponse);
 

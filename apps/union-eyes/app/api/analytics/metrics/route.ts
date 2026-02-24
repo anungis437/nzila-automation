@@ -1,5 +1,3 @@
-﻿// @ts-nocheck
-import { logApiAuditEvent } from "@/lib/middleware/api-security";
 /**
  * Metrics API
  * Q1 2025 - Advanced Analytics
@@ -7,27 +5,25 @@ import { logApiAuditEvent } from "@/lib/middleware/api-security";
  * Endpoint for calculating and retrieving analytics metrics
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { calculateMetrics, getAnalyticsMetrics } from '@/actions/analytics-actions';
 import { z } from "zod";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const analyticsMetricsSchema = z.object({
-  metricType: z.unknown().optional(),
+  metricType: z.string().optional(),
   metricName: z.string().min(1, 'metricName is required'),
-  periodType: z.unknown().optional(),
-  periodStart: z.unknown().optional(),
-  periodEnd: z.unknown().optional(),
+  periodType: z.string().optional(),
+  periodStart: z.string().optional(),
+  periodEnd: z.string().optional(),
 });
 
-export const POST = async (request: NextRequest) => {
-  return withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, _context) => {
     try {
       const body = await request.json();
     // Validate request body
@@ -61,7 +57,7 @@ export const POST = async (request: NextRequest) => {
       const result = await calculateMetrics({
         metricType,
         metricName,
-        periodType,
+        periodType: periodType as 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly',
         periodStart: new Date(periodStart),
         periodEnd: new Date(periodEnd)
       });
@@ -84,11 +80,9 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
+export const GET = withRoleAuth('member', async (request, _context) => {
     try {
       const searchParams = request.nextUrl.searchParams;
       const metricType = searchParams.get('metricType');
@@ -124,6 +118,5 @@ return standardErrorResponse(
       error
     );
     }
-    })(request);
-};
+});
 

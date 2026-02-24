@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Feature Flag Service
  * 
@@ -495,16 +494,16 @@ export async function addOrganizationToPilot(
     throw new Error(`Feature flag not found: ${featureName}`);
   }
   
-  const allowedTenants = (flag.allowedTenants as string[] | null) || [];
+  const allowedOrganizations = (flag.allowedOrganizations as string[] | null) || [];
   
-  if (!allowedTenants.includes(organizationId)) {
-    allowedTenants.push(organizationId);
+  if (!allowedOrganizations.includes(organizationId)) {
+    allowedOrganizations.push(organizationId);
     
     await db
       .update(featureFlags)
       .set({
         type: 'tenant',
-        allowedTenants,
+        allowedOrganizations,
         updatedAt: new Date(),
         lastModifiedBy: actorId,
       })
@@ -528,13 +527,13 @@ export async function removeOrganizationFromPilot(
     throw new Error(`Feature flag not found: ${featureName}`);
   }
   
-  const allowedTenants = (flag.allowedTenants as string[] | null) || [];
-  const filtered = allowedTenants.filter(id => id !== organizationId);
+  const allowedOrganizations = (flag.allowedOrganizations as string[] | null) || [];
+  const filtered = allowedOrganizations.filter(id => id !== organizationId);
   
   await db
     .update(featureFlags)
     .set({
-      allowedTenants: filtered,
+      allowedOrganizations: filtered,
       updatedAt: new Date(),
       lastModifiedBy: actorId,
     })

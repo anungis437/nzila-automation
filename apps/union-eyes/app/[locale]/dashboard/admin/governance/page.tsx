@@ -1,5 +1,7 @@
 "use client";
 
+
+export const dynamic = 'force-dynamic';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -133,7 +135,7 @@ export default function GovernancePage() {
       if (!response.ok) throw new Error("Failed to load governance dashboard");
       const data = await response.json();
       setDashboard(data.data);
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to load governance dashboard");
     } finally {
       setLoading(false);
@@ -194,7 +196,7 @@ toast.error("Unable to load governance dashboard");
       toast.success("Golden share issued");
       setShareForm({ certificateNumber: "", issueDate: "", councilMembersJson: "" });
       fetchDashboard();
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to issue golden share");
     }
   };
@@ -233,7 +235,7 @@ toast.error("Unable to issue golden share");
         matterDetailsJson: "{}",
       });
       fetchDashboard();
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to create reserved matter");
     }
   };
@@ -254,7 +256,7 @@ toast.error("Unable to create reserved matter");
       toast.success("Class A vote recorded");
       setClassAVoteForm({ voteId: "", votesFor: "", votesAgainst: "", abstain: "" });
       fetchDashboard();
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to record Class A vote");
     }
   };
@@ -289,7 +291,7 @@ toast.error("Unable to record Class A vote");
         councilMembersVotingJson: "[]",
       });
       fetchDashboard();
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to record Class B vote");
     }
   };
@@ -328,7 +330,7 @@ toast.error("Unable to record Class B vote");
         auditorOpinion: "",
       });
       fetchDashboard();
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to create mission audit");
     }
   };
@@ -371,13 +373,13 @@ toast.error("Unable to create mission audit");
         participationRate: "",
       });
       fetchDashboard();
-    } catch (error) {
+    } catch (_error) {
 toast.error("Unable to record council election");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/70 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-stone-50 via-amber-50/70 to-slate-100">
       <div className="container mx-auto px-6 py-10 space-y-10 font-poppins">
         <motion.div
           initial={{ opacity: 0, y: 18 }}

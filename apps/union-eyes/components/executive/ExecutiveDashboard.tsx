@@ -2,8 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, TrendingUp, AlertCircle, CheckCircle, Calendar, DollarSign } from "lucide-react";
+import { Users, TrendingUp, AlertCircle, CheckCircle, Calendar, DollarSign, Loader2 } from "lucide-react";
+ 
 import { useTranslations } from "next-intl";
+import { useState, useEffect, useCallback } from "react";
 
 interface ExecutiveDashboardProps {
   organizationId: string;
@@ -24,23 +26,49 @@ interface ExecutiveMetrics {
   grievanceResolutionRate: number; // percentage
 }
 
-export default function ExecutiveDashboard({ organizationId, userRole }: ExecutiveDashboardProps) {
-  const t = useTranslations();
+const defaultMetrics: ExecutiveMetrics = {
+  totalMembers: 0,
+  activeGrievances: 0,
+  pendingApprovals: 0,
+  upcomingMeetings: 0,
+  monthlyBudget: { allocated: 0, spent: 0, currency: "CAD" },
+  membershipTrend: 0,
+  grievanceResolutionRate: 0,
+};
 
-  // Mock data - replace with actual API call
-  const metrics: ExecutiveMetrics = {
-    totalMembers: 1247,
-    activeGrievances: 23,
-    pendingApprovals: 8,
-    upcomingMeetings: 4,
-    monthlyBudget: {
-      allocated: 125000,
-      spent: 87500,
-      currency: "CAD"
-    },
-    membershipTrend: 3.2,
-    grievanceResolutionRate: 87.5
-  };
+export default function ExecutiveDashboard({ organizationId, userRole }: ExecutiveDashboardProps) {
+  const _t = useTranslations();
+  const [metrics, setMetrics] = useState<ExecutiveMetrics>(defaultMetrics);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMetrics = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/executive/metrics?organizationId=${organizationId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setMetrics({
+          totalMembers: data.totalMembers ?? data.total_members ?? 0,
+          activeGrievances: data.activeGrievances ?? data.active_grievances ?? 0,
+          pendingApprovals: data.pendingApprovals ?? data.pending_approvals ?? 0,
+          upcomingMeetings: data.upcomingMeetings ?? data.upcoming_meetings ?? 0,
+          monthlyBudget: data.monthlyBudget ?? data.monthly_budget ?? defaultMetrics.monthlyBudget,
+          membershipTrend: data.membershipTrend ?? data.membership_trend ?? 0,
+          grievanceResolutionRate: data.grievanceResolutionRate ?? data.grievance_resolution_rate ?? 0,
+        });
+      }
+    } catch {
+      // API not available — defaults shown
+    } finally {
+      setLoading(false);
+    }
+  }, [organizationId]);
+
+  useEffect(() => { fetchMetrics(); }, [fetchMetrics]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
 
   const metricCards = [
     {

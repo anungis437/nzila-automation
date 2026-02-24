@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Accessibility Audit Service
  * 
@@ -11,14 +10,11 @@ import { db } from "@/db";
 import {
   accessibilityAudits,
   accessibilityIssues,
-  wcagSuccessCriteria,
-  accessibilityTestSuites,
-  type NewAccessibilityAudit,
   type NewAccessibilityIssue,
   type AccessibilityAudit,
   type AccessibilityIssue,
 } from "@/db/schema";
-import { eq, and, desc, sql, inArray } from "drizzle-orm";
+import { eq, desc, inArray } from "drizzle-orm";
 
 /**
  * Accessibility Audit Manager
@@ -43,8 +39,7 @@ export class AccessibilityAuditManager {
       .insert(accessibilityAudits)
       .values({
         ...data,
-        tenantId: data.organizationId,
-        conformanceLevel: (data.conformanceLevel as unknown) || "AA",
+        conformanceLevel: data.conformanceLevel || "AA",
         status: "pending",
         startedAt: new Date(),
       })
@@ -75,13 +70,15 @@ export class AccessibilityAuditManager {
     
     try {
       // Run axe-core scan (this is a placeholder - actual implementation would use Playwright/Puppeteer)
-      const scanResults = await this.runAxeScan(audit[0].targetUrl);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const scanResults = await this.runAxeScan(audit[0].targetUrl) as any;
       
       // Process and save issues
       const issues: NewAccessibilityIssue[] = scanResults.violations.map(
-        (violation: unknown) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (violation: any) => ({
           auditId,
-          tenantId: audit[0].organizationId /* was tenantId */,
+          organizationId: audit[0].organizationId,
           issueTitle: violation.description,
           issueDescription: violation.help,
           severity: this.mapAxeSeverityToOurs(violation.impact),
@@ -141,7 +138,7 @@ export class AccessibilityAuditManager {
   /**
    * Run axe-core scan (placeholder - implement with Playwright)
    */
-  private async runAxeScan(url: string): Promise<unknown> {
+  private async runAxeScan(_url: string): Promise<unknown> {
     // This is a placeholder. In production, you would:
     // 1. Launch Playwright/Puppeteer browser
     // 2. Navigate to URL
@@ -212,11 +209,13 @@ export class AccessibilityAuditManager {
     let query = db
       .select()
       .from(accessibilityIssues)
-      .where(eq(accessibilityIssues.organizationId /* was tenantId */, organizationId));
+      .where(eq(accessibilityIssues.organizationId, organizationId))
+      .$dynamic();
     
     if (options.severity && options.severity.length > 0) {
       query = query.where(
-        inArray(accessibilityIssues.severity as unknown, options.severity)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        inArray(accessibilityIssues.severity as any, options.severity)
       );
     }
     
@@ -228,7 +227,8 @@ export class AccessibilityAuditManager {
     
     if (options.status) {
       query = query.where(
-        eq(accessibilityIssues.status as unknown, options.status)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        eq(accessibilityIssues.status as any, options.status)
       );
     }
     
@@ -267,7 +267,7 @@ export class AccessibilityAuditManager {
   private mapAxeSeverityToOurs(
     axeSeverity: string
   ): "critical" | "serious" | "moderate" | "minor" {
-    const mapping: Record<string, unknown> = {
+    const mapping: Record<string, "critical" | "serious" | "moderate" | "minor"> = {
       critical: "critical",
       serious: "serious",
       moderate: "moderate",
@@ -549,7 +549,7 @@ export class AccessibilityReportGenerator {
    */
   async generateComplianceReport(
     organizationId: string,
-    options: {
+    _options: {
       startDate?: Date;
       endDate?: Date;
       includeResolved?: boolean;
@@ -576,7 +576,7 @@ export class AccessibilityReportGenerator {
     const issues = await db
       .select()
       .from(accessibilityIssues)
-      .where(eq(accessibilityIssues.organizationId /* was tenantId */, organizationId));
+      .where(eq(accessibilityIssues.organizationId, organizationId));
     
     // Calculate summary
     const summary = {

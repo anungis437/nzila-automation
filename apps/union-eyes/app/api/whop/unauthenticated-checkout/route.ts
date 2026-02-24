@@ -1,11 +1,7 @@
-﻿// @ts-nocheck
 import { NextResponse } from "next/server";
 import { DEFAULT_REDIRECT_URL } from "../webhooks/utils/constants";
 import crypto from "crypto";
 import { logger } from '@/lib/logger';
-import {
-  ErrorCode,
-} from '@/lib/api/standardized-responses';
 
 /**
  * API endpoint to create a Whop checkout session for unauthenticated users
@@ -14,7 +10,7 @@ import {
  */
 export async function POST(req: Request) {
   try {
-    const { planId, redirectUrl, email } = await req.json();
+    const { planId, _redirectUrl, email } = await req.json();
     
     // Validate required parameters
     if (!planId) {
@@ -140,7 +136,7 @@ export async function POST(req: Request) {
       }
     );
   } catch (error) {
-    logger.error('Error creating unauthenticated Whop checkout', error as Error, { email, planId });
+    logger.error('Error creating unauthenticated Whop checkout', error as Error);
     return NextResponse.json(
       { 
         error: "Internal server error",

@@ -6,7 +6,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Home, LayoutDashboard, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -21,6 +21,7 @@ export default function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -41,11 +42,7 @@ export default function Header() {
     return (
       <div className="sticky top-0 z-50 w-full px-4 py-3 flex justify-center">
         <header 
-          className="rounded-xl backdrop-blur-xl bg-white/50 border border-white/40 shadow-sm relative overflow-hidden max-w-fit mx-auto"
-          style={{ 
-            minWidth: 'min(95%, 800px)',
-            backdropFilter: 'blur(12px)'
-          }}
+          className="rounded-xl backdrop-blur-xl bg-white/50 border border-white/40 shadow-sm relative overflow-hidden max-w-fit mx-auto min-w-[min(95%,800px)]"
         >
           <div className="px-6 py-3 relative">
             <div className="flex items-center justify-between gap-8">
@@ -75,18 +72,14 @@ export default function Header() {
           scrolled 
             ? "shadow-md" 
             : "shadow-sm"
-        } relative overflow-hidden transition-all duration-300 max-w-fit mx-auto`}
+        } relative overflow-hidden transition-all duration-300 max-w-fit mx-auto min-w-[min(95%,800px)]`}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        style={{ 
-          minWidth: 'min(95%, 800px)',
-          backdropFilter: 'blur(12px)'
-        }}
       >
         {/* Enhanced glassmorphism glow effects */}
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none"
+          className="absolute inset-0 bg-linear-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none"
           animate={{ 
             opacity: [0.5, 0.7, 0.5],
             background: [
@@ -99,10 +92,10 @@ export default function Header() {
         />
         
         {/* Enhanced edge highlights for 3D effect */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-80" />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent" />
-        <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-80" />
-        <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-80" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white to-transparent opacity-80" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-gray-300/50 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-80" />
+        <div className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-80" />
         
         <div className="px-6 py-3 relative">
           <div className="flex items-center justify-between gap-8">
@@ -140,7 +133,7 @@ export default function Header() {
                   <path d="M4 12h16" />
                 </svg>
               </div>
-              <div className="text-lg font-bold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
+              <div className="text-lg font-bold bg-linear-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
                 UnionEyes
               </div>
             </motion.div>
@@ -178,7 +171,7 @@ export default function Header() {
                     >
                       {/* Enhanced button glow effect */}
                       <motion.span 
-                        className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0"
+                        className="absolute inset-0 w-full h-full bg-linear-to-r from-primary/0 via-primary/20 to-primary/0"
                         animate={{ 
                           x: ['-100%', '200%'],
                         }}
@@ -197,10 +190,9 @@ export default function Header() {
 
               <SignedIn>
                 <motion.div 
-                  className="bg-white/80 p-0.5 rounded-full shadow-sm border border-white/80 relative"
+                  className="bg-white/80 p-0.5 rounded-full shadow-sm border border-white/80 relative w-9.5 h-9.5"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  style={{ width: '38px', height: '38px' }}
                 >
                   {/* Enhanced glow behind avatar */}
                   <motion.div 
@@ -235,11 +227,11 @@ export default function Header() {
                     size="icon"
                     onClick={toggleMenu}
                     aria-label="Toggle menu"
-                    className="text-gray-800 bg-white/70 rounded-xl shadow-sm border border-white/60 hover:bg-white/90 relative overflow-hidden w-[38px] h-[38px] p-0"
+                    className="text-gray-800 bg-white/70 rounded-xl shadow-sm border border-white/60 hover:bg-white/90 relative overflow-hidden w-9.5 h-9.5 p-0"
                   >
                     {/* Enhanced button glow effect */}
                     <motion.span 
-                      className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0"
+                      className="absolute inset-0 w-full h-full bg-linear-to-r from-primary/0 via-primary/20 to-primary/0"
                       animate={{ 
                         x: ['-100%', '200%'],
                       }}

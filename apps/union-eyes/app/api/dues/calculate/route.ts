@@ -1,15 +1,13 @@
-﻿// @ts-nocheck
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { DuesCalculationEngine } from '@/lib/dues-calculation-engine';
-import { logApiAuditEvent } from '@/lib/middleware/request-validation';
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { logApiAuditEvent } from '@/lib/middleware/api-security';
+import { withRoleAuth, type BaseAuthContext } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 // Validation schema for dues calculation
 const calculateDuesSchema = z.object({
@@ -19,7 +17,7 @@ const calculateDuesSchema = z.object({
   memberData: z.record(z.any()).optional(),
 });
 
-export const POST = withRoleAuth('steward', async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context: BaseAuthContext) => {
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -42,6 +40,9 @@ export const POST = withRoleAuth('steward', async (request, context) => {
 
   const body = parsed.data;
   const { userId, organizationId } = context;
+  if (!userId || !organizationId) {
+    return standardErrorResponse(ErrorCode.AUTH_REQUIRED, 'Unauthorized');
+  }
 
   // Rate limiting: 100 financial read operations per hour per user
   const rateLimitResult = await checkRateLimit(userId, RATE_LIMITS.FINANCIAL_READ);
@@ -82,7 +83,7 @@ try {
           timestamp: new Date().toISOString(), userId,
           endpoint: '/api/dues/calculate',
           method: 'POST',
-          eventType: 'error',
+          eventType: 'validation_failed',
           severity: 'medium',
           details: { reason: 'Unable to calculate dues', memberId },
         });
@@ -103,7 +104,7 @@ try {
           memberId,
           periodStart,
           periodEnd,
-          calculatedAmount: calculation.duesAmount,
+          calculatedAmount: calculation.amount,
         },
       });
 
@@ -116,7 +117,7 @@ try {
         timestamp: new Date().toISOString(), userId,
         endpoint: '/api/dues/calculate',
         method: 'POST',
-        eventType: 'error',
+        eventType: 'validation_failed',
         severity: 'high',
         details: { error: error instanceof Error ? error.message : 'Unknown error' },
       });
@@ -128,4 +129,4 @@ try {
     }
 });
 
-
+

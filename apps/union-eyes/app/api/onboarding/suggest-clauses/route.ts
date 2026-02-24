@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Clause Suggestions API
  * 
@@ -11,17 +10,17 @@
  */
 
 import { z } from 'zod';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withRoleAuth } from '@/lib/role-middleware';
 import { suggestRelevantClauses } from '@/lib/utils/smart-onboarding';
 import { logger } from '@/lib/logger';
 import { eventBus, AppEvents } from '@/lib/events';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const onboardingSuggestClausesSchema = z.object({
@@ -29,7 +28,7 @@ const onboardingSuggestClausesSchema = z.object({
 });
 
 export const POST = withRoleAuth('officer', async (request, context) => {
-  const { userId, organizationId } = context;
+  const { userId, organizationId: _organizationId } = context;
 
   try {
     const rateLimit = await checkRateLimit(userId, RATE_LIMITS.ONBOARDING);
@@ -44,9 +43,9 @@ export const POST = withRoleAuth('officer', async (request, context) => {
       );
     }
 
-    const { organizationId: reqOrgId } = await request.json();
+    const body = await request.json();
     // Validate request body
-    const validation = onboardingSuggest-clausesSchema.safeParse(body);
+    const validation = onboardingSuggestClausesSchema.safeParse(body);
     if (!validation.success) {
       return standardErrorResponse(
         ErrorCode.VALIDATION_ERROR,
@@ -55,14 +54,7 @@ export const POST = withRoleAuth('officer', async (request, context) => {
       );
     }
     
-    const { organizationId } = validation.data;
-
-    if (!reqOrgId) {
-      return standardErrorResponse(
-      ErrorCode.MISSING_REQUIRED_FIELD,
-      'organizationId is required'
-    );
-    }
+    const { organizationId: reqOrgId } = validation.data;
 
     const suggestions = await suggestRelevantClauses(reqOrgId);
 

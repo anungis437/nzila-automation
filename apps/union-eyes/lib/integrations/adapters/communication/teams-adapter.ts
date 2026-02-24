@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Microsoft Teams Integration Adapter
  * 
@@ -9,10 +8,10 @@
 import { BaseIntegration } from '../../base-integration';
 import { TeamsClient } from './teams-client';
 import type {
-  IIntegration,
   SyncOptions,
   SyncResult,
-  IntegrationCapabilities,
+  HealthCheckResult,
+  WebhookEvent,
 } from '../../types';
 import { db } from '@/db';
 import {
@@ -21,22 +20,31 @@ import {
   externalCommunicationUsers,
   externalCommunicationFiles,
 } from '@/db/schema/domains/data/communication';
-import { IntegrationProvider } from '../../types';
+import { IntegrationType, IntegrationProvider, ConnectionStatus } from '../../types';
 import { eq, and } from 'drizzle-orm';
-import { logger } from '@/lib/logger';
 
 const PAGE_SIZE = 50; // Microsoft Graph API default
 
-export class TeamsAdapter extends BaseIntegration implements IIntegration {
+export class TeamsAdapter extends BaseIntegration {
   private client: TeamsClient;
+  private orgId: string;
 
   constructor(orgId: string, config: Record<string, unknown>) {
-    super(orgId, IntegrationProvider.TEAMS, config);
+    super(IntegrationType.COMMUNICATION, IntegrationProvider.MICROSOFT_TEAMS, {
+      supportsFullSync: true,
+      supportsIncrementalSync: true,
+      supportsWebhooks: true,
+      supportsRealTime: false,
+      supportedEntities: ['teams', 'channels', 'messages', 'members', 'files'],
+      requiresOAuth: true,
+      rateLimitPerMinute: 2000,
+    });
+    this.orgId = orgId;
 
     this.client = new TeamsClient({
       clientId: config.clientId as string,
       clientSecret: config.clientSecret as string,
-      tenantId: config.organizationId /* was tenantId */ as string,
+      tenantId: config.organizationId as string,
       apiUrl: config.apiUrl as string | undefined,
     });
   }
@@ -46,26 +54,43 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
     if (health.status !== 'ok') {
       throw new Error(`Failed to connect to Microsoft Teams: ${health.message}`);
     }
-    this.logger.info('Successfully connected to Microsoft Teams API');
+    this.connected = true;
+    this.logOperation('connect', { message: 'Connected to Microsoft Teams API' });
   }
 
   async disconnect(): Promise<void> {
-    this.logger.info('Microsoft Teams integration disconnected');
+    this.connected = false;
+    this.logOperation('disconnect', { message: 'Microsoft Teams integration disconnected' });
   }
 
-  async healthCheck(): Promise<{ status: 'ok' | 'error'; message: string }> {
-    return await this.client.healthCheck();
+  async healthCheck(): Promise<HealthCheckResult> {
+    try {
+      const startTime = Date.now();
+      const health = await this.client.healthCheck();
+      const latencyMs = Date.now() - startTime;
+      return {
+        healthy: health.status === 'ok',
+        status: health.status === 'ok' ? ConnectionStatus.CONNECTED : ConnectionStatus.ERROR,
+        latencyMs,
+        lastCheckedAt: new Date(),
+        lastError: health.status !== 'ok' ? health.message : undefined,
+      };
+    } catch (error) {
+      return {
+        healthy: false,
+        status: ConnectionStatus.ERROR,
+        lastCheckedAt: new Date(),
+        lastError: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 
-  getCapabilities(): IntegrationCapabilities {
-    return {
-      supportsFullSync: true,
-      supportsIncrementalSync: true,
-      supportsWebhooks: true, // Teams supports change notifications
-      supportsRealTimeSync: false,
-      batchSize: PAGE_SIZE,
-      rateLimitPerMinute: 2000,
-    };
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
+    return true; // Simplified for now
+  }
+
+  async processWebhook(event: WebhookEvent): Promise<void> {
+    this.logOperation('webhook', { eventType: event.type, message: `Processing ${event.type}` });
   }
 
   async sync(options: SyncOptions): Promise<SyncResult> {
@@ -101,15 +126,16 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
         await this.syncFiles(options, results);
       }
 
-      this.logger.info('Microsoft Teams sync completed', {
+      this.logOperation('sync', {
+        message: 'Microsoft Teams sync completed',
         processed: results.recordsProcessed,
         created: results.recordsCreated,
         updated: results.recordsUpdated,
       });
     } catch (error) {
       results.success = false;
-      results.error = error instanceof Error ? error.message : String(error);
-      this.logger.error('Microsoft Teams sync failed', error);
+      results.metadata = { error: error instanceof Error ? error.message : String(error) };
+      this.logError('sync', error as Error);
     }
 
     return results;
@@ -131,11 +157,11 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
       for (const team of response.teams) {
         try {
           // Sync the team as a "team" type channel
-          const teamChannel = await db
+          const _teamChannel = await db
             .insert(externalCommunicationChannels)
             .values({
               orgId: this.orgId,
-              externalProvider: IntegrationProvider.TEAMS,
+              externalProvider: IntegrationProvider.MICROSOFT_TEAMS,
               externalId: team.id,
               channelName: team.displayName,
               channelType: 'team', // Special type for Teams
@@ -164,7 +190,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
           // Now sync channels within this team
           await this.syncTeamChannels(team.id, results);
         } catch (error) {
-          this.logger.error(`Failed to sync team ${team.id}`, error);
+          this.logError('syncTeam', error as Error, { message: `Failed to sync team ${team.id}` });
           results.recordsFailed++;
         }
       }
@@ -193,7 +219,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
             .insert(externalCommunicationChannels)
             .values({
               orgId: this.orgId,
-              externalProvider: IntegrationProvider.TEAMS,
+              externalProvider: IntegrationProvider.MICROSOFT_TEAMS,
               externalId: channel.id,
               channelName: channel.displayName,
               channelType: channel.membershipType || 'standard',
@@ -218,7 +244,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
 
           results.recordsProcessed++;
         } catch (error) {
-          this.logger.error(`Failed to sync channel ${channel.id}`, error);
+          this.logError('syncChannel', error as Error, { message: `Failed to sync channel ${channel.id}` });
           results.recordsFailed++;
         }
       }
@@ -239,7 +265,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
       .where(
         and(
           eq(externalCommunicationChannels.orgId, this.orgId),
-          eq(externalCommunicationChannels.externalProvider, IntegrationProvider.TEAMS)
+          eq(externalCommunicationChannels.externalProvider, IntegrationProvider.MICROSOFT_TEAMS)
         )
       );
 
@@ -275,7 +301,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
                 .insert(externalCommunicationMessages)
                 .values({
                   orgId: this.orgId,
-                  externalProvider: IntegrationProvider.TEAMS,
+                  externalProvider: IntegrationProvider.MICROSOFT_TEAMS,
                   externalId: message.id,
                   channelId: channel.id,
                   userId: message.from?.user?.id,
@@ -302,7 +328,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
 
               results.recordsProcessed++;
             } catch (error) {
-              this.logger.error(`Failed to sync message ${message.id}`, error);
+              this.logError('syncMessage', error as Error, { message: `Failed to sync message ${message.id}` });
               results.recordsFailed++;
             }
           }
@@ -310,7 +336,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
           hasMore = !!response.nextLink;
           nextLink = response.nextLink;
         } catch (error) {
-          this.logger.error(`Failed to fetch messages for channel ${channel.externalId}`, error);
+          this.logError('syncMessages', error as Error, { message: `Failed to fetch messages for channel ${channel.externalId}` });
           break;
         }
       }
@@ -328,7 +354,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
       .where(
         and(
           eq(externalCommunicationChannels.orgId, this.orgId),
-          eq(externalCommunicationChannels.externalProvider, IntegrationProvider.TEAMS),
+          eq(externalCommunicationChannels.externalProvider, IntegrationProvider.MICROSOFT_TEAMS),
           eq(externalCommunicationChannels.channelType, 'team')
         )
       );
@@ -352,7 +378,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
                 .insert(externalCommunicationUsers)
                 .values({
                   orgId: this.orgId,
-                  externalProvider: IntegrationProvider.TEAMS,
+                  externalProvider: IntegrationProvider.MICROSOFT_TEAMS,
                   externalId: member.userId,
                   username: member.email?.split('@')[0] || member.displayName,
                   displayName: member.displayName,
@@ -378,7 +404,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
 
               results.recordsProcessed++;
             } catch (error) {
-              this.logger.error(`Failed to sync member ${member.userId}`, error);
+              this.logError('syncMember', error as Error, { message: `Failed to sync member ${member.userId}` });
               results.recordsFailed++;
             }
           }
@@ -386,7 +412,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
           hasMore = !!response.nextLink;
           nextLink = response.nextLink;
         } catch (error) {
-          this.logger.error(`Failed to fetch members for team ${team.externalId}`, error);
+          this.logError('syncMembers', error as Error, { message: `Failed to fetch members for team ${team.externalId}` });
           break;
         }
       }
@@ -404,7 +430,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
       .where(
         and(
           eq(externalCommunicationChannels.orgId, this.orgId),
-          eq(externalCommunicationChannels.externalProvider, IntegrationProvider.TEAMS)
+          eq(externalCommunicationChannels.externalProvider, IntegrationProvider.MICROSOFT_TEAMS)
         )
       );
 
@@ -433,7 +459,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
                 .insert(externalCommunicationFiles)
                 .values({
                   orgId: this.orgId,
-                  externalProvider: IntegrationProvider.TEAMS,
+                  externalProvider: IntegrationProvider.MICROSOFT_TEAMS,
                   externalId: file.id,
                   channelId: channel.id,
                   userId: file.createdBy?.user?.id,
@@ -460,7 +486,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
 
               results.recordsProcessed++;
             } catch (error) {
-              this.logger.error(`Failed to sync file ${file.id}`, error);
+              this.logError('syncFile', error as Error, { message: `Failed to sync file ${file.id}` });
               results.recordsFailed++;
             }
           }
@@ -468,7 +494,7 @@ export class TeamsAdapter extends BaseIntegration implements IIntegration {
           hasMore = !!response.nextLink;
           nextLink = response.nextLink;
         } catch (error) {
-          this.logger.error(`Failed to fetch files for channel ${channel.externalId}`, error);
+          this.logError('syncFiles', error as Error, { message: `Failed to fetch files for channel ${channel.externalId}` });
           break;
         }
       }

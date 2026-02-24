@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * SAT-based Entitlement Constraint Validator
  * 
@@ -9,7 +8,7 @@
  * they cause runtime issues.
  */
 
-import { GatedFeature, SubscriptionTier, TIER_FEATURES } from './services/entitlements';
+import { GatedFeature, SubscriptionTier } from './services/entitlements';
 import { UserRole } from './api-auth-guard';
 
 /**
@@ -334,7 +333,7 @@ export class EntitlementValidator {
           if (ent !== entitlement) {
             // Check if this is required by looking at constraints
             const constraint = this.constraints.find(c => c.entitlement === entitlement);
-            if (constraint?.requires?.includes(ent)) {
+            if (constraint?.requires?.includes(ent as GatedFeature)) {
               requires.push(ent);
             }
           }
@@ -437,11 +436,11 @@ export function createUnionEyesEntitlements(): {
       entitlements: ['ai_search', 'ai_summarize', 'ai_classify'],
     },
     {
-      role: 'organizer',
+      role: 'organizer' as UserRole,
       entitlements: ['ai_search', 'ai_summarize', 'ai_classify', 'ai_extract_clauses'],
     },
     {
-      role: 'business_rep',
+      role: 'business_rep' as UserRole,
       entitlements: ['ai_search', 'ai_summarize', 'ai_classify', 'ai_extract_clauses', 'ai_match_precedents', 'ai_semantic_search', 'advanced_analytics', 'api_access'],
     },
     {

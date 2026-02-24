@@ -16,7 +16,6 @@ export interface UserContext {
   lastName?: string;
   role?: UserRole;
   organizationId?: string | null;
-  tenantId?: string | null;
 }
 
 /**

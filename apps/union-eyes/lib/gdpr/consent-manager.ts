@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * GDPR Consent Management Service
  * 
@@ -27,10 +26,6 @@ import {
   profiles,
   smsMessages,
   smsCampaignRecipients,
-  type NewUserConsent,
-  type NewCookieConsent,
-  type NewGdprDataRequest,
-  type NewDataAnonymizationLog,
 } from "@/db/schema";
 import { eq, and, desc, sql, or } from "drizzle-orm";
 import { createHash } from "crypto";
@@ -46,7 +41,7 @@ export class ConsentManager {
    */
   static async recordConsent(data: {
     userId: string;
-    tenantId: string;
+    organizationId: string;
     consentType: "essential" | "functional" | "analytics" | "marketing" | "personalization" | "third_party";
     legalBasis: string;
     processingPurpose: string;
@@ -57,13 +52,16 @@ export class ConsentManager {
     expiresAt?: Date;
     metadata?: unknown;
   }): Promise<typeof userConsents.$inferSelect> {
+    const { organizationId, ...rest } = data;
     const [consent] = await db
       .insert(userConsents)
       .values({
-        ...data,
+        ...rest,
+        organizationId,
         status: "granted",
         grantedAt: new Date(),
-      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
       .returning();
 
     return consent;
@@ -97,14 +95,14 @@ export class ConsentManager {
   /**
    * Get active consents for user
    */
-  static async getUserConsents(userId: string, tenantId: string) {
+  static async getUserConsents(userId: string, organizationId: string) {
     return await db
       .select()
       .from(userConsents)
       .where(
         and(
           eq(userConsents.userId, userId),
-          eq(userConsents.organizationId /* was tenantId */, tenantId),
+          eq(userConsents.organizationId, organizationId),
           eq(userConsents.status, "granted")
         )
       )
@@ -116,7 +114,7 @@ export class ConsentManager {
    */
   static async hasConsent(
     userId: string,
-    tenantId: string,
+    organizationId: string,
     consentType: string
   ): Promise<boolean> {
     const result = await db
@@ -125,8 +123,9 @@ export class ConsentManager {
       .where(
         and(
           eq(userConsents.userId, userId),
-          eq(userConsents.organizationId /* was tenantId */, tenantId),
-          eq(userConsents.consentType, consentType as unknown),
+          eq(userConsents.organizationId, organizationId),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          eq(userConsents.consentType, consentType as any),
           eq(userConsents.status, "granted")
         )
       )
@@ -145,7 +144,7 @@ export class CookieConsentManager {
    */
   static async saveCookieConsent(data: {
     userId?: string;
-    tenantId: string;
+    organizationId: string;
     consentId: string; // Browser-side unique ID
     essential: boolean;
     functional: boolean;
@@ -166,25 +165,31 @@ export class CookieConsentManager {
 
     if (existing.length > 0) {
       // Update existing
+      const { organizationId: _tid, ...updateFields } = data;
       const [updated] = await db
         .update(cookieConsents)
         .set({
-          ...data,
+          ...updateFields,
+          organizationId: data.organizationId,
           lastUpdated: new Date(),
           expiresAt,
-        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any)
         .where(eq(cookieConsents.consentId, data.consentId))
         .returning();
 
       return updated;
     } else {
       // Insert new
+      const { organizationId: _tid2, ...insertFields } = data;
       const [consent] = await db
         .insert(cookieConsents)
         .values({
-          ...data,
+          ...insertFields,
+          organizationId: data.organizationId,
           expiresAt,
-        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any)
         .returning();
 
       return consent;
@@ -225,7 +230,7 @@ export class GdprRequestManager {
    */
   static async requestDataAccess(data: {
     userId: string;
-    tenantId: string;
+    organizationId: string;
     requestDetails?: unknown;
     verificationMethod?: string;
   }): Promise<typeof gdprDataRequests.$inferSelect> {
@@ -235,10 +240,14 @@ export class GdprRequestManager {
     const [request] = await db
       .insert(gdprDataRequests)
       .values({
-        ...data,
-        requestType: "access",
-        status: "pending",
+        userId: data.userId,
+        organizationId: data.organizationId,
+        requestType: "access" as const,
+        status: "pending" as const,
         deadline,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        requestDetails: data.requestDetails as any,
+        verificationMethod: data.verificationMethod,
       })
       .returning();
 
@@ -246,7 +255,7 @@ export class GdprRequestManager {
     try {
       const notificationService = new NotificationService();
       await notificationService.send({
-        organizationId: data.organizationId /* was tenantId */,
+        organizationId: data.organizationId,
         recipientEmail: process.env.DPO_EMAIL || process.env.ADMIN_EMAIL || 'admin@unioneyes.app',
         type: 'email',
         priority: 'high',
@@ -257,7 +266,7 @@ export class GdprRequestManager {
           <p>A new GDPR data access request has been submitted.</p>
           <ul>
             <li><strong>User ID:</strong> ${data.userId}</li>
-            <li><strong>Tenant ID:</strong> ${data.tenantId}</li>
+            <li><strong>Organization ID:</strong> ${data.organizationId}</li>
             <li><strong>Request Type:</strong> Data Access (Article 15)</li>
             <li><strong>Deadline:</strong> ${deadline.toLocaleDateString()}</li>
           </ul>
@@ -281,7 +290,7 @@ export class GdprRequestManager {
    */
   static async requestDataErasure(data: {
     userId: string;
-    tenantId: string;
+    organizationId: string;
     requestDetails?: unknown;
     verificationMethod?: string;
   }): Promise<typeof gdprDataRequests.$inferSelect> {
@@ -291,10 +300,14 @@ export class GdprRequestManager {
     const [request] = await db
       .insert(gdprDataRequests)
       .values({
-        ...data,
-        requestType: "erasure",
-        status: "pending",
+        userId: data.userId,
+        organizationId: data.organizationId,
+        requestType: "erasure" as const,
+        status: "pending" as const,
         deadline,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        requestDetails: data.requestDetails as any,
+        verificationMethod: data.verificationMethod,
       })
       .returning();
 
@@ -306,7 +319,7 @@ export class GdprRequestManager {
    */
   static async requestDataPortability(data: {
     userId: string;
-    tenantId: string;
+    organizationId: string;
     preferredFormat?: "json" | "csv" | "xml";
     requestDetails?: unknown;
   }): Promise<typeof gdprDataRequests.$inferSelect> {
@@ -317,13 +330,14 @@ export class GdprRequestManager {
       .insert(gdprDataRequests)
       .values({
         userId: data.userId,
-        tenantId: data.organizationId /* was tenantId */,
-        requestType: "portability",
-        status: "pending",
+        organizationId: data.organizationId,
+        requestType: "portability" as const,
+        status: "pending" as const,
         deadline,
         requestDetails: {
           preferredFormat: data.preferredFormat || "json",
-          ...data.requestDetails,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ...(data.requestDetails as any),
         },
       })
       .returning();
@@ -334,14 +348,14 @@ export class GdprRequestManager {
   /**
    * Get user's GDPR requests
    */
-  static async getUserRequests(userId: string, tenantId: string) {
+  static async getUserRequests(userId: string, organizationId: string) {
     return await db
       .select()
       .from(gdprDataRequests)
       .where(
         and(
           eq(gdprDataRequests.userId, userId),
-          eq(gdprDataRequests.organizationId /* was tenantId */, tenantId)
+          eq(gdprDataRequests.organizationId, organizationId)
         )
       )
       .orderBy(desc(gdprDataRequests.requestedAt));
@@ -350,13 +364,13 @@ export class GdprRequestManager {
   /**
    * Get pending requests (for admin)
    */
-  static async getPendingRequests(tenantId: string) {
+  static async getPendingRequests(organizationId: string) {
     return await db
       .select()
       .from(gdprDataRequests)
       .where(
         and(
-          eq(gdprDataRequests.organizationId /* was tenantId */, tenantId),
+          eq(gdprDataRequests.organizationId, organizationId),
           eq(gdprDataRequests.status, "pending")
         )
       )
@@ -375,7 +389,7 @@ export class GdprRequestManager {
       rejectionReason?: string;
     }
   ) {
-    const updateData: unknown = {
+    const updateData: Record<string, unknown> = {
       status,
       updatedAt: new Date(),
       ...data,
@@ -391,7 +405,8 @@ export class GdprRequestManager {
 
     const [updated] = await db
       .update(gdprDataRequests)
-      .set(updateData)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .set(updateData as any)
       .where(eq(gdprDataRequests.id, requestId))
       .returning();
 
@@ -408,21 +423,21 @@ export class DataExportService {
    */
   static async exportUserData(
     userId: string,
-    tenantId: string,
+    organizationId: string,
     format: "json" | "csv" | "xml" = "json"
   ): Promise<unknown> {
     // Collect all user data from various tables
     const userData = {
       exportDate: new Date().toISOString(),
       userId,
-      tenantId,
+      organizationId,
       format,
       data: {
         profile: await this.getProfileData(userId),
-        consents: await this.getConsentData(userId, tenantId),
-        communications: await this.getCommunicationData(userId, tenantId),
-        claims: await this.getClaimsData(userId, tenantId),
-        votes: await this.getVotingData(userId, tenantId),
+        consents: await this.getConsentData(userId, organizationId),
+        communications: await this.getCommunicationData(userId, organizationId),
+        claims: await this.getClaimsData(userId, organizationId),
+        votes: await this.getVotingData(userId, organizationId),
         // Add more data categories as needed
       },
     };
@@ -433,29 +448,29 @@ export class DataExportService {
   private static async getProfileData(userId: string) {
     // Query profile data
     const result = await db.query.profiles.findFirst({
-      where: (profiles: unknown, { eq }: unknown) => eq(profiles.userId, userId),
+      where: eq(profiles.userId, userId),
     });
     return result;
   }
 
-  private static async getConsentData(userId: string, tenantId: string) {
+  private static async getConsentData(userId: string, organizationId: string) {
     return await db
       .select()
       .from(userConsents)
       .where(
         and(
           eq(userConsents.userId, userId),
-          eq(userConsents.organizationId /* was tenantId */, tenantId)
+          eq(userConsents.organizationId, organizationId)
         )
       );
   }
 
-  private static async getCommunicationData(userId: string, tenantId: string) {
+  private static async getCommunicationData(userId: string, organizationId: string) {
     try {
       // Query message threads where user participated
       const userThreads = await db.query.messageThreads.findMany({
         where: and(
-          eq(messageThreads.organizationId, tenantId),
+          eq(messageThreads.organizationId, organizationId),
           or(
             eq(messageThreads.memberId, userId),
             eq(messageThreads.staffId, userId)
@@ -522,13 +537,13 @@ export class DataExportService {
     }
   }
 
-  private static async getClaimsData(userId: string, tenantId: string) {
+  private static async getClaimsData(userId: string, organizationId: string) {
     try {
       // Query claims filed by user
       const userClaims = await db.query.claims.findMany({
         where: and(
           eq(claims.memberId, userId),
-          eq(claims.organizationId, tenantId)
+          eq(claims.organizationId, organizationId)
         )
       });
 
@@ -568,7 +583,8 @@ export class DataExportService {
         {
           dataType: "claim_notes",
           count: claimNotes.length,
-          data: claimNotes.map((n: unknown) => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data: claimNotes.map((n: any) => ({
             updateId: n.updateId,
             claimId: n.claimId,
             updateType: n.updateType,
@@ -583,11 +599,11 @@ export class DataExportService {
     }
   }
 
-  private static async getVotingData(userId: string, tenantId: string) {
+  private static async getVotingData(userId: string, organizationId: string) {
     try {
       // Query voting sessions in user's organization
       const orgSessions = await db.query.votingSessions.findMany({
-        where: eq(votingSessions.organizationId, tenantId)
+        where: eq(votingSessions.organizationId, organizationId)
       });
 
       // Query user's vote participation (anonymized - no vote content)
@@ -648,7 +664,7 @@ export class DataErasureService {
    */
   static async eraseUserData(
     userId: string,
-    tenantId: string,
+    organizationId: string,
     requestId: string,
     executedBy: string
   ): Promise<void> {
@@ -664,21 +680,21 @@ export class DataErasureService {
       tablesAffected.push(profileResult);
 
       // 2. Delete or anonymize communications
-      const commResult = await this.eraseCommunications(userId, tenantId);
+      const commResult = await this.eraseCommunications(userId, organizationId);
       tablesAffected.push(commResult);
 
       // 3. Anonymize claims (may need to keep for legal reasons)
-      const claimsResult = await this.anonymizeClaims(userId, tenantId);
+      const claimsResult = await this.anonymizeClaims(userId, organizationId);
       tablesAffected.push(claimsResult);
 
       // 4. Delete consent records
-      const consentResult = await this.eraseConsents(userId, tenantId);
+      const consentResult = await this.eraseConsents(userId, organizationId);
       tablesAffected.push(consentResult);
 
       // 5. Log the anonymization
       await db.insert(dataAnonymizationLog).values({
         userId,
-        tenantId,
+        organizationId,
         operationType: "anonymize",
         reason: "RTBF request",
         requestId,
@@ -701,7 +717,7 @@ export class DataErasureService {
     } catch (error) {
       logger.error("Data erasure failed", error instanceof Error ? error : new Error(String(error)), {
         userId,
-        tenantId,
+        organizationId,
         requestId,
       });
       throw new Error("Failed to complete data erasure");
@@ -744,13 +760,13 @@ export class DataErasureService {
     }
   }
 
-  private static async eraseCommunications(userId: string, tenantId: string) {
+  private static async eraseCommunications(userId: string, organizationId: string) {
     // Delete message threads and messages (cascade delete handles related records)
     const deletedThreads = await db
       .delete(messageThreads)
       .where(
         and(
-          eq(messageThreads.organizationId, tenantId),
+          eq(messageThreads.organizationId, organizationId),
           or(
             eq(messageThreads.memberId, userId),
             eq(messageThreads.staffId, userId)
@@ -770,8 +786,8 @@ export class DataErasureService {
       .delete(smsMessages)
       .where(
         and(
-          eq(smsMessages.organizationId, tenantId),
-          eq(smsMessages.recipientUserId, userId)
+          eq(smsMessages.organizationId, organizationId),
+          eq(smsMessages.userId, userId)
         )
       )
       .returning();
@@ -779,7 +795,7 @@ export class DataErasureService {
     // Delete SMS campaign recipient records
     const deletedCampaignRecipients = await db
       .delete(smsCampaignRecipients)
-      .where(eq(smsCampaignRecipients.recipientUserId, userId))
+      .where(eq(smsCampaignRecipients.userId, userId))
       .returning();
 
     const totalDeleted = 
@@ -804,7 +820,7 @@ export class DataErasureService {
     };
   }
 
-  private static async anonymizeClaims(userId: string, tenantId: string) {
+  private static async anonymizeClaims(userId: string, organizationId: string) {
     // Anonymize claims while keeping statistical data for analytics
     // We preserve: claim type, status, dates, amounts (for aggregate statistics)
     // We anonymize: description, witness details, personal identifiers
@@ -824,7 +840,7 @@ export class DataErasureService {
       })
       .where(
         and(
-          eq(claims.organizationId, tenantId),
+          eq(claims.organizationId, organizationId),
           eq(claims.memberId, userId)
         )
       )
@@ -834,11 +850,10 @@ export class DataErasureService {
     const anonymizedUpdates = await db
       .update(claimUpdates)
       .set({
-        updateText: "[Update removed per GDPR data erasure request]",
-        updatedAt: new Date(),
+        message: "[Update removed per GDPR data erasure request]",
       })
       .where(
-        eq(claimUpdates.updatedBy, userId)
+        eq(claimUpdates.createdBy, userId)
       )
       .returning();
 
@@ -856,13 +871,13 @@ export class DataErasureService {
     };
   }
 
-  private static async eraseConsents(userId: string, tenantId: string) {
-    const result = await db
+  private static async eraseConsents(userId: string, organizationId: string) {
+    const _result = await db
       .delete(userConsents)
       .where(
         and(
           eq(userConsents.userId, userId),
-          eq(userConsents.organizationId /* was tenantId */, tenantId)
+          eq(userConsents.organizationId, organizationId)
         )
       );
 
@@ -878,13 +893,13 @@ export class DataErasureService {
    * Some data may need to be retained for legal reasons
    */
   static async canEraseData(
-    userId: string,
-    tenantId: string
+    _userId: string,
+    _organizationId: string
   ): Promise<{ canErase: boolean; reasons: string[] }> {
     const reasons: string[] = [];
 
     // Check for active claims
-    // const activeClaims = await checkActiveClaims(userId, tenantId);
+    // const activeClaims = await checkActiveClaims(userId, organizationId);
     // if (activeClaims > 0) {
     //   reasons.push("User has active claims that must be retained for legal purposes");
     // }
@@ -944,6 +959,7 @@ export const CONSENT_BANNER_CONFIG = {
   cookiePolicyUrl: "/cookie-policy",
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   ConsentManager,
   CookieConsentManager,

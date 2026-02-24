@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * CLC Analytics - Multi-Year Trends API
  * 
@@ -7,21 +6,18 @@
  * Returns trend analysis data for specified time period
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { NextResponse } from 'next/server';
 import { logApiAuditEvent } from '@/lib/middleware/api-security';
 import { analyzeMultiYearTrends } from '@/services/clc/compliance-reports';
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(90, async (request, context) => {
-    const { userId } = context;
+export const GET = withRoleAuth('admin', async (request, context) => {
+    const { userId } = context as { userId: string };
 
   try {
         // Rate limiting: 50 CLC operations per hour per user
@@ -79,7 +75,7 @@ export const GET = async (request: NextRequest) => {
           timestamp: new Date().toISOString(), userId,
           endpoint: '/api/admin/clc/analytics/trends',
           method: 'GET',
-          eventType: 'server_error',
+          eventType: 'unauthorized_access',
           severity: 'high',
           details: { error: error instanceof Error ? error.message : 'Unknown error' },
         });
@@ -89,7 +85,6 @@ return standardErrorResponse(
       error
     );
       }
-      })(request);
-};
+});
 
-
+

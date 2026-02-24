@@ -2,7 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
+ 
+import { RefreshCw, CheckCircle, XCircle, Clock, AlertTriangle, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 interface SyncStatus {
   affiliateId: string;
@@ -20,46 +22,41 @@ interface CLCSyncDashboardProps {
 }
 
 export default function CLCSyncDashboard({ organizationId }: CLCSyncDashboardProps) {
-  // Mock data - replace with actual API call
-  const syncStatuses: SyncStatus[] = [
-    {
-      affiliateId: "1",
-      affiliateName: "CUPE Local 79",
-      lastSync: "2026-02-11T08:00:00Z",
-      nextScheduledSync: "2026-02-11T20:00:00Z",
-      status: "success",
-      recordsSynced: 3500,
-      syncType: "full"
-    },
-    {
-      affiliateId: "2",
-      affiliateName: "Unifor Local 444",
-      lastSync: "2026-02-11T07:30:00Z",
-      nextScheduledSync: "2026-02-11T19:30:00Z",
-      status: "success",
-      recordsSynced: 8200,
-      syncType: "membership"
-    },
-    {
-      affiliateId: "3",
-      affiliateName: "PSAC Local 610",
-      lastSync: "2026-02-11T06:00:00Z",
-      nextScheduledSync: "2026-02-11T18:00:00Z",
-      status: "in-progress",
-      recordsSynced: 450,
-      syncType: "financial"
-    },
-    {
-      affiliateId: "4",
-      affiliateName: "UFCW Local 1006A",
-      lastSync: "2026-02-10T20:00:00Z",
-      nextScheduledSync: "2026-02-11T20:00:00Z",
-      status: "failed",
-      recordsSynced: 0,
-      errors: ["Connection timeout", "Invalid credentials"],
-      syncType: "full"
+  const [syncStatuses, setSyncStatuses] = useState<SyncStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchSyncStatuses = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = organizationId ? `?organizationId=${organizationId}` : '';
+      const res = await fetch(`/api/v2/clc/sync${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setSyncStatuses(items.map((s: any) => ({
+          affiliateId: String(s.affiliateId ?? s.affiliate_id ?? s.id),
+          affiliateName: s.affiliateName ?? s.affiliate_name ?? '',
+          lastSync: s.lastSync ?? s.last_sync ?? '',
+          nextScheduledSync: s.nextScheduledSync ?? s.next_scheduled_sync ?? '',
+          status: s.status ?? 'pending',
+          recordsSynced: s.recordsSynced ?? s.records_synced ?? 0,
+          errors: s.errors,
+          syncType: s.syncType ?? s.sync_type ?? 'full',
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [organizationId]);
+
+  useEffect(() => { fetchSyncStatuses(); }, [fetchSyncStatuses]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
 
   const totalAffiliates = syncStatuses.length;
   const successfulSyncs = syncStatuses.filter(s => s.status === "success").length;

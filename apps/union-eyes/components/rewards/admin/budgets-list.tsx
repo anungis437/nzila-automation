@@ -1,8 +1,6 @@
-﻿// @ts-nocheck
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import type { RewardBudgetEnvelope } from '@/db/schema/recognition-rewards-schema';
 
@@ -35,22 +33,22 @@ export function BudgetsList({ budgets }: BudgetsListProps) {
         </TableHeader>
         <TableBody>
           {budgets.map((budget) => {
-            const remaining = budget.amount_allocated - budget.amount_used;
-            const usagePercent = (budget.amount_used / budget.amount_allocated) * 100;
+            const remaining = budget.amountLimit - budget.amountUsed;
+            const _usagePercent = (budget.amountUsed / budget.amountLimit) * 100;
             
             return (
               <TableRow key={budget.id}>
                 <TableCell className="font-medium">{budget.name}</TableCell>
-                <TableCell>{budget.amount_allocated.toLocaleString()}</TableCell>
-                <TableCell>{budget.amount_used.toLocaleString()}</TableCell>
+                <TableCell>{budget.amountLimit.toLocaleString()}</TableCell>
+                <TableCell>{budget.amountUsed.toLocaleString()}</TableCell>
                 <TableCell>
-                  <span className={remaining < budget.amount_allocated * 0.1 ? 'text-destructive font-semibold' : ''}>
+                  <span className={remaining < budget.amountLimit * 0.1 ? 'text-destructive font-semibold' : ''}>
                     {remaining.toLocaleString()}
                   </span>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
-                  {budget.period_start && budget.period_end
-                    ? `${new Date(budget.period_start).toLocaleDateString()} - ${new Date(budget.period_end).toLocaleDateString()}`
+                  {budget.startsAt && budget.endsAt
+                    ? `${new Date(budget.startsAt).toLocaleDateString()} - ${new Date(budget.endsAt).toLocaleDateString()}`
                     : t('list.ongoing', { defaultValue: 'Ongoing' })}
                 </TableCell>
               </TableRow>

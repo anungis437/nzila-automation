@@ -1,14 +1,14 @@
-﻿// @ts-nocheck
 import { NextRequest, NextResponse } from "next/server";
 
 import { getOverdueClaims, getClaimsApproachingDeadline } from "@/lib/workflow-engine";
 import { requireApiAuth } from '@/lib/api-auth-guard';
 import { logger } from '@/lib/logger';
 
+ 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * GET /api/workflow/overdue
@@ -19,8 +19,8 @@ import {
 export async function GET(request: NextRequest) {
   try {
     // Authentication guard with organization isolation
-    const { userId, organizationId } = await requireApiAuth({
-      organization: true,
+    const { userId: _userId, organizationId: _organizationId } = await requireApiAuth({
+      tenant: true,
       roles: ['admin', 'steward'],
     });
 

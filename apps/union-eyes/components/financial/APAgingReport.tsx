@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, TrendingUp } from 'lucide-react';
+ 
 import { useToast } from '@/lib/hooks/use-toast';
 
 interface APAgingData {
@@ -37,59 +38,38 @@ export default function APAgingReport({ organizationId }: APAgingReportProps) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // In a real implementation, this would fetch from an API endpoint
-    // For now, we&apos;ll use mock data
     fetchAPAging();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organizationId]);
 
   const fetchAPAging = async () => {
     try {
       setLoading(true);
       
-      // Mock data - in production, this would be:
-      // const response = await fetch('/api/financial/reports/ap-aging');
-      // const data = await response.json();
+      const response = await fetch(`/api/v2/financial/reports/aged-receivables?organizationId=${organizationId}`);
       
-      const mockData: APAgingData[] = [
-        {
-          vendorId: '1',
-          vendorName: 'Office Depot',
-          current: 1250.00,
-          days1_30: 850.00,
-          days31_60: 0,
-          days61_90: 0,
-          days90Plus: 0,
-          totalDue: 2100.00,
-          status: 'open',
-        },
-        {
-          vendorId: '2',
-          vendorName: 'Tech Solutions Inc.',
-          current: 5000.00,
-          days1_30: 2500.00,
-          days31_60: 1500.00,
-          days61_90: 0,
-          days90Plus: 0,
-          totalDue: 9000.00,
-          status: 'open',
-        },
-        {
-          vendorId: '3',
-          vendorName: 'ABC Cleaning Services',
-          current: 0,
-          days1_30: 0,
-          days31_60: 450.00,
-          days61_90: 300.00,
-          days90Plus: 150.00,
-          totalDue: 900.00,
-          status: 'overdue',
-        },
-      ];
+      let data: APAgingData[] = [];
+      if (response.ok) {
+        const json = await response.json();
+        const items = Array.isArray(json) ? json : json?.results ?? json?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data = items.map((v: any) => ({
+          vendorId: String(v.vendorId ?? v.vendor_id ?? v.id ?? ''),
+          vendorName: v.vendorName ?? v.vendor_name ?? v.name ?? '',
+          current: v.current ?? 0,
+          days1_30: v.days1_30 ?? v.days_1_30 ?? 0,
+          days31_60: v.days31_60 ?? v.days_31_60 ?? 0,
+          days61_90: v.days61_90 ?? v.days_61_90 ?? 0,
+          days90Plus: v.days90Plus ?? v.days_90_plus ?? 0,
+          totalDue: v.totalDue ?? v.total_due ?? v.total ?? 0,
+          status: v.status ?? 'open',
+        }));
+      }
 
-      setAgingData(mockData);
+      setAgingData(data);
 
       // Calculate summary
-      const summary = mockData.reduce((acc, vendor) => ({
+      const calcSummary = data.reduce((acc, vendor) => ({
         totalCurrent: acc.totalCurrent + vendor.current,
         total1_30: acc.total1_30 + vendor.days1_30,
         total31_60: acc.total31_60 + vendor.days31_60,
@@ -105,9 +85,9 @@ export default function APAgingReport({ organizationId }: APAgingReportProps) {
         grandTotal: 0,
       });
 
-      setSummary(summary);
+      setSummary(calcSummary);
 
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to load AP aging report',

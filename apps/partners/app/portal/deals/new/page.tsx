@@ -71,6 +71,7 @@ export default function NewDealPage() {
           <select
             required
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            aria-label="Select vertical"
           >
             <option value="">Select a vertical…</option>
             {verticals.map((v) => (
@@ -101,6 +102,7 @@ export default function NewDealPage() {
             type="date"
             required
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            aria-label="Expected close date"
           />
         </div>
 

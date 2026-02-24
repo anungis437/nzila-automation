@@ -1,11 +1,10 @@
-﻿// @ts-nocheck
 /**
  * Document Folders API Routes
  * GET /api/documents/folders - List folders
  * POST /api/documents/folders - Create folder
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { 
@@ -13,12 +12,13 @@ import {
   createFolder,
   getFolderTree
 } from "@/lib/services/document-service";
-import { getCurrentUser, withAdminAuth, withApiAuth, withMinRole, withRoleAuth } from '@/lib/api-auth-guard';
+import { withRoleAuth } from '@/lib/api-auth-guard';
 
+ 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 /**
  * Validation schema for creating folders
@@ -39,9 +39,8 @@ const createFolderSchema = z.object({
  * - parentFolderId: string (optional, use "root" for root folders)
  * - tree: boolean - return full folder tree structure
  */
-export const GET = async (request: NextRequest) => {
-  return withRoleAuth(10, async (request, context) => {
-    const { userId, organizationId } = context;
+export const GET = withRoleAuth('member', async (request, context) => {
+    const { userId, organizationId: _organizationId } = context as { userId: string; organizationId: string };
 
   try {
         const { searchParams } = new URL(request.url);
@@ -100,7 +99,7 @@ export const GET = async (request: NextRequest) => {
           timestamp: new Date().toISOString(), userId,
           endpoint: '/api/documents/folders',
           method: 'GET',
-          eventType: 'server_error',
+          eventType: 'validation_failed',
           severity: 'high',
           details: { error: error instanceof Error ? error.message : 'Unknown error' },
         });
@@ -110,8 +109,7 @@ return standardErrorResponse(
       error
     );
       }
-      })(request);
-};
+});
 
 /**
  * POST /api/documents/folders
@@ -123,7 +121,7 @@ return standardErrorResponse(
  * - description: string
  * - parentFolderId: string
  */
-export const POST = withRoleAuth(20, async (request, context) => {
+export const POST = withRoleAuth('steward', async (request, context) => {
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -145,7 +143,7 @@ export const POST = withRoleAuth(20, async (request, context) => {
   }
 
   const body = parsed.data;
-  const { userId, organizationId } = context;
+  const { userId, organizationId: _organizationId } = context as { userId: string; organizationId: string };
 
   if (body.organizationId !== context.organizationId) {
     return standardErrorResponse(
@@ -182,7 +180,7 @@ try {
         timestamp: new Date().toISOString(), userId,
         endpoint: '/api/documents/folders',
         method: 'POST',
-        eventType: 'server_error',
+        eventType: 'validation_failed',
         severity: 'high',
         details: { error: error instanceof Error ? error.message : 'Unknown error' },
       });
@@ -194,4 +192,4 @@ return standardErrorResponse(
     }
 });
 
-
+

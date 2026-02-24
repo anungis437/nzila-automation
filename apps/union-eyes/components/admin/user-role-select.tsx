@@ -8,7 +8,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Shield, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -16,14 +16,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+ 
+ 
 import { useToast } from "@/lib/hooks/use-toast";
 
 type UserRole = "member" | "steward" | "officer" | "admin";
 
 interface UserRoleSelectProps {
   userId: string;
-  tenantId: string;
+  organizationId: string;
   currentRole: UserRole;
 }
 
@@ -54,7 +55,7 @@ const ROLE_CONFIG = {
   },
 };
 
-export function UserRoleSelect({ userId, tenantId, currentRole }: UserRoleSelectProps) {
+export function UserRoleSelect({ userId: _userId, organizationId: _organizationId, currentRole }: UserRoleSelectProps) {
   const [role, setRole] = useState<UserRole>(currentRole);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -65,17 +66,18 @@ export function UserRoleSelect({ userId, tenantId, currentRole }: UserRoleSelect
 
     startTransition(async () => {
       try {
-        // TODO: Call server action when integrated with RLS
-        // await updateUserRole(userId, tenantId, newRole);
-        
-        // Mock API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const res = await fetch('/api/v2/admin/users/role', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: _userId, organizationId: _organizationId, role: newRole }),
+        });
+        if (!res.ok) throw new Error('Failed to update role');
         
         toast({
           title: "Role updated",
           description: `User role changed to ${ROLE_CONFIG[newRole].label}`,
         });
-      } catch (error) {
+      } catch (_error) {
         // Revert on error
         setRole(currentRole);
         toast({

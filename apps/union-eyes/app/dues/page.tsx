@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Dues Dashboard Page
  * 
@@ -7,6 +6,8 @@
 
 'use client';
 
+
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ import {
   DollarSign, TrendingUp, AlertCircle, FileText, 
   Download, Upload, RefreshCw 
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/index';
 
 interface DuesStats {
   totalCollected: number;
@@ -67,8 +68,8 @@ export default function DuesDashboardPage() {
         api.dues.remittances.list({ limit: 10 }),
       ]);
       
-      setStats(statsData);
-      setRemittances(remittancesData.remittances || []);
+      setStats(statsData as DuesStats);
+      setRemittances((remittancesData as unknown as { remittances: Remittance[] }).remittances || []);
     } catch (error) {
       logger.error('Error fetching dues dashboard', error);
       alert('Error loading dashboard data.');

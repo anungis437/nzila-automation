@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Award Service
  * Handles award lifecycle: creation, approval, issuance, revocation
@@ -8,7 +7,6 @@ import { db } from '@/db';
 import {
   recognitionAwards,
   recognitionAwardTypes,
-  type NewRecognitionAward,
   type RecognitionAward,
 } from '@/db/schema';
 import { eq, and, inArray, desc } from 'drizzle-orm';
@@ -22,6 +20,7 @@ export interface CreateAwardOptions {
   recipientUserId: string;
   issuerUserId?: string;
   reason: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadataJson?: Record<string, any>;
 }
 
@@ -164,9 +163,12 @@ export async function issueAward(
       throw new Error(`Cannot issue award with status: ${award.status}`);
     }
 
-    const creditAmount = award.awardType.defaultCreditAmount;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const awardType = award.awardType as Record<string, any>;
+    const creditAmount = awardType.defaultCreditAmount;
 
     // Apply ledger entry (earn credits)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ledgerEntry = await applyLedgerEntry(tx as any, {
       orgId: award.orgId,
       userId: award.recipientUserId,
@@ -174,12 +176,11 @@ export async function issueAward(
       amountCredits: creditAmount,
       sourceType: 'award',
       sourceId: award.id,
-      memo: `Award: ${award.awardType.name}`,
+      memo: `Award: ${awardType.name}`,
     });
 
     // Apply budget usage with limit enforcement
     const budgetApplied = await applyBudgetUsageChecked(
-      tx as any,
       award.programId,
       creditAmount
     );
@@ -238,7 +239,9 @@ export async function revokeAward(
       throw new Error(`Cannot revoke award with status: ${award.status}`);
     }
 
-    const creditAmount = award.awardType.defaultCreditAmount;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const awardType = award.awardType as Record<string, any>;
+    const creditAmount = awardType.defaultCreditAmount;
 
     // Apply negative ledger entry (revoke credits)
     const ledgerEntry = await applyLedgerEntry(tx, {
@@ -252,7 +255,7 @@ export async function revokeAward(
     });
 
     // Refund budget (negative usage)
-    await applyBudgetUsage(tx, award.programId, -creditAmount);
+    await applyBudgetUsage(award.programId, -creditAmount);
 
     // Update award status
     const [updatedAward] = await tx

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Hierarchy-Based Access Control
  * 
@@ -26,7 +25,7 @@
 
 import { db } from '@/db';
 import { organizations, organizationMembers, congressMemberships } from '@/db/schema';
-import { eq, and, or, inArray } from 'drizzle-orm';
+import { eq, and, or } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import type { InferSelectModel } from 'drizzle-orm';
 
@@ -42,6 +41,9 @@ export type ActionType = 'read' | 'write' | 'admin' | 'share';
 
 type Organization = InferSelectModel<typeof organizations>;
 type OrganizationMember = InferSelectModel<typeof organizationMembers>;
+
+/** Membership with eager-loaded organization relation */
+type MembershipWithOrg = OrganizationMember & { organization?: Organization };
 
 /**
  * Validates if a user has access to a target organization based on hierarchy
@@ -71,7 +73,7 @@ export async function validateHierarchyAccess(
       with: {
         organization: true,
       },
-    });
+    }) as MembershipWithOrg[];
 
     if (userMemberships.length === 0) {
       return {
@@ -167,9 +169,9 @@ export async function validateSharingLevel(
     with: {
       organization: true,
     },
-  });
+  }) as MembershipWithOrg[];
 
-  const userOrg = userMemberships.find((m: OrganizationMember) => m.organizationId === sourceOrgId)?.organization;
+  const userOrg = userMemberships.find((m) => m.organizationId === sourceOrgId)?.organization;
   if (!userOrg) {
     return {
       allowed: false,
@@ -260,7 +262,7 @@ export async function getAccessibleOrganizations(
       with: {
         organization: true,
       },
-    });
+    }) as MembershipWithOrg[];
 
     const accessibleOrgIds = new Set<string>();
 

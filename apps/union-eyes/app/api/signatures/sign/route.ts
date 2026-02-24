@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Signature Recording API
  * POST /api/signatures/sign - Record signature
@@ -11,16 +10,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireApiAuth } from '@/lib/api-auth-guard';
 import { SignatureService } from "@/lib/signature/signature-service";
 
+ 
 import {
   ErrorCode,
   standardErrorResponse,
-  standardSuccessResponse,
 } from '@/lib/api/standardized-responses';
 
 const signatureSchema = z.object({
   signerId: z.string().uuid('Invalid signerId'),
   signatureImageUrl: z.string().url('Invalid signature image URL'),
-  signatureType: z.enum(['drawn', 'uploaded', 'typed', 'biometric'], { 
+  signatureType: z.enum(['electronic', 'digital', 'wet'], { 
     errorMap: () => ({ message: 'Invalid signature type' }) 
   }),
   geolocation: z.object({
@@ -31,7 +30,7 @@ const signatureSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // Authentication guard
-    const { userId } = await requireApiAuth();
+    const { userId: _userId } = await requireApiAuth();
 
     const body = await req.json();
     

@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -48,7 +49,7 @@ async function getFederationMetrics(orgId: string) {
   try {
     // Fetch member unions count
     const memberUnions = await db.query.organizations.findMany({
-      where: (organizations, { eq }) => eq(organizations.parentOrganizationId, orgId),
+      where: (organizations, { eq }) => eq(organizations.parentId, orgId),
     });
 
     // Aggregate total members from all member unions via per-capita remittances
@@ -329,7 +330,7 @@ export default async function FederationDashboardPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {metrics.memberUnions.slice(0, 5).map((union: MemberUnionData) => (
+              {(metrics.memberUnions as unknown as MemberUnionData[]).slice(0, 5).map((union: MemberUnionData) => (
                 <div key={union.id} className="flex items-center justify-between border-b pb-4 last:border-0">
                   <div>
                     <div className="font-medium">{union.name}</div>

@@ -5,11 +5,15 @@
  * Main analytics dashboard page
  */
 
+
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { RefreshCw } from 'lucide-react';
+import { getOrganizationIdForUser } from '@/lib/organization-utils';
 
 export const metadata = {
   title: 'Analytics | UnionEyes',
@@ -20,8 +24,7 @@ async function getOrganizationId() {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  // Get user's organization (simplified - you&apos;d query the database)
-  return 'org-id'; // Placeholder
+  return getOrganizationIdForUser(userId);
 }
 
 export default async function AnalyticsPage() {

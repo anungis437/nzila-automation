@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { z } from 'zod';
 import { NextRequest, NextResponse } from "next/server";
 import { GeofencePrivacyService } from "@/services/geofence-privacy-service";
@@ -17,7 +16,7 @@ import {
  */
 
 
-const locationConsentSchema = z.object({
+const _locationConsentSchema = z.object({
   userId: z.string().uuid('Invalid userId'),
   purpose: z.unknown().optional(),
   purposeDescription: z.string().optional(),
@@ -56,13 +55,11 @@ export const POST = withApiAuth(async (req: NextRequest) => {
 
     return standardSuccessResponse(
       { consent,
-        message: "Location tracking consent granted. Data will be retained for 24 hours maximum.", },
-      undefined,
-      201
+        message: "Location tracking consent granted. Data will be retained for 24 hours maximum." }
     );
-  } catch (error: Record<string, unknown>) {
+  } catch (error) {
     return NextResponse.json(
-      { error: error.message || "Failed to request location consent" },
+      { error: error instanceof Error ? error.message : "Failed to request location consent" },
       { status: 500 }
     );
   }
@@ -88,9 +85,9 @@ export const GET = withApiAuth(async (req: NextRequest) => {
       hasConsent,
       context,
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error) {
     return NextResponse.json(
-      { error: error.message || "Failed to check consent status" },
+      { error: error instanceof Error ? error.message : "Failed to check consent status" },
       { status: 500 }
     );
   }
@@ -115,9 +112,9 @@ export const DELETE = withApiAuth(async (req: NextRequest) => {
       success: true,
       message: "Location tracking consent revoked. All location data has been deleted.",
     });
-  } catch (error: Record<string, unknown>) {
+  } catch (error) {
     return NextResponse.json(
-      { error: error.message || "Failed to revoke consent" },
+      { error: error instanceof Error ? error.message : "Failed to revoke consent" },
       { status: 500 }
     );
   }

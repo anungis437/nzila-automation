@@ -9,7 +9,8 @@
 
 "use client";
 
-import { useState } from "react";
+
+export const dynamic = 'force-dynamic';
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,15 +28,10 @@ export default function NewIncidentPage() {
 
   const handleSubmit = async () => {
     try {
-      // In production: submit to API
-      // const response = await fetch('/api/health-safety/incidents', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // });
-      
-      // Mock success for now
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetch('/api/v2/health-safety/incidents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
       
       toast.success("Incident report submitted successfully", {
         description: "The safety team has been notified.",
@@ -75,7 +71,7 @@ export default function NewIncidentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Page Header */}
         <motion.div
@@ -114,7 +110,7 @@ export default function NewIncidentPage() {
           <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
             <CardContent className="pt-6">
               <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 <div className="space-y-2 text-sm">
                   <p className="font-semibold text-amber-900 dark:text-amber-100">
                     Important Information

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Claim Workflow Finite State Machine (FSM)
  * 
@@ -226,13 +225,13 @@ export function validateClaimTransition(
   const {
     currentStatus,
     targetStatus,
-    userId,
+    userId: _userId,
     userRole = 'member',
     priority,
     statusChangedAt,
     hasUnresolvedCriticalSignals = false,
     hasRequiredDocumentation = false,
-    isOverdue = false,
+    isOverdue: _isOverdue = false,
     notes,
   } = context;
 
@@ -240,14 +239,14 @@ export function validateClaimTransition(
   const currentState = CLAIM_FSM[currentStatus];
   
   // Check 1: Is target status a valid transition?
-  if (!currentState.allowedTransitions.includes(targetStatus)) {
+  if (!(currentState.allowedTransitions as readonly string[]).includes(targetStatus)) {
     return {
       allowed: false,
       reason: `Invalid transition from '${currentStatus}' to '${targetStatus}'. Allowed transitions: ${currentState.allowedTransitions.join(', ')}`,
       requiredActions: [
         `The claim must be in one of these states to transition to '${targetStatus}': ${
          Object.entries(CLAIM_FSM)
-            .filter(([_, state]) => state.allowedTransitions.includes(targetStatus))
+            .filter(([_, state]) => (state.allowedTransitions as readonly string[]).includes(targetStatus))
             .map(([key]) => key)
             .join(', ')
         }`
@@ -294,7 +293,7 @@ export function validateClaimTransition(
 
   // Check 5: Are there unresolved critical signals? (PR-7: LRO Signals Integration)
   // Critical signals BLOCK closure/resolution
-  if (currentState.blockIfCriticalSignals && hasUnresolvedCriticalSignals) {
+  if ('blockIfCriticalSignals' in currentState && currentState.blockIfCriticalSignals && hasUnresolvedCriticalSignals) {
     return {
       allowed: false,
       reason: `Cannot transition to '${targetStatus}' while critical signals remain unresolved.`,
@@ -369,7 +368,8 @@ export function getTransitionRequirements(
     requiresRole: state.requiresRole[targetStatus] || ['member'],
     minHours: state.minTimeInState / (1000 * 60 * 60),
     requiresDocumentation: state.requiresDocumentation,
-    blockIfCriticalSignals: state.blockIfCriticalSignals || false,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    blockIfCriticalSignals: (state as any).blockIfCriticalSignals || false,
   };
 }
 

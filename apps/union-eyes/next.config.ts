@@ -153,9 +153,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // TypeScript configuration - ENABLED for type safety
+  // TypeScript configuration – all 2,538 errors resolved; strict checking enabled.
   typescript: {
-    // TypeScript errors will now block builds to prevent type errors in production
     ignoreBuildErrors: false,
   },
   
@@ -173,6 +172,12 @@ const nextConfig: NextConfig = {
   }),
   
   // Experimental features for faster builds
+  // Externalize native/binary packages that break Turbopack bundling
+  serverExternalPackages: [
+    '@tensorflow/tfjs-node',
+    '@mapbox/node-pre-gyp',
+  ],
+
   experimental: {
     // Optimize package imports
     optimizePackageImports: [
@@ -203,9 +208,10 @@ const nextConfig: NextConfig = {
   },
   
   // Output optimization
-  // Disable standalone mode for Docker to prevent trace collection hanging
-  // Docker already handles dependencies, no need for Next.js to trace them
-  output: process.env.DOCKER_BUILD === 'true' ? undefined : 'standalone',
+  // Standalone mode required for Docker production stage (node server.js)
+  // Disabled on Windows dev builds: Turbopack generates filenames with colons
+  // (e.g. node:crypto) which are invalid on NTFS. CI/Docker builds run on Linux.
+  output: process.platform === 'win32' ? undefined : 'standalone',
   
   // Skip API route static analysis during build (speeds up Docker builds)
   // API routes are inherently dynamic and don't need static generation
@@ -219,6 +225,12 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
   },
 
   async headers() {

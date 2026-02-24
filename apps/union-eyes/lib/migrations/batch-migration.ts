@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Batch Migration Engine
  * 
@@ -19,7 +18,6 @@
 import { db } from "@/db/db";
 import { sql } from "drizzle-orm";
 import {
-  getOrganizationIdFromTenant,
   batchGetOrganizationIds,
   updateMappingStatus,
   validateMapping,
@@ -181,7 +179,7 @@ export async function migrateTable(
 
       // Get unique tenant IDs from batch
       const tenantIds = Array.from(new Set(
-        batch.map((row: unknown) => row[config.tenantIdColumn]).filter(Boolean)
+        batch.map((row: unknown) => (row as Record<string, unknown>)[config.tenantIdColumn]).filter(Boolean)
       )) as string[];
 
       // Batch map tenant IDs to organization IDs
