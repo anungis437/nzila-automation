@@ -29,13 +29,13 @@ export default function PayPage() {
   const pricingData = {
     monthly: {
       price: "$19",
-      planId: "plan_Fd5UBpraUWKMH", // Hardcoded from WHOP_PLAN_ID_MONTHLY
+      planId: process.env.NEXT_PUBLIC_WHOP_PLAN_ID_MONTHLY ?? "plan_Fd5UBpraUWKMH",
       savingsPercentage: 0,
       savingsAmount: "$0"
     },
     yearly: {
       price: "$190",
-      planId: "plan_VVfTQzyslIKtq", // Hardcoded from WHOP_PLAN_ID_YEARLY
+      planId: process.env.NEXT_PUBLIC_WHOP_PLAN_ID_YEARLY ?? "plan_VVfTQzyslIKtq",
       savingsPercentage: 17,
       savingsAmount: "$38"
     }

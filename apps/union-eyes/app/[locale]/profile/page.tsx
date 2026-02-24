@@ -11,14 +11,18 @@
  * @page app/[locale]/profile/page.tsx
  */
 
+"use client";
 
 export const dynamic = 'force-dynamic';
 
 import * as React from "react";
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
 import {
   User,
   Mail,
@@ -30,26 +34,109 @@ import {
   Edit,
 } from "lucide-react";
 
-export default function ProfilePage() {
-  // Mock member data - would come from API/database
-  const memberData = {
-    id: "member-123",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    department: "Operations",
-    position: "Senior Technician",
-    status: "active" as const,
-    joinDate: new Date("2020-01-15"),
-    membershipNumber: "UE-2020-001234",
-    address: "123 Main St, City, ST 12345",
-    emergencyContact: {
-      name: "Jane Doe",
-      relationship: "Spouse",
-      phone: "+1 (555) 987-6543",
-    },
+interface MemberProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  department: string;
+  position: string;
+  status: string;
+  joinDate: string;
+  membershipNumber: string;
+  address: string;
+  emergencyContact: {
+    name: string;
+    relationship: string;
+    phone: string;
   };
+}
+
+export default function ProfilePage() {
+  const { user } = useUser();
+  const [memberData, setMemberData] = useState<MemberProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/v2/members/me');
+        if (res.ok) {
+          const data = await res.json();
+          setMemberData({
+            id: data.id ?? user?.id ?? '',
+            firstName: data.firstName ?? data.first_name ?? user?.firstName ?? '',
+            lastName: data.lastName ?? data.last_name ?? user?.lastName ?? '',
+            email: data.email ?? user?.primaryEmailAddress?.emailAddress ?? '',
+            phone: data.phone ?? '',
+            department: data.department ?? '',
+            position: data.position ?? '',
+            status: data.status ?? 'active',
+            joinDate: data.joinDate ?? data.join_date ?? data.createdAt ?? '',
+            membershipNumber: data.membershipNumber ?? data.membership_number ?? '',
+            address: data.address ?? '',
+            emergencyContact: data.emergencyContact ?? data.emergency_contact ?? {
+              name: '',
+              relationship: '',
+              phone: '',
+            },
+          });
+        } else {
+          // Fallback to Clerk user data
+          setMemberData({
+            id: user?.id ?? '',
+            firstName: user?.firstName ?? '',
+            lastName: user?.lastName ?? '',
+            email: user?.primaryEmailAddress?.emailAddress ?? '',
+            phone: '',
+            department: '',
+            position: '',
+            status: 'active',
+            joinDate: user?.createdAt ? new Date(user.createdAt).toISOString() : '',
+            membershipNumber: '',
+            address: '',
+            emergencyContact: { name: '', relationship: '', phone: '' },
+          });
+        }
+      } catch {
+        // Fallback to Clerk
+        setMemberData({
+          id: user?.id ?? '',
+          firstName: user?.firstName ?? '',
+          lastName: user?.lastName ?? '',
+          email: user?.primaryEmailAddress?.emailAddress ?? '',
+          phone: '',
+          department: '',
+          position: '',
+          status: 'active',
+          joinDate: user?.createdAt ? new Date(user.createdAt).toISOString() : '',
+          membershipNumber: '',
+          address: '',
+          emergencyContact: { name: '', relationship: '', phone: '' },
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProfile();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8 flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!memberData) {
+    return (
+      <div className="container mx-auto py-8">
+        <p className="text-gray-600">Unable to load profile.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-6">
@@ -98,7 +185,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-gray-400" />
                   <span>
-                    Member since {memberData.joinDate.toLocaleDateString()}
+                    Member since {memberData.joinDate ? new Date(memberData.joinDate).toLocaleDateString() : 'N/A'}
                   </span>
                 </div>
               </div>

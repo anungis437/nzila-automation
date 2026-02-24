@@ -421,7 +421,7 @@ alert(error instanceof Error ? error.message : 'Failed to enroll');
                 {/* Enrollment Button */}
                 <div className="flex gap-2 pt-4 border-t">
                   <Button 
-                    onClick={() => handleEnroll('mock-session-id')} 
+                    onClick={() => handleEnroll(selectedCourse.id)} 
                     className="flex-1"
                     disabled={enrolling || !memberId}
                   >

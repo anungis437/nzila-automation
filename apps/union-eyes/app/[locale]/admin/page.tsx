@@ -12,6 +12,8 @@
  */
 
 
+"use client";
+
 export const dynamic = 'force-dynamic';
 
 import * as React from "react";
@@ -41,15 +43,28 @@ interface AdminPageProps {
 }
 
 export default function AdminPage({ params }: AdminPageProps) {
-  // Mock statistics - would come from API/database
-  const stats = {
-    totalMembers: 1234,
-    activeMembers: 1150,
-    pendingApprovals: 23,
+  // Stats fetched from API — default to zeros until loaded
+  const [stats, setStats] = React.useState({
+    totalMembers: 0,
+    activeMembers: 0,
+    pendingApprovals: 0,
     systemHealth: "healthy" as const,
-    openClaims: 45,
-    activeElections: 2,
-  };
+    openClaims: 0,
+    activeElections: 0,
+  });
+
+  React.useEffect(() => {
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/v2/admin/stats');
+        if (res.ok) {
+          const data = await res.json();
+          setStats(prev => ({ ...prev, ...data }));
+        }
+      } catch { /* API not available */ }
+    }
+    loadStats();
+  }, []);
 
   return (
     <div className="space-y-6">

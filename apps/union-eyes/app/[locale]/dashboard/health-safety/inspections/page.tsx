@@ -64,6 +64,8 @@ export default function InspectionsPage() {
   const [typeFilter, setTypeFilter] = useState<InspectionType | "all">("all");
   const [dateRange, setDateRange] = useState<"week" | "month" | "quarter">("month");
   const [selectedInspection, setSelectedInspection] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [findings, setFindings] = useState<any[]>([]);
 
   // Summary statistics
   const [stats, setStats] = useState({
@@ -79,8 +81,23 @@ export default function InspectionsPage() {
     if (organizationId) {
       // eslint-disable-next-line react-hooks/immutability
       loadStats();
+      // eslint-disable-next-line react-hooks/immutability
+      loadFindings();
     }
   }, [organizationId, dateRange]);
+
+  const loadFindings = async () => {
+    try {
+      const res = await fetch(`/api/v2/health-safety/inspections/findings?organizationId=${organizationId}`);
+      if (res.ok) {
+        const json = await res.json();
+        const items = Array.isArray(json) ? json : json?.findings ?? json?.data ?? [];
+        setFindings(items);
+      }
+    } catch (error) {
+      logger.error("Failed to load findings:", error);
+    }
+  };
 
   const loadStats = async () => {
     try {
@@ -373,26 +390,14 @@ export default function InspectionsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Mock findings - replace with actual data */}
-                    {[1, 2, 3].map((i) => (
+                    {findings.length > 0 ? findings.map((finding) => (
                       <InspectionFindingsCard
-                        key={i}
-                        finding={{
-                          id: `finding-${i}`,
-                          inspectionId: `inspection-${i}`,
-                          severity: i === 1 ? "critical" : i === 2 ? "moderate" : "minor",
-                          description: `Finding ${i} description`,
-                          location: `Location ${i}`,
-                          category: "Safety Equipment",
-                          status: "open",
-                          assignedTo: "Safety Officer",
-                          // eslint-disable-next-line react-hooks/purity
-                          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                          createdAt: new Date().toISOString(),
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        } as any}
+                        key={finding.id}
+                        finding={finding}
                       />
-                    ))}
+                    )) : (
+                      <p className="text-center text-gray-500 py-8">No findings recorded</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

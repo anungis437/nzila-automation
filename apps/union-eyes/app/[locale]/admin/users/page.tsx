@@ -284,15 +284,16 @@ export default async function UsersPage({ params, searchParams }: PageProps) {
 }
 
 async function UserStats() {
-  // Mock stats - replace with actual data
-  const stats = {
-    total: 1234,
-    active: 1150,
-    admins: 24,
-    officers: 89,
-    stewards: 145,
-    members: 976,
-  };
+  // Fetch user stats from API
+  let stats = { total: 0, active: 0, admins: 0, officers: 0, stewards: 0, members: 0 };
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/admin/users/stats`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      stats = { ...stats, ...data };
+    }
+  } catch { /* API not available */ }
 
   return (
     <div className="grid gap-4 md:grid-cols-5">

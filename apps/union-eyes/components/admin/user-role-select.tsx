@@ -66,11 +66,12 @@ export function UserRoleSelect({ userId: _userId, organizationId: _organizationI
 
     startTransition(async () => {
       try {
-        // TODO: Call server action when integrated with RLS
-        // await updateUserRole(userId, organizationId, newRole);
-        
-        // Mock API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const res = await fetch('/api/v2/admin/users/role', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: _userId, organizationId: _organizationId, role: newRole }),
+        });
+        if (!res.ok) throw new Error('Failed to update role');
         
         toast({
           title: "Role updated",
