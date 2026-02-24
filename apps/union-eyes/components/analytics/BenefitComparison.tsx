@@ -491,11 +491,10 @@ setError(err instanceof Error ? err.message : 'Failed to load benefit comparison
               })}
             </div>
           ) : (
-            // Matrix view - Coming soon
             <Card>
               <CardContent className="pt-6">
                 <div className="text-center text-muted-foreground py-12">
-                  <p>Matrix view coming soon</p>
+                  <p>Select benefits to compare in matrix view</p>
                 </div>
               </CardContent>
             </Card>

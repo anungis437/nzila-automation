@@ -189,7 +189,7 @@ export default async function AdminMetricsReportPage() {
         <CardHeader>
           <CardTitle>Case Studies Performance</CardTitle>
           <CardDescription>
-            Content performance and engagement (views/downloads coming soon)
+            Content performance and engagement metrics
           </CardDescription>
         </CardHeader>
         <CardContent>

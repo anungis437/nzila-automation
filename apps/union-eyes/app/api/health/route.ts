@@ -9,7 +9,9 @@ async function checkDb(): Promise<boolean> {
   try {
     const { db } = await import('@nzila/db')
     const { sql } = await import('drizzle-orm')
-    await db.execute(sql`SELECT 1`)
+    // Cast needed: packages/db pins drizzle-orm ^0.39 while app uses ^0.45
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await db.execute(sql`SELECT 1` as any)
     return true
   } catch {
     return false

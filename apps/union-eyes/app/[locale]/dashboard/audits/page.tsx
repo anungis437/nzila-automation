@@ -23,49 +23,18 @@ export default async function AuditsPage() {
     redirect("/dashboard");
   }
 
-  // Mock data - replace with actual API calls
-  const audits = [
-    {
-      id: "1",
-      title: "Annual Financial Audit 2025",
-      type: "Financial",
-      status: "completed",
-      dateCompleted: "2026-01-15",
-      auditor: "Smith & Associates",
-      findings: 0,
-      hasReport: true
-    },
-    {
-      id: "2",
-      title: "Q4 2025 Internal Review",
-      type: "Internal",
-      status: "completed",
-      dateCompleted: "2025-12-20",
-      auditor: "Internal Audit Committee",
-      findings: 2,
-      hasReport: true
-    },
-    {
-      id: "3",
-      title: "Compliance Review 2026",
-      type: "Compliance",
-      status: "in-progress",
-      dateScheduled: "2026-03-01",
-      auditor: "Labor Board",
-      findings: 0,
-      hasReport: false
-    },
-    {
-      id: "4",
-      title: "Membership Verification",
-      type: "Membership",
-      status: "scheduled",
-      dateScheduled: "2026-04-15",
-      auditor: "External Auditor",
-      findings: 0,
-      hasReport: false
+  // Fetch audit data from API
+  let audits: { id: string; title: string; type: string; status: string; dateCompleted?: string; dateScheduled?: string; auditor: string; findings: number; hasReport: boolean; }[] = [];
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/audits`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      audits = Array.isArray(json) ? json : json?.audits ?? json?.data ?? [];
     }
-  ];
+  } catch {
+    // API not available — empty state
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {

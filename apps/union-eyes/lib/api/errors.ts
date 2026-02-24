@@ -89,6 +89,10 @@ export class ApiError extends Error {
     return new ApiError(ErrorCode.EXTERNAL_SERVICE_ERROR, `${service}: ${message}`, { service });
   }
 
+  static notImplemented(message = 'This endpoint is not yet implemented') {
+    return new ApiError(ErrorCode.NOT_IMPLEMENTED, message);
+  }
+
   /**
    * Convert a Zod error into a validation ApiError with field-level details.
    */

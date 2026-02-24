@@ -84,16 +84,18 @@ export default function InspectionsPage() {
 
   const loadStats = async () => {
     try {
-      // In production: fetch from API
-      // Example: const response = await fetch(`/api/health-safety/inspections/stats?organizationId=${organizationId}`);
-      setStats({
-        total: 28,
-        scheduled: 12,
-        completed: 14,
-        overdue: 2,
-        complianceRate: 96,
-        avgScore: 88.5,
-      });
+      const res = await fetch(`/api/v2/health-safety/inspections/stats?organizationId=${organizationId}`);
+      if (res.ok) {
+        const json = await res.json();
+        setStats({
+          total: json.total ?? 0,
+          scheduled: json.scheduled ?? 0,
+          completed: json.completed ?? 0,
+          overdue: json.overdue ?? 0,
+          complianceRate: json.complianceRate ?? json.compliance_rate ?? 0,
+          avgScore: json.avgScore ?? json.avg_score ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load inspection statistics");

@@ -25,8 +25,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-// Mock data for demonstration (in production, fetch from database)
-const mockTests = [
+// Default A/B test data (overridden by API fetch in component)
+const _defaultTests = [
   {
     id: 'test-1',
     name: 'Pilot Application Email Subject',
@@ -125,7 +125,21 @@ const mockTests = [
   },
 ];
 
-export default function ABTestingDashboardPage() {
+export default async function ABTestingDashboardPage() {
+  // Fetch A/B tests from API (falls back to defaults)
+  let mockTests = [..._defaultTests];
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/admin/ab-testing`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      const items = Array.isArray(json) ? json : json?.tests ?? json?.data ?? [];
+      if (items.length > 0) mockTests = items;
+    }
+  } catch {
+    // API not available — use fallback data
+  }
+
   const activeTests = mockTests.filter((t) => t.status === 'active').length;
   const completedTests = mockTests.filter((t) => t.status === 'completed').length;
   const draftTests = mockTests.filter((t) => t.status === 'draft').length;
@@ -287,7 +301,7 @@ export default function ABTestingDashboardPage() {
 /**
  * Test Card Component
  */
-function TestCard({ test }: { test: typeof mockTests[0] }) {
+function TestCard({ test }: { test: typeof _defaultTests[0] }) {
   const progress = (test.currentSampleSize / test.targetSampleSize) * 100;
   const bestVariant = test.variants.reduce((best, current) =>
     current.conversionRate > best.conversionRate ? current : best

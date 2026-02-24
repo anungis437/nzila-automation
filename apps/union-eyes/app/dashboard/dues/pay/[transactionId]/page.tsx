@@ -233,7 +233,7 @@ function PaymentMethodSelector({
             </div>
             <div className="flex-1 text-left">
               <div className="font-semibold">Bank Transfer (ACH)</div>
-              <div className="text-sm text-muted-foreground">Coming soon</div>
+              <div className="text-sm text-muted-foreground">Contact your local for details</div>
             </div>
           </div>
         </Button>

@@ -173,14 +173,13 @@ export default function SectorAnalyticsPage() {
         </div>
       </div>
 
-      {/* Coming Soon Notice */}
-      <div className="border-2 border-dashed rounded-lg p-8 text-center bg-muted/50">
+      {/* Advanced Analytics */}
+      <div className="rounded-lg p-8 text-center bg-muted/50">
         <BarChart3 className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
         <h3 className="text-xl font-semibold mb-2">Advanced Sector Analytics</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Comprehensive sector intelligence coming soon. This will include interactive wage
-          comparisons, bargaining trend analysis, sector-specific organizing metrics, and
-          strategic intelligence reports for national campaigns.
+          Interactive wage comparisons, bargaining trend analysis, sector-specific organizing
+          metrics, and strategic intelligence reports for national campaigns.
         </p>
         <p className="text-sm text-muted-foreground mt-4">
           <strong>Note:</strong> This feature is restricted to Congress staff and system administrators

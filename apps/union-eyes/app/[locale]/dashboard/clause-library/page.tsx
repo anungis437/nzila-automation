@@ -443,9 +443,11 @@ toast({
                 isOwner={selectedClause.isOwner}
                 onEdit={() => {
                   toast({
-                    title: "Coming soon",
-                    description: "Clause editing will be available in a future update",
+                    title: "Edit Clause",
+                    description: "Opening clause editor...",
                   });
+                  // Navigate to edit view
+                  window.location.href = `/dashboard/clause-library/${selectedClause.id}/edit`;
                 }}
                 onDelete={async () => {
                   try {

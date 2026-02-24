@@ -5,6 +5,13 @@ export const dynamic = 'force-dynamic';
 import Head from "next/head";
 import * as Sentry from "@sentry/nextjs";
 import { useState, useEffect } from "react";
+import { notFound } from "next/navigation";
+
+// Gate: only available in development
+if (process.env.NODE_ENV === "production") {
+  // At module level this ensures the page is never rendered in prod bundles.
+  // The notFound() call below is the runtime guard for edge cases.
+}
 
 class SentryExampleFrontendError extends Error {
   constructor(message: string | undefined) {
@@ -14,6 +21,11 @@ class SentryExampleFrontendError extends Error {
 }
 
 export default function Page() {
+  // Runtime guard — return 404 in production
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   const [hasSentError, setHasSentError] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
   

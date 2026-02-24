@@ -29,9 +29,8 @@ export const GET = withApi(
       summary: 'GET feature-flags',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    throw ApiError.notImplemented('Feature flags management is not yet available.');
   },
 );
 
@@ -44,8 +43,7 @@ export const PATCH = withApi(
       summary: 'PATCH feature-flags',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    throw ApiError.notImplemented('Feature flags management is not yet available.');
   },
 );

@@ -52,6 +52,9 @@ export enum ErrorCode {
   // Service Unavailability (503)
   SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE',
   CIRCUIT_BREAKER_OPEN = 'CIRCUIT_BREAKER_OPEN',
+
+  // Not Implemented (501)
+  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
 }
 
 /**
@@ -90,6 +93,9 @@ const ERROR_CODE_TO_STATUS: Record<ErrorCode, number> = {
   // Service unavailability
   [ErrorCode.SERVICE_UNAVAILABLE]: 503,
   [ErrorCode.CIRCUIT_BREAKER_OPEN]: 503,
+
+  // Not implemented
+  [ErrorCode.NOT_IMPLEMENTED]: 501,
 };
 
 /**

@@ -81,16 +81,18 @@ export default function IncidentsPage() {
 
   const loadStats = async () => {
     try {
-      // In production: fetch from API
-      // Example: const response = await fetch(`/api/health-safety/incidents/stats?organizationId=${organizationId}&period=${dateRange}`);
-      setStats({
-        total: 45,
-        reported: 8,
-        investigating: 12,
-        resolved: 20,
-        closed: 5,
-        avgResolutionTime: 4.5,
-      });
+      const res = await fetch(`/api/v2/health-safety/incidents/stats?organizationId=${organizationId}&period=${dateRange}`);
+      if (res.ok) {
+        const json = await res.json();
+        setStats({
+          total: json.total ?? 0,
+          reported: json.reported ?? 0,
+          investigating: json.investigating ?? 0,
+          resolved: json.resolved ?? 0,
+          closed: json.closed ?? 0,
+          avgResolutionTime: json.avgResolutionTime ?? json.avg_resolution_time ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load incident statistics");

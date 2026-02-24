@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -84,54 +84,8 @@ interface _PostPreview {
 }
 
 // ================================================================
-// SAMPLE DATA
+// QUICK SCHEDULE OPTIONS
 // ================================================================
-
-const availableAccounts: SocialAccount[] = [
-  {
-    id: '1',
-    platform: 'facebook',
-    username: 'local123union',
-    displayName: 'Local 123 UFCW',
-    characterLimit: 63206,
-    supportsTypes: ['text', 'image', 'video', 'link', 'carousel']
-  },
-  {
-    id: '2',
-    platform: 'twitter',
-    username: '@local123',
-    displayName: 'Local 123',
-    characterLimit: 280,
-    supportsTypes: ['text', 'image', 'video', 'link']
-  },
-  {
-    id: '3',
-    platform: 'instagram',
-    username: 'local123union',
-    displayName: 'Local 123 UFCW',
-    characterLimit: 2200,
-    supportsTypes: ['image', 'video', 'carousel', 'story', 'reel']
-  },
-  {
-    id: '4',
-    platform: 'linkedin',
-    username: 'local-123-ufcw',
-    displayName: 'Local 123 UFCW',
-    characterLimit: 3000,
-    supportsTypes: ['text', 'image', 'video', 'link']
-  }
-];
-
-const hashtagSuggestions: HashtagSuggestion[] = [
-  { tag: 'UnionStrong', popularity: 95, relevance: 100 },
-  { tag: '1u', popularity: 88, relevance: 95 },
-  { tag: 'UnionPower', popularity: 82, relevance: 90 },
-  { tag: 'OrganizedLabor', popularity: 75, relevance: 85 },
-  { tag: 'WorkersRights', popularity: 78, relevance: 80 },
-  { tag: 'FairWages', popularity: 70, relevance: 75 },
-  { tag: 'UnionJobs', popularity: 68, relevance: 70 },
-  { tag: 'Solidarity', popularity: 85, relevance: 95 }
-];
 
 const quickScheduleOptions = [
   { label: 'Now', date: new Date() },
@@ -185,7 +139,9 @@ const extractMentions = (text: string): string[] => {
 // ================================================================
 
 export default function SocialMediaPostComposer() {
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>(['1', '2', '3']);
+  const [availableAccounts, setAvailableAccounts] = useState<SocialAccount[]>([]);
+  const [hashtagSuggestions, setHashtagSuggestions] = useState<HashtagSuggestion[]>([]);
+  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [postType, setPostType] = useState<PostType>('text');
   const [content, setContent] = useState('');
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
@@ -197,8 +153,43 @@ export default function SocialMediaPostComposer() {
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
   const [useAIOptimization, setUseAIOptimization] = useState(true);
   const [previewPlatform, setPreviewPlatform] = useState<SocialPlatform>('facebook');
+  const [_loading, setLoading] = useState(true);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const fetchAccounts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/v2/social-media/accounts');
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const accounts = items.map((a: any) => ({
+          id: String(a.id),
+          platform: a.platform,
+          username: a.username,
+          displayName: a.displayName ?? a.display_name ?? a.username,
+          characterLimit: a.characterLimit ?? a.character_limit,
+          supportsTypes: a.supportsTypes ?? a.supports_types ?? ['text', 'image'],
+        }));
+        setAvailableAccounts(accounts);
+        if (accounts.length > 0) setSelectedAccounts(accounts.map((a: SocialAccount) => a.id));
+      }
+      // Fetch hashtag suggestions
+      const hashRes = await fetch('/api/v2/social-media/hashtag-suggestions');
+      if (hashRes.ok) {
+        const data = await hashRes.json();
+        setHashtagSuggestions(Array.isArray(data) ? data : data?.results ?? data?.data ?? []);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAccounts(); }, [fetchAccounts]);
   
   const hashtags = extractHashtags(content);
   const _mentions = extractMentions(content);

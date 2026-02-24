@@ -64,64 +64,12 @@ export default function OrganizingDashboardPage() {
     try {
       setLoading(true);
       
-      // Mock data for demonstration - replace with actual API call
-      const mockCampaigns: OrganizingCampaign[] = [
-        {
-          id: '1',
-          campaignName: 'Healthcare Workers Union Drive',
-          campaignCode: 'ORG-2024-HCW-001',
-          campaignType: 'new_workplace',
-          campaignStatus: 'active',
-          targetEmployerName: 'City General Hospital',
-          workplaceCity: 'Toronto',
-          workplaceProvince: 'ON',
-          estimatedEligibleWorkers: 450,
-          cardsSignedCount: 285,
-          cardsSignedPercentage: 63.33,
-          cardSigningThresholdPercentage: 40.00,
-          superMajorityThresholdPercentage: 65.00,
-          organizingCommitteeSize: 12,
-          campaignLaunchDate: '2024-01-15',
-          cardCheckDeadline: '2024-03-15'
-        },
-        {
-          id: '2',
-          campaignName: 'Manufacturing Workers Expansion',
-          campaignCode: 'ORG-2024-MFG-002',
-          campaignType: 'expansion',
-          campaignStatus: 'card_check',
-          targetEmployerName: 'AutoParts Manufacturing Inc.',
-          workplaceCity: 'Windsor',
-          workplaceProvince: 'ON',
-          estimatedEligibleWorkers: 180,
-          cardsSignedCount: 145,
-          cardsSignedPercentage: 80.56,
-          cardSigningThresholdPercentage: 40.00,
-          superMajorityThresholdPercentage: 65.00,
-          organizingCommitteeSize: 8,
-          campaignLaunchDate: '2023-11-01',
-          cardCheckDeadline: '2024-01-30'
-        },
-        {
-          id: '3',
-          campaignName: 'Retail Workers Certification',
-          campaignCode: 'ORG-2024-RTL-003',
-          campaignType: 'new_workplace',
-          campaignStatus: 'research',
-          targetEmployerName: 'MegaStore Retail Chain',
-          workplaceCity: 'Ottawa',
-          workplaceProvince: 'ON',
-          estimatedEligibleWorkers: 320,
-          cardsSignedCount: 45,
-          cardsSignedPercentage: 14.06,
-          cardSigningThresholdPercentage: 40.00,
-          superMajorityThresholdPercentage: 65.00,
-          organizingCommitteeSize: 3,
-          campaignLaunchDate: '2024-02-01'
-        }
-      ];
-
-      setCampaigns(mockCampaigns);
+      const res = await fetch('/api/v2/organizing/campaigns');
+      if (res.ok) {
+        const json = await res.json();
+        const items = Array.isArray(json) ? json : json?.campaigns ?? json?.data ?? [];
+        setCampaigns(items);
+      }
     } catch (_err) {
 setError('Unable to load organizing campaigns. Please try again later.');
     } finally {

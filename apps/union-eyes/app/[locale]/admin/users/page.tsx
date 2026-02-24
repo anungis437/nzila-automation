@@ -47,25 +47,22 @@ async function UsersTable({
   organizationId?: string; 
   role?: "member" | "steward" | "officer" | "admin";
 }) {
-  // This will need RLS context - for now using a mock approach
-  // In production, this would be called from an API route with proper RLS
-  const _tx = null as unknown; // TODO: Get transaction from RLS-protected API route
-  
-  // Mock data for demonstration - replace with actual API call
-  const users = await Promise.resolve([
-    {
-      id: "user-1",
-      name: "John Doe",
-      email: "john@example.com",
-      role: "admin" as const,
-      organizationId: "tenant-1",
-      tenantName: "Local 123",
-      status: "active" as const,
-      lastLogin: "2026-02-12T10:30:00Z",
-      joinedAt: "2025-01-15T08:00:00Z",
-    },
-    // More mock data...
-  ]);
+  // Fetch users from API
+  let users: { id: string; name: string; email: string; role: "member" | "steward" | "officer" | "admin"; organizationId: string; tenantName: string; status: string; lastLogin: string; joinedAt: string; }[] = [];
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (organizationId) params.set('organizationId', organizationId);
+    if (role) params.set('role', role);
+    const res = await fetch(`${baseUrl}/api/v2/admin/users?${params.toString()}`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      users = Array.isArray(json) ? json : json?.users ?? json?.data ?? [];
+    }
+  } catch {
+    // API not available — empty state
+  }
 
   if (users.length === 0) {
     return (

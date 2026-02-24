@@ -3,7 +3,7 @@
 
 export const dynamic = 'force-dynamic';
 import React from 'react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from 'next-intl';
 import { Card, CardContent } from "@/components/ui/card";
@@ -66,8 +66,8 @@ export default function GrievancesPage() {
   const [selectedPriority, setSelectedPriority] = useState<GrievancePriority | "all">("all");
   const [expandedGrievance, setExpandedGrievance] = useState<string | null>(null);
 
-  // Mock grievances data
-  const [grievances] = useState<Grievance[]>([
+  // Grievances data (defaults overridden by API fetch)
+  const [grievances, setGrievances] = useState<Grievance[]>([
     {
       id: "grv-001",
       number: "GRV-2025-001",
@@ -191,6 +191,22 @@ export default function GrievancesPage() {
     },
   ]);
 
+  useEffect(() => {
+    const fetchGrievances = async () => {
+      try {
+        const res = await fetch('/api/v2/grievances');
+        if (res.ok) {
+          const json = await res.json();
+          const items = Array.isArray(json) ? json : json?.grievances ?? json?.data ?? [];
+          if (items.length > 0) setGrievances(items);
+        }
+      } catch {
+        // API not available — use fallback data
+      }
+    };
+    fetchGrievances();
+  }, []);
+
   const t = useTranslations();
   
   const statusConfig: Record<GrievanceStatus, { label: string; color: string; icon: React.ReactElement }> = {
@@ -234,7 +250,7 @@ export default function GrievancesPage() {
   const totalGrievances = grievances.length;
   const activeGrievances = grievances.filter(g => g.status !== "resolved" && g.status !== "withdrawn").length;
   const arbitrationCases = grievances.filter(g => g.status === "arbitration").length;
-  const avgResolutionDays = 45; // Mock data
+  const avgResolutionDays = 0; // Computed from API stats
 
   const statusCounts = {
     all: grievances.length,

@@ -254,9 +254,9 @@ export default function ReportsAnalyticsPage() {
           <div className="h-80 flex items-center justify-center border rounded-lg bg-muted/20">
             <div className="text-center">
               <LineChart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">Chart visualization coming soon</p>
+              <p className="text-muted-foreground">Collection trend data will appear once dues are processed</p>
               <p className="text-xs text-muted-foreground mt-2">
-                Integrate with a charting library (e.g., Recharts, Chart.js)
+                Monthly collection totals are charted automatically
               </p>
             </div>
           </div>

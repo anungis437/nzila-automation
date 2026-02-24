@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,134 +87,6 @@ interface ScheduledPost {
 }
 
 // ================================================================
-// SAMPLE DATA
-// ================================================================
-
-const sampleCampaigns: Campaign[] = [
-  {
-    id: '1',
-    name: 'Contract Victory Campaign',
-    description: 'Celebrate our contract win and thank members for their solidarity',
-    status: 'active',
-    platforms: ['facebook', 'twitter', 'instagram'],
-    startDate: new Date('2025-01-15'),
-    endDate: new Date('2025-01-31'),
-    goals: {
-      impressions: 50000,
-      engagementRate: 5,
-      conversions: 100
-    },
-    progress: {
-      postsPublished: 8,
-      totalPosts: 15,
-      impressions: 32000,
-      engagements: 1850,
-      conversions: 42
-    },
-    hashtags: ['ContractWin', 'UnionStrong', 'Local123Victory'],
-    targetAudience: 'Union members and community supporters'
-  },
-  {
-    id: '2',
-    name: 'Membership Drive 2025',
-    description: 'Recruit new members and highlight union benefits',
-    status: 'planning',
-    platforms: ['facebook', 'instagram', 'linkedin'],
-    startDate: new Date('2025-02-01'),
-    endDate: new Date('2025-02-28'),
-    goals: {
-      impressions: 75000,
-      engagementRate: 4,
-      conversions: 200
-    },
-    progress: {
-      postsPublished: 0,
-      totalPosts: 20,
-      impressions: 0,
-      engagements: 0,
-      conversions: 0
-    },
-    hashtags: ['JoinLocal123', 'UnionBenefits', 'WorkersUnite'],
-    targetAudience: 'Non-union workers in retail and grocery sectors'
-  },
-  {
-    id: '3',
-    name: 'Strike Authorization Info',
-    description: 'Educate members about strike vote process and timeline',
-    status: 'completed',
-    platforms: ['facebook', 'twitter'],
-    startDate: new Date('2024-12-01'),
-    endDate: new Date('2024-12-15'),
-    goals: {
-      impressions: 30000,
-      engagementRate: 6
-    },
-    progress: {
-      postsPublished: 12,
-      totalPosts: 12,
-      impressions: 38500,
-      engagements: 2450,
-      conversions: 0
-    },
-    hashtags: ['StrikeVote', 'UnionDemocracy', 'MembersDecide'],
-    targetAudience: 'Active union members'
-  }
-];
-
-const sampleScheduledPosts: ScheduledPost[] = [
-  {
-    id: '1',
-    campaignId: '1',
-    platform: 'facebook',
-    content: 'VICTORY! Our members voted 95% YES on the new contract. This is what solidarity looks like. 💪',
-    scheduledFor: new Date('2025-01-20T10:00:00'),
-    status: 'scheduled',
-    hashtags: ['ContractWin', 'UnionStrong'],
-    mediaCount: 1
-  },
-  {
-    id: '2',
-    campaignId: '1',
-    platform: 'twitter',
-    content: 'Breaking: New contract ratified! Better wages, stronger benefits, job security for all members. #ContractWin',
-    scheduledFor: new Date('2025-01-20T10:15:00'),
-    status: 'scheduled',
-    hashtags: ['ContractWin'],
-    mediaCount: 0
-  },
-  {
-    id: '3',
-    campaignId: '1',
-    platform: 'instagram',
-    content: 'Celebrating our contract victory! Swipe to see what we won together. 🎉',
-    scheduledFor: new Date('2025-01-20T12:00:00'),
-    status: 'scheduled',
-    hashtags: ['ContractWin', 'UnionStrong', 'Local123Victory'],
-    mediaCount: 4
-  },
-  {
-    id: '4',
-    campaignId: '1',
-    platform: 'facebook',
-    content: 'Member testimonial: "This contract means I can finally afford healthcare for my family." Read more stories from our members.',
-    scheduledFor: new Date('2025-01-22T14:00:00'),
-    status: 'scheduled',
-    hashtags: ['UnionStrong'],
-    mediaCount: 1
-  },
-  {
-    id: '5',
-    campaignId: '1',
-    platform: 'instagram',
-    content: 'Meet the bargaining team! These dedicated members spent months fighting for this contract. Thank you! 🙏',
-    scheduledFor: new Date('2025-01-25T09:00:00'),
-    status: 'scheduled',
-    hashtags: ['Local123Victory', 'UnionStrong'],
-    mediaCount: 5
-  }
-];
-
-// ================================================================
 // HELPER FUNCTIONS
 // ================================================================
 
@@ -269,21 +141,70 @@ const formatNumber = (num: number): string => {
 // ================================================================
 
 export default function CampaignScheduler() {
-  const [selectedCampaign, setSelectedCampaign] = useState<string | null>('1');
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
   const [filterStatus, setFilterStatus] = useState<CampaignStatus | 'all'>('all');
+  const [loading, setLoading] = useState(true);
 
-  const activeCampaign = sampleCampaigns.find(c => c.id === selectedCampaign);
-  const campaignPosts = sampleScheduledPosts.filter(p => p.campaignId === selectedCampaign);
-  const postsOnSelectedDate = sampleScheduledPosts.filter(p => 
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [campRes, postsRes] = await Promise.all([
+        fetch('/api/v2/social-media/campaigns'),
+        fetch('/api/v2/social-media/scheduled-posts'),
+      ]);
+      if (campRes.ok) {
+        const data = await campRes.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setCampaigns(items.map((c: any) => ({
+          ...c,
+          startDate: new Date(c.startDate ?? c.start_date),
+          endDate: c.endDate ?? c.end_date ? new Date(c.endDate ?? c.end_date) : undefined,
+          goals: c.goals ?? {},
+          progress: c.progress ?? { postsPublished: 0, totalPosts: 0, impressions: 0, engagements: 0, conversions: 0 },
+          hashtags: c.hashtags ?? [],
+          platforms: c.platforms ?? [],
+        })));
+        if (items.length > 0 && !selectedCampaign) setSelectedCampaign(items[0].id);
+      }
+      if (postsRes.ok) {
+        const data = await postsRes.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setScheduledPosts(items.map((p: any) => ({
+          ...p,
+          scheduledFor: new Date(p.scheduledFor ?? p.scheduled_for),
+          mediaCount: p.mediaCount ?? p.media_count ?? 0,
+          hashtags: p.hashtags ?? [],
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCampaign]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  const activeCampaign = campaigns.find(c => c.id === selectedCampaign);
+  const campaignPosts = scheduledPosts.filter(p => p.campaignId === selectedCampaign);
+  const postsOnSelectedDate = scheduledPosts.filter(p => 
     isSameDay(p.scheduledFor, selectedDate)
   );
 
-  const filteredCampaigns = sampleCampaigns.filter(c => 
+  const filteredCampaigns = campaigns.filter(c => 
     filterStatus === 'all' || c.status === filterStatus
   );
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -382,12 +303,12 @@ export default function CampaignScheduler() {
           <CardHeader className="pb-2">
             <CardDescription>Active Campaigns</CardDescription>
             <CardTitle className="text-3xl">
-              {sampleCampaigns.filter(c => c.status === 'active').length}
+              {campaigns.filter(c => c.status === 'active').length}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              {sampleCampaigns.filter(c => c.status === 'planning').length} in planning
+              {campaigns.filter(c => c.status === 'planning').length} in planning
             </p>
           </CardContent>
         </Card>
@@ -396,7 +317,7 @@ export default function CampaignScheduler() {
           <CardHeader className="pb-2">
             <CardDescription>Scheduled Posts</CardDescription>
             <CardTitle className="text-3xl">
-              {sampleScheduledPosts.filter(p => p.status === 'scheduled').length}
+              {scheduledPosts.filter(p => p.status === 'scheduled').length}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -411,7 +332,7 @@ export default function CampaignScheduler() {
             <CardDescription>Total Reach (Active)</CardDescription>
             <CardTitle className="text-3xl">
               {formatNumber(
-                sampleCampaigns
+                campaigns
                   .filter(c => c.status === 'active')
                   .reduce((sum, c) => sum + c.progress.impressions, 0)
               )}

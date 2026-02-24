@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,112 +58,6 @@ interface FeedItem {
 }
 
 // ================================================================
-// SAMPLE DATA
-// ================================================================
-
-const sampleFeedItems: FeedItem[] = [
-  {
-    id: '1',
-    platform: 'facebook',
-    accountName: 'Local 123 UFCW',
-    accountUsername: 'local123union',
-    accountAvatar: '/avatars/union-logo.png',
-    itemType: 'post',
-    content: '🎉 VICTORY! Our members voted 95% YES on the new contract!\n\nAfter months of hard negotiations, we\'ve secured:\n✅ 15% wage increase over 3 years\n✅ Full healthcare coverage with no premium increases\n✅ Strong job security protections\n✅ Enhanced retirement benefits\n\nThis is what solidarity looks like. When workers stand together, we win. 💪\n\n#UnionStrong #Local123 #ContractWin',
-    mediaUrls: ['/posts/victory-rally.jpg'],
-    likesCount: 892,
-    commentsCount: 156,
-    sharesCount: 234,
-    viewsCount: 12500,
-    publishedAt: new Date(Date.now() - 3600000 * 4),
-    platformUrl: 'https://facebook.com/local123union/posts/123456',
-    hashtags: ['UnionStrong', 'Local123', 'ContractWin']
-  },
-  {
-    id: '2',
-    platform: 'instagram',
-    accountName: 'Local 123 UFCW',
-    accountUsername: 'local123union',
-    accountAvatar: '/avatars/union-logo.png',
-    itemType: 'photo',
-    content: 'Meet Sarah, shop steward and 12-year member. 💪\n\n"This union changed my life. I went from barely making ends meet to owning my home and sending my kids to college. Every member should know they have that same opportunity."\n\nWant to share your union story? Drop a comment below! 👇\n\n#MemberSpotlight #UnionPower #WorkersRights',
-    mediaUrls: ['/posts/sarah-steward.jpg'],
-    likesCount: 1245,
-    commentsCount: 67,
-    sharesCount: 89,
-    publishedAt: new Date(Date.now() - 3600000 * 8),
-    platformUrl: 'https://instagram.com/p/ABC123',
-    hashtags: ['MemberSpotlight', 'UnionPower', 'WorkersRights']
-  },
-  {
-    id: '3',
-    platform: 'twitter',
-    accountName: 'Local 123',
-    accountUsername: '@local123',
-    accountAvatar: '/avatars/union-logo.png',
-    itemType: 'post',
-    content: '🚨 BREAKING: New contract ratified!\n\n95% YES vote from our members. Better wages, stronger benefits, job security for all.\n\nThis is the power of organized labor. This is what we fight for.\n\n#1u #UnionStrong #WorkersWin',
-    mediaUrls: [],
-    likesCount: 678,
-    commentsCount: 123,
-    sharesCount: 345,
-    viewsCount: 15200,
-    publishedAt: new Date(Date.now() - 3600000 * 5),
-    platformUrl: 'https://twitter.com/local123/status/123456',
-    hashtags: ['1u', 'UnionStrong', 'WorkersWin']
-  },
-  {
-    id: '4',
-    platform: 'linkedin',
-    accountName: 'Local 123 UFCW',
-    accountUsername: 'local-123-ufcw',
-    accountAvatar: '/avatars/union-logo.png',
-    itemType: 'post',
-    content: 'Proud to announce the successful ratification of our new collective bargaining agreement.\n\nKey achievements:\n• 15% wage increase ensuring fair compensation\n• Comprehensive healthcare benefits with zero premium increases\n• Strengthened job security provisions\n• Enhanced retirement and pension benefits\n\nThis contract demonstrates the tangible value of collective bargaining and worker solidarity in achieving meaningful workplace improvements.\n\n#LaborRelations #CollectiveBargaining #WorkplaceRights',
-    mediaUrls: [],
-    likesCount: 234,
-    commentsCount: 45,
-    sharesCount: 78,
-    publishedAt: new Date(Date.now() - 3600000 * 6),
-    platformUrl: 'https://linkedin.com/posts/local-123-ufcw_123456',
-    hashtags: ['LaborRelations', 'CollectiveBargaining', 'WorkplaceRights']
-  },
-  {
-    id: '5',
-    platform: 'facebook',
-    accountName: 'Local 123 UFCW',
-    accountUsername: 'local123union',
-    accountAvatar: '/avatars/union-logo.png',
-    itemType: 'video',
-    content: '📹 Watch: Member testimonials from our contract victory celebration!\n\nHear directly from the members who fought for and won this historic contract. Their stories remind us why we organize.\n\n"We showed the company that united workers cannot be defeated." - Mike, 8-year member\n\n#UnionVoices #MemberStories',
-    mediaUrls: ['/posts/testimonials-video.mp4'],
-    likesCount: 567,
-    commentsCount: 89,
-    sharesCount: 156,
-    viewsCount: 8900,
-    publishedAt: new Date(Date.now() - 3600000 * 12),
-    platformUrl: 'https://facebook.com/local123union/videos/789012',
-    hashtags: ['UnionVoices', 'MemberStories']
-  },
-  {
-    id: '6',
-    platform: 'instagram',
-    accountName: 'Local 123 UFCW',
-    accountUsername: 'local123union',
-    accountAvatar: '/avatars/union-logo.png',
-    itemType: 'photo',
-    content: 'Solidarity in action! 🤝\n\nOur members showed up in force at today\'s membership meeting. When we stand together, we\'re unstoppable.\n\nNext meeting: February 15th, 6 PM at the union hall. See you there!\n\n#Solidarity #UnionMeeting #StrongerTogether',
-    mediaUrls: ['/posts/membership-meeting.jpg'],
-    likesCount: 789,
-    commentsCount: 45,
-    sharesCount: 67,
-    publishedAt: new Date(Date.now() - 3600000 * 18),
-    platformUrl: 'https://instagram.com/p/DEF456',
-    hashtags: ['Solidarity', 'UnionMeeting', 'StrongerTogether']
-  }
-];
-
-// ================================================================
 // HELPER FUNCTIONS
 // ================================================================
 
@@ -198,20 +92,44 @@ const formatNumber = (num: number): string => {
 // ================================================================
 
 export default function SocialFeedWidget() {
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [filterPlatform, setFilterPlatform] = useState<SocialPlatform | 'all'>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [visibleItems, setVisibleItems] = useState(3);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFeed = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/v2/social-media/feed');
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setFeedItems(items.map((item: any) => ({
+          ...item,
+          publishedAt: new Date(item.publishedAt ?? item.published_at),
+          mediaUrls: item.mediaUrls ?? item.media_urls ?? [],
+          hashtags: item.hashtags ?? [],
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchFeed(); }, [fetchFeed]);
 
   const filteredItems = filterPlatform === 'all'
-    ? sampleFeedItems
-    : sampleFeedItems.filter(item => item.platform === filterPlatform);
+    ? feedItems
+    : feedItems.filter(item => item.platform === filterPlatform);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 1000);
+    await fetchFeed();
+    setIsRefreshing(false);
   };
 
   const loadMore = () => {
@@ -402,7 +320,30 @@ export default function SocialFeedWidget() {
 // Smaller version for sidebars and dashboards
 
 export function SocialFeedCompact() {
-  const recentPosts = sampleFeedItems.slice(0, 3);
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+
+  const fetchFeed = useCallback(async () => {
+    try {
+      const res = await fetch('/api/v2/social-media/feed?limit=3');
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setFeedItems(items.map((item: any) => ({
+          ...item,
+          publishedAt: new Date(item.publishedAt ?? item.published_at),
+          mediaUrls: item.mediaUrls ?? item.media_urls ?? [],
+          hashtags: item.hashtags ?? [],
+        })));
+      }
+    } catch {
+      // API not available
+    }
+  }, []);
+
+  useEffect(() => { fetchFeed(); }, [fetchFeed]);
+
+  const recentPosts = feedItems.slice(0, 3);
 
   return (
     <Card className="w-full">

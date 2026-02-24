@@ -1,6 +1,8 @@
 /**
  * Debug page to view current user information
  * This helps link Clerk users to database records
+ * 
+ * GATED: Only accessible in development. Returns 404 in production.
  */
 
 export const dynamic = 'force-dynamic';
@@ -8,8 +10,14 @@ export const dynamic = 'force-dynamic';
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getClaimsAssignedToUser } from "@/db/queries/claims-queries";
+import { notFound } from "next/navigation";
 
 export default async function DebugPage() {
+  // Gate: only available in development
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   const { userId, orgId } = await auth();
   const user = await currentUser();
   

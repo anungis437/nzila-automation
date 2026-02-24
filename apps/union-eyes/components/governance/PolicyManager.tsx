@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
  
-import { FileText, Plus, Edit2, Trash2, Eye } from "lucide-react";
+import { FileText, Plus, Edit2, Trash2, Eye, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Policy {
   id: string;
@@ -21,55 +22,40 @@ interface PolicyManagerProps {
   canManage?: boolean;
 }
 
-export default function PolicyManager({ organizationId: _organizationId, canManage = false }: PolicyManagerProps) {
-  // Mock data - replace with actual API call
-  const policies: Policy[] = [
-    {
-      id: "1",
-      title: "Workplace Harassment Prevention",
-      category: "hr",
-      description: "Guidelines for preventing and addressing harassment in the workplace",
-      status: "active",
-      lastUpdated: "2025-09-15",
-      updatedBy: "HR Committee"
-    },
-    {
-      id: "2",
-      title: "Grievance Filing Procedures",
-      category: "grievance",
-      description: "Step-by-step process for filing and processing grievances",
-      status: "active",
-      lastUpdated: "2025-08-20",
-      updatedBy: "Chief Steward"
-    },
-    {
-      id: "3",
-      title: "Emergency Response Protocol",
-      category: "health-safety",
-      description: "Procedures for responding to workplace emergencies",
-      status: "active",
-      lastUpdated: "2026-01-10",
-      updatedBy: "H&S Committee"
-    },
-    {
-      id: "4",
-      title: "Social Media Guidelines",
-      category: "communications",
-      description: "Union member guidelines for social media conduct",
-      status: "under-review",
-      lastUpdated: "2026-02-01",
-      updatedBy: "Communications Team"
-    },
-    {
-      id: "5",
-      title: "Expense Reimbursement",
-      category: "financial",
-      description: "Policy for member and officer expense claims",
-      status: "active",
-      lastUpdated: "2025-11-30",
-      updatedBy: "Secretary-Treasurer"
+export default function PolicyManager({ organizationId, canManage = false }: PolicyManagerProps) {
+  const [policies, setPolicies] = useState<Policy[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPolicies = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/governance/policies/rules?organizationId=${organizationId}`);
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setPolicies(items.map((p: any, i: number) => ({
+          id: String(p.id ?? i + 1),
+          title: p.title ?? p.name ?? '',
+          category: p.category ?? 'hr',
+          description: p.description ?? '',
+          status: p.status ?? 'active',
+          lastUpdated: p.lastUpdated ?? p.updated_at ?? '',
+          updatedBy: p.updatedBy ?? p.updated_by ?? '',
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [organizationId]);
+
+  useEffect(() => { fetchPolicies(); }, [fetchPolicies]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
 
   const getCategoryColor = (category: string) => {
     const colors = {

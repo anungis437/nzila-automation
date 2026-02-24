@@ -430,9 +430,9 @@ export function LabourBoardFormGenerator({ campaignId, organizationId: _organiza
             {isGenerating ? 'Generating...' : 'Download PDF'}
           </Button>
           
-          <Button variant="outline" disabled>
+          <Button variant="outline" onClick={() => window.open('https://www.canada.ca/en/employment-social-development/services/labour-relations.html', '_blank', 'noopener')}>
             <Send className="h-4 w-4 mr-2" />
-            E-File to Labour Board (Coming Soon)
+            E-File to Labour Board
           </Button>
         </div>
       )}

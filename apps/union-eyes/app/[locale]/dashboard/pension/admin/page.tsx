@@ -116,147 +116,43 @@ export default function PensionAdminPage() {
       const firstPlanId = plansData.data?.[0]?.id;
       
       // Load remaining admin data in parallel
-      const [_contributionsRes, _claimsRes, _membersRes, _t4aRes] = await Promise.all([
+      const [contributionsRes, claimsRes, membersRes, t4aRes] = await Promise.all([
         fetch(`/api/pension/plans?organizationId=${organizationId}`), // Reusing for contributions demo
         fetch('/api/pension/benefits'),
         firstPlanId ? fetch(`/api/pension/members?planId=${firstPlanId}`) : Promise.resolve({ ok: false }),
         fetch('/api/tax/t4a')
       ]);
 
-      // Mock data for demonstration
-      setPlans([
-        {
-          id: '1',
-          planName: 'CUPE Local 1234 Defined Benefit Plan',
-          planType: 'Defined Benefit',
-          status: 'Active',
-          activeMembers: 456,
-          totalAssets: 12500000,
-          fundingStatus: 94.5
-        },
-        {
-          id: '2',
-          planName: 'CUPE Local 1234 Defined Contribution Plan',
-          planType: 'Defined Contribution',
-          status: 'Active',
-          activeMembers: 123,
-          totalAssets: 3200000,
-          fundingStatus: 100
-        }
-      ]);
+      // Use actual API response data
+      setPlans(plansData?.data ?? []);
 
-      setContributions([
-        {
-          id: '1',
-          memberId: 'M001',
-          memberName: 'John Doe',
-          period: 'January 2024',
-          amount: 450,
-          paymentStatus: 'Paid',
-          paymentDate: '2024-01-15'
-        },
-        {
-          id: '2',
-          memberId: 'M002',
-          memberName: 'Jane Smith',
-          period: 'January 2024',
-          amount: 450,
-          paymentStatus: 'Pending'
-        },
-        {
-          id: '3',
-          memberId: 'M003',
-          memberName: 'Robert Johnson',
-          period: 'January 2024',
-          amount: 450,
-          paymentStatus: 'Overdue'
-        }
-      ]);
+      if (contributionsRes.ok) {
+        const contribData = await contributionsRes.json();
+        setContributions(contribData?.data ?? []);
+      } else {
+        setContributions([]);
+      }
 
-      setClaims([
-        {
-          id: '1',
-          memberId: 'M001',
-          memberName: 'Mary Wilson',
-          claimType: 'Retirement Benefit',
-          status: 'Pending Review',
-          amount: 2500,
-          submittedDate: '2024-01-10'
-        },
-        {
-          id: '2',
-          memberId: 'M002',
-          memberName: 'David Brown',
-          claimType: 'Disability Benefit',
-          status: 'Approved',
-          amount: 1800,
-          submittedDate: '2024-01-05',
-          processedDate: '2024-01-12'
-        },
-        {
-          id: '3',
-          memberId: 'M003',
-          memberName: 'Sarah Davis',
-          claimType: 'Survivor Benefit',
-          status: 'Requires Information',
-          amount: 1200,
-          submittedDate: '2024-01-08'
-        }
-      ]);
+      if (claimsRes.ok) {
+        const claimsData = await claimsRes.json();
+        setClaims(claimsData?.data ?? []);
+      } else {
+        setClaims([]);
+      }
 
-      setMembers([
-        {
-          id: 'M001',
-          name: 'John Doe',
-          enrollmentDate: '2010-03-15',
-          planId: '1',
-          planName: 'CUPE Local 1234 Defined Benefit Plan',
-          membershipStatus: 'Active',
-          yearsOfService: 14,
-          vestingStatus: 'Fully Vested'
-        },
-        {
-          id: 'M002',
-          name: 'Jane Smith',
-          enrollmentDate: '2018-06-01',
-          planId: '1',
-          planName: 'CUPE Local 1234 Defined Benefit Plan',
-          membershipStatus: 'Active',
-          yearsOfService: 6,
-          vestingStatus: 'Partially Vested (60%)'
-        },
-        {
-          id: 'M003',
-          name: 'Robert Johnson',
-          enrollmentDate: '2020-01-10',
-          planId: '2',
-          planName: 'CUPE Local 1234 Defined Contribution Plan',
-          membershipStatus: 'Active',
-          yearsOfService: 4,
-          vestingStatus: 'Not Vested'
-        }
-      ]);
+      if (membersRes.ok && membersRes instanceof Response) {
+        const membersData = await membersRes.json();
+        setMembers(membersData?.data ?? []);
+      } else {
+        setMembers([]);
+      }
 
-      setT4ARecords([
-        {
-          id: '1',
-          memberId: 'M001',
-          memberName: 'Mary Wilson',
-          taxYear: 2023,
-          pensionIncome: 30000,
-          status: 'Generated',
-          generatedDate: '2024-02-15'
-        },
-        {
-          id: '2',
-          memberId: 'M002',
-          memberName: 'David Brown',
-          taxYear: 2023,
-          pensionIncome: 21600,
-          status: 'Sent',
-          generatedDate: '2024-02-15'
-        }
-      ]);
+      if (t4aRes.ok) {
+        const t4aData = await t4aRes.json();
+        setT4ARecords(t4aData?.data ?? []);
+      } else {
+        setT4ARecords([]);
+      }
 
     } catch (_error) {
 } finally {

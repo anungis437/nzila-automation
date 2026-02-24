@@ -85,16 +85,18 @@ export default function HazardsPage() {
 
   const loadStats = async () => {
     try {
-      // In production: fetch from API
-      // Example: const response = await fetch(`/api/health-safety/hazards/stats?organizationId=${organizationId}`);
-      setStats({
-        total: 32,
-        open: 8,
-        inProgress: 12,
-        resolved: 12,
-        critical: 3,
-        avgResolutionTime: 5.2,
-      });
+      const res = await fetch(`/api/v2/health-safety/hazards/stats?organizationId=${organizationId}`);
+      if (res.ok) {
+        const json = await res.json();
+        setStats({
+          total: json.total ?? 0,
+          open: json.open ?? 0,
+          inProgress: json.inProgress ?? json.in_progress ?? 0,
+          resolved: json.resolved ?? 0,
+          critical: json.critical ?? 0,
+          avgResolutionTime: json.avgResolutionTime ?? json.avg_resolution_time ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load hazard statistics");
@@ -107,8 +109,10 @@ export default function HazardsPage() {
 
   const handleReportSubmit = async () => {
     try {
-      // In production: submit to API
-      // const response = await fetch('/api/health-safety/hazards', { method: 'POST', body: JSON.stringify(data) });
+      await fetch('/api/v2/health-safety/hazards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
       toast.success("Hazard report submitted successfully");
       setShowReportForm(false);
       loadStats();

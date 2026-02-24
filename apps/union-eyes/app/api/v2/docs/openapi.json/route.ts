@@ -19,8 +19,7 @@ export const GET = withApi(
       summary: 'GET openapi.json',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query, params: _params }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    throw ApiError.notImplemented('OpenAPI spec generation is not yet available.');
   },
 );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import {
   Target,
   Award,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 
 // Types
@@ -55,7 +56,8 @@ interface BenchmarkComparison {
   periodOverPeriodChange: number | null;
 }
 
-// Sample benchmark categories
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Benchmark data (module-level defaults, shadowed by API-driven state in component)
 const BENCHMARK_CATEGORIES: BenchmarkCategory[] = [
   // Financial
   { id: "1", categoryName: "dues_collection_rate", displayName: "Dues Collection Rate", categoryGroup: "financial", unitType: "percentage", higherIsBetter: true, icon: "💰", color: "bg-green-500" },
@@ -199,6 +201,7 @@ const SAMPLE_COMPARISONS: BenchmarkComparison[] = [
     periodOverPeriodChange: 0.1,
   },
 ];
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export default function BenchmarkComparisonDashboard() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["1", "4", "7", "10"]);
@@ -207,6 +210,37 @@ export default function BenchmarkComparisonDashboard() {
     new Set<ComparisonLevel>(["local", "regional", "national"])
   );
   const [periodRange, setPeriodRange] = useState("last_90_days");
+
+  // API-driven data (shadows module-level defaults)
+  const [BENCHMARK_CATEGORIES, setBenchmarkCategories] = useState<BenchmarkCategory[]>([]);
+  const [SAMPLE_COMPARISONS, setSampleComparisons] = useState<BenchmarkComparison[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchBenchmarks = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/analytics/benchmarks?period=${periodRange}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.categories) setBenchmarkCategories(json.categories);
+        if (json.comparisons) setSampleComparisons(json.comparisons);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [periodRange]);
+
+  useEffect(() => { fetchBenchmarks(); }, [fetchBenchmarks]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   // Toggle category selection
   const toggleCategory = (categoryId: string) => {

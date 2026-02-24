@@ -22,15 +22,44 @@ export default async function StewardsDashboardPage() {
     redirect("/dashboard");
   }
 
-  // Mock data - replace with actual API calls
-  const stewardStats = {
-    totalStewards: 12,
-    activeCases: 45,
-    pendingEscalations: 8,
-    completedThisMonth: 23,
-    successRate: 87.5,
-    upcomingTraining: 2
+  // Fetch steward stats from API
+  let stewardStats = {
+    totalStewards: 0,
+    activeCases: 0,
+    pendingEscalations: 0,
+    completedThisMonth: 0,
+    successRate: 0,
+    upcomingTraining: 0
   };
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const res = await fetch(`${baseUrl}/api/v2/stewards/stats`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      stewardStats = { ...stewardStats, ...json };
+    }
+  } catch {
+    // API not available — empty state
+  }
+
+  // Fetch steward performance and escalations
+  let stewardPerformance: { name: string; active: number; completed: number; successRate: number }[] = [];
+  let pendingEscalationsList: { id: string; member: string; steward: string; reason: string }[] = [];
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const perfRes = await fetch(`${baseUrl}/api/v2/stewards/performance`, { cache: 'no-store' });
+    if (perfRes.ok) {
+      const json = await perfRes.json();
+      stewardPerformance = Array.isArray(json) ? json : json?.data ?? [];
+    }
+    const escRes = await fetch(`${baseUrl}/api/v2/stewards/escalations`, { cache: 'no-store' });
+    if (escRes.ok) {
+      const json = await escRes.json();
+      pendingEscalationsList = Array.isArray(json) ? json : json?.data ?? [];
+    }
+  } catch {
+    // API not available — empty state
+  }
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -121,12 +150,7 @@ export default async function StewardsDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { name: "John Smith", active: 8, completed: 15, successRate: 92 },
-                { name: "Sarah Johnson", active: 6, completed: 12, successRate: 89 },
-                { name: "Michael Chen", active: 5, completed: 10, successRate: 85 },
-                { name: "Emily Davis", active: 7, completed: 14, successRate: 88 },
-              ].map((steward, idx) => (
+              {stewardPerformance.map((steward, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <div className="font-medium">{steward.name}</div>
@@ -151,11 +175,7 @@ export default async function StewardsDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { id: "G-2026-045", member: "Alex Brown", steward: "John Smith", reason: "Requires arbitration decision" },
-                { id: "G-2026-042", member: "Lisa Wong", steward: "Sarah Johnson", reason: "Complex interpretation issue" },
-                { id: "G-2026-038", member: "David Lee", steward: "Michael Chen", reason: "Management escalation" },
-              ].map((escalation, idx) => (
+              {pendingEscalationsList.map((escalation, idx) => (
                 <div key={idx} className="p-3 border rounded-lg space-y-2">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline">{escalation.id}</Badge>

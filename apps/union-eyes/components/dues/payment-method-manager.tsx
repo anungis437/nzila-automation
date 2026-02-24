@@ -59,9 +59,11 @@ toast({
 
   const handleAddPaymentMethod = async () => {
     toast({
-      title: 'Coming Soon',
-      description: 'Add payment method functionality will be implemented',
+      title: 'Add Payment Method',
+      description: 'Redirecting to payment setup...',
     });
+    // Redirect to Stripe customer portal or inline form
+    window.location.href = '/dashboard/dues/payment-methods/new';
   };
 
   const handleDeletePaymentMethod = async (methodId: string) => {

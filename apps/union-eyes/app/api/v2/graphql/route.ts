@@ -29,9 +29,8 @@ export const GET = withApi(
       summary: 'GET graphql',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    throw ApiError.notImplemented('GraphQL endpoint is not yet available. Use REST API endpoints instead.');
   },
 );
 
@@ -44,8 +43,7 @@ export const POST = withApi(
     },
     successStatus: 201,
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    throw ApiError.notImplemented('GraphQL endpoint is not yet available. Use REST API endpoints instead.');
   },
 );

@@ -20,8 +20,7 @@ export const GET = withApi(
       summary: 'GET docs',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query, params: _params }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    throw ApiError.notImplemented('API documentation endpoint is not yet available. See /api-docs for Swagger UI.');
   },
 );

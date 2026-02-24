@@ -8,7 +8,7 @@ import React from 'react';
  * View and search collective bargaining agreements and contracts
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from 'next-intl';
@@ -191,11 +191,27 @@ const statusConfig: Record<AgreementStatus, { label: string; icon: React.ReactEl
 export default function AgreementsPage() {
   const t = useTranslations();
   const { user: _user } = useUser();
-  const [agreements] = useState<Agreement[]>(mockAgreements);
+  const [agreements, setAgreements] = useState<Agreement[]>(mockAgreements);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<AgreementType | "all">("all");
   const [selectedStatus, setSelectedStatus] = useState<AgreementStatus | "all">("all");
   const [expandedAgreement, setExpandedAgreement] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAgreements = async () => {
+      try {
+        const res = await fetch('/api/v2/agreements');
+        if (res.ok) {
+          const json = await res.json();
+          const items = Array.isArray(json) ? json : json?.agreements ?? json?.data ?? [];
+          if (items.length > 0) setAgreements(items);
+        }
+      } catch {
+        // API not available — use fallback data
+      }
+    };
+    fetchAgreements();
+  }, []);
 
   // Filter agreements
   const filteredAgreements = agreements.filter(agreement => {

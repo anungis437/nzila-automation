@@ -380,7 +380,7 @@ function IntegrationsStep() {
             { name: "Google Workspace", status: "Available", desc: "Calendar, email sync" },
             { name: "Microsoft 365", status: "Available", desc: "Outlook, Teams integration" },
             { name: "Slack", status: "Available", desc: "Notifications to channels" },
-            { name: "HRIS Systems", status: "Coming Soon", desc: "Workday, BambooHR" },
+            { name: "HRIS Systems", status: "Available", desc: "Workday, BambooHR" },
             { name: "Accounting", status: "Available", desc: "QuickBooks, Xero sync" },
             { name: "Payment Processors", status: "Available", desc: "Stripe, PayPal" }
           ].map((item, index) => (

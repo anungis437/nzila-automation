@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ import {
   Smartphone,
   Monitor,
   Tablet,
+  Loader2,
 } from "lucide-react";
 
 // Types
@@ -83,7 +84,8 @@ interface BestTimeToSend {
   openRate: number;
 }
 
-// Sample data
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Sample data (module-level defaults, shadowed by API-driven state in component)
 const CHANNEL_METRICS: ChannelMetrics[] = [
   {
     channel: "email",
@@ -212,11 +214,51 @@ const BEST_TIME_TO_SEND: BestTimeToSend[] = [
   { dayOfWeek: "Thursday", hour: 9, openRate: 71.2 },
   { dayOfWeek: "Friday", hour: 11, openRate: 65.4 },
 ];
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export default function CommunicationAnalyticsDashboard() {
   const [activeChannel, setActiveChannel] = useState<CommunicationChannel>("all");
   const [timeGranularity, setTimeGranularity] = useState<TimeGranularity>("weekly");
   const [dateRange, setDateRange] = useState("last_30_days");
+
+  // API-driven data (shadows module-level sample data)
+  const [CHANNEL_METRICS, setChannelMetrics] = useState<ChannelMetrics[]>([]);
+  const [SEGMENT_METRICS, setSegmentMetrics] = useState<SegmentMetrics[]>([]);
+  const [CAMPAIGN_METRICS, setCampaignMetrics] = useState<CampaignMetrics[]>([]);
+  const [TIME_SERIES_DATA, setTimeSeriesData] = useState<TimeSeriesDataPoint[]>([]);
+  const [DEVICE_BREAKDOWN, setDeviceBreakdown] = useState<DeviceBreakdown>({ desktop: 0, mobile: 0, tablet: 0 });
+  const [BEST_TIME_TO_SEND, setBestTimeToSend] = useState<BestTimeToSend[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAnalytics = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/communications/analytics?range=${dateRange}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.channelMetrics) setChannelMetrics(json.channelMetrics);
+        if (json.segmentMetrics) setSegmentMetrics(json.segmentMetrics);
+        if (json.campaignMetrics) setCampaignMetrics(json.campaignMetrics);
+        if (json.timeSeriesData) setTimeSeriesData(json.timeSeriesData);
+        if (json.deviceBreakdown) setDeviceBreakdown(json.deviceBreakdown);
+        if (json.bestTimeToSend) setBestTimeToSend(json.bestTimeToSend);
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [dateRange]);
+
+  useEffect(() => { fetchAnalytics(); }, [fetchAnalytics]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   // Calculate overall metrics
   const overallMetrics = CHANNEL_METRICS.reduce(

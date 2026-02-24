@@ -369,7 +369,7 @@ export default function CaseStudyEditorForm({ caseStudy }: CaseStudyEditorFormPr
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Metrics editor coming soon. For now, metrics can be added via API.
+                Impact metrics can be managed through the case study API.
               </p>
             </CardContent>
           </Card>

@@ -63,17 +63,18 @@ export default function HealthSafetyPage() {
 
   const loadQuickStats = async () => {
     try {
-      // In production, this would fetch from your API
-      // Example: const response = await fetch(`/api/health-safety/stats?organizationId=${organizationId}&period=${period}`);
-      // For now, using mock data matching the component interface
-      setQuickStats({
-        totalIncidents: 12,
-        openHazards: 8,
-        inspectionsDue: 3,
-        trainingDue: 15,
-        daysWithoutIncident: 45,
-        complianceRate: 94,
-      });
+      const res = await fetch(`/api/v2/health-safety/stats?organizationId=${organizationId}&period=${period}`);
+      if (res.ok) {
+        const json = await res.json();
+        setQuickStats({
+          totalIncidents: json.totalIncidents ?? json.total_incidents ?? 0,
+          openHazards: json.openHazards ?? json.open_hazards ?? 0,
+          inspectionsDue: json.inspectionsDue ?? json.inspections_due ?? 0,
+          trainingDue: json.trainingDue ?? json.training_due ?? 0,
+          daysWithoutIncident: json.daysWithoutIncident ?? json.days_without_incident ?? 0,
+          complianceRate: json.complianceRate ?? json.compliance_rate ?? 0,
+        });
+      }
     } catch (error) {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load health & safety statistics");

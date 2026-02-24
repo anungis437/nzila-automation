@@ -31,9 +31,8 @@ export const GET = withApi(
       summary: 'GET cron',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query, params: _params }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    return { status: 'ok', message: 'Use POST to trigger reward cron tasks.' };
   },
 );
 

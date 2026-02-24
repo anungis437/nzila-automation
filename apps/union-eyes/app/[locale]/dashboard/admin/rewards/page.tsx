@@ -304,7 +304,7 @@ export default async function AdminRewardsPage() {
           <div className="text-center py-8 text-muted-foreground">
             <p>
               {t('recentActivity.placeholder', {
-                defaultValue: 'Activity feed coming soon',
+                defaultValue: 'No recent activity',
               })}
             </p>
           </div>

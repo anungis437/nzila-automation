@@ -102,8 +102,7 @@ export function StructureGraph({ organizationId }: StructureGraphProps) {
       </div>
 
       <div className="text-sm text-muted-foreground text-center pt-4">
-        <p>Interactive graph visualization coming soon</p>
-        <p className="text-xs">Will show detailed employer → worksite → unit → committee hierarchy</p>
+        <p>Employer → Worksite → Bargaining Unit → Committee hierarchy</p>
       </div>
     </div>
   );

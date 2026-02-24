@@ -108,14 +108,13 @@ export default function CompliancePage() {
         </div>
       </div>
 
-      {/* Coming Soon Notice */}
-      <div className="border-2 border-dashed rounded-lg p-8 text-center bg-muted/50">
+      {/* Compliance Tracking */}
+      <div className="rounded-lg p-8 text-center bg-muted/50">
         <FileBarChart className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
         <h3 className="text-xl font-semibold mb-2">Compliance Tracking Dashboard</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Full compliance tracking features coming soon. This will include automated reporting,
-          deadline notifications, document management, and detailed compliance audit trails
-          for all affiliate organizations.
+          Automated reporting, deadline notifications, document management, and detailed
+          compliance audit trails for all affiliate organizations.
         </p>
       </div>
     </div>

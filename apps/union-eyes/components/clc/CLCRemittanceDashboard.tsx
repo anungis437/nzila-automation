@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
+import { DollarSign, TrendingUp, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 interface RemittanceData {
   affiliateId: string;
@@ -22,56 +23,42 @@ interface CLCRemittanceDashboardProps {
 }
 
 export default function CLCRemittanceDashboard({ period }: CLCRemittanceDashboardProps) {
-  // Mock data - replace with actual API call
-  const remittances: RemittanceData[] = [
-    {
-      affiliateId: "1",
-      affiliateName: "CUPE Local 79",
-      province: "ON",
-      membersCount: 3500,
-      perCapitaRate: 2.50,
-      amountDue: 8750,
-      amountPaid: 8750,
-      status: "paid",
-      lastPaymentDate: "2026-02-05",
-      dueDate: "2026-02-15"
-    },
-    {
-      affiliateId: "2",
-      affiliateName: "Unifor Local 444",
-      province: "ON",
-      membersCount: 8200,
-      perCapitaRate: 2.50,
-      amountDue: 20500,
-      amountPaid: 20500,
-      status: "paid",
-      lastPaymentDate: "2026-02-08",
-      dueDate: "2026-02-15"
-    },
-    {
-      affiliateId: "3",
-      affiliateName: "PSAC Local 610",
-      province: "BC",
-      membersCount: 1200,
-      perCapitaRate: 2.50,
-      amountDue: 3000,
-      amountPaid: 1500,
-      status: "partial",
-      lastPaymentDate: "2026-02-01",
-      dueDate: "2026-02-15"
-    },
-    {
-      affiliateId: "4",
-      affiliateName: "UFCW Local 1006A",
-      province: "ON",
-      membersCount: 5400,
-      perCapitaRate: 2.50,
-      amountDue: 13500,
-      amountPaid: 0,
-      status: "overdue",
-      dueDate: "2026-01-15"
+  const [remittances, setRemittances] = useState<RemittanceData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRemittances = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/v2/clc/remittances?period=${period}`);
+      if (res.ok) {
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data?.results ?? data?.data ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setRemittances(items.map((r: any) => ({
+          affiliateId: String(r.affiliateId ?? r.affiliate_id ?? r.id),
+          affiliateName: r.affiliateName ?? r.affiliate_name ?? '',
+          province: r.province ?? '',
+          membersCount: r.membersCount ?? r.members_count ?? 0,
+          perCapitaRate: r.perCapitaRate ?? r.per_capita_rate ?? 0,
+          amountDue: r.amountDue ?? r.amount_due ?? 0,
+          amountPaid: r.amountPaid ?? r.amount_paid ?? 0,
+          status: r.status ?? 'pending',
+          lastPaymentDate: r.lastPaymentDate ?? r.last_payment_date,
+          dueDate: r.dueDate ?? r.due_date ?? '',
+        })));
+      }
+    } catch {
+      // API not available — empty state
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [period]);
+
+  useEffect(() => { fetchRemittances(); }, [fetchRemittances]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
 
   const totalDue = remittances.reduce((sum, r) => sum + r.amountDue, 0);
   const totalPaid = remittances.reduce((sum, r) => sum + r.amountPaid, 0);

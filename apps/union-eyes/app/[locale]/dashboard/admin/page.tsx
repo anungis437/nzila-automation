@@ -699,7 +699,7 @@ toast.error("Failed to optimize database");
                               <button 
                                 className="p-1 text-blue-600 hover:bg-blue-50 rounded" 
                                 aria-label="Edit user"
-                                onClick={() => toast.info("Edit user functionality - coming soon")}
+                                onClick={() => window.location.href = `/dashboard/admin/users/${user.id}/edit`}
                               >
                                 <Edit className="w-4 h-4" />
                               </button>

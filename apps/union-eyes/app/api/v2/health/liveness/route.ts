@@ -1,26 +1,22 @@
 /**
  * GET /api/health/liveness
- * Migrated to withApi() framework
+ * Kubernetes/load-balancer liveness probe — returns 200 if the process is alive.
  */
- 
- 
- 
- 
- 
- 
- 
-import { withApi, ApiError } from '@/lib/api/framework';
+
+import { withApi } from '@/lib/api/framework';
 
 export const GET = withApi(
   {
     auth: { required: false },
     openapi: {
       tags: ['Health'],
-      summary: 'GET liveness',
+      summary: 'Liveness probe',
     },
   },
-  async ({ request: _request, userId: _userId, organizationId: _organizationId, user: _user, body: _body, query: _query, params: _params }) => {
-    // TODO: migrate handler body
-    throw ApiError.internal('Route not yet migrated');
+  async () => {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+    };
   },
 );

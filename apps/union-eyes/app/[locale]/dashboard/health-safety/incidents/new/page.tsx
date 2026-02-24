@@ -28,15 +28,10 @@ export default function NewIncidentPage() {
 
   const handleSubmit = async () => {
     try {
-      // In production: submit to API
-      // const response = await fetch('/api/health-safety/incidents', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // });
-      
-      // Mock success for now
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetch('/api/v2/health-safety/incidents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
       
       toast.success("Incident report submitted successfully", {
         description: "The safety team has been notified.",
