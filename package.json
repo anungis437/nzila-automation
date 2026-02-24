@@ -39,5 +39,14 @@
     "turbo": "^2.8.10",
     "typescript": "^5",
     "vitest": "^4.0.18"
+  },
+  "pnpm": {
+    "overrides": {
+      "tar": ">=7.5.9",
+      "minimatch": ">=10.2.2",
+      "cjs-module-lexer": ">=2.2.0",
+      "jspdf": ">=4.2.0",
+      "@firebase/util": ">=1.10.3"
+    }
   }
 }

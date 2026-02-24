@@ -21,6 +21,11 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput || true
 
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
 # Run with gunicorn
 EXPOSE 8000
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120"]

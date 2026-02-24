@@ -63,7 +63,7 @@ export default function ResourcesPage() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/70 to-navy/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-navy/80 via-navy/70 to-navy/90" />
         <div className="absolute inset-0 bg-mesh opacity-40" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
@@ -151,7 +151,7 @@ export default function ResourcesPage() {
                       <div className="flex items-center gap-4 mb-8">
                         <span className="text-2xl">{meta.icon}</span>
                         <h2 className="text-2xl font-bold text-navy">{category}</h2>
-                        <div className="flex-1 h-px bg-gradient-to-r from-electric/20 to-transparent" />
+                        <div className="flex-1 h-px bg-linear-to-r from-electric/20 to-transparent" />
                         <span className="text-sm text-gray-400 tabular-nums">
                           {grouped[category].length} article{grouped[category].length !== 1 ? 's' : ''}
                         </span>
@@ -166,7 +166,7 @@ export default function ResourcesPage() {
                             <Link href={`/resources/${doc.slug}`}>
                               <div className="group relative bg-white rounded-2xl border border-gray-200/80 p-6 hover:border-electric/30 hover:shadow-xl hover:shadow-electric/5 transition-all duration-300 hover-lift h-full flex flex-col">
                                 {/* Icon */}
-                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center flex-shrink-0 mb-4 group-hover:scale-110 transition-transform`}>
+                                <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${meta.color} flex items-center justify-center shrink-0 mb-4 group-hover:scale-110 transition-transform`}>
                                   <span className="text-lg">{meta.icon}</span>
                                 </div>
 

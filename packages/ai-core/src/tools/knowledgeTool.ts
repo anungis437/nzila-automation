@@ -91,6 +91,33 @@ async function resolveSourceText(
   }
 
   if (source.sourceType === 'url' && source.url) {
+    // SSRF protection: validate URL against allowlist and block private/internal IPs
+    const parsedUrl = new URL(source.url)
+    const blockedHosts = ['localhost', '127.0.0.1', '0.0.0.0', '[::1]', 'metadata.google.internal']
+    const blockedProtocols = ['file:', 'ftp:', 'gopher:']
+
+    if (blockedProtocols.includes(parsedUrl.protocol)) {
+      throw new Error(`Blocked protocol: ${parsedUrl.protocol}`)
+    }
+    if (blockedHosts.includes(parsedUrl.hostname)) {
+      throw new Error(`Blocked host: ${parsedUrl.hostname}`)
+    }
+    // Block private IP ranges (10.x, 172.16-31.x, 192.168.x, 169.254.x)
+    const ipMatch = parsedUrl.hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/)
+    if (ipMatch) {
+      const [, a, b] = ipMatch.map(Number)
+      if (
+        a === 10 ||
+        a === 127 ||
+        (a === 172 && b >= 16 && b <= 31) ||
+        (a === 192 && b === 168) ||
+        (a === 169 && b === 254) ||
+        a === 0
+      ) {
+        throw new Error(`Blocked private/internal IP address: ${parsedUrl.hostname}`)
+      }
+    }
+
     const response = await fetch(source.url)
     if (!response.ok) throw new Error(`Failed to fetch URL: ${source.url} (${response.status})`)
     const text = await response.text()

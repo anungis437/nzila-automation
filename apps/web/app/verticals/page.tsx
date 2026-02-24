@@ -123,7 +123,7 @@ export default function Verticals() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/70 to-navy/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-navy/80 via-navy/70 to-navy/90" />
         <div className="absolute inset-0 bg-mesh opacity-40" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
@@ -182,7 +182,7 @@ export default function Verticals() {
                       className="object-cover"
                       sizes="(max-width:768px) 100vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-navy/80 to-transparent" />
                     <div className="absolute bottom-4 left-5 right-5">
                       <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-bold text-white">{v.name}</h2>

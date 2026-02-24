@@ -88,7 +88,15 @@ export function verifyPackIndex(
         (artifact as Record<string, unknown>).filename as string | undefined
       if (!filename) continue
 
-      const filePath = join(artifactsDir, filename)
+      // Prevent path traversal — use basename to strip directory components
+      const safeFilename = filename.replace(/[\\/]/g, '_')
+      const filePath = join(artifactsDir, safeFilename)
+      // Verify resolved path stays within artifactsDir
+      const resolvedArtifacts = join(artifactsDir) // already absolute from dirname()
+      if (!filePath.startsWith(resolvedArtifacts)) {
+        artifactHashErrors.push(`${filename}: path traversal detected, skipping`)
+        continue
+      }
       if (!existsSync(filePath)) {
         // Not an error — artifact may be in blob storage
         continue

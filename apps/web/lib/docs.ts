@@ -101,6 +101,11 @@ export async function getDocBySlug(
   const contentDir = resolveContentDir(scope)
   const filePath = path.join(contentDir, `${slug}.md`)
 
+  // Prevent path traversal — resolved path must stay within contentDir
+  const resolvedContent = path.resolve(contentDir)
+  const resolvedFile = path.resolve(filePath)
+  if (!resolvedFile.startsWith(resolvedContent + path.sep)) return null
+
   if (!fs.existsSync(filePath)) return null
 
   const raw = fs.readFileSync(filePath, 'utf-8')

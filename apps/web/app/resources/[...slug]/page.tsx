@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getDocBySlug, getAllDocSlugs } from '@/lib/docs';
 import ScrollReveal from '@/components/public/ScrollReveal';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -93,7 +94,7 @@ export default async function ResourceDocPage({ params }: PageProps) {
           <ScrollReveal>
             <article
               className="doc-prose prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: doc.htmlContent }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(doc.htmlContent) }}
             />
           </ScrollReveal>
         </div>

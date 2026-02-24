@@ -32,7 +32,7 @@ export default function DashboardPage() {
             Welcome back. Here&apos;s an overview of your partnership.
           </p>
         </div>
-        <button className="relative p-2 rounded-lg border border-slate-200 hover:bg-white transition">
+        <button className="relative p-2 rounded-lg border border-slate-200 hover:bg-white transition" aria-label="Notifications">
           <BellIcon className="w-5 h-5 text-slate-500" />
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-slate-50" />
         </button>

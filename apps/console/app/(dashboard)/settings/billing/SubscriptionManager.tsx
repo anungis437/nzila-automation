@@ -8,6 +8,7 @@
  */
 import { useState } from 'react'
 import { Card } from '@nzila/ui'
+import { validateRedirectUrl } from '@/lib/sanitize'
 import { Badge } from '@nzila/ui'
 import { CheckCircleIcon, CreditCardIcon } from '@heroicons/react/24/solid'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
@@ -76,7 +77,9 @@ function ActiveSubscriptionCard({ sub }: { sub: ActiveSub }) {
       })
       if (!res.ok) throw new Error('Failed to open billing portal')
       const { url } = await res.json()
-      window.location.href = url
+      const safeUrl = validateRedirectUrl(url)
+      if (!safeUrl) throw new Error('Untrusted redirect URL')
+      window.location.href = safeUrl
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error opening portal')
       setLoading(false)
@@ -156,7 +159,9 @@ function PlanPicker() {
       }
 
       const { url } = await res.json()
-      window.location.href = url
+      const safeUrl = validateRedirectUrl(url)
+      if (!safeUrl) throw new Error('Untrusted redirect URL')
+      window.location.href = safeUrl
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error starting checkout')
       setLoadingPlanId(null)

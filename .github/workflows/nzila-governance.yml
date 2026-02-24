@@ -48,13 +48,13 @@ jobs:
           fetch-depth: 0
 
       - name: Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
       - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@v3.88.0 # pin to release tag, not mutable @main
         with:
           extra_args: --only-verified
 
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Trivy (filesystem mode)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.34.1 # pin to release tag, not mutable @master
         with:
           scan-type: fs
           scan-ref: '.'
@@ -114,7 +114,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -146,7 +146,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -171,7 +171,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -253,7 +253,7 @@ jobs:
             --skip-editable || true
 
       - name: Run Trivy FS scan on ABR scaffold [BLOCKING — CRITICAL only]
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.34.1 # pin to release tag, not mutable @master
         with:
           scan-type: fs
           scan-ref: tech-repo-scaffold/django-backbone
@@ -262,7 +262,7 @@ jobs:
           format: table
 
       - name: Run Trivy FS scan — SARIF upload (non-blocking)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.34.1 # pin to release tag, not mutable @master
         if: always()
         continue-on-error: true
         with:
@@ -327,7 +327,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -418,7 +418,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
@@ -449,7 +449,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 10.11.0
 
