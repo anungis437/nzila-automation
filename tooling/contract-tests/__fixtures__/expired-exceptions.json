@@ -1,0 +1,12 @@
+{
+  "ruleId": "EXPIRED_RULE",
+  "description": "Exception file with expired entry",
+  "entries": [
+    {
+      "path": "apps/old-app/**",
+      "owner": "old-team",
+      "justification": "Was needed once",
+      "expiresOn": "2024-01-01"
+    }
+  ]
+}

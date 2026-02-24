@@ -1,0 +1,12 @@
+{
+  "ruleId": "TEST_RULE",
+  "description": "Test exception file",
+  "entries": [
+    {
+      "path": "apps/test-app/**",
+      "owner": "test-team",
+      "justification": "Test justification",
+      "expiresOn": "2099-12-31"
+    }
+  ]
+}

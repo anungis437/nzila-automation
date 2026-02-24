@@ -1,0 +1,31 @@
+{
+  "$schema": "./exception-schema.json",
+  "ruleId": "ARCH_LAYER_001",
+  "description": "Allowed exceptions to the architecture layering invariant (no direct DB from routes)",
+  "entries": [
+    {
+      "path": "apps/orchestrator-api/**",
+      "owner": "platform-team",
+      "justification": "Standalone non-Next.js service with its own DB client. Migration planned — see docs/migration/ENFORCEMENT_UPGRADE.md",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/console/**",
+      "owner": "platform-team",
+      "justification": "Console app has legacy unscoped DB imports across ~60 routes. Migration to createScopedDb(entityId) + service layer tracked in docs/migration/ENFORCEMENT_UPGRADE.md",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/partners/**",
+      "owner": "partners-team",
+      "justification": "Partners app has legacy unscoped DB import in partner-auth. Migration tracked in docs/migration/ENFORCEMENT_UPGRADE.md",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/union-eyes/**",
+      "owner": "union-eyes-team",
+      "justification": "Django-migrated app with direct DB access patterns. Migration tracked alongside console/partners.",
+      "expiresOn": "2026-09-01"
+    }
+  ]
+}

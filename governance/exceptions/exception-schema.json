@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["ruleId", "description", "entries"],
+  "properties": {
+    "ruleId": { "type": "string" },
+    "description": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "owner", "justification", "expiresOn"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Glob or exact relative path from repo root"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Team or individual responsible for this exception"
+          },
+          "justification": {
+            "type": "string",
+            "description": "Why this exception is necessary"
+          },
+          "expiresOn": {
+            "type": "string",
+            "format": "date",
+            "description": "Expiry date in YYYY-MM-DD format. Test will FAIL if expired."
+          }
+        }
+      }
+    }
+  }
+}
