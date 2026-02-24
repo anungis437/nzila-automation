@@ -65,16 +65,23 @@ export default function AdminDashboardPage() {
       
       // Calculate stats from available data
       const integrationsList = (integrationsData as unknown as { integrations?: Integration[] })?.integrations || [];
+
+      // Fetch additional stats in parallel
+      const [usersRes, governanceRes, approvalsRes] = await Promise.all([
+        fetch('/api/v2/admin/users/stats').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('/api/v2/admin/governance/stats').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('/api/v2/admin/approvals/stats').then(r => r.ok ? r.json() : null).catch(() => null),
+      ]);
+
       setStats({
-        totalUsers: 0, // TODO: Fetch from user management endpoint
+        totalUsers: usersRes?.total ?? 0,
         activeIntegrations: integrationsList.filter((i: Integration) => i.status === 'active').length,
-        dataRetentionPolicies: 0, // TODO: Fetch from governance endpoint
-        pendingApprovals: 0, // TODO: Fetch from approvals endpoint
+        dataRetentionPolicies: governanceRes?.retentionPolicies ?? 0,
+        pendingApprovals: approvalsRes?.pending ?? 0,
       });
       setIntegrations(integrationsList);
     } catch (error) {
       logger.error('Error fetching admin data', { error });
-      alert('Error loading admin dashboard.');
     } finally {
       setLoading(false);
     }

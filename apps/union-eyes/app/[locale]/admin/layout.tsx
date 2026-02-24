@@ -9,6 +9,7 @@ import { ReactNode } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth/rbac-server";
 import { 
   LayoutDashboard, 
   Users, 
@@ -33,8 +34,12 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
     redirect(`/${locale}/sign-in`);
   }
 
-  // TODO: Add RBAC check here once integrated with requireAdmin()
-  // For now, relying on page-level checks
+  // RBAC check — only admins can access admin layout
+  try {
+    await requireAdmin();
+  } catch {
+    redirect(`/${locale}/dashboard`);
+  }
 
   const navItems = [
     { 

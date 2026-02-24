@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,6 +33,7 @@ export default function TestimonialApprovalActions({
   testimonial,
 }: TestimonialApprovalActionsProps) {
   const router = useRouter();
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -48,7 +50,7 @@ export default function TestimonialApprovalActions({
         body: JSON.stringify({
           status: 'approved',
           reviewedAt: new Date().toISOString(),
-          reviewedBy: 'admin-user', // TODO: Get from session
+          reviewedBy: user?.id ?? 'unknown',
         }),
       });
 
@@ -77,7 +79,7 @@ export default function TestimonialApprovalActions({
           status: 'rejected',
           rejectionReason: rejectionReason || null,
           reviewedAt: new Date().toISOString(),
-          reviewedBy: 'admin-user', // TODO: Get from session
+          reviewedBy: user?.id ?? 'unknown',
         }),
       });
 

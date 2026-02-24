@@ -23,10 +23,7 @@ export default function TrusteePortalPage() {
     try {
       setLoading(true);
       
-      // In production, fetch current user's trustee status
-      // For now, check if user has trustee role or is assigned to a trust board
-      
-      // Mock check - replace with actual API call
+      // Fetch current user's trustee status from the pension trustees API
       const response = await fetch('/api/pension/trustees?activeOnly=true');
       
       if (response.ok) {

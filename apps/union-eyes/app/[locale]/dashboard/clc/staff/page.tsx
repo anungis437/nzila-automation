@@ -372,13 +372,31 @@ export default async function CLCStaffDashboardPage() {
             organizationId: orgId,
             onApprove: async (id: string) => {
               'use server';
-              // TODO: Implement approval logic
-              logger.info('Approved', { id });
+              const { revalidatePath } = await import('next/cache');
+              const { logger: log } = await import('@/lib/logger');
+              try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/v2/clc/remittances/${id}/approve`, { method: 'POST' });
+                if (!res.ok) throw new Error(`Approve failed: ${res.status}`);
+                log.info('Approved remittance', { id });
+              } catch (error) {
+                log.error('Failed to approve remittance', { id, error });
+                throw error;
+              }
+              revalidatePath('/dashboard/clc/staff');
             },
             onReject: async (id: string) => {
               'use server';
-              // TODO: Implement rejection logic
-              logger.info('Rejected', { id });
+              const { revalidatePath } = await import('next/cache');
+              const { logger: log } = await import('@/lib/logger');
+              try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/v2/clc/remittances/${id}/reject`, { method: 'POST' });
+                if (!res.ok) throw new Error(`Reject failed: ${res.status}`);
+                log.info('Rejected remittance', { id });
+              } catch (error) {
+                log.error('Failed to reject remittance', { id, error });
+                throw error;
+              }
+              revalidatePath('/dashboard/clc/staff');
             },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any}

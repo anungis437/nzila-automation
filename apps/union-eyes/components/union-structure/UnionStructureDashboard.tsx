@@ -58,11 +58,13 @@ export function UnionStructureDashboard({ organizationId }: UnionStructureDashbo
       setIsLoading(true);
       
       // Fetch counts from each entity endpoint
-      const [employers, worksites, units, committees] = await Promise.all([
+      const [employers, worksites, units, committees, stewards, members] = await Promise.all([
         fetch(`/api/employers?organizationId=${organizationId}`).then(r => r.json()),
         fetch(`/api/worksites?organizationId=${organizationId}`).then(r => r.json()),
         fetch(`/api/units?organizationId=${organizationId}`).then(r => r.json()),
         fetch(`/api/committees?organizationId=${organizationId}`).then(r => r.json()),
+        fetch(`/api/v2/stewards?organizationId=${organizationId}`).then(r => r.json()).catch(() => ({ data: [] })),
+        fetch(`/api/v2/organization/members?organizationId=${organizationId}`).then(r => r.json()).catch(() => ({ data: [] })),
       ]);
 
       setStats({
@@ -70,8 +72,8 @@ export function UnionStructureDashboard({ organizationId }: UnionStructureDashbo
         worksitesCount: worksites.data?.length || 0,
         bargainingUnitsCount: units.data?.length || 0,
         committeesCount: committees.data?.length || 0,
-        stewardAssignmentsCount: 0, // TODO: Add steward assignments endpoint
-        totalMembers: 0, // TODO: Calculate from profiles
+        stewardAssignmentsCount: stewards.data?.length || stewards.results?.length || 0,
+        totalMembers: members.data?.length || members.total || members.count || 0,
       });
     } catch (error) {
       logger.error("Failed to fetch structure stats", error);

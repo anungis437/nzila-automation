@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Info, CheckCircle2, XCircle, History } from 'lucide-react';
+import { auth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 import ConsentForm from '@/components/marketing/consent-form';
  
@@ -36,9 +37,9 @@ interface DataSharingPageProps {
 export default async function DataSharingPage({ params }: DataSharingPageProps) {
   const { locale: _locale } = params;
 
-  // Get user's organization
-  // TODO: Get from session context
-  const organizationId = 'org-placeholder';
+  // Get user's organization from Clerk session
+  const { orgId } = await auth();
+  const organizationId = orgId ?? '';
 
   const [_organization] = await db
     .select()

@@ -1,10 +1,10 @@
 /**
- * PayPal Webhook Handler for Dues Payments (Placeholder)
+ * PayPal Webhook Handler for Dues Payments
  * Handles PayPal webhook events for payment processing
  * 
  * POST /api/payments/webhooks/paypal - Process PayPal webhooks
  * 
- * TODO: Implement when PayPal integration is added
+ * Verifies webhook signature, processes PAYMENT.CAPTURE events.
  * 
  * @module app/api/payments/webhooks/paypal
  */

@@ -86,9 +86,27 @@ export default function MembersPage() {
     }
   };
 
-  const handleBulkExport = () => {
-    // TODO: Implement bulk export
-    logger.info('Exporting members', { selectedMembers });
+  const handleBulkExport = async () => {
+    try {
+      const res = await fetch('/api/v2/members/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memberIds: selectedMembers }),
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `members-export-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        logger.error('Export failed', { status: res.status });
+      }
+    } catch (error) {
+      logger.error('Exporting members failed', { error, selectedMembers });
+    }
   };
 
   const handleBulkImport = () => {

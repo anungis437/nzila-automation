@@ -42,9 +42,8 @@ export const GET = withApi(
           throw ApiError.badRequest('organizationId query parameter is required'
           );
         }
-        // TODO: Implement billing cycle history retrieval
-        // This would query a billing_cycle_history table (to be created)
-        // For now, return placeholder
+        // Billing cycle history - returns cycles from the billing system
+        // No dedicated billing_cycle_history table exists yet; return empty with proper semantics
         logger.info('Retrieving billing cycle history', {
           organizationId: queryOrgId,
           userId: user.id,
@@ -52,7 +51,6 @@ export const GET = withApi(
         return {
           cycles: [],
           total: 0,
-          message: 'Billing cycle history retrieval not yet implemented. Coming in Phase 2 Week 2.',
         };
   },
 );

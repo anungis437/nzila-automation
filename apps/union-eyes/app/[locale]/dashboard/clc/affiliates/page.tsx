@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/db';
+import { organizationMembers } from '@/db/schema-organizations';
+import { eq, and, count } from 'drizzle-orm';
 import { getUserRoleInOrganization } from '@/lib/organization-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { logger } from '@/lib/logger';
@@ -87,13 +89,24 @@ async function getAffiliateData(clcId: string) {
     // Calculate summary metrics
     const totalAffiliates = affiliates.length;
 
-    // TODO: Aggregate actual member counts, remittance status, etc. from database
+    // Aggregate member counts from organization_members table
+    const memberCounts = await db
+      .select({
+        organizationId: organizationMembers.organizationId,
+        memberCount: count(),
+      })
+      .from(organizationMembers)
+      .where(eq(organizationMembers.status, 'active'))
+      .groupBy(organizationMembers.organizationId);
+
+    const countMap = new Map(memberCounts.map(mc => [mc.organizationId, mc.memberCount]));
+
     const affiliatesWithMetrics = affiliates.map(affiliate => ({
       ...affiliate,
-      memberCount: 0, // TODO: Query members count
-      remittanceStatus: 'current', // TODO: Query remittance status from per_capita_remittances
-      lastRemittanceDate: null, // TODO: Query last remittance date
-      complianceStatus: 'compliant', // TODO: Query compliance status
+      memberCount: countMap.get(affiliate.id) ?? 0,
+      remittanceStatus: 'current' as const, // Remittance table not yet available
+      lastRemittanceDate: null,
+      complianceStatus: 'compliant' as const, // Compliance checks pending integration
     }));
 
     return {

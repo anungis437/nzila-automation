@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, TrendingUp, TrendingDown, Shield, Users, FileText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
  
- 
+import { auth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 
 interface MovementInsightsPageProps {
@@ -44,9 +44,9 @@ export default async function MovementInsightsPage({
   const { locale } = params;
   const { timeframe = 'quarter', sector: _sector, jurisdiction: _jurisdiction } = searchParams;
 
-  // Get user's organization consent status
-  // TODO: Get from session context
-  const organizationId = 'org-placeholder';
+  // Get user's organization consent status from Clerk session
+  const { orgId: authOrgId } = await auth();
+  const organizationId = authOrgId ?? '';
   
   const [consent] = await db
     .select()
@@ -190,7 +190,22 @@ export default async function MovementInsightsPage({
               </div>
             </div>
 
-            {/* TODO: Add sector and jurisdiction filters */}
+            {/* Sector filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Sector</label>
+              <div className="flex gap-2">
+                {['all', 'public', 'private', 'non-profit'].map((s) => (
+                  <Link
+                    key={s}
+                    href={`/${locale}/dashboard/movement-insights?timeframe=${timeframe}&sector=${s === 'all' ? '' : s}`}
+                  >
+                    <Badge variant={(_sector ?? '') === (s === 'all' ? '' : s) ? 'default' : 'outline'}>
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </Badge>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

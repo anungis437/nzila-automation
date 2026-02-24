@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,6 +33,7 @@ export default function PilotApplicationActions({
   application,
 }: PilotApplicationActionsProps) {
   const router = useRouter();
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
@@ -50,7 +52,7 @@ export default function PilotApplicationActions({
         body: JSON.stringify({
           status: 'approved',
           reviewedAt: new Date().toISOString(),
-          reviewedBy: 'admin-user', // TODO: Get from session
+          reviewedBy: user?.id ?? 'unknown',
           reviewNotes: notes || null,
         }),
       });
@@ -80,7 +82,7 @@ export default function PilotApplicationActions({
         body: JSON.stringify({
           status: 'rejected',
           reviewedAt: new Date().toISOString(),
-          reviewedBy: 'admin-user', // TODO: Get from session
+          reviewedBy: user?.id ?? 'unknown',
           reviewNotes: notes || null,
         }),
       });
