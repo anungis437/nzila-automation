@@ -6,6 +6,7 @@ export default defineProject({
     name: 'contract-tests',
     environment: 'node',
     globals: false,
+    testTimeout: 30_000, // Contract tests scan the full file tree — need headroom under parallel load
     include: ['**/*.test.ts'],
     exclude: [
       '**/node_modules/**',
