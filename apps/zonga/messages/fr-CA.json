@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "Zonga",
+    "tagline": "La musique sans frontières"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue sur Zonga",
+    "description": "Gérez votre catalogue, suivez vos revenus, consultez vos paiements et développez votre audience — tout en un seul endroit."
+  },
+  "catalog": {
+    "title": "Catalogue",
+    "tracks": "Pistes",
+    "albums": "Albums",
+    "podcasts": "Podcasts",
+    "videos": "Clips musicaux",
+    "upload": "Télécharger un contenu",
+    "publish": "Publier",
+    "noAssets": "Aucun contenu",
+    "noAssetsDescription": "Téléchargez votre première piste pour commencer."
+  },
+  "releases": {
+    "title": "Sorties",
+    "create": "Créer une sortie",
+    "draft": "Brouillon",
+    "scheduled": "Programmée",
+    "live": "En ligne",
+    "archived": "Archivée"
+  },
+  "revenue": {
+    "title": "Revenus",
+    "streams": "Écoutes",
+    "downloads": "Téléchargements",
+    "licensing": "Licences",
+    "sync": "Synchronisation",
+    "merchandise": "Marchandise",
+    "tips": "Pourboires",
+    "subscriptions": "Abonnements",
+    "totalEarnings": "Revenus totaux",
+    "platformFee": "Frais de plateforme",
+    "netPayout": "Paiement net"
+  },
+  "payouts": {
+    "title": "Paiements",
+    "pending": "En attente",
+    "processing": "En cours",
+    "completed": "Terminé",
+    "requestPayout": "Demander un paiement",
+    "walletBalance": "Solde du portefeuille"
+  },
+  "creators": {
+    "title": "Créateurs",
+    "artists": "Artistes",
+    "labels": "Labels",
+    "producers": "Producteurs",
+    "register": "Inscrire un créateur"
+  },
+  "integrity": {
+    "title": "Intégrité",
+    "fingerprints": "Empreintes audio",
+    "copyrightChecks": "Vérifications de droits",
+    "auditTrail": "Piste d'audit"
+  },
+  "analytics": {
+    "title": "Analytique",
+    "listeners": "Auditeurs",
+    "geography": "Géographie",
+    "demographics": "Démographie",
+    "trends": "Tendances"
+  },
+  "marketing": {
+    "hero": {
+      "badge": "Musique africaine, scène mondiale",
+      "title": "Votre musique,",
+      "titleAccent": "Vos revenus",
+      "description": "La plateforme musicale équitable — redevances transparentes, paiements instantanés et pleine propriété créative pour les artistes et créateurs africains."
+    },
+    "features": {
+      "badge": "Fonctionnalités",
+      "title": "Conçu pour les",
+      "titleAccent": "créateurs africains",
+      "description": "Tout ce dont vous avez besoin pour distribuer, monétiser et développer votre musique — avec transparence à chaque étape."
+    },
+    "mission": {
+      "badge": "Notre mission",
+      "title": "La musique qui",
+      "titleAccent": "responsabilise",
+      "description": "Zonga est née d'une conviction simple : les créateurs africains méritent les mêmes outils, la même transparence et le même partage de revenus que les artistes du monde entier."
+    },
+    "cta": {
+      "title": "Prêt à partager votre",
+      "titleAccent": "musique ?",
+      "description": "Rejoignez des milliers de créateurs africains qui font confiance à Zonga pour des redevances transparentes, des paiements instantanés et une pleine propriété créative."
+    }
+  }
+}

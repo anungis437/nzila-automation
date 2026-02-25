@@ -1,0 +1,38 @@
+{
+  "name": "@nzila/commerce-db",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./customers": "./src/repositories/customers.ts",
+    "./quotes": "./src/repositories/quotes.ts",
+    "./orders": "./src/repositories/orders.ts",
+    "./invoices": "./src/repositories/invoices.ts",
+    "./fulfillment": "./src/repositories/fulfillment.ts",
+    "./payments": "./src/repositories/payments.ts",
+    "./opportunities": "./src/repositories/opportunities.ts",
+    "./disputes": "./src/repositories/disputes.ts",
+    "./evidence": "./src/repositories/evidence.ts",
+    "./sync": "./src/repositories/sync.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@nzila/commerce-core": "workspace:*",
+    "@nzila/db": "workspace:*",
+    "drizzle-orm": "^0.39.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "vitest": "^4.0.18",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9"
+  }
+}

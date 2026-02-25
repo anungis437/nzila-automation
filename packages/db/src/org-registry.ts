@@ -111,6 +111,45 @@ export const ORG_SCOPED_TABLES = [
   'taxNotices',
   'indirectTaxAccounts',
   'indirectTaxPeriods',
+
+  // ── nacp.ts ─────────────────────────────────────────────
+  'nacpSubjects',
+  'nacpCenters',
+  'nacpExams',
+  'nacpExamSessions',
+  'nacpCandidates',
+  'nacpSubmissions',
+  'nacpIntegrityArtifacts',
+  'nacpOutbox',
+  'nacpSyncQueue',
+
+  // ── zonga.ts ────────────────────────────────────────────
+  'zongaCreators',
+  'zongaContentAssets',
+  'zongaReleases',
+  'zongaRevenueEvents',
+  'zongaWalletLedger',
+  'zongaPayouts',
+  'zongaOutbox',
+
+  // ── commerce.ts ─────────────────────────────────────────
+  'commerceCustomers',
+  'commerceOpportunities',
+  'commerceQuotes',
+  'commerceQuoteVersions',
+  'commerceQuoteLines',
+  'commerceOrders',
+  'commerceOrderLines',
+  'commerceInvoices',
+  'commerceInvoiceLines',
+  'commerceFulfillmentTasks',
+  'commercePayments',
+  'commerceCreditNotes',
+  'commerceRefunds',
+  'commerceDisputes',
+  'commerceEvidenceArtifacts',
+  'commerceSyncJobs',
+  'commerceSyncReceipts',
 ] as const
 
 /**

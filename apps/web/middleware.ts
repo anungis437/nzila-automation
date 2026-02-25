@@ -32,6 +32,13 @@ export default clerkMiddleware(async (_auth, request) => {
       },
     )
   }
+
+  /* ── Request-ID propagation for observability ── */
+  const requestId =
+    request.headers.get('x-request-id') ?? crypto.randomUUID()
+  const response = NextResponse.next()
+  response.headers.set('x-request-id', requestId)
+  return response
 })
 
 export const config = {

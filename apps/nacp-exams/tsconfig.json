@@ -1,0 +1,28 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/ui": ["../../packages/ui/src"],
+      "@nzila/db": ["../../packages/db/src/index.ts"],
+      "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
+      "@nzila/nacp-core": ["../../packages/nacp-core/src/index.ts"],
+      "@nzila/os-core": ["../../packages/os-core/src/index.ts"],
+      "@nzila/os-core/telemetry": ["../../packages/os-core/src/telemetry/index.ts"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.mts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    ".turbo",
+    "dist"
+  ]
+}

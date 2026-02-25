@@ -1,0 +1,23 @@
+{
+  "app": {
+    "title": "NACP Examens",
+    "description": "Plateforme nationale de gestion des examens"
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "pricing": "Tarification",
+    "contact": "Contact",
+    "signIn": "Connexion",
+    "requestDemo": "Demander une démo"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "examSessions": "Sessions d'examen",
+    "candidates": "Candidats",
+    "centers": "Centres d'examen",
+    "submissions": "Soumissions",
+    "integrity": "Contrôles d'intégrité",
+    "reports": "Rapports"
+  }
+}

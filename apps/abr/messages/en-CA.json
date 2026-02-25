@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "ABR Insights",
+    "tagline": "AI-Powered Legal Intelligence",
+    "description": "Advanced legal research and case analysis platform powered by artificial intelligence"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "platform": "Platform",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "badge": "Trusted by 500+ Legal Professionals",
+    "title": "Legal Research,",
+    "titleAccent": "Reimagined",
+    "subtitle": "Harness AI to analyze case law, track precedents, and generate compliance reports with unmatched accuracy across Canadian jurisdictions.",
+    "cta": "Start Researching",
+    "ctaSecondary": "See a Demo"
+  },
+  "stats": {
+    "cases": "10,000+",
+    "casesLabel": "Cases Analyzed",
+    "accuracy": "99.7%",
+    "accuracyLabel": "Accuracy Rate",
+    "jurisdictions": "50+",
+    "jurisdictionsLabel": "Jurisdictions",
+    "turnaround": "<2h",
+    "turnaroundLabel": "Avg Turnaround"
+  },
+  "features": {
+    "title": "Enterprise Legal Intelligence",
+    "subtitle": "Everything your legal team needs to stay ahead",
+    "caseAnalysis": "Case Analysis",
+    "caseAnalysisDesc": "AI-powered case law analysis with precedent identification and risk scoring across common and civil law jurisdictions.",
+    "complianceReports": "Compliance Reports",
+    "complianceReportsDesc": "Automated compliance reporting with configurable templates, audit trails, and regulatory mapping for multi-jurisdictional operations.",
+    "precedentTracking": "Precedent Tracking",
+    "precedentTrackingDesc": "Real-time precedent monitoring with citation network analysis and impact assessment for evolving legal landscapes.",
+    "riskAssessment": "Risk Assessment",
+    "riskAssessmentDesc": "Quantitative legal risk scoring using historical outcomes, jurisdiction-specific factors, and predictive analytics.",
+    "auditTrails": "Audit Trails",
+    "auditTrailsDesc": "Tamper-evident audit logging with hash-chain integrity verification and complete evidence lifecycle management.",
+    "teamCollaboration": "Team Collaboration",
+    "teamCollaborationDesc": "Role-based access control, dual-control workflows, and secure document sharing for distributed legal teams."
+  },
+  "mission": {
+    "title": "Defending Justice with Intelligence",
+    "description": "ABR Insights empowers legal professionals with AI-driven tools that reduce research time by 80%, surface critical precedents in seconds, and ensure compliance across every jurisdiction where you operate.",
+    "highlight": "Built in Canada for the world's most demanding legal environments."
+  },
+  "cta": {
+    "title": "Ready to Transform Your Legal Practice?",
+    "subtitle": "Join hundreds of firms using ABR Insights to deliver better outcomes faster.",
+    "button": "Get Started Today"
+  },
+  "footer": {
+    "description": "AI-powered legal intelligence for modern legal teams.",
+    "platform": "Platform",
+    "resources": "Resources",
+    "legal": "Legal",
+    "ecosystem": "Ecosystem",
+    "caseAnalysis": "Case Analysis",
+    "compliance": "Compliance",
+    "precedents": "Precedents",
+    "riskScoring": "Risk Scoring",
+    "documentation": "Documentation",
+    "apiReference": "API Reference",
+    "changelog": "Changelog",
+    "systemStatus": "System Status",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "security": "Security",
+    "dpa": "Data Processing Agreement",
+    "nzilaOS": "NzilaOS Platform",
+    "unionEyes": "Union Eyes",
+    "nacpExams": "NACP Exams",
+    "zonga": "Zonga",
+    "allRights": "All rights reserved.",
+    "soc2": "SOC 2 Compliant",
+    "gdpr": "GDPR Ready",
+    "pipeda": "PIPEDA Compliant"
+  },
+  "auth": {
+    "signInTitle": "Welcome Back",
+    "signInSubtitle": "Sign in to access your legal intelligence dashboard",
+    "signUpTitle": "Create Your Account",
+    "signUpSubtitle": "Start analyzing cases with AI-powered insights"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "cases": "Cases",
+    "research": "Research",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "compliance": "Compliance",
+    "settings": "Settings",
+    "welcome": "Welcome back",
+    "activeCases": "Active Cases",
+    "reportsGenerated": "Reports Generated",
+    "complianceScore": "Compliance Score",
+    "teamMembers": "Team Members",
+    "quickActions": "Quick Actions",
+    "newCase": "New Case",
+    "generateReport": "Generate Report",
+    "runAnalysis": "Run Analysis",
+    "viewAlerts": "View Alerts"
+  }
+}

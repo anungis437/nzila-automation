@@ -1,0 +1,260 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+@custom-variant dark (&.dark, .dark &);
+@plugin "tailwindcss-animate";
+
+/* ═══════════════════════════════════════════════════════
+   Nzila Design System — NACP Exams Brand Tokens
+   Aligned with Union Eyes / apps/web for portfolio cohesion
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Nzila Portfolio Tokens (shared across all apps) ── */
+  --navy: #0B1121;
+  --navy-light: #131B2E;
+  --navy-mid: #1A2340;
+  --gold: #D4A843;
+  --gold-light: #E8C76A;
+  --electric: #2563EB;
+  --electric-light: #60A5FA;
+  --emerald: #10B981;
+  --coral: #F43F5E;
+  --violet: #8B5CF6;
+
+  /* ── shadcn/ui design tokens ── */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 9%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 9%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+  --radius: 0.75rem;
+  --chart-1: 221 83% 53%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 43 74% 66%;
+  --chart-4: 263 70% 50%;
+  --chart-5: 12 76% 61%;
+}
+
+.dark {
+  --background: 222 47% 7%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 7%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 7%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 7%;
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+  --ring: 224 76% 48%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-navy-mid: var(--navy-mid);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-electric: var(--electric);
+  --color-electric-light: var(--electric-light);
+  --color-emerald: var(--emerald);
+  --color-coral: var(--coral);
+  --color-violet: var(--violet);
+  --font-sans: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Base Styles
+   ═══════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-poppins), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+::selection {
+  background: var(--electric);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Premium Effects (Nzila Design System)
+   ═══════════════════════════════════════════════════════ */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #2563EB, #8B5CF6, #D4A843, #2563EB);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+}
+
+.bg-mesh {
+  background:
+    radial-gradient(at 20% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(212, 168, 67, 0.08) 0%, transparent 50%);
+}
+
+.border-gradient {
+  position: relative;
+}
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--electric), var(--violet), var(--gold));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.3); }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--electric);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Clerk Auth Component Overrides
+   ═══════════════════════════════════════════════════════ */
+
+.cl-card {
+  box-shadow: none !important;
+  border: 1px solid rgba(214, 220, 228, 0.6) !important;
+}
+.cl-headerTitle,
+.cl-headerSubtitle {
+  font-family: var(--font-poppins), system-ui, sans-serif !important;
+}
+.cl-formButtonPrimary {
+  background: var(--electric) !important;
+  font-family: var(--font-poppins), system-ui, sans-serif !important;
+}
+.cl-formButtonPrimary:hover {
+  background: #1d4ed8 !important;
+}
+.cl-footerActionLink {
+  color: var(--electric) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Sidebar Scrollbar
+   ═══════════════════════════════════════════════════════ */
+
+@layer utilities {
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .sidebar-scroll:hover {
+    scrollbar-color: rgba(0,0,0,0.15) transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+  }
+  .sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+  }
+}

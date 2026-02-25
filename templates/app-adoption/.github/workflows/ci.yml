@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: aquasecurity/trivy-action@0.34.1 # pin to release tag, not mutable @master
+      - uses: aquasecurity/trivy-action@e368e328979b113139d6f9068e03accaed98a518 # v0.34.1
         with:
           scan-type: fs
           severity: CRITICAL,HIGH
@@ -64,13 +64,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: anchore/sbom-action@f6c3d0fe42c3cf876e3462574e4c9416b5e0f07a # v0.9.0
+        id: sbom
         with:
           format: cyclonedx-json
-          output-file: sbom.json
+          artifact-name: sbom.json
       - uses: actions/upload-artifact@v4
         with:
           name: sbom
-          path: sbom.json
+          path: ${{ steps.sbom.outputs.sbom-artifact-id }}
 
   # ── Lint + Typecheck ─────────────────────────────────────────────────────
   lint-and-typecheck:

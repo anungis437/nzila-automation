@@ -1,16 +1,5 @@
-import { SignIn } from '@clerk/nextjs';
+import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 
 export default function SignInPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <SignIn
-        appearance={{
-          elements: {
-            rootBox: 'mx-auto',
-            card: 'shadow-xl',
-          },
-        }}
-      />
-    </div>
-  );
+  return <AuthPageLayout mode="sign-in" />;
 }

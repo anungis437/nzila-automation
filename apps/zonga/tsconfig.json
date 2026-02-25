@@ -1,0 +1,20 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/db": ["../../packages/db/src"],
+      "@nzila/db/*": ["../../packages/db/src/*"],
+      "@nzila/os-core": ["../../packages/os-core/src"],
+      "@nzila/os-core/*": ["../../packages/os-core/src/*"],
+      "@nzila/ui": ["../../packages/ui/src"],
+      "@nzila/ui/*": ["../../packages/ui/src/*"],
+      "@nzila/zonga-core": ["../../packages/zonga-core/src"],
+      "@nzila/zonga-core/*": ["../../packages/zonga-core/src/*"]
+    },
+    "plugins": [{ "name": "next" }]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

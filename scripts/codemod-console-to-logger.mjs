@@ -14,9 +14,11 @@
  * 2. CLI scripts (seeds, evidence scripts) are skipped — console is appropriate there.
  * 3. The web contact form (TSX client component) uses a no-op replacement.
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, realpathSync } from 'node:fs'
 import { execSync } from 'node:child_process'
-import { basename, dirname } from 'node:path'
+import { basename, dirname, resolve, join } from 'node:path'
+
+const REPO_ROOT = resolve(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/i, '$1')), '..')
 
 // ── Files to skip (CLI scripts — console is appropriate) ──────────────────
 const CLI_SCRIPTS = new Set([
@@ -64,7 +66,12 @@ function hasLoggerDecl(content) {
 
 // ── Transform a file ──────────────────────────────────────────────────────
 function transformFile(filePath) {
-  let content = readFileSync(filePath, 'utf-8')
+  // Resolve to absolute and verify it stays within the repo root
+  const resolved = resolve(REPO_ROOT, filePath)
+  if (!resolved.startsWith(REPO_ROOT)) {
+    throw new Error(`Path traversal blocked: ${filePath}`)
+  }
+  let content = readFileSync(resolved, 'utf-8')
   const original = content
 
   // Skip client components (TSX with 'use client')
@@ -72,7 +79,7 @@ function transformFile(filePath) {
     // For client components, just remove console.log calls
     content = content.replace(/\s*console\.log\([^)]*\);?\s*\n?/g, '\n')
     if (content !== original) {
-      writeFileSync(filePath, content)
+      writeFileSync(resolved, content)
       console.log(`  [client] ${filePath} — removed console.log`)
       return true
     }
@@ -200,7 +207,7 @@ function transformFile(filePath) {
   )
 
   if (content !== original) {
-    writeFileSync(filePath, content)
+    writeFileSync(resolved, content)
     console.log(`  [fixed] ${filePath} (namespace: ${namespace})`)
     return true
   }

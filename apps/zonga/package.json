@@ -1,0 +1,45 @@
+{
+  "name": "@nzila/zonga",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3006 --turbopack",
+    "build": "next build",
+    "start": "next start --port 3006",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.12.0",
+    "@nzila/db": "workspace:*",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/ui": "workspace:*",
+    "@nzila/zonga-core": "workspace:*",
+    "@radix-ui/react-dialog": "^1.1.7",
+    "@radix-ui/react-dropdown-menu": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.12",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.3.30",
+    "lucide-react": "^0.513.0",
+    "next": "^16.1.6",
+    "next-intl": "^4.6.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@nzila/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/node": "^22.16.3",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "tailwindcss": "^4.1.10",
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.18"
+  }
+}

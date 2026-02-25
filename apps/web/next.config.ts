@@ -7,6 +7,10 @@ const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
+  { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+  { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+  { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
   {
     key: 'Content-Security-Policy',
     value: [
@@ -54,6 +58,35 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.jsdelivr.net',
       },
     ],
+  },
+  webpack: (config) => {
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
+        ...config.optimization?.splitChunks,
+        cacheGroups: {
+          framework: {
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+            name: 'framework',
+            priority: 40,
+            chunks: 'all' as const,
+          },
+          lib: {
+            test: /[\\/]node_modules[\\/](framer-motion|@radix-ui)[\\/]/,
+            name: 'lib',
+            priority: 30,
+            chunks: 'all' as const,
+          },
+          commons: {
+            minChunks: 2,
+            name: 'commons',
+            priority: 20,
+            chunks: 'all' as const,
+          },
+        },
+      },
+    };
+    return config;
   },
 };
 

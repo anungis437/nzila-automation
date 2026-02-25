@@ -1,0 +1,23 @@
+{
+  "app": {
+    "title": "NACP Exams",
+    "description": "National Examination Management Platform"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "requestDemo": "Request Demo"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "examSessions": "Exam Sessions",
+    "candidates": "Candidates",
+    "centers": "Examination Centers",
+    "submissions": "Submissions",
+    "integrity": "Integrity Checks",
+    "reports": "Reports"
+  }
+}

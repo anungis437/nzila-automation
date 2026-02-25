@@ -1,0 +1,23 @@
+{
+  "name": "@nzila/commerce-integration-tests",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cross-package integration tests for the commerce engine",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "devDependencies": {
+    "@nzila/commerce-core": "workspace:*",
+    "@nzila/commerce-state": "workspace:*",
+    "@nzila/commerce-governance": "workspace:*",
+    "@nzila/commerce-events": "workspace:*",
+    "@nzila/commerce-audit": "workspace:*",
+    "@nzila/commerce-evidence": "workspace:*",
+    "vitest": "^4.0.18",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9"
+  }
+}

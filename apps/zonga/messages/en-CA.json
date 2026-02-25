@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "Zonga",
+    "tagline": "Music Without Borders"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to Zonga",
+    "description": "Manage your catalog, track revenue, view payouts, and grow your audience — all in one place."
+  },
+  "catalog": {
+    "title": "Catalog",
+    "tracks": "Tracks",
+    "albums": "Albums",
+    "podcasts": "Podcasts",
+    "videos": "Music Videos",
+    "upload": "Upload Asset",
+    "publish": "Publish",
+    "noAssets": "No assets yet",
+    "noAssetsDescription": "Upload your first track to get started."
+  },
+  "releases": {
+    "title": "Releases",
+    "create": "Create Release",
+    "draft": "Draft",
+    "scheduled": "Scheduled",
+    "live": "Live",
+    "archived": "Archived"
+  },
+  "revenue": {
+    "title": "Revenue",
+    "streams": "Streams",
+    "downloads": "Downloads",
+    "licensing": "Licensing",
+    "sync": "Sync",
+    "merchandise": "Merchandise",
+    "tips": "Tips",
+    "subscriptions": "Subscriptions",
+    "totalEarnings": "Total Earnings",
+    "platformFee": "Platform Fee",
+    "netPayout": "Net Payout"
+  },
+  "payouts": {
+    "title": "Payouts",
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "requestPayout": "Request Payout",
+    "walletBalance": "Wallet Balance"
+  },
+  "creators": {
+    "title": "Creators",
+    "artists": "Artists",
+    "labels": "Labels",
+    "producers": "Producers",
+    "register": "Register Creator"
+  },
+  "integrity": {
+    "title": "Integrity",
+    "fingerprints": "Audio Fingerprints",
+    "copyrightChecks": "Copyright Checks",
+    "auditTrail": "Audit Trail"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "listeners": "Listeners",
+    "geography": "Geography",
+    "demographics": "Demographics",
+    "trends": "Trends"
+  },
+  "marketing": {
+    "hero": {
+      "badge": "African Music, Global Stage",
+      "title": "Your Music,",
+      "titleAccent": "Your Revenue",
+      "description": "The fair-share music platform — transparent royalties, instant payouts, and full creative ownership for African artists and creators."
+    },
+    "features": {
+      "badge": "Platform Features",
+      "title": "Built for",
+      "titleAccent": "African Creators",
+      "description": "Everything you need to distribute, monetize, and grow your music — with transparency at every step."
+    },
+    "mission": {
+      "badge": "Our Mission",
+      "title": "Music That",
+      "titleAccent": "Empowers",
+      "description": "Zonga was born from a simple belief: African creators deserve the same tools, transparency, and revenue share as artists anywhere in the world. We built a platform that makes that possible."
+    },
+    "cta": {
+      "title": "Ready to Share Your",
+      "titleAccent": "Music?",
+      "description": "Join thousands of African creators who trust Zonga for transparent royalties, instant payouts, and full creative ownership."
+    }
+  }
+}

@@ -15,10 +15,11 @@ import {
   readdirSync,
   statSync,
   existsSync,
+  realpathSync,
 } from 'node:fs'
-import { join, relative } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 
-const REPO_ROOT = join(__dirname, '../..')
+const REPO_ROOT = realpathSync(join(__dirname, '../..'))
 const SCHEMA_DIR = join(REPO_ROOT, 'packages', 'db', 'src', 'schema')
 const SNAPSHOT_FILE = join(REPO_ROOT, 'tooling', 'db', 'schema-snapshot.json')
 
@@ -30,7 +31,11 @@ interface SchemaSnapshot {
 }
 
 function hashFile(filePath: string): string {
-  const content = readFileSync(filePath)
+  const resolved = resolve(filePath)
+  if (!resolved.startsWith(SCHEMA_DIR)) {
+    throw new Error(`Path traversal blocked: ${filePath}`)
+  }
+  const content = readFileSync(resolved)
   return createHash('sha256').update(content).digest('hex')
 }
 

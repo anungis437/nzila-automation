@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "ABR Insights",
+    "tagline": "Intelligence Juridique Propulsée par l'IA",
+    "description": "Plateforme avancée de recherche juridique et d'analyse de cas propulsée par l'intelligence artificielle"
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "platform": "Plateforme",
+    "pricing": "Tarification",
+    "contact": "Contact",
+    "signIn": "Se connecter",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "badge": "Approuvé par 500+ professionnels juridiques",
+    "title": "Recherche Juridique,",
+    "titleAccent": "Réinventée",
+    "subtitle": "Exploitez l'IA pour analyser la jurisprudence, suivre les précédents et générer des rapports de conformité avec une précision inégalée dans les juridictions canadiennes.",
+    "cta": "Commencer la Recherche",
+    "ctaSecondary": "Voir une Démo"
+  },
+  "stats": {
+    "cases": "10 000+",
+    "casesLabel": "Cas Analysés",
+    "accuracy": "99,7 %",
+    "accuracyLabel": "Taux de Précision",
+    "jurisdictions": "50+",
+    "jurisdictionsLabel": "Juridictions",
+    "turnaround": "<2h",
+    "turnaroundLabel": "Délai Moyen"
+  },
+  "features": {
+    "title": "Intelligence Juridique pour Entreprises",
+    "subtitle": "Tout ce dont votre équipe juridique a besoin pour garder une longueur d'avance",
+    "caseAnalysis": "Analyse de Cas",
+    "caseAnalysisDesc": "Analyse jurisprudentielle propulsée par l'IA avec identification des précédents et notation des risques dans les juridictions de droit commun et civil.",
+    "complianceReports": "Rapports de Conformité",
+    "complianceReportsDesc": "Production automatisée de rapports de conformité avec modèles configurables, pistes d'audit et cartographie réglementaire.",
+    "precedentTracking": "Suivi des Précédents",
+    "precedentTrackingDesc": "Surveillance en temps réel des précédents avec analyse du réseau de citations et évaluation d'impact.",
+    "riskAssessment": "Évaluation des Risques",
+    "riskAssessmentDesc": "Notation quantitative des risques juridiques à l'aide de résultats historiques et d'analyses prédictives.",
+    "auditTrails": "Pistes d'Audit",
+    "auditTrailsDesc": "Journalisation d'audit inviolable avec vérification d'intégrité par chaîne de hachage.",
+    "teamCollaboration": "Collaboration d'Équipe",
+    "teamCollaborationDesc": "Contrôle d'accès basé sur les rôles, flux de travail à double contrôle et partage sécurisé de documents."
+  },
+  "mission": {
+    "title": "Défendre la Justice avec Intelligence",
+    "description": "ABR Insights donne aux professionnels du droit des outils propulsés par l'IA qui réduisent le temps de recherche de 80 %, révèlent les précédents critiques en quelques secondes et assurent la conformité dans chaque juridiction.",
+    "highlight": "Conçu au Canada pour les environnements juridiques les plus exigeants au monde."
+  },
+  "cta": {
+    "title": "Prêt à Transformer Votre Pratique Juridique ?",
+    "subtitle": "Rejoignez des centaines de cabinets utilisant ABR Insights pour obtenir de meilleurs résultats plus rapidement.",
+    "button": "Commencer Aujourd'hui"
+  },
+  "footer": {
+    "description": "Intelligence juridique propulsée par l'IA pour les équipes juridiques modernes.",
+    "platform": "Plateforme",
+    "resources": "Ressources",
+    "legal": "Juridique",
+    "ecosystem": "Écosystème",
+    "caseAnalysis": "Analyse de Cas",
+    "compliance": "Conformité",
+    "precedents": "Précédents",
+    "riskScoring": "Notation des Risques",
+    "documentation": "Documentation",
+    "apiReference": "Référence API",
+    "changelog": "Journal des Modifications",
+    "systemStatus": "État du Système",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "security": "Sécurité",
+    "dpa": "Accord de Traitement des Données",
+    "nzilaOS": "Plateforme NzilaOS",
+    "unionEyes": "Union Eyes",
+    "nacpExams": "NACP Exams",
+    "zonga": "Zonga",
+    "allRights": "Tous droits réservés.",
+    "soc2": "Conforme SOC 2",
+    "gdpr": "Conforme RGPD",
+    "pipeda": "Conforme LPRPDE"
+  },
+  "auth": {
+    "signInTitle": "Bienvenue",
+    "signInSubtitle": "Connectez-vous pour accéder à votre tableau de bord d'intelligence juridique",
+    "signUpTitle": "Créer Votre Compte",
+    "signUpSubtitle": "Commencez à analyser des cas avec des perspectives propulsées par l'IA"
+  },
+  "dashboard": {
+    "title": "Tableau de Bord",
+    "overview": "Aperçu",
+    "cases": "Cas",
+    "research": "Recherche",
+    "analytics": "Analytique",
+    "reports": "Rapports",
+    "compliance": "Conformité",
+    "settings": "Paramètres",
+    "welcome": "Bienvenue",
+    "activeCases": "Cas Actifs",
+    "reportsGenerated": "Rapports Générés",
+    "complianceScore": "Score de Conformité",
+    "teamMembers": "Membres de l'Équipe",
+    "quickActions": "Actions Rapides",
+    "newCase": "Nouveau Cas",
+    "generateReport": "Générer un Rapport",
+    "runAnalysis": "Lancer une Analyse",
+    "viewAlerts": "Voir les Alertes"
+  }
+}
