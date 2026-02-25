@@ -84,7 +84,7 @@ export default async function BillingSuccessPage({ searchParams }: PageProps) {
               View billing
             </Link>
             <Link
-              href="/dashboard"
+              href="/console"
               className="rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Go to dashboard
