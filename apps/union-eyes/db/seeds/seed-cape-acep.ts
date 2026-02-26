@@ -26,7 +26,7 @@
 
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 // ──────────────────────────────────────────────────────────────────
 // CAPE-ACEP Organization
@@ -205,7 +205,7 @@ export async function seedCapeAcep(): Promise<CapeAcepSeedResult> {
   // 3. Insert dues rule (use raw SQL insert for the duesRules table)
   try {
     await db.execute(
-      /* sql */`
+      sql`
       INSERT INTO dues_rules (
         organization_id, rule_name, rule_code, description,
         calculation_type, percentage_rate, base_field,
@@ -234,7 +234,7 @@ export async function seedCapeAcep(): Promise<CapeAcepSeedResult> {
   // 4. Insert sharing settings
   try {
     await db.execute(
-      /* sql */`
+      sql`
       INSERT INTO organization_sharing_settings (
         organization_id,
         allow_federation_sharing, allow_sector_sharing,
@@ -253,7 +253,7 @@ export async function seedCapeAcep(): Promise<CapeAcepSeedResult> {
         ${CAPE_SHARING_SETTINGS.autoSharePrecedents},
         ${CAPE_SHARING_SETTINGS.requireAnonymization},
         ${CAPE_SHARING_SETTINGS.defaultSharingLevel},
-        ${`{${CAPE_SHARING_SETTINGS.allowedSharingLevels.join(',')}}`},
+        ${sql.raw(`'{${CAPE_SHARING_SETTINGS.allowedSharingLevels.join(',')}}'`)},
         ${CAPE_SHARING_SETTINGS.sharingApprovalRequired},
         ${CAPE_SHARING_SETTINGS.sharingApproverRole}
       )

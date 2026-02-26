@@ -69,8 +69,9 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 
 # Build only apps that have deps installed in the Docker image (turbo filters)
-RUN pnpm turbo build --filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --filter=@nzila/orchestrator-api
-
+# Default: all apps. Override via --build-arg TURBO_FILTER for single-app builds.
+ARG TURBO_FILTER="--filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --filter=@nzila/orchestrator-api"
+RUN pnpm turbo build ${TURBO_FILTER}
 # ============================================
 # Web production stage
 # ============================================

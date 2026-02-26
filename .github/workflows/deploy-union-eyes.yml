@@ -38,6 +38,7 @@ jobs:
         run: |
           docker build \
             --target union-eyes \
+            --build-arg TURBO_FILTER="--filter=@nzila/union-eyes" \
             --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.UE_CLERK_PUBLISHABLE_KEY }} \
             --build-arg NEXT_PUBLIC_APP_URL=${{ secrets.UE_APP_URL }} \
             -t ${{ env.IMAGE }}:${{ github.sha }} \
