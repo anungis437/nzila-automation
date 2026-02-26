@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 import {withSentryConfig} from '@sentry/nextjs';
 import createNextIntlPlugin from 'next-intl/plugin';
 import bundleAnalyzer from '@next/bundle-analyzer';
+import webpack from 'webpack';
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
@@ -344,33 +345,16 @@ const nextConfig: NextConfig = {
         querystring: false,
         zlib: false,
       };
-      // Handle node: protocol imports (e.g. "node:fs", "node:crypto")
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'node:async_hooks': false,
-        'node:buffer': false,
-        'node:crypto': false,
-        'node:diagnostics_channel': false,
-        'node:events': false,
-        'node:fs': false,
-        'node:fs/promises': false,
-        'node:http': false,
-        'node:http2': false,
-        'node:https': false,
-        'node:net': false,
-        'node:os': false,
-        'node:path': false,
-        'node:perf_hooks': false,
-        'node:process': false,
-        'node:stream': false,
-        'node:tls': false,
-        'node:url': false,
-        'node:util': false,
-        'node:zlib': false,
-        'node:child_process': false,
-        'node:dns': false,
-        'node:worker_threads': false,
-      };
+      // Strip "node:" prefix from imports so fallback handles them.
+      // webpack 5 treats "node:*" as URL schemes that need a plugin.
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /^node:/,
+          (resource: { request: string }) => {
+            resource.request = resource.request.replace(/^node:/, '');
+          },
+        ),
+      );
     }
     
     // Optimize build performance
