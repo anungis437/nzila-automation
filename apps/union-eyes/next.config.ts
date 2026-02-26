@@ -173,9 +173,68 @@ const nextConfig: NextConfig = {
   
   // Experimental features for faster builds
   // Externalize native/binary packages that break Turbopack bundling
+  // Next.js 16 uses Turbopack by default — webpack callback is NOT executed.
+  // All server-only packages using Node.js builtins MUST be listed here.
   serverExternalPackages: [
+    // Native/binary
     '@tensorflow/tfjs-node',
     '@mapbox/node-pre-gyp',
+    // Database drivers (net, dns, fs, tls)
+    'pg',
+    'postgres',
+    'drizzle-orm',
+    'drizzle-kit',
+    // Queue / Redis (net, dns)
+    'bullmq',
+    'ioredis',
+    // Azure SDKs (net, http2, fs)
+    '@azure/storage-blob',
+    '@azure/identity',
+    '@azure/keyvault-keys',
+    '@azure/keyvault-secrets',
+    '@azure/msal-node',
+    '@azure/cognitiveservices-computervision',
+    '@azure/ms-rest-js',
+    // Auth (async_hooks, diagnostics_channel)
+    '@clerk/backend',
+    '@clerk/nextjs',
+    // Observability (async_hooks, diagnostics_channel, perf_hooks)
+    '@sentry/nextjs',
+    '@opentelemetry/sdk-node',
+    '@opentelemetry/auto-instrumentations-node',
+    'import-in-the-middle',
+    'require-in-the-middle',
+    // Payments / email (net, http2)
+    'stripe',
+    'resend',
+    'square',
+    // Cloud SDKs (net, http2, fs)
+    '@aws-sdk/client-s3',
+    '@aws-sdk/client-textract',
+    '@aws-sdk/s3-request-presigner',
+    'googleapis',
+    '@microsoft/microsoft-graph-client',
+    '@google-cloud/vision',
+    // Document/file processing (fs)
+    'pdfjs-dist',
+    'pdf-parse',
+    'pdfkit',
+    'mammoth',
+    'exceljs',
+    'tesseract.js',
+    // Communication (net, http2)
+    'twilio',
+    'firebase-admin',
+    'microsoft-cognitiveservices-speech-sdk',
+    // Utilities (fs, net)
+    'axios',
+    'node-cron',
+    'node-geocoder',
+    'geoip-lite',
+    'dotenv',
+    'react-email',
+    '@react-email/render',
+    '@react-email/components',
   ],
 
   experimental: {
