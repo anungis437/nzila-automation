@@ -4,6 +4,7 @@
  * Resolver functions for GraphQL queries, mutations, and subscriptions
  */
 
+import { Decimal } from 'decimal.js';
 import { db } from '@/db';
 import { claims, profiles } from '@/db/schema';
 import { 
@@ -19,6 +20,7 @@ import {
   PensionPlanType,
   ContributionPeriod,
   PensionMember,
+  PensionableEarnings,
   EmploymentStatus,
 } from '@/lib/pension-processor/types';
 import { IntegrationFactory } from '@/lib/integrations/factory';
@@ -472,14 +474,20 @@ export const resolvers = {
           grossEarnings: number;
           pensionableEarnings?: number;
         }) => {
-          const member = {
+          const member: PensionMember = {
             id: contrib.memberId,
-            planType: input.planType as PensionPlanType,
+            employeeNumber: contrib.memberId,
+            firstName: 'Unknown',
+            lastName: 'Unknown',
             dateOfBirth: new Date(1980, 0, 1), // Default — overridden by processor lookup
+            hireDate: new Date(),
+            employmentStatus: EmploymentStatus.FULL_TIME,
+            province: 'ON',
+            annualSalary: new Decimal(contrib.grossEarnings * 12 || 0),
           };
-          const earnings = {
-            grossEarnings: contrib.grossEarnings,
-            pensionableEarnings: contrib.pensionableEarnings ?? contrib.grossEarnings,
+          const earnings: PensionableEarnings = {
+            grossEarnings: new Decimal(contrib.grossEarnings),
+            pensionableEarnings: new Decimal(contrib.pensionableEarnings ?? contrib.grossEarnings),
             periodStartDate: new Date(input.periodStart),
             periodEndDate: new Date(input.periodEnd),
           };

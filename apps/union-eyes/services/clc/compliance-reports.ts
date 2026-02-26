@@ -1128,22 +1128,22 @@ export async function forecastRemittances(months: number): Promise<any[]> {
   // Fetch last 12 months of historical remittance data for a moving-average forecast
   const historicalData = await db
     .select({
-      month: sql<number>`EXTRACT(MONTH FROM ${perCapitaRemittances.periodStart})::int`,
-      year: sql<number>`EXTRACT(YEAR FROM ${perCapitaRemittances.periodStart})::int`,
-      totalAmount: sql<number>`SUM(${perCapitaRemittances.amount})::numeric`,
+      month: perCapitaRemittances.remittanceMonth,
+      year: perCapitaRemittances.remittanceYear,
+      totalAmount: sql<number>`SUM(${perCapitaRemittances.totalAmount}::numeric)`,
       remittanceCount: sql<number>`COUNT(*)::int`,
     })
     .from(perCapitaRemittances)
     .where(
-      sql`${perCapitaRemittances.periodStart} >= NOW() - INTERVAL '12 months'`
+      sql`MAKE_DATE(${perCapitaRemittances.remittanceYear}, ${perCapitaRemittances.remittanceMonth}, 1) >= NOW() - INTERVAL '12 months'`
     )
     .groupBy(
-      sql`EXTRACT(YEAR FROM ${perCapitaRemittances.periodStart})`,
-      sql`EXTRACT(MONTH FROM ${perCapitaRemittances.periodStart})`
+      perCapitaRemittances.remittanceYear,
+      perCapitaRemittances.remittanceMonth
     )
     .orderBy(
-      sql`EXTRACT(YEAR FROM ${perCapitaRemittances.periodStart})`,
-      sql`EXTRACT(MONTH FROM ${perCapitaRemittances.periodStart})`
+      perCapitaRemittances.remittanceYear,
+      perCapitaRemittances.remittanceMonth
     );
 
   // Calculate moving average from available data
