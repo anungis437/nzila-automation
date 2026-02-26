@@ -202,6 +202,15 @@ const nextConfig: NextConfig = {
     '@sentry/nextjs',
     '@opentelemetry/sdk-node',
     '@opentelemetry/auto-instrumentations-node',
+    '@opentelemetry/otlp-grpc-exporter-base',
+    '@opentelemetry/exporter-metrics-otlp-grpc',
+    '@opentelemetry/exporter-trace-otlp-http',
+    '@opentelemetry/exporter-trace-otlp-grpc',
+    '@opentelemetry/resources',
+    '@opentelemetry/semantic-conventions',
+    '@opentelemetry/api',
+    '@grpc/grpc-js',
+    '@grpc/proto-loader',
     'import-in-the-middle',
     'require-in-the-middle',
     // Payments / email (net, http2)
@@ -344,11 +353,13 @@ const nextConfig: NextConfig = {
       };
     }
     
-    // Externalize bullmq and ioredis to prevent bundling browser API dependencies
+    // Externalize server-only packages to prevent bundling Node.js builtin dependencies
     if (isServer) {
       config.externals = config.externals || {};
       config.externals['bullmq'] = 'commonjs bullmq';
       config.externals['ioredis'] = 'commonjs ioredis';
+      config.externals['@grpc/grpc-js'] = 'commonjs @grpc/grpc-js';
+      config.externals['@grpc/proto-loader'] = 'commonjs @grpc/proto-loader';
     }
     
     return config;
