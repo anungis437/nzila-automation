@@ -68,8 +68,8 @@ ARG CLERK_SECRET_KEY=sk_test_build_placeholder
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 
-# Build all packages and apps
-RUN pnpm build
+# Build only apps that have deps installed in the Docker image (turbo filters)
+RUN pnpm turbo build --filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --filter=@nzila/orchestrator-api
 
 # ============================================
 # Web production stage
