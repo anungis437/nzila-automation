@@ -30,6 +30,7 @@
   "include": [
     "next-env.d.ts",
     "global.d.ts",
+    "modules.d.ts",
     "i18n.ts",
     "**/*.ts",
     "**/*.tsx",
