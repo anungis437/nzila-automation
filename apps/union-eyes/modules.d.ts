@@ -34,3 +34,17 @@ declare module '@sendgrid/mail' {
   };
   export default sgMail;
 }
+
+// --- Optional: sharp (ocr-service.ts image processing) ---
+declare module 'sharp' {
+  interface SharpInstance {
+    resize(width: number, height?: number): SharpInstance;
+    grayscale(): SharpInstance;
+    normalize(): SharpInstance;
+    sharpen(): SharpInstance;
+    toBuffer(): Promise<Buffer>;
+    metadata(): Promise<{ width?: number; height?: number; format?: string }>;
+  }
+  function sharp(input: Buffer | string): SharpInstance;
+  export default sharp;
+}
