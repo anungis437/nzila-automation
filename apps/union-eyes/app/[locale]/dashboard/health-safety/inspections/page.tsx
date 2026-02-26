@@ -15,7 +15,7 @@
 
 
 export const dynamic = 'force-dynamic';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -77,16 +77,7 @@ export default function InspectionsPage() {
     avgScore: 0,
   });
 
-  useEffect(() => {
-    if (organizationId) {
-      // eslint-disable-next-line react-hooks/immutability
-      loadStats();
-      // eslint-disable-next-line react-hooks/immutability
-      loadFindings();
-    }
-  }, [organizationId, dateRange]);
-
-  const loadFindings = async () => {
+  const loadFindings = useCallback(async () => {
     try {
       const res = await fetch(`/api/v2/health-safety/inspections/findings?organizationId=${organizationId}`);
       if (res.ok) {
@@ -97,9 +88,9 @@ export default function InspectionsPage() {
     } catch (error) {
       logger.error("Failed to load findings:", error);
     }
-  };
+  }, [organizationId]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const res = await fetch(`/api/v2/health-safety/inspections/stats?organizationId=${organizationId}`);
       if (res.ok) {
@@ -117,7 +108,16 @@ export default function InspectionsPage() {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load inspection statistics");
     }
-  };
+  }, [organizationId]);
+
+  useEffect(() => {
+    if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
+      loadStats();
+      // eslint-disable-next-line react-hooks/immutability
+      loadFindings();
+    }
+  }, [organizationId, dateRange, loadFindings, loadStats]);
 
   const handleScheduleInspection = () => {
     router.push("/dashboard/health-safety/inspections/new");

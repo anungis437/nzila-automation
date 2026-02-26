@@ -26,6 +26,60 @@
       "owner": "union-eyes-team",
       "justification": "Service Worker runs in browser context where @nzila/os-core is not available — console is the only logging mechanism.",
       "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/union-eyes/middleware.ts",
+      "owner": "platform-team",
+      "justification": "Edge middleware cannot use @nzila/os-core/createLogger (Node.js APIs unavailable on Edge Runtime) — console is the only safe logging mechanism.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/cfo/app/*/dashboard/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/cfo/app/*/dashboard/*/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary for sub-sections runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/cfo/app/*/dashboard/*/*/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary for nested sub-sections (e.g., documents/upload, workflows/new) runs in browser context where @nzila/os-core is not available.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/zonga/app/*/dashboard/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/zonga/app/*/dashboard/*/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary for sub-sections runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/partners/app/admin/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/partners/app/portal/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/nacp-exams/app/*/dashboard/error.tsx",
+      "owner": "platform-team",
+      "justification": "Client-side error boundary runs in browser context where @nzila/os-core is not available — console.error is needed for Next.js error reporting.",
+      "expiresOn": "2026-09-01"
     }
   ]
 }

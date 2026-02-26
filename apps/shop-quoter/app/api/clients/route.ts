@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { withSpan } from '@nzila/os-core/telemetry'
 import { customerRepo } from '@/lib/db'
 
 /**
@@ -7,29 +8,31 @@ import { customerRepo } from '@/lib/db'
  * POST /api/clients — create a new client.
  */
 
-export async function GET() {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const clients = await customerRepo.findAll()
-    return NextResponse.json({ ok: true, data: clients })
-  } catch (err) {
-    return NextResponse.json(
-      { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500 },
-    )
-  }
+export async function GET(request: Request) {
+  return withRequestContext(request, () =>
+    withSpan('api.clients.list', { 'http.method': 'GET' }, async () => {
+    const authResult = await authenticateUser()
+    if (!authResult.ok) return authResult.response
+    try {
+      const clients = await customerRepo.findAll()
+      return NextResponse.json({ ok: true, data: clients })
+    } catch (err) {
+      return NextResponse.json(
+        { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
+        { status: 500 },
+      )
+    }
+    }),
+  )
 }
 
 export async function POST(request: Request) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const body = await request.json()
+  return withRequestContext(request, () =>
+    withSpan('api.clients.create', { 'http.method': 'POST' }, async () => {
+    const authResult = await authenticateUser()
+    if (!authResult.ok) return authResult.response
+    try {
+      const body = await request.json()
     if (!body.name) {
       return NextResponse.json(
         { ok: false, error: 'name is required' },
@@ -53,4 +56,6 @@ export async function POST(request: Request) {
       { status: 500 },
     )
   }
+    }),
+  )
 }

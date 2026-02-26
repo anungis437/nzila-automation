@@ -13,7 +13,7 @@ import {
   type GrievanceDocument,
   type SignatureData,
 } from "@/db/schema";
-import { put } from "@vercel/blob";
+import { putBlob } from "@/lib/blob-client";
 import { DocuSignProvider } from "@/lib/services/signature-providers";
 import { processImageOCR, processPDFOCR } from "@/lib/services/ocr-service";
 
@@ -94,8 +94,7 @@ export async function uploadDocument(
 ): Promise<{ success: boolean; documentId?: string; error?: string }> {
   try {
     // Upload file to blob storage
-    const blob = await put(`grievances/${claimId}/${file.name}`, file, {
-      access: "public",
+    const blob = await putBlob(`grievances/${claimId}/${file.name}`, file, {
       addRandomSuffix: true,
     });
 
@@ -166,11 +165,10 @@ export async function uploadDocumentVersion(
     }
 
     // Upload new file
-    const blob = await put(
+    const blob = await putBlob(
       `grievances/${parentDoc.claimId}/${file.name}`,
       file,
       {
-        access: "public",
         addRandomSuffix: true,
       }
     );

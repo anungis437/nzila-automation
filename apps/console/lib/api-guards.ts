@@ -5,7 +5,7 @@
  * combining Clerk authentication, entity membership verification,
  * and platform-level role checks from lib/rbac.
  */
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import {
   createScopedDb,
   createAuditedScopedDb,
@@ -17,6 +17,7 @@ import { entityMembers } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { getUserRole, type NzilaRole } from '@/lib/rbac'
+import { createRequestContext, runWithContext } from '@nzila/os-core'
 
 // ── Re-exports for route convenience ────────────────────────────────────────
 export { withAudit, createAuditedScopedDb, createScopedDb }
@@ -167,4 +168,19 @@ export async function requirePlatformRole(
   }
 
   return authResult
+}
+
+// ── Observability Helpers ────────────────────────────────────────────────────
+
+/**
+ * Wrap an API route handler with request context propagation.
+ * Ensures OTel traces, structured logs, and audit trails share a
+ * consistent request-scoped context (request-id, user, timing).
+ */
+export async function withRequestContext<T>(
+  request: Request | NextRequest,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const ctx = createRequestContext(request)
+  return runWithContext(ctx, fn)
 }

@@ -47,6 +47,13 @@ export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
     await auth.protect()
   }
+
+  // ── Request-ID propagation ────────────────────────────────────────────
+  const requestId =
+    request.headers.get('x-request-id') ?? crypto.randomUUID()
+  const response = NextResponse.next()
+  response.headers.set('x-request-id', requestId)
+  return response
 })
 
 export const config = {

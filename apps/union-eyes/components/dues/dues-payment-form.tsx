@@ -9,13 +9,12 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/lib/hooks/use-toast';
-import { loadStripe } from '@stripe/stripe-js';
+import { getStripePromise } from '@/lib/stripe-elements';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
- 
- 
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = getStripePromise();
 
 interface DuesPaymentFormProps {
   userId: string;

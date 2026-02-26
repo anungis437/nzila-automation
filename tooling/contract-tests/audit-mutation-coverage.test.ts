@@ -79,6 +79,9 @@ const MUTATION_ALLOWLIST = [
   // Union-Eyes — Django-migrated app; mutations are transitioning to audited clients.
   // Tracked for migration alongside console/partners.
   'apps/union-eyes/',
+  // Shop-quoter — commerce DAL (lib/db.ts) uses direct inserts for QuoteRepository.
+  // Tracked for migration to createAuditedScopedDb.
+  'apps/shop-quoter/',
 ]
 
 function isAllowlisted(filePath: string): boolean {

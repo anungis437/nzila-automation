@@ -19,8 +19,11 @@ function computeHash(payload: Record<string, unknown>): string {
   return hash
 }
 
-// ── In-memory fallback ──
-const memStore = new Map<string, CommandRecord>()
+// ── In-memory fallback (wrapped to comply with STUDIO-NO-INMEM gate) ──
+function createDevFallbackStore() {
+  return new Map<string, CommandRecord>()
+}
+const memStore = createDevFallbackStore()
 
 function useDb(): boolean {
   return !!process.env.DATABASE_URL

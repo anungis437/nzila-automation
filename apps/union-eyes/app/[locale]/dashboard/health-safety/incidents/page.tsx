@@ -15,7 +15,7 @@
 
 
 export const dynamic = 'force-dynamic';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -72,14 +72,7 @@ export default function IncidentsPage() {
     avgResolutionTime: 0,
   });
 
-  useEffect(() => {
-    if (organizationId) {
-      // eslint-disable-next-line react-hooks/immutability
-      loadStats();
-    }
-  }, [organizationId, dateRange]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const res = await fetch(`/api/v2/health-safety/incidents/stats?organizationId=${organizationId}&period=${dateRange}`);
       if (res.ok) {
@@ -97,7 +90,14 @@ export default function IncidentsPage() {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load incident statistics");
     }
-  };
+  }, [organizationId, dateRange]);
+
+  useEffect(() => {
+    if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
+      loadStats();
+    }
+  }, [organizationId, dateRange, loadStats]);
 
   const handleViewIncident = (incidentId: string) => {
     router.push(`/dashboard/health-safety/incidents/${incidentId}`);

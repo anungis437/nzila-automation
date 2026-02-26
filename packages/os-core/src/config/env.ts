@@ -20,24 +20,39 @@ const baseSchema = z.object({
   KEY_VAULT_URI: z.string().url().optional(),
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
   OTEL_SERVICE_NAME: z.string().optional(),
+  // AI / ML gateway (used by all intelligent apps)
+  AI_CORE_URL: z.string().url().default('http://localhost:4100'),
+  AI_API_KEY: z.string().min(1).optional(),
+  ML_CORE_URL: z.string().url().default('http://localhost:4200'),
+  ML_API_KEY: z.string().min(1).optional(),
+  // Rate limiting
+  RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120),
+  RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
 })
+
+// ---------------------------------------------------------------------------
+// Clerk auth mixin (re-used across authenticated Next.js apps)
+// ---------------------------------------------------------------------------
+const clerkMixin = {
+  CLERK_SECRET_KEY: z.string().startsWith('sk_'),
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
+  CLERK_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
+}
 
 // ---------------------------------------------------------------------------
 // App-specific extensions
 // ---------------------------------------------------------------------------
 const consoleSchema = baseSchema.extend({
   NEXT_PUBLIC_APP_URL: z.string().url(),
-  CLERK_SECRET_KEY: z.string().startsWith('sk_'),
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
-  CLERK_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
+  ...clerkMixin,
   STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
 })
 
 const partnersSchema = baseSchema.extend({
   NEXT_PUBLIC_APP_URL: z.string().url(),
-  CLERK_SECRET_KEY: z.string().startsWith('sk_'),
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
+  NEXT_PUBLIC_PARTNERS_URL: z.string().url().optional(),
+  ...clerkMixin,
 })
 
 const webSchema = baseSchema.extend({
@@ -50,10 +65,63 @@ const unionEyesSchema = baseSchema.extend({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith('pk_').optional(),
 })
 
+const cfoSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+  STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
+  QBO_CLIENT_ID: z.string().min(1).optional(),
+  QBO_CLIENT_SECRET: z.string().min(1).optional(),
+})
+
+const shopQuoterSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_CONSOLE_URL: z.string().url().default('http://localhost:3001'),
+  NEXT_PUBLIC_WEB_URL: z.string().url().default('http://localhost:3000'),
+  ...clerkMixin,
+})
+
+const nacpExamsSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+})
+
+const zongaSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+  STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
+})
+
+const abrSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_API_URL: z.string().url().default('http://localhost:8001'),
+  EVIDENCE_SEAL_KEY: z.string().min(1).optional(),
+  ...clerkMixin,
+})
+
+const orchestratorSchema = baseSchema.extend({
+  PORT: z.coerce.number().int().positive().default(4000),
+  HOST: z.string().default('0.0.0.0'),
+  LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
+  GITHUB_TOKEN: z.string().min(1).optional(),
+  GITHUB_REPO_OWNER: z.string().default('anungis437'),
+  GITHUB_REPO_NAME: z.string().default('nzila-automation'),
+})
+
 // ---------------------------------------------------------------------------
 // Validation helper
 // ---------------------------------------------------------------------------
-type AppName = 'console' | 'partners' | 'web' | 'union-eyes' | 'base'
+type AppName =
+  | 'console'
+  | 'partners'
+  | 'web'
+  | 'union-eyes'
+  | 'cfo'
+  | 'shop-quoter'
+  | 'nacp-exams'
+  | 'zonga'
+  | 'abr'
+  | 'orchestrator-api'
+  | 'base'
 
 const SCHEMAS: Record<AppName, ZodTypeAny> = {
   base: baseSchema,
@@ -61,6 +129,12 @@ const SCHEMAS: Record<AppName, ZodTypeAny> = {
   partners: partnersSchema,
   web: webSchema,
   'union-eyes': unionEyesSchema,
+  cfo: cfoSchema,
+  'shop-quoter': shopQuoterSchema,
+  'nacp-exams': nacpExamsSchema,
+  zonga: zongaSchema,
+  abr: abrSchema,
+  'orchestrator-api': orchestratorSchema,
 }
 
 export type ValidatedEnv<T extends AppName = 'base'> = T extends 'console'
@@ -71,7 +145,19 @@ export type ValidatedEnv<T extends AppName = 'base'> = T extends 'console'
       ? z.infer<typeof webSchema>
       : T extends 'union-eyes'
         ? z.infer<typeof unionEyesSchema>
-        : z.infer<typeof baseSchema>
+        : T extends 'cfo'
+          ? z.infer<typeof cfoSchema>
+          : T extends 'shop-quoter'
+            ? z.infer<typeof shopQuoterSchema>
+            : T extends 'nacp-exams'
+              ? z.infer<typeof nacpExamsSchema>
+              : T extends 'zonga'
+                ? z.infer<typeof zongaSchema>
+                : T extends 'abr'
+                  ? z.infer<typeof abrSchema>
+                  : T extends 'orchestrator-api'
+                    ? z.infer<typeof orchestratorSchema>
+                    : z.infer<typeof baseSchema>
 
 /**
  * Validate environment variables for the given app.
@@ -101,4 +187,16 @@ export function validateEnv<T extends AppName>(appName: T): ValidatedEnv<T> {
   }
 }
 
-export { baseSchema, consoleSchema, partnersSchema, webSchema, unionEyesSchema }
+export {
+  baseSchema,
+  consoleSchema,
+  partnersSchema,
+  webSchema,
+  unionEyesSchema,
+  cfoSchema,
+  shopQuoterSchema,
+  nacpExamsSchema,
+  zongaSchema,
+  abrSchema,
+  orchestratorSchema,
+}

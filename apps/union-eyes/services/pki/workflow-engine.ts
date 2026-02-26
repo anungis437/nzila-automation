@@ -102,7 +102,10 @@ export interface WorkflowAdvanceResult {
 // IN-MEMORY WORKFLOW STORE (Temporary until migration 051)
 // =====================================================================================
 
-const workflowStore = new Map<string, WorkflowDefinition>();
+function createWorkflowStore() {
+  return new Map<string, WorkflowDefinition>();
+}
+const workflowStore = createWorkflowStore();
 
 const mapWorkflowStatus = (status: WorkflowStatus) => {
   switch (status) {

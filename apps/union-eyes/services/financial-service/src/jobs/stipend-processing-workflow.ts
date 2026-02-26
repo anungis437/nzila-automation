@@ -22,15 +22,13 @@ import {
   strikeFunds
 } from '../db/schema';
 import { eq, and, gte, lte, sql, inArray } from 'drizzle-orm';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import Stripe from 'stripe';
+// Platform Stripe integration via @nzila/payments-stripe
+import { getStripeClient } from '@nzila/payments-stripe';
 import { queueNotification } from '../services/notification-service';
 import { logger } from '@/lib/logger';
 
-// Initialize Stripe
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-02-24.acacia' })
-  : null;
+// Initialize Stripe via platform wrapper
+const stripe = getStripeClient();
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',

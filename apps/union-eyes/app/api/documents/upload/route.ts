@@ -9,7 +9,7 @@ import { logApiAuditEvent } from "@/lib/middleware/api-security";
 import { createDocument } from "@/lib/services/document-service";
 import { withRoleAuth } from '@/lib/api-auth-guard';
 import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from "@/lib/rate-limiter";
-import { put } from "@vercel/blob";
+import { putBlob } from "@/lib/blob-client";
 
 const ALLOWED_MIME_TYPES_LIST = [
   'application/pdf',
@@ -217,11 +217,10 @@ export const POST = withRoleAuth('member', async (request, context) => {
     }
 
     // Upload to Vercel Blob Storage
-    const blob = await put(
+    const blob = await putBlob(
       `documents/${organizationId}/${Date.now()}-${file.name}`,
       file,
       {
-        access: "public",
         addRandomSuffix: true,
       }
     );

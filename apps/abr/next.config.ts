@@ -5,7 +5,7 @@ const withNextIntl = createNextIntlPlugin("./i18n.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: "standalone",
+  output: process.platform === 'win32' ? undefined : 'standalone',
   transpilePackages: [
     "@nzila/ui",
     "@nzila/os-core",

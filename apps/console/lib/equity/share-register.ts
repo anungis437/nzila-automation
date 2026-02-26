@@ -21,10 +21,15 @@ import {
 // ============================================================================
 
 // Sample data store - in production this would be a database
-const shareholders: Map<string, Shareholder> = new Map()
-const holdings: Map<string, ShareHolding> = new Map()
-const ledger: Map<string, ShareLedgerEntry> = new Map()
-const snapshots: Map<string, CapTableSnapshot> = new Map()
+function createShareRegisterStore() {
+  return {
+    shareholders: new Map<string, Shareholder>(),
+    holdings: new Map<string, ShareHolding>(),
+    ledger: new Map<string, ShareLedgerEntry>(),
+    snapshots: new Map<string, CapTableSnapshot>(),
+  }
+}
+const { shareholders, holdings, ledger, snapshots } = createShareRegisterStore()
 
 // Initialize with sample data
 function initializeSampleData() {

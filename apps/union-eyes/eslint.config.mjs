@@ -38,7 +38,18 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-require-imports': 'warn',
       '@typescript-eslint/no-empty-object-type': 'warn',
       'react/no-unescaped-entities': 'warn',
-      'no-restricted-imports': 'error', // NzilaOS: raw DB driver imports are BLOCKER (PR-UE-01)
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: 'stripe',
+            message: 'Use @nzila/payments-stripe or @/lib/stripe facade instead of raw stripe SDK.',
+          },
+          {
+            name: '@stripe/stripe-js',
+            message: 'Use @/lib/stripe-elements (getStripePromise) instead of direct loadStripe.',
+          },
+        ],
+      }],
       'prefer-const': 'warn',
       '@next/next/no-assign-module-variable': 'warn',
       // React 19 compiler rules — downgraded until UE code is fully aligned

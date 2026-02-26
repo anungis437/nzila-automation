@@ -8,10 +8,7 @@
 import { db } from '@/db/db';
 import { autoPaySettings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import { stripe } from '@/lib/stripe';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import type Stripe from 'stripe';
+import { stripe, type Stripe } from '@/lib/stripe';
 
 export interface AutoPaySettingsData {
   userId: string;

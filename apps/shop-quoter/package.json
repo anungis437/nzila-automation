@@ -17,10 +17,14 @@
     "@nzila/commerce-core": "workspace:*",
     "@nzila/commerce-services": "workspace:*",
     "@nzila/commerce-audit": "workspace:*",
+    "@nzila/db": "workspace:*",
+    "@nzila/blob": "workspace:*",
     "@nzila/os-core": "workspace:*",
     "@nzila/pricing-engine": "workspace:*",
     "@nzila/shop-quoter": "workspace:*",
     "@nzila/ui": "workspace:*",
+    "@nzila/ai-sdk": "workspace:*",
+    "@nzila/ml-sdk": "workspace:*",
     "clsx": "^2.1.0",
     "framer-motion": "^11.3.30",
     "next": "16.1.6",
@@ -29,7 +33,11 @@
     "react-dom": "19.2.4",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.0"
+    "zod": "^3.24.0",
+    "@nzila/commerce-observability": "workspace:*",
+    "@nzila/commerce-state": "workspace:*",
+    "@nzila/commerce-governance": "workspace:*",
+    "@nzila/commerce-events": "workspace:*"
   },
   "devDependencies": {
     "@nzila/config": "workspace:*",

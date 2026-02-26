@@ -2,8 +2,8 @@
  * Contract Test — Rate Limiting (REM-01)
  *
  * Verifies:
- *   1. Both console and partners middleware import the rate limiter from os-core
- *   2. /api/health is in the isPublicRoute allowlist of both middlewares
+ *   1. ALL Next.js app middleware files import the rate limiter from os-core
+ *   2. /api/health is in the isPublicRoute allowlist of all middlewares
  *      (so readiness probes are never blocked by auth or rate-limit auth loops)
  *   3. The rate-limit module itself is exported from @nzila/os-core
  *   4. Rate limit env vars are referenced in middleware (RATE_LIMIT_MAX / RATE_LIMIT_WINDOW_MS)
@@ -24,8 +24,16 @@ function read(rel: string): string {
 
 // ── Subject files ─────────────────────────────────────────────────────────────
 
-const CONSOLE_MIDDLEWARE = 'apps/console/middleware.ts'
-const PARTNERS_MIDDLEWARE = 'apps/partners/middleware.ts'
+const RATE_LIMIT_APPS = [
+  'console',
+  'partners',
+  'cfo',
+  'shop-quoter',
+  'nacp-exams',
+  'zonga',
+  'abr',
+] as const
+
 const OS_CORE_RATE_LIMIT = 'packages/os-core/src/rateLimit.ts'
 const OS_CORE_PKG = 'packages/os-core/package.json'
 const OS_CORE_INDEX = 'packages/os-core/src/index.ts'
@@ -65,38 +73,28 @@ describe('Rate Limiting — REM-01 contract', () => {
     expect(idx).toContain('rateLimitHeaders')
   })
 
-  it('console middleware imports rate limiter', () => {
-    const content = read(CONSOLE_MIDDLEWARE)
-    expect(content).not.toBe('')
-    expect(importsRateLimiter(content)).toBe(true)
-  })
+  for (const app of RATE_LIMIT_APPS) {
+    const mwPath = `apps/${app}/middleware.ts`
 
-  it('partners middleware imports rate limiter', () => {
-    const content = read(PARTNERS_MIDDLEWARE)
-    expect(content).not.toBe('')
-    expect(importsRateLimiter(content)).toBe(true)
-  })
+    it(`${app} middleware imports rate limiter`, () => {
+      const content = read(mwPath)
+      expect(content).not.toBe('')
+      expect(
+        importsRateLimiter(content),
+        `apps/${app}/middleware.ts must import checkRateLimit or rateLimitHeaders from @nzila/os-core/rateLimit`,
+      ).toBe(true)
+    })
 
-  it('console middleware enforces a rate-limit max cap', () => {
-    const content = read(CONSOLE_MIDDLEWARE)
-    // Either hardcoded or via env var reference
-    expect(content.includes('RATE_LIMIT_MAX') || content.includes('max:')).toBe(true)
-  })
+    it(`${app} middleware enforces a rate-limit max cap`, () => {
+      const content = read(mwPath)
+      expect(content.includes('RATE_LIMIT_MAX') || content.includes('max:')).toBe(true)
+    })
 
-  it('partners middleware enforces a rate-limit max cap', () => {
-    const content = read(PARTNERS_MIDDLEWARE)
-    expect(content.includes('RATE_LIMIT_MAX') || content.includes('max:')).toBe(true)
-  })
-
-  it('/api/health is in console middleware public-route allowlist', () => {
-    const content = read(CONSOLE_MIDDLEWARE)
-    expect(hasHealthInPublicRoutes(content)).toBe(true)
-  })
-
-  it('/api/health is in partners middleware public-route allowlist', () => {
-    const content = read(PARTNERS_MIDDLEWARE)
-    expect(hasHealthInPublicRoutes(content)).toBe(true)
-  })
+    it(`/api/health is in ${app} middleware public-route allowlist`, () => {
+      const content = read(mwPath)
+      expect(hasHealthInPublicRoutes(content)).toBe(true)
+    })
+  }
 
   it('rate-limit module has no Node.js-only imports (Edge Runtime compatible)', () => {
     const content = read(OS_CORE_RATE_LIMIT)

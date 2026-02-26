@@ -1,17 +1,23 @@
 /**
  * Partner auth helpers — role & org utilities on top of Clerk.
  *
+ * Platform Owner (Admin) Roles:
+ *   - platform:admin    — Full platform access
+ *   - platform:ops      — Operations access
+ *   - platform:finance  — Finance access
+ *
  * Partner roles follow the pattern: `{partnerType}:{role}`
  *   - channel:admin, channel:sales, channel:executive
  *   - isv:admin, isv:technical, isv:business
  *   - enterprise:admin, enterprise:user
  */
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 // Partner tables are non-Org-scoped (see NON_ORG_SCOPED_TABLES) — use platformDb
 import { platformDb } from '@nzila/db/platform'
-import { partners, partnerEntities } from '@nzila/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { partners, partnerEntities, partnerUsers } from '@nzila/db/schema'
+import { eq, and, sql, desc } from 'drizzle-orm'
 
+export type PlatformRole = 'platform:admin' | 'platform:ops' | 'platform:finance'
 export type PartnerType = 'channel' | 'isv' | 'enterprise'
 
 export type PartnerRole =
@@ -150,4 +156,148 @@ export async function resolvePartnerEntityIdForView(
   if (!views.includes(requiredView)) return null
 
   return entitlement.entityId
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Platform Admin Functions
+// ──────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Check if the current user has a platform admin role.
+ */
+export async function isPlatformAdmin(): Promise<boolean> {
+  const session = await auth()
+  if (!session.userId) return false
+  
+  // Check for platform roles
+  const platformRoles: PlatformRole[] = ['platform:admin', 'platform:ops', 'platform:finance']
+  for (const role of platformRoles) {
+    const result = await session.has({ role })
+    if (result) return true
+  }
+  
+  return false
+}
+
+/**
+ * Require platform admin access. Throws if not authorized.
+ */
+export async function requirePlatformAdmin(): Promise<{ userId: string; role: PlatformRole }> {
+  const session = await auth()
+  if (!session.userId) {
+    throw new Error('Unauthenticated')
+  }
+
+  const platformRoles: PlatformRole[] = ['platform:admin', 'platform:ops', 'platform:finance']
+  for (const role of platformRoles) {
+    const hasRole = await session.has({ role })
+    if (hasRole) {
+      return { userId: session.userId, role }
+    }
+  }
+
+  throw new Error('Insufficient permissions - platform admin access required')
+}
+
+/**
+ * Get all partners (for admin view).
+ */
+export async function getAllPartners() {
+  await requirePlatformAdmin()
+  
+  return platformDb
+    .select({
+      id: partners.id,
+      companyName: partners.companyName,
+      type: partners.type,
+      tier: partners.tier,
+      status: partners.status,
+      clerkOrgId: partners.clerkOrgId,
+      nzilaOwnerId: partners.nzilaOwnerId,
+      createdAt: partners.createdAt,
+      updatedAt: partners.updatedAt,
+    })
+    .from(partners)
+    .orderBy(desc(partners.createdAt))
+}
+
+/**
+ * Get partner by ID (for admin view).
+ */
+export async function getPartnerById(partnerId: string) {
+  await requirePlatformAdmin()
+  
+  const [partner] = await platformDb
+    .select()
+    .from(partners)
+    .where(eq(partners.id, partnerId))
+    .limit(1)
+
+  return partner
+}
+
+/**
+ * Update partner status (activate, suspend, deactivate).
+ */
+export async function updatePartnerStatus(
+  partnerId: string,
+  status: 'pending' | 'active' | 'suspended' | 'churned',
+) {
+  await requirePlatformAdmin()
+  
+  await platformDb
+    .update(partners)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(partners.id, partnerId))
+}
+
+/**
+ * Update partner tier.
+ */
+export async function updatePartnerTier(
+  partnerId: string,
+  tier: 'registered' | 'select' | 'elite',
+) {
+  await requirePlatformAdmin()
+  
+  await platformDb
+    .update(partners)
+    .set({ tier, updatedAt: new Date() })
+    .where(eq(partners.id, partnerId))
+}
+
+/**
+ * Get platform-wide partner statistics.
+ */
+export async function getPartnerStats() {
+  await requirePlatformAdmin()
+  
+  const [stats] = await platformDb.execute(sql`
+    SELECT 
+      COUNT(*) as total_partners,
+      COUNT(*) FILTER (WHERE status = 'active') as active_partners,
+      COUNT(*) FILTER (WHERE status = 'pending') as pending_partners,
+      COUNT(*) FILTER (WHERE status = 'suspended') as suspended_partners,
+      COUNT(*) FILTER (WHERE tier = 'elite') as elite_partners,
+      COUNT(*) FILTER (WHERE tier = 'select') as select_partners,
+      COUNT(*) FILTER (WHERE tier = 'registered') as registered_partners,
+      COUNT(*) FILTER (WHERE type = 'channel') as channel_partners,
+      COUNT(*) FILTER (WHERE type = 'isv') as isv_partners,
+      COUNT(*) FILTER (WHERE type = 'enterprise') as enterprise_partners
+    FROM partners
+  `)
+  
+  return stats
+}
+
+/**
+ * Get all users for a specific partner (admin view).
+ */
+export async function getPartnerUsers(partnerId: string) {
+  await requirePlatformAdmin()
+  
+  return platformDb
+    .select()
+    .from(partnerUsers)
+    .where(eq(partnerUsers.partnerId, partnerId))
 }

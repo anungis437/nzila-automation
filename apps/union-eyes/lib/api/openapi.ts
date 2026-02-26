@@ -128,7 +128,10 @@ interface SchemaObject {
 }
 
 // Route metadata storage
-const routeMetadata = new Map<string, PathItemObject>();
+function createRouteMetadataStore() {
+  return new Map<string, PathItemObject>();
+}
+const routeMetadata = createRouteMetadataStore();
 
 /**
  * Register API route for documentation

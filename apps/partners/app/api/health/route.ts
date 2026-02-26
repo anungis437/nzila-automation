@@ -18,10 +18,8 @@ async function checkDb(): Promise<boolean> {
 
 async function checkBlob(): Promise<boolean> {
   try {
-    const connectionStr = process.env.BLOB_CONNECTION_STRING
-    if (!connectionStr) return false
-    const { BlobServiceClient } = await import('@azure/storage-blob')
-    const client = BlobServiceClient.fromConnectionString(connectionStr)
+    const { container } = await import('@nzila/blob')
+    const client = container('evidence')
     await client.getProperties()
     return true
   } catch {

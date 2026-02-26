@@ -5,7 +5,7 @@
  * Provides the standard withAudit / createAuditedScopedDb wrappers
  * so partner-facing API routes use audited, Org-isolated writes.
  */
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import {
   withAudit,
@@ -16,6 +16,7 @@ import {
 import { platformDb } from '@nzila/db/platform'
 import { entityMembers } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { createRequestContext, runWithContext } from '@nzila/os-core'
 
 // ── Re-exports for route convenience ────────────────────────────────────────
 export { withAudit, createAuditedScopedDb }
@@ -100,4 +101,20 @@ export async function requireEntityAccess(
   }
 
   return { ok: true, userId: authResult.userId }
+}
+
+// ── Request Context wrapper ─────────────────────────────────────────────────
+
+/**
+ * Wraps a route handler with os-core request context.
+ * Extracts x-request-id and W3C traceparent from headers,
+ * then runs the handler inside AsyncLocalStorage so the
+ * os-core logger auto-attaches requestId/traceId to every log.
+ */
+export async function withRequestContext<T>(
+  req: NextRequest | Request,
+  handler: () => Promise<T>,
+): Promise<T> {
+  const ctx = createRequestContext(req, { appName: 'partners' })
+  return runWithContext(ctx, handler)
 }

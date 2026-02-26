@@ -1,27 +1,29 @@
 /**
  * NACP Exams — Edge Middleware
  *
- * 3-layer stack (aligned with Union Eyes):
- *   Layer 1: Edge  — Clerk auth + i18n routing (this file)
- *   Layer 2: DB    — RLS context injection (future)
- *   Layer 3: App   — RBAC authorization (future)
+ * 4-layer stack (aligned with console reference + i18n):
+ *   Layer 1: Edge  — Rate limiting (skip in dev)
+ *   Layer 2: Edge  — Clerk auth (skip in dev)
+ *   Layer 3: Edge  — i18n routing (next-intl)
+ *   Layer 4: Edge  — Request-ID propagation
  */
 
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import createIntlMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './lib/locales';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import createIntlMiddleware from 'next-intl/middleware'
+import { checkRateLimit, rateLimitHeaders } from '@nzila/os-core/rateLimit'
+import { locales, defaultLocale } from './lib/locales'
 
 // ── Request-ID propagation (Edge-safe) ──────────────────────────────────────
 
 function ensureRequestId(req: NextRequest): string {
-  return req.headers.get('x-request-id') ?? crypto.randomUUID();
+  return req.headers.get('x-request-id') ?? crypto.randomUUID()
 }
 
 function withRequestId(response: NextResponse, requestId: string): NextResponse {
-  response.headers.set('x-request-id', requestId);
-  return response;
+  response.headers.set('x-request-id', requestId)
+  return response
 }
 
 // ── Route matchers ──────────────────────────────────────────────────────────
@@ -37,6 +39,7 @@ const isPublicRoute = createRouteMatcher([
   "/pricing(.*)",
   "/contact(.*)",
   "/demo-request(.*)",
+  "/api/health(.*)",
 ]);
 
 const isClerkAuthPath = createRouteMatcher([
@@ -59,17 +62,45 @@ const intlMiddleware = createIntlMiddleware({
   defaultLocale,
   localePrefix: 'always',
   localeDetection: true,
-});
+})
+
+// ── Rate limiting ───────────────────────────────────────────────────────────
+
+const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX ?? '120')
+const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS ?? '60000')
 
 // ── Main middleware ─────────────────────────────────────────────────────────
 
 export default clerkMiddleware(async (auth, req) => {
-  const requestId = ensureRequestId(req);
+  const requestId = ensureRequestId(req)
+
+  // ── Rate limiting (skip in dev — HMR triggers too many requests) ──────
+  if (process.env.NODE_ENV !== 'development') {
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      req.headers.get('x-real-ip') ??
+      'unknown'
+    const rl = checkRateLimit(ip, {
+      max: RATE_LIMIT_MAX,
+      windowMs: RATE_LIMIT_WINDOW_MS,
+    })
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Too Many Requests' },
+        {
+          status: 429,
+          headers: rateLimitHeaders(rl, RATE_LIMIT_MAX),
+        },
+      )
+    }
+  }
 
   // API routes — protect unless explicitly public
   if (req.nextUrl.pathname.startsWith('/api')) {
-    await auth.protect();
-    return withRequestId(NextResponse.next(), requestId);
+    if (!isPublicRoute(req)) {
+      await auth.protect()
+    }
+    return withRequestId(NextResponse.next(), requestId)
   }
 
   // Static files

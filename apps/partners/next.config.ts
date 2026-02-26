@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
     '@nzila/payments-stripe',
     '@nzila/tax',
   ],
-  output: 'standalone',
+  output: process.platform === 'win32' ? undefined : 'standalone',
   headers: async () => [
     {
       source: '/(.*)',

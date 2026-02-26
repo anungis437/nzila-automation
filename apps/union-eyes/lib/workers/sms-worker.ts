@@ -24,7 +24,6 @@ if (typeof window === 'undefined' && !process.env.__NEXT_BUILDING) {
 import { db } from '../../db/db';
 import { notificationHistory, userNotificationPreferences } from '../../db/schema';
 import { eq } from 'drizzle-orm';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
 import twilio from 'twilio';
 
 const connection = new IORedis({

@@ -16,7 +16,7 @@ const sidebarItems = [
 
 export default function DashboardLayout({
   children,
-  params,
+  params: _params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;

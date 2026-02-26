@@ -9,12 +9,17 @@ import { UserButton, OrganizationSwitcher } from '@clerk/nextjs';
 
 const sidebarLinks = [
   { href: 'dashboard', label: 'Overview', icon: '📊' },
+  { href: 'dashboard/browse', label: 'Browse', icon: '🌍' },
+  { href: 'dashboard/search', label: 'Search', icon: '🔍' },
   { href: 'dashboard/catalog', label: 'Catalog', icon: '🎵' },
   { href: 'dashboard/releases', label: 'Releases', icon: '📀' },
+  { href: 'dashboard/playlists', label: 'Playlists', icon: '📋' },
+  { href: 'dashboard/events', label: 'Events', icon: '🎪' },
   { href: 'dashboard/revenue', label: 'Revenue', icon: '💰' },
   { href: 'dashboard/payouts', label: 'Payouts', icon: '⚡' },
   { href: 'dashboard/creators', label: 'Creators', icon: '🎤' },
   { href: 'dashboard/analytics', label: 'Analytics', icon: '📈' },
+  { href: 'dashboard/notifications', label: 'Notifications', icon: '🔔' },
   { href: 'dashboard/integrity', label: 'Integrity', icon: '🔒' },
 ];
 

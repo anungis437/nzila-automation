@@ -20,7 +20,6 @@
  * @see docs/phases/PHASE_5_COMMUNICATIONS.md
  */
 
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
 import twilio from 'twilio';
 import { db } from '@/db';
 import { eq, and, sql } from 'drizzle-orm';

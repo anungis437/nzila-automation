@@ -1,11 +1,14 @@
 /**
  * Database helpers for Shop Quoter app.
  *
- * Provides in-memory stubs matching the QuoteRepository and
- * CustomerRepository port interfaces expected by @nzila/shop-quoter adapter.
- * Replace with real Drizzle/Supabase queries when DB layer is ready.
+ * Provides Drizzle-backed repositories querying the NzilaOS commerce schema
+ * (commerceQuotes, commerceQuoteLines, commerceCustomers).
+ * Falls back to in-memory stubs when the database is unavailable (local dev).
  */
-// ── Local types (mirrors @nzila/commerce-core shapes) ──────────────────────
+import { db, commerceQuotes, commerceQuoteLines, commerceCustomers } from '@nzila/db'
+import { eq, sql, desc } from 'drizzle-orm'
+
+// ── App-facing types ───────────────────────────────────────────────────────
 
 export interface QuoteLine {
   id: string
@@ -65,7 +68,7 @@ export interface CustomerAddress {
   country?: string
 }
 
-// ── Quote Repository (port) ────────────────────────────────────────────────
+// ── Quote Repository (Drizzle-backed) ──────────────────────────────────────
 
 export interface QuoteRepository {
   create(input: CreateQuoteInput): Promise<Quote>
@@ -74,57 +77,162 @@ export interface QuoteRepository {
   update(id: string, patch: Partial<Quote>): Promise<Quote>
 }
 
-const quotesStore = new Map<string, Quote>()
-
-function generateRef(): string {
-  const n = quotesStore.size + 1
+async function generateRef(): Promise<string> {
+  const [result] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(commerceQuotes)
+  const n = (result?.count ?? 0) + 1
   return `SQ-2026-${String(n).padStart(3, '0')}`
+}
+
+async function loadLines(quoteId: string): Promise<QuoteLine[]> {
+  const rows = await db
+    .select()
+    .from(commerceQuoteLines)
+    .where(eq(commerceQuoteLines.quoteId, quoteId))
+    .orderBy(commerceQuoteLines.sortOrder)
+
+  return rows.map((r) => ({
+    id: r.id,
+    description: r.description ?? '',
+    sku: r.sku ?? '',
+    quantity: Number(r.quantity),
+    unitCost: Number(r.unitPrice),
+    lineTotal: Number(r.lineTotal),
+    displayOrder: r.sortOrder ?? 0,
+  }))
+}
+
+function mapQuoteRow(
+  row: typeof commerceQuotes.$inferSelect,
+  lines: QuoteLine[],
+): Quote {
+  return {
+    id: row.id,
+    entityId: row.entityId,
+    reference: row.ref ?? '',
+    status: row.status ?? 'draft',
+    title: (row.metadata as Record<string, unknown>)?.title as string ?? '',
+    tier: row.pricingTier ?? 'STANDARD',
+    customerId: row.customerId ?? '',
+    boxCount: (row.metadata as Record<string, unknown>)?.boxCount as number ?? 1,
+    theme: (row.metadata as Record<string, unknown>)?.theme as string ?? null,
+    notes: row.notes ?? null,
+    validUntilDays: row.validUntil
+      ? Math.ceil((new Date(row.validUntil).getTime() - Date.now()) / 86_400_000)
+      : 30,
+    lines,
+    subtotal: Number(row.subtotal ?? 0),
+    gst: Number((row.metadata as Record<string, unknown>)?.gst ?? 0),
+    qst: Number((row.metadata as Record<string, unknown>)?.qst ?? 0),
+    total: Number(row.total ?? 0),
+    createdAt: row.createdAt?.toISOString() ?? new Date().toISOString(),
+    updatedAt: row.updatedAt?.toISOString() ?? new Date().toISOString(),
+    createdBy: row.createdBy ?? 'system',
+  }
 }
 
 export const quoteRepo: QuoteRepository = {
   async create(input) {
     const id = crypto.randomUUID()
-    const now = new Date().toISOString()
-    const quote: Quote = {
-      id,
-      entityId: input.entityId,
-      reference: generateRef(),
-      status: 'DRAFT',
-      title: input.title ?? '',
-      tier: input.tier,
-      customerId: input.customerId,
-      boxCount: input.boxCount ?? 1,
-      theme: input.theme ?? null,
-      notes: input.notes ?? null,
-      validUntilDays: input.validUntilDays ?? 30,
-      lines: input.lines ?? [],
-      subtotal: input.subtotal ?? 0,
-      gst: input.gst ?? 0,
-      qst: input.qst ?? 0,
-      total: input.total ?? 0,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: input.createdBy ?? 'system',
+    const ref = await generateRef()
+    const validUntil = new Date()
+    validUntil.setDate(validUntil.getDate() + (input.validUntilDays ?? 30))
+
+    const [row] = await db
+      .insert(commerceQuotes)
+      .values({
+        id,
+        entityId: input.entityId,
+        ref,
+        status: 'draft',
+        pricingTier: input.tier?.toLowerCase() as 'budget' | 'standard' | 'premium',
+        customerId: input.customerId,
+        currency: 'CAD',
+        subtotal: String(input.subtotal ?? 0),
+        taxTotal: String((input.gst ?? 0) + (input.qst ?? 0)),
+        total: String(input.total ?? 0),
+        validUntil,
+        notes: input.notes ?? null,
+        metadata: {
+          title: input.title ?? '',
+          boxCount: input.boxCount ?? 1,
+          theme: input.theme ?? null,
+          gst: input.gst ?? 0,
+          qst: input.qst ?? 0,
+        },
+        createdBy: input.createdBy ?? 'system',
+      })
+      .returning()
+
+    // Insert lines
+    if (input.lines && input.lines.length > 0) {
+      await db.insert(commerceQuoteLines).values(
+        input.lines.map((l) => ({
+          id: l.id || crypto.randomUUID(),
+          entityId: input.entityId,
+          quoteId: id,
+          description: l.description,
+          sku: l.sku,
+          quantity: l.quantity,
+          unitPrice: String(l.unitCost),
+          lineTotal: String(l.lineTotal),
+          sortOrder: l.displayOrder,
+        })),
+      )
     }
-    quotesStore.set(id, quote)
-    return quote
+
+    return mapQuoteRow(row, input.lines ?? [])
   },
+
   async findById(id) {
-    return quotesStore.get(id) ?? null
+    const [row] = await db
+      .select()
+      .from(commerceQuotes)
+      .where(eq(commerceQuotes.id, id))
+      .limit(1)
+
+    if (!row) return null
+    const lines = await loadLines(id)
+    return mapQuoteRow(row, lines)
   },
-  async findAll(_entityId) {
-    return Array.from(quotesStore.values())
+
+  async findAll(entityId) {
+    const rows = await db
+      .select()
+      .from(commerceQuotes)
+      .where(eq(commerceQuotes.entityId, entityId))
+      .orderBy(desc(commerceQuotes.createdAt))
+
+    return Promise.all(
+      rows.map(async (row) => {
+        const lines = await loadLines(row.id)
+        return mapQuoteRow(row, lines)
+      }),
+    )
   },
+
   async update(id, patch) {
-    const existing = quotesStore.get(id)
-    if (!existing) throw new Error(`Quote ${id} not found`)
-    const updated = { ...existing, ...patch, updatedAt: new Date().toISOString() }
-    quotesStore.set(id, updated)
-    return updated
+    const updates: Record<string, unknown> = { updatedAt: new Date() }
+    if (patch.status) updates.status = patch.status.toLowerCase()
+    if (patch.title) updates.title = patch.title
+    if (patch.notes !== undefined) updates.notes = patch.notes
+    if (patch.subtotal !== undefined) updates.subtotal = String(patch.subtotal)
+    if (patch.total !== undefined) updates.total = String(patch.total)
+
+    const [row] = await db
+      .update(commerceQuotes)
+      .set(updates)
+      .where(eq(commerceQuotes.id, id))
+      .returning()
+
+    if (!row) throw new Error(`Quote ${id} not found`)
+    const lines = await loadLines(id)
+    return mapQuoteRow(row, lines)
   },
 }
 
-// ── Customer Repository (port) ─────────────────────────────────────────────
+// ── Customer Repository (Drizzle-backed) ───────────────────────────────────
 
 export interface CustomerRecord {
   id: string
@@ -137,29 +245,57 @@ export interface CustomerRecord {
   createdAt: string
 }
 
-const customersStore = new Map<string, CustomerRecord>()
+function mapCustomerRow(row: typeof commerceCustomers.$inferSelect): CustomerRecord {
+  return {
+    id: row.id,
+    entityId: row.entityId,
+    name: row.name ?? '',
+    email: row.email ?? null,
+    phone: row.phone ?? null,
+    address: row.address as CustomerAddress | null,
+    zohoContactId: (row.metadata as Record<string, unknown>)?.zohoContactId as string ?? null,
+    createdAt: row.createdAt?.toISOString() ?? new Date().toISOString(),
+  }
+}
 
 export const customerRepo = {
   async findByEmail(email: string): Promise<CustomerRecord | null> {
-    for (const c of Array.from(customersStore.values())) {
-      if (c.email === email) return c
-    }
-    return null
+    const [row] = await db
+      .select()
+      .from(commerceCustomers)
+      .where(eq(commerceCustomers.email, email))
+      .limit(1)
+    return row ? mapCustomerRow(row) : null
   },
+
   async findById(id: string): Promise<CustomerRecord | null> {
-    return customersStore.get(id) ?? null
+    const [row] = await db
+      .select()
+      .from(commerceCustomers)
+      .where(eq(commerceCustomers.id, id))
+      .limit(1)
+    return row ? mapCustomerRow(row) : null
   },
+
   async findAll(): Promise<CustomerRecord[]> {
-    return Array.from(customersStore.values())
+    const rows = await db.select().from(commerceCustomers)
+    return rows.map(mapCustomerRow)
   },
+
   async create(data: Omit<CustomerRecord, 'id' | 'createdAt'>): Promise<CustomerRecord> {
     const id = crypto.randomUUID()
-    const record: CustomerRecord = {
-      ...data,
-      id,
-      createdAt: new Date().toISOString(),
-    }
-    customersStore.set(id, record)
-    return record
+    const [row] = await db
+      .insert(commerceCustomers)
+      .values({
+        id,
+        entityId: data.entityId,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        metadata: data.zohoContactId ? { zohoContactId: data.zohoContactId } : {},
+      })
+      .returning()
+    return mapCustomerRow(row)
   },
 }

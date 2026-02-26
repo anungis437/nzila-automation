@@ -26,6 +26,7 @@ export function SiteNavigation() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard close-on-navigate pattern
     setMobileOpen(false);
   }, [pathname]);
 

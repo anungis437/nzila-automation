@@ -91,7 +91,7 @@ export function PushNotificationHistory({
   const [fetchedNotifications, setFetchedNotifications] = useState<PushNotification[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedNotification, setSelectedNotification] = useState<PushNotification | null>(null);
-  const [loading, setLoading] = useState(!propNotifications);
+  const [_loading, setLoading] = useState(!propNotifications);
 
   const fetchNotifications = useCallback(async () => {
     if (propNotifications) return;

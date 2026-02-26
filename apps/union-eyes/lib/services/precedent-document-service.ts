@@ -3,7 +3,7 @@
  * Handles document uploads to Vercel Blob Storage
  */
 
-import { put, del } from '@vercel/blob';
+import { putBlob, deleteBlob } from '@/lib/blob-client';
 import { logger } from '@/lib/logger';
 
 export interface DocumentUploadResult {
@@ -36,10 +36,9 @@ export async function uploadPrecedentDocument(
     const blobPath = `precedents/${organizationId}/${precedentId}/${redactedPrefix}${filename}`;
     
     // Upload to Vercel Blob
-    const blob = await put(blobPath, file, {
-      access: 'public', // Can be changed to 'private' if needed with token-based access
+    const blob = await putBlob(blobPath, file, {
       contentType,
-      addRandomSuffix: false, // Use exact filename for clarity
+      addRandomSuffix: false,
     });
 
     return {
@@ -64,7 +63,7 @@ export async function uploadPrecedentDocument(
  */
 export async function deletePrecedentDocument(url: string): Promise<void> {
   try {
-    await del(url);
+    await deleteBlob(url);
   } catch (error) {
     logger.error('[PrecedentDocumentService] Delete failed', { error, url });
     throw new Error('Failed to delete document from blob storage');

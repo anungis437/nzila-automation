@@ -1,19 +1,15 @@
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import Stripe from "stripe";
+/**
+ * Stripe client — UnionEyes.
+ *
+ * Delegates to @nzila/payments-stripe for a platform-managed Stripe client.
+ * Kept as a thin re-export so existing `@/lib/stripe` imports continue to work.
+ */
+import { getStripeClient, verifyWebhookSignature } from '@nzila/payments-stripe'
 
-// Validate Stripe secret key
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error(
-    'STRIPE_SECRET_KEY is not defined. Please add it to your environment variables.'
-  );
-}
+export const stripe = getStripeClient()
+export { verifyWebhookSignature }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-06-20",
-  appInfo: {
-    name: "UnionEyes",
-    version: "1.0.0"
-  },
-  typescript: true,
-});
+// Re-export Stripe type for files that need it for type annotations
+// eslint-disable-next-line no-restricted-imports -- this IS the stripe facade
+export type { default as Stripe } from 'stripe'
 

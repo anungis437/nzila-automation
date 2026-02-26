@@ -8,8 +8,11 @@
       "@nzila/db": ["../../packages/db/src/index.ts"],
       "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
       "@nzila/nacp-core": ["../../packages/nacp-core/src/index.ts"],
+      "@nzila/nacp-core/*": ["../../packages/nacp-core/src/*"],
       "@nzila/os-core": ["../../packages/os-core/src/index.ts"],
-      "@nzila/os-core/telemetry": ["../../packages/os-core/src/telemetry/index.ts"]
+      "@nzila/os-core/telemetry": ["../../packages/os-core/src/telemetry/index.ts"],
+      "@nzila/ai-sdk": ["../../packages/ai-sdk/src"],
+      "@nzila/ml-sdk": ["../../packages/ml-sdk/src"]
     }
   },
   "include": [

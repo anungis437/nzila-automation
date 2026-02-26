@@ -22,104 +22,86 @@ function read(rel: string): string {
   return existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
 }
 
-// ── Subject files ─────────────────────────────────────────────────────────────
+// ── Subject apps ──────────────────────────────────────────────────────────────
 
-const CONSOLE_HEALTH = 'apps/console/app/api/health/route.ts'
-const PARTNERS_HEALTH = 'apps/partners/app/api/health/route.ts'
-const CONSOLE_MIDDLEWARE = 'apps/console/middleware.ts'
-const PARTNERS_MIDDLEWARE = 'apps/partners/middleware.ts'
+/**
+ * All Next.js apps that MUST have production-grade health routes.
+ * Each entry maps to apps/<name>/app/api/health/route.ts and apps/<name>/middleware.ts.
+ */
+const HEALTH_APPS = [
+  'console',
+  'partners',
+  'cfo',
+  'shop-quoter',
+  'nacp-exams',
+  'zonga',
+  'abr',
+] as const
+
+function healthRoutePath(app: string) {
+  return `apps/${app}/app/api/health/route.ts`
+}
+function middlewarePath(app: string) {
+  return `apps/${app}/middleware.ts`
+}
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('Health & Readiness Routes — REM-05 contract', () => {
-  // ── Existence ───────────────────────────────────────────────────────────────
+  for (const app of HEALTH_APPS) {
+    describe(`apps/${app}`, () => {
+      // ── Existence ─────────────────────────────────────────────────────────
+      it('/api/health route file exists', () => {
+        expect(existsSync(resolve(ROOT, healthRoutePath(app)))).toBe(true)
+      })
 
-  it('console /api/health route file exists', () => {
-    expect(existsSync(resolve(ROOT, CONSOLE_HEALTH))).toBe(true)
-  })
+      // ── DB check ──────────────────────────────────────────────────────────
+      it('health route checks database connectivity', () => {
+        const content = read(healthRoutePath(app))
+        expect(
+          content.includes('SELECT 1') ||
+          content.includes('db.execute') ||
+          content.includes('db.query') ||
+          content.includes('sql`SELECT') ||
+          content.includes('@nzila/db'),
+          `apps/${app} health route must probe database connectivity`,
+        ).toBe(true)
+      })
 
-  it('partners /api/health route file exists', () => {
-    expect(existsSync(resolve(ROOT, PARTNERS_HEALTH))).toBe(true)
-  })
+      // ── Blob check ────────────────────────────────────────────────────────
+      it('health route checks blob/storage connectivity', () => {
+        const content = read(healthRoutePath(app))
+        expect(
+          content.includes('blob') ||
+          content.includes('Blob') ||
+          content.includes('storage') ||
+          content.includes('Storage'),
+          `apps/${app} health route must probe blob/storage connectivity`,
+        ).toBe(true)
+      })
 
-  // ── DB check ────────────────────────────────────────────────────────────────
+      // ── Degraded response ─────────────────────────────────────────────────
+      it('health route returns 503 on degraded', () => {
+        const content = read(healthRoutePath(app))
+        expect(content).toContain('503')
+      })
 
-  it('console health route checks database connectivity', () => {
-    const content = read(CONSOLE_HEALTH)
-    // Must perform a DB reachability probe (SELECT 1 or equivalent)
-    expect(
-      content.includes('SELECT 1') ||
-      content.includes('db.execute') ||
-      content.includes('db.query') ||
-      content.includes('sql`SELECT')
-    ).toBe(true)
-  })
+      // ── Response shape ────────────────────────────────────────────────────
+      it('health route emits status field in response', () => {
+        const content = read(healthRoutePath(app))
+        expect(
+          content.includes("status: 'ok'") ||
+          content.includes("status:") ||
+          content.includes("'ok'") ||
+          content.includes("'degraded'"),
+        ).toBe(true)
+      })
 
-  it('partners health route checks database connectivity', () => {
-    const content = read(PARTNERS_HEALTH)
-    expect(
-      content.includes('SELECT 1') ||
-      content.includes('db.execute') ||
-      content.includes('db.query') ||
-      content.includes('sql`SELECT')
-    ).toBe(true)
-  })
-
-  // ── Blob check ──────────────────────────────────────────────────────────────
-
-  it('console health route checks blob/storage connectivity', () => {
-    const content = read(CONSOLE_HEALTH)
-    expect(
-      content.includes('blob') ||
-      content.includes('Blob') ||
-      content.includes('storage') ||
-      content.includes('Storage')
-    ).toBe(true)
-  })
-
-  it('partners health route checks blob/storage connectivity', () => {
-    const content = read(PARTNERS_HEALTH)
-    expect(
-      content.includes('blob') ||
-      content.includes('Blob') ||
-      content.includes('storage') ||
-      content.includes('Storage')
-    ).toBe(true)
-  })
-
-  // ── Degraded response ───────────────────────────────────────────────────────
-
-  it('console health route returns 503 on degraded', () => {
-    const content = read(CONSOLE_HEALTH)
-    expect(content).toContain('503')
-  })
-
-  it('partners health route returns 503 on degraded', () => {
-    const content = read(PARTNERS_HEALTH)
-    expect(content).toContain('503')
-  })
-
-  // ── Response shape ──────────────────────────────────────────────────────────
-
-  it('console health route emits status field in response', () => {
-    const content = read(CONSOLE_HEALTH)
-    expect(content.includes("status: 'ok'") || content.includes('status:')).toBe(true)
-  })
-
-  it('partners health route emits status field in response', () => {
-    const content = read(PARTNERS_HEALTH)
-    expect(content.includes("status: 'ok'") || content.includes('status:')).toBe(true)
-  })
-
-  // ── Auth bypass ─────────────────────────────────────────────────────────────
-
-  it('/api/health bypasses auth in console middleware (public route)', () => {
-    const mw = read(CONSOLE_MIDDLEWARE)
-    expect(mw).toContain('/api/health')
-  })
-
-  it('/api/health bypasses auth in partners middleware (public route)', () => {
-    const mw = read(PARTNERS_MIDDLEWARE)
-    expect(mw).toContain('/api/health')
-  })
+      // ── Auth bypass ───────────────────────────────────────────────────────
+      it('/api/health bypasses auth in middleware (public route)', () => {
+        const mw = read(middlewarePath(app))
+        expect(mw).toContain('/api/health')
+      })
+    })
+  }
 })

@@ -4,29 +4,16 @@
  * React hooks for fetching UE ML signals from the ML Signals API via @nzila/ml-sdk.
  *
  * CONSTRAINT: This file MUST NOT import from @nzila/db or any ml* schema tables.
- * All ML data must flow through createMlClient() from @nzila/ml-sdk.
+ * All ML data must flow through the governed ml-client module.
  */
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createMlClient } from '@nzila/ml-sdk'
+import { makeMlClient } from '@/lib/ml-client'
 import type { UEPriorityScoreResponse, UESlaRiskScoreResponse } from '@nzila/ml-sdk'
 
-// ── Client factory ────────────────────────────────────────────────────────────
-
-/**
- * Creates an ML client bound to the current session token.
- * Pass a Clerk token getter, e.g. `useAuth().getToken`.
- */
-export function makeMlClient(getToken: () => Promise<string | null>) {
-  return createMlClient({
-    baseUrl: process.env.NEXT_PUBLIC_CONSOLE_URL ?? 'http://localhost:3001',
-    getToken: async () => {
-      const token = await getToken()
-      return token ?? ''
-    },
-  })
-}
+// Re-export for backwards compatibility — canonical source is now @/lib/ml-client
+export { makeMlClient } from '@/lib/ml-client'
 
 // ── Per-case priority signal ──────────────────────────────────────────────────
 

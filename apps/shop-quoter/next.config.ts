@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
     "@nzila/pricing-engine",
     "@nzila/shop-quoter",
   ],
-  output: "standalone",
+  output: process.platform === 'win32' ? undefined : 'standalone',
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

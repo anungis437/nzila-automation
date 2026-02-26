@@ -482,8 +482,13 @@ export class AITransparencyEngine {
 // ============================================================================
 
 /** In-memory storage for demo (use database in production) */
-const appealsStore = new Map<string, AIAppeal>();
-const overrideStore = new Map<string, HumanOverrideRequest>();
+function createTransparencyStores() {
+  return {
+    appeals: new Map<string, AIAppeal>(),
+    overrides: new Map<string, HumanOverrideRequest>(),
+  }
+}
+const { appeals: appealsStore, overrides: overrideStore } = createTransparencyStores();
 
 /**
  * AI Appeal Manager

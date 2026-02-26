@@ -13,8 +13,13 @@ import type {
   ReleaseStatus,
   RevenueType,
   PayoutStatus,
+  PayoutRail,
   LedgerEntryType,
   ZongaRole,
+  ZongaCurrency,
+  ZongaLanguage,
+  AfricanGenre,
+  AudioQuality,
 } from '../enums'
 
 // ── Branded Types ───────────────────────────────────────────────────────────
@@ -57,9 +62,22 @@ export interface Creator {
   readonly genre: string | null
   readonly country: string | null
   readonly verified: boolean
+  /** Preferred UI / metadata language. */
+  readonly language: ZongaLanguage | null
+  /** African region code (e.g. 'west', 'east', 'southern'). */
+  readonly region: CreatorRegion | null
+  /** How the creator receives payouts. */
+  readonly payoutRail: PayoutRail | null
+  /** Mobile money phone number or payout account ref. */
+  readonly payoutAccountRef: string | null
+  /** Preferred payout currency. */
+  readonly payoutCurrency: ZongaCurrency | null
   readonly createdAt: string
   readonly updatedAt: string
 }
+
+/** Broad geographic region within Africa for filtering and analytics. */
+export type CreatorRegion = 'west' | 'east' | 'central' | 'southern' | 'north' | 'diaspora'
 
 // ── Content Asset ───────────────────────────────────────────────────────────
 
@@ -75,6 +93,16 @@ export interface ContentAsset {
   readonly coverArtUrl: string | null
   readonly durationSeconds: number | null
   readonly genre: string | null
+  /** Content / lyrics language. */
+  readonly language: ZongaLanguage | null
+  /** Featured / collaborating artists. */
+  readonly collaborators: readonly string[]
+  /** ISRC code for distribution tracking. */
+  readonly isrc: string | null
+  /** SHA-256 fingerprint of the original uploaded file. */
+  readonly audioFingerprint: string | null
+  /** Available quality tiers for the encoded file. */
+  readonly qualityTiers: readonly AudioQuality[]
   readonly metadata: Readonly<Record<string, unknown>>
   readonly publishedAt: string | null
   readonly createdAt: string
@@ -137,6 +165,8 @@ export interface Payout {
   readonly amount: number
   readonly currency: string
   readonly status: PayoutStatus
+  /** Rail used for this payout (M-Pesa, Stripe, bank, etc.). */
+  readonly payoutRail: PayoutRail | null
   readonly periodStart: string
   readonly periodEnd: string
   readonly revenueEventCount: number
@@ -147,6 +177,31 @@ export interface Payout {
   readonly failedReason: string | null
   readonly createdAt: string
   readonly updatedAt: string
+}
+
+// ── Collaborative Release Split ─────────────────────────────────────────────
+
+/**
+ * Defines how revenue from a release is split among collaborators.
+ * Stored in release metadata, enforced at payout preview time.
+ */
+export interface RoyaltySplit {
+  readonly creatorId: string
+  readonly displayName: string
+  readonly role: 'primary' | 'featured' | 'producer' | 'songwriter'
+  /** Percentage of net revenue (must sum to 100 across all splits). */
+  readonly sharePercent: number
+}
+
+// ── Upload Result ───────────────────────────────────────────────────────────
+
+/** Result of uploading an audio file to blob storage. */
+export interface AudioUploadResult {
+  readonly blobPath: string
+  readonly sha256: string
+  readonly sizeBytes: number
+  readonly durationSeconds: number | null
+  readonly contentType: string
 }
 
 // ── Payout Preview (computed, not persisted) ────────────────────────────────

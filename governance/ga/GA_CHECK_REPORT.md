@@ -1,43 +1,46 @@
 # GA Gate v2 — Check Report
 
 **Overall**: ✅ PASS
-**Commit**: `5979ae7`
-**Timestamp**: 2026-02-22T01:20:47.080Z
-**Duration**: 166ms
+**Commit**: `d4e28e6`
+**Timestamp**: 2026-02-25T22:06:24.715Z
+**Duration**: 3339ms
 **CI**: No
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Total checks | 20 |
-| Passed | 20 |
+| Total checks | 23 |
+| Passed | 23 |
 | Failed | 0 |
 
 ## Gate Results
 
 | Status | Gate | Details | Duration |
 |--------|------|---------|----------|
-| ✅ | Org boundary: No raw DB imports in app code | All 4 apps clean — no raw DB imports | 58ms |
+| ✅ | Org boundary: No raw DB imports in app code | All 4 apps clean — no raw DB imports | 1801ms |
 | ✅ | Org boundary: Org-scoped registry exists and consistent | Org-scoped registry present with both ORG_SCOPED_TABLES and NON_ORG_SCOPED_TABLES | 0ms |
 | ✅ | Hash chain: Module + append-only tables tracked | Hash module exists, 3 append-only tables tracked | 0ms |
-| ✅ | Governance profiles: Registry exists + validation | Profile registry with immutable controls + validation | 1ms |
-| ✅ | Auth middleware: All apps have Clerk middleware | All 4 apps have Clerk auth middleware | 0ms |
+| ✅ | Governance profiles: Registry exists + validation | Profile registry with immutable controls + validation | 0ms |
+| ✅ | Auth middleware: All apps have Clerk middleware | All 4 apps have Clerk auth middleware | 2ms |
 | ✅ | Audited writes: withAudit used in API guards | All apps use withAudit in API guards | 1ms |
-| ✅ | Audited writes: Audit module blocks on failure | Audit emission is mandatory (blocks on failure) | 0ms |
+| ✅ | Audited writes: Audit module blocks on failure | Audit emission is mandatory (blocks on failure) | 1ms |
 | ✅ | Evidence: verifySeal exported from seal module | generateSeal + verifySeal both exported | 0ms |
-| ✅ | Evidence: governance workflow includes verifySeal step | Governance workflow includes evidence seal verification | 1ms |
-| ✅ | Evidence: pack.json + seal.json both uploaded as CI artifacts | pack.json + seal.json + sbom all uploaded as CI artifacts | 0ms |
+| ✅ | Evidence: governance workflow includes verifySeal step | Governance workflow includes evidence seal verification | 0ms |
+| ✅ | Evidence: pack.json + seal.json both uploaded as CI artifacts | pack.json + seal.json + sbom all uploaded as CI artifacts | 1ms |
 | ✅ | Evidence: UE and ABR evidence jobs wired into governance-gate | UE and ABR evidence jobs both present, wired into governance-gate, and have blocking verify steps | 0ms |
-| ✅ | CI gates: Required security checks present in workflows | All 5 required CI checks present in workflows | 4ms |
+| ✅ | CI gates: Required security checks present in workflows | All 5 required CI checks present in workflows | 3ms |
 | ✅ | CI gates: Governance workflow exists | nzila-governance.yml + ci.yml both present | 0ms |
-| ✅ | CI gates: Trivy FS scan is PR-blocking on CRITICAL | Trivy FS blocking scan present (exit-code: 1) in CI workflows | 2ms |
+| ✅ | CI gates: Trivy FS scan is PR-blocking on CRITICAL | Trivy FS blocking scan present (exit-code: 1) in CI workflows | 1ms |
 | ✅ | CI gates: No || true on security-gating commands | No \|\| true on security-gating commands in CI workflows | 3ms |
 | ✅ | ESLint: All apps enforce boundary rules | All 4 apps enforce 3 boundary rules | 1ms |
-| ✅ | Contract tests: ≥20 test files exist | 40 contract test files (require ≥20) | 1ms |
-| ✅ | CODEOWNERS: Governance files have ownership | All governance paths have code ownership | 1ms |
+| ✅ | Contract tests: ≥20 test files exist | 76 contract test files (require ≥20) | 2ms |
+| ✅ | CODEOWNERS: Governance files have ownership | All governance paths have code ownership | 0ms |
 | ✅ | Red-team: Nightly red-team workflow exists | Red-team nightly workflow with schedule trigger present | 0ms |
-| ✅ | Red-team: Outputs included as evidence artifacts | Red-team outputs uploaded as artifacts, test files present | 0ms |
+| ✅ | Red-team: Outputs included as evidence artifacts | Red-team outputs uploaded as artifacts, test files present | 1ms |
+| ✅ | Studio maturity: Every app scores ≥ 7/10 on platform integration | All 10 apps score ≥ 7/10 on platform integration | 6ms |
+| ✅ | Studio maturity: No AI marketing claims without ai-sdk wiring | All apps with AI claims have runtime ai-sdk wiring | 3ms |
+| ✅ | Studio maturity: No in-memory Maps used as primary persistence | No in-memory Map stores used as primary persistence in app code | 1411ms |
 
 ## Environment
 

@@ -1,0 +1,51 @@
+{
+  "name": "@nzila/cfo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3008",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .next .turbo node_modules"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.12.0",
+    "@nzila/blob": "workspace:*",
+    "@nzila/db": "workspace:*",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/ui": "workspace:*",
+    "@nzila/ai-sdk": "workspace:*",
+    "@nzila/ml-sdk": "workspace:*",
+    "clsx": "^2.1.0",
+    "drizzle-orm": "^0.39.0",
+    "framer-motion": "^11.3.30",
+    "lucide-react": "^0.475.0",
+    "next": "16.1.6",
+    "next-intl": "^4.6.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^2.2.1",
+    "zod": "^3.22.4",
+    "@nzila/commerce-observability": "workspace:*",
+    "@nzila/payments-stripe": "workspace:*",
+    "@nzila/qbo": "workspace:*",
+    "@nzila/tax": "workspace:*",
+    "@nzila/commerce-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@nzila/config": "workspace:*",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^25",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.18"
+  }
+}

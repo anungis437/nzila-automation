@@ -16,7 +16,7 @@
 
 
 export const dynamic = 'force-dynamic';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useOrganizationId } from "@/lib/hooks/use-organization";
@@ -54,14 +54,7 @@ export default function HealthSafetyPage() {
     complianceRate: 0,
   });
 
-  useEffect(() => {
-    if (organizationId) {
-      // eslint-disable-next-line react-hooks/immutability
-      loadQuickStats();
-    }
-  }, [organizationId, period]);
-
-  const loadQuickStats = async () => {
+  const loadQuickStats = useCallback(async () => {
     try {
       const res = await fetch(`/api/v2/health-safety/stats?organizationId=${organizationId}&period=${period}`);
       if (res.ok) {
@@ -79,7 +72,14 @@ export default function HealthSafetyPage() {
       logger.error("Failed to load stats:", error);
       toast.error("Failed to load health & safety statistics");
     }
-  };
+  }, [organizationId, period]);
+
+  useEffect(() => {
+    if (organizationId) {
+      // eslint-disable-next-line react-hooks/immutability
+      loadQuickStats();
+    }
+  }, [organizationId, period, loadQuickStats]);
 
   const handleExportData = () => {
     toast.info("Exporting health & safety data...");

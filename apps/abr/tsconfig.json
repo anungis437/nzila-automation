@@ -1,8 +1,8 @@
 {
   "extends": "@nzila/config/tsconfig/nextjs",
   "compilerOptions": {
-    "noImplicitAny": false,
-    "useUnknownInCatchVariables": false,
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": true,
     "jsx": "preserve",
     "paths": {
       "@/*": ["./*"],
@@ -11,7 +11,9 @@
       "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
       "@nzila/db/client": ["../../packages/db/src/client.ts"],
       "@nzila/os-core": ["../../packages/os-core/src/index.ts"],
-      "@nzila/blob": ["../../packages/blob/src/index.ts"]
+      "@nzila/blob": ["../../packages/blob/src/index.ts"],
+      "@nzila/ai-sdk": ["../../packages/ai-sdk/src"],
+      "@nzila/ml-sdk": ["../../packages/ml-sdk/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

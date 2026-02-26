@@ -3,7 +3,7 @@
  * Generate PDF receipts for dues payments
  */
 import { jsPDF } from 'jspdf';
-import { put } from '@vercel/blob';
+import { putBlob } from '@/lib/blob-client';
 import { logger } from '@/lib/logger';
 
 interface ReceiptData {
@@ -94,8 +94,7 @@ export async function generateReceipt(data: ReceiptData): Promise<string> {
     
     // Upload to Vercel Blob
     const filename = `receipt-${data.transactionId}-${Date.now()}.pdf`;
-    const blob = await put(`receipts/${data.memberId}/${filename}`, pdfBuffer, {
-      access: 'public',
+    const blob = await putBlob(`receipts/${data.memberId}/${filename}`, pdfBuffer, {
       contentType: 'application/pdf',
     });
     

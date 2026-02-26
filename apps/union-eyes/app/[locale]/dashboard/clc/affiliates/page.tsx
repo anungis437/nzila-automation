@@ -25,7 +25,7 @@ import {
 import Link from 'next/link';
 import { db } from '@/db';
 import { organizationMembers } from '@/db/schema-organizations';
-import { eq, and, count } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import { getUserRoleInOrganization } from '@/lib/organization-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { logger } from '@/lib/logger';

@@ -50,7 +50,7 @@ interface Notification {
 export default function NotificationsPage() {
   // Fetch notifications from API
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [_loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     async function loadNotifications() {

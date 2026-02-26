@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { currentUser } from '@clerk/nextjs/server'
+import { Card } from '@nzila/ui'
 import {
   DocumentTextIcon,
   UserGroupIcon,
@@ -11,12 +12,62 @@ import {
   CurrencyDollarIcon,
 } from '@heroicons/react/24/outline'
 
-const stats = [
-  { label: 'Active Quotes', value: '—', icon: DocumentTextIcon, color: 'text-purple-600 bg-purple-50' },
-  { label: 'Pending Review', value: '—', icon: ClockIcon, color: 'text-amber-600 bg-amber-50' },
-  { label: 'Accepted (MTD)', value: '—', icon: CheckCircleIcon, color: 'text-green-600 bg-green-50' },
-  { label: 'Revenue (MTD)', value: '—', icon: CurrencyDollarIcon, color: 'text-blue-600 bg-blue-50' },
-]
+// ── Data fetching ───────────────────────────────────────────────────────────
+
+interface DashboardStats {
+  activeQuotes: number | null
+  pendingReview: number | null
+  acceptedMtd: number | null
+  revenueMtd: number | null
+}
+
+async function getDashboardStats(): Promise<DashboardStats> {
+  try {
+    const { db, commerceQuotes } = await import('@nzila/db')
+    const { sql, eq, and, gte } = await import('drizzle-orm')
+
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+
+    const [activeResult, pendingResult, acceptedResult, revenueResult] =
+      await Promise.allSettled([
+        db.select({ count: sql<number>`count(*)` })
+          .from(commerceQuotes)
+          .where(eq(commerceQuotes.status, 'draft')),
+        db.select({ count: sql<number>`count(*)` })
+          .from(commerceQuotes)
+          .where(eq(commerceQuotes.status, 'sent')),
+        db.select({ count: sql<number>`count(*)` })
+          .from(commerceQuotes)
+          .where(and(
+            eq(commerceQuotes.status, 'accepted'),
+            gte(commerceQuotes.updatedAt, startOfMonth),
+          )),
+        db.select({ total: sql<number>`COALESCE(SUM(CAST(total AS NUMERIC)), 0)` })
+          .from(commerceQuotes)
+          .where(and(
+            eq(commerceQuotes.status, 'accepted'),
+            gte(commerceQuotes.updatedAt, startOfMonth),
+          )),
+      ])
+
+    return {
+      activeQuotes: activeResult.status === 'fulfilled' ? Number(activeResult.value[0]?.count ?? 0) : null,
+      pendingReview: pendingResult.status === 'fulfilled' ? Number(pendingResult.value[0]?.count ?? 0) : null,
+      acceptedMtd: acceptedResult.status === 'fulfilled' ? Number(acceptedResult.value[0]?.count ?? 0) : null,
+      revenueMtd: revenueResult.status === 'fulfilled' ? Number(revenueResult.value[0]?.total ?? 0) : null,
+    }
+  } catch {
+    return { activeQuotes: null, pendingReview: null, acceptedMtd: null, revenueMtd: null }
+  }
+}
+
+function formatStat(value: number | null, isCurrency = false): string {
+  if (value === null) return '—'
+  if (isCurrency) return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value)
+  return value.toLocaleString()
+}
 
 const quickActions = [
   {
@@ -42,12 +93,16 @@ const quickActions = [
   },
 ]
 
-const recentActivity = [
-  { id: 'placeholder-1', action: 'Quote created', detail: 'No activity yet', time: '—' },
-]
-
 export default async function DashboardPage() {
   const user = await currentUser()
+  const data = await getDashboardStats()
+
+  const statItems = [
+    { label: 'Active Quotes', value: formatStat(data.activeQuotes), icon: DocumentTextIcon, color: 'text-purple-600 bg-purple-50', live: data.activeQuotes !== null },
+    { label: 'Pending Review', value: formatStat(data.pendingReview), icon: ClockIcon, color: 'text-amber-600 bg-amber-50', live: data.pendingReview !== null },
+    { label: 'Accepted (MTD)', value: formatStat(data.acceptedMtd), icon: CheckCircleIcon, color: 'text-green-600 bg-green-50', live: data.acceptedMtd !== null },
+    { label: 'Revenue (MTD)', value: formatStat(data.revenueMtd, true), icon: CurrencyDollarIcon, color: 'text-blue-600 bg-blue-50', live: data.revenueMtd !== null },
+  ]
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -61,19 +116,19 @@ export default async function DashboardPage() {
 
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4"
-          >
-            <div className={`rounded-lg p-2.5 ${stat.color}`}>
-              <stat.icon className="h-5 w-5" />
+        {statItems.map((stat) => (
+          <Card key={stat.label}>
+            <div className="p-5 flex items-center gap-4">
+              <div className={`rounded-lg p-2.5 ${stat.color}`}>
+                <stat.icon className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                {stat.live && <p className="text-[10px] text-green-500 mt-0.5">Live from DB</p>}
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-500">{stat.label}</p>
-              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-            </div>
-          </div>
+          </Card>
         ))}
       </div>
 
@@ -107,7 +162,7 @@ export default async function DashboardPage() {
             Recent Activity
           </h2>
           <div className="bg-white rounded-xl border border-gray-200">
-            {recentActivity.map((item) => (
+            {([] as { id: string; action: string; detail: string; time: string }[]).map((item) => (
               <div
                 key={item.id}
                 className="flex items-center justify-between px-5 py-4 border-b border-gray-100 last:border-b-0"

@@ -3,8 +3,9 @@
  * Primary payment processor for UnionEyes
  */
 
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import Stripe from 'stripe';
+// Platform Stripe integration via @nzila/payments-stripe
+import { getStripeClient } from '@nzila/payments-stripe';
+import type { Stripe } from '@/lib/stripe';
 import { BasePaymentProcessor, mapProcessorStatus } from './base-processor';
 import {
   PaymentProcessorType,
@@ -49,14 +50,7 @@ export class StripeProcessor extends BasePaymentProcessor {
   async initialize(config: ProcessorConfig): Promise<void> {
     await super.initialize(config);
     
-    this.stripe = new Stripe(config.apiKey, {
-      apiVersion: '2024-06-20',
-      appInfo: {
-        name: 'UnionEyes',
-        version: '1.0.0',
-      },
-      typescript: true,
-    });
+    this.stripe = getStripeClient();
   }
 
   private getStripe(): Stripe {

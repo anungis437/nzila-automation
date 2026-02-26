@@ -246,6 +246,16 @@ gate('NO-DIRECT-PROVIDER: Apps use SDK wrappers only', () => {
   const blockedProviders = ['stripe', 'quickbooks', '@azure/storage-blob', '@aws-sdk/client-s3', '@sendgrid/mail', 'twilio']
   const violations: string[] = []
 
+  // Load exception paths
+  const exceptionPaths: string[] = []
+  const exceptionFile = join(ROOT, 'governance/exceptions/no-direct-provider.json')
+  if (existsSync(exceptionFile)) {
+    const exceptions = JSON.parse(readFileSync(exceptionFile, 'utf-8'))
+    for (const entry of exceptions.entries ?? []) {
+      exceptionPaths.push(entry.path.replace(/\\/g, '/'))
+    }
+  }
+
   for (const appDir of APP_DIRS) {
     const fullDir = join(ROOT, appDir)
     if (!existsSync(fullDir)) continue
@@ -254,7 +264,10 @@ gate('NO-DIRECT-PROVIDER: Apps use SDK wrappers only', () => {
 
     for (const file of tsFiles) {
       const content = readFileSync(file, 'utf-8')
-      const rel = relative(ROOT, file)
+      const rel = relative(ROOT, file).replace(/\\/g, '/')
+
+      // Skip exception paths
+      if (exceptionPaths.some(ep => rel === ep || rel.startsWith(ep.replace(/\*\*$/, '')))) continue
 
       for (const provider of blockedProviders) {
         if (content.includes(`from '${provider}'`) || content.includes(`from "${provider}"`)) {

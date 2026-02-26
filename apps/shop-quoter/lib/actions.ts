@@ -9,6 +9,11 @@
  */
 import { quoteRepo, customerRepo } from '@/lib/db'
 import type { CustomerRecord } from '@/lib/db'
+import { calculateQuebecTaxes } from '@nzila/pricing-engine'
+import { transitionQuote } from '@/lib/quote-machine'
+import { auditQuoteTransition } from '@/lib/evidence'
+import { logTransition } from '@/lib/commerce-telemetry'
+import { logger } from '@/lib/logger'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -37,10 +42,6 @@ export interface ActionResult<T = unknown> {
   error?: string
 }
 
-// GST/QST rates (Quebec)
-const GST_RATE = 0.05
-const QST_RATE = 0.09975
-
 // ── Create Quote ───────────────────────────────────────────────────────────
 
 export async function createQuoteAction(
@@ -63,14 +64,13 @@ export async function createQuoteAction(
       })
     }
 
-    // 2. Calculate totals
+    // 2. Calculate totals using @nzila/pricing-engine
     const subtotal = formData.lines.reduce(
       (sum, l) => sum + l.quantity * l.unitCost,
       0,
     )
-    const gst = subtotal * GST_RATE
-    const qst = (subtotal + gst) * QST_RATE
-    const total = subtotal + gst + qst
+    const taxes = calculateQuebecTaxes(subtotal)
+    const { gst, qst, total } = taxes
 
     // 3. Create quote via repository
     const quote = await quoteRepo.create({
@@ -201,7 +201,7 @@ export async function validateLegacyDataAction(
   return { ok: true, data: { valid: errors.length === 0, errors } }
 }
 
-// ── Update Quote Status ────────────────────────────────────────────────────
+// ── Update Quote Status (governed transition) ─────────────────────────────
 
 export async function updateQuoteStatusAction(
   quoteId: string,
@@ -211,9 +211,46 @@ export async function updateQuoteStatusAction(
     const quote = await quoteRepo.findById(quoteId)
     if (!quote) return { ok: false, error: `Quote ${quoteId} not found` }
 
+    // ── State machine: validate transition ──────────────────────────
+    const transition = transitionQuote(
+      quote.status as Parameters<typeof transitionQuote>[0],
+      newStatus,
+      { entityId: quoteId, actorId: 'server-action', role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
+      quoteId,
+    )
+    if (!transition.ok) {
+      return { ok: false, error: `Invalid transition: ${transition.reason}` }
+    }
+
+    // ── Persist the update ──────────────────────────────────────────
     const updated = await quoteRepo.update(quoteId, {
       status: newStatus,
     })
+
+    // ── Audit trail: record the transition ──────────────────────────
+    try {
+      auditQuoteTransition({
+        quoteId,
+        fromStatus: quote.status,
+        toStatus: newStatus,
+        userId: 'server-action',
+        entityId: quoteId,
+      })
+      logTransition(
+        { orgId: quoteId },
+        'quote',
+        quote.status,
+        newStatus,
+        true,
+      )
+    } catch (auditErr) {
+      // Audit failure is non-blocking but logged
+      logger.warn('Audit/telemetry failed for quote transition', {
+        quoteId,
+        error: auditErr instanceof Error ? auditErr.message : String(auditErr),
+      })
+    }
+
     return { ok: true, data: { id: updated.id, status: newStatus } }
   } catch (err) {
     return {

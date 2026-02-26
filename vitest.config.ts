@@ -5,10 +5,12 @@ export default defineConfig({
     projects: [
       // Apps
       'apps/abr',
+      'apps/cfo',
       'apps/console',
       'apps/orchestrator-api',
       'apps/partners',
       'apps/union-eyes',
+      'apps/shop-quoter',
       'apps/web',
       'apps/nacp-exams',
       'apps/zonga',

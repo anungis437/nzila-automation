@@ -21,7 +21,6 @@ import {
 } from '../db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { Resend } from 'resend';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
 import twilio from 'twilio';
 // TODO: Fix FCM and email service imports
 // import { FCMService } from '@/services/fcm-service';

@@ -60,6 +60,7 @@ export type GateCategory =
   | 'evidence'
   | 'ci-gates'
   | 'red-team'
+  | 'studio-maturity'
 
 export interface GateCheck {
   id: string

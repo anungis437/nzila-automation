@@ -1,6 +1,5 @@
  
 import * as Sentry from '@sentry/nextjs';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { logger } from '@/lib/logger';
 
 export async function register() {
@@ -15,7 +14,7 @@ export async function register() {
       // Log error but don't fail startup - tracing is non-critical
       const errorMessage = error instanceof Error ? error.message : String(error);
       const errorStack = error instanceof Error ? error.stack : undefined;
-      logger.error('❌ [ERROR] Failed to initialize OpenTelemetry tracing:', errorMessage instanceof Error ? errorMessage : { detail: errorMessage });
+      logger.error('Failed to initialize OpenTelemetry tracing', { detail: errorMessage });
       if (errorStack) logger.error('Stack:', { detail: errorStack });
     }
 

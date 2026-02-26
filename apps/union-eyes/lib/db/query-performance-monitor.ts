@@ -69,7 +69,10 @@ const defaultConfig: QueryPerformanceConfig = {
 };
 
 // In-memory store for query patterns (consider Redis for distributed systems)
-const queryPatterns = new Map<string, QueryPattern>();
+function createQueryPatternStore() {
+  return new Map<string, QueryPattern>();
+}
+const queryPatterns = createQueryPatternStore();
 const recentSlowQueries: SlowQueryLog[] = [];
 const MAX_SLOW_QUERY_HISTORY = 100;
 

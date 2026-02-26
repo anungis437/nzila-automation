@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { withSpan } from '@nzila/os-core/telemetry'
 import { quoteRepo } from '@/lib/db'
 
 /**
@@ -7,29 +8,31 @@ import { quoteRepo } from '@/lib/db'
  * POST /api/quotes — create a new quote.
  */
 
-export async function GET() {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const quotes = await quoteRepo.findAll('default')
-    return NextResponse.json({ ok: true, data: quotes })
-  } catch (err) {
-    return NextResponse.json(
-      { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500 },
-    )
-  }
+export async function GET(request: Request) {
+  return withRequestContext(request, () =>
+    withSpan('api.quotes.list', { 'http.method': 'GET' }, async () => {
+    const authResult = await authenticateUser()
+    if (!authResult.ok) return authResult.response
+    try {
+      const quotes = await quoteRepo.findAll('default')
+      return NextResponse.json({ ok: true, data: quotes })
+    } catch (err) {
+      return NextResponse.json(
+        { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
+        { status: 500 },
+      )
+    }
+    }),
+  )
 }
 
 export async function POST(request: Request) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const body = await request.json()
+  return withRequestContext(request, () =>
+    withSpan('api.quotes.create', { 'http.method': 'POST' }, async () => {
+    const authResult = await authenticateUser()
+    if (!authResult.ok) return authResult.response
+    try {
+      const body = await request.json()
 
     // Minimal validation
     if (!body.title) {
@@ -57,4 +60,6 @@ export async function POST(request: Request) {
       { status: 500 },
     )
   }
+    }),
+  )
 }

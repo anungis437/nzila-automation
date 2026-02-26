@@ -1,0 +1,28 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": true,
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/ui": ["../../packages/ui/src"],
+      "@nzila/db": ["../../packages/db/src/index.ts"],
+      "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
+      "@nzila/db/client": ["../../packages/db/src/client.ts"],
+      "@nzila/db/platform": ["../../packages/db/src/platform.ts"],
+      "@nzila/os-core": ["../../packages/os-core/src/index.ts"],
+      "@nzila/os-core/rateLimit": ["../../packages/os-core/src/rateLimit.ts"],
+      "@nzila/blob": ["../../packages/blob/src/index.ts"],
+      "@nzila/ai-sdk": ["../../packages/ai-sdk/src"],
+      "@nzila/ml-sdk": ["../../packages/ml-sdk/src"],
+      "@nzila/commerce-observability": ["../../packages/commerce-observability/src"],
+      "@nzila/payments-stripe": ["../../packages/payments-stripe/src"],
+      "@nzila/qbo": ["../../packages/qbo/src"],
+      "@nzila/tax": ["../../packages/tax/src"],
+      "@nzila/commerce-core": ["../../packages/commerce-core/src"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next", ".turbo", "dist", "_legacy"]
+}

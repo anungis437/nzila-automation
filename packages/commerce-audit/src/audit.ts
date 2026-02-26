@@ -14,6 +14,8 @@
  *
  * @module @nzila/commerce-audit
  */
+import { createHash } from 'node:crypto'
+
 import type { OrgRole } from '@nzila/commerce-core/enums'
 import type { TransitionSuccess } from '@nzila/commerce-state'
 
@@ -210,8 +212,6 @@ export function validateAuditEntry(entry: AuditEntry): string[] {
  * Uses JSON serialization with sorted keys.
  */
 export function hashAuditEntry(entry: AuditEntry): string {
-  // Lazy import to avoid Node.js dependency at module level
-  const { createHash } = require('node:crypto') as typeof import('node:crypto')
   const canonical = JSON.stringify(entry, Object.keys(entry).sort())
   return createHash('sha256').update(canonical).digest('hex')
 }

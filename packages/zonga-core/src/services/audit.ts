@@ -20,6 +20,7 @@ export interface ZongaAuditEvent {
 export const ZongaAuditAction = {
   CONTENT_PUBLISH: 'content.publish',
   CONTENT_TAKE_DOWN: 'content.take_down',
+  CONTENT_UPLOAD: 'content.upload',
   REVENUE_IMPORT: 'revenue.import',
   REVENUE_RECORD: 'revenue.record',
   PAYOUT_PREVIEW: 'payout.preview',
@@ -27,8 +28,10 @@ export const ZongaAuditAction = {
   PAYOUT_CANCEL: 'payout.cancel',
   CREATOR_ACTIVATE: 'creator.activate',
   CREATOR_SUSPEND: 'creator.suspend',
+  CREATOR_UPDATE_PAYOUT: 'creator.update_payout',
   RELEASE_PUBLISH: 'release.publish',
   RELEASE_WITHDRAW: 'release.withdraw',
+  RELEASE_SPLIT_UPDATE: 'release.split_update',
 } as const
 export type ZongaAuditAction = (typeof ZongaAuditAction)[keyof typeof ZongaAuditAction]
 

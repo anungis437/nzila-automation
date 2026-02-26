@@ -19,7 +19,7 @@ import {
   Download,
 } from 'lucide-react';
 import QRCode from 'qrcode';
-import { loadStripe } from '@stripe/stripe-js';
+import { getStripePromise } from '@/lib/stripe-elements';
 import {
   Elements,
   PaymentElement,
@@ -27,7 +27,7 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = getStripePromise();
 
 interface PublicEvent {
   id: string;

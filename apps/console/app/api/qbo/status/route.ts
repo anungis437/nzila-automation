@@ -90,7 +90,7 @@ export async function DELETE(req: NextRequest) {
   // Best-effort revoke — don't fail if Intuit is down
   if (tokenRow) {
     await revokeToken(tokenRow.refreshToken).catch((err: unknown) =>
-      logger.warn('[QBO] Token revocation failed (continuing disconnect):', err),
+      logger.warn('[QBO] Token revocation failed (continuing disconnect)', { error: err instanceof Error ? err.message : String(err) }),
     )
   }
 

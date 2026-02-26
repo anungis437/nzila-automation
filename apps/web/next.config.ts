@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   turbopack: {},
   transpilePackages: ['@nzila/ui'],
-  output: 'standalone',
+  output: process.platform === 'win32' ? undefined : 'standalone',
   headers: async () => [
     {
       source: '/(.*)',

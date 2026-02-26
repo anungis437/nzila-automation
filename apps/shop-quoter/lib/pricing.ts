@@ -1,28 +1,26 @@
 /**
  * Pricing utilities — Shop Quoter app.
  *
- * Wraps @nzila/pricing-engine for the UI layer. Provides helpers
- * that the server actions and components can call directly.
+ * Delegates to @nzila/pricing-engine for all tax and pricing calculations.
+ * Provides UI-specific display config on top.
  */
+import {
+  calculateQuebecTaxes as _calculateQuebecTaxes,
+  formatCurrency as _formatCurrency,
+} from '@nzila/pricing-engine'
 
-// Quebec tax constants
+// Re-export so existing consumers don't break
 export const GST_RATE = 0.05
 export const QST_RATE = 0.09975
 
-/** Calculate Quebec taxes for a given subtotal. */
+/** Calculate Quebec taxes for a given subtotal (delegates to pricing-engine). */
 export function calculateQuebecTaxes(subtotal: number) {
-  const gst = subtotal * GST_RATE
-  const qst = (subtotal + gst) * QST_RATE
-  const total = subtotal + gst + qst
-  return { subtotal, gst, qst, total }
+  return _calculateQuebecTaxes(subtotal)
 }
 
-/** Format a number as CAD currency. */
+/** Format a number as CAD currency (delegates to pricing-engine). */
 export function formatCAD(n: number): string {
-  return new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-  }).format(n)
+  return _formatCurrency(n, 'CAD')
 }
 
 /** Tier display labels. */

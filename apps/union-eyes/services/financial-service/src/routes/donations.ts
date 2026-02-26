@@ -5,19 +5,16 @@
 
 import express, { Router, Request, Response } from 'express';
 import { z } from 'zod';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import Stripe from 'stripe';
+// Platform Stripe integration via @nzila/payments-stripe
+import { getStripeClient } from '@nzila/payments-stripe';
 import { db } from '../db';
 import { sql } from 'drizzle-orm';
-import { logger } from '../../../lib/logger';
 import { logger } from '@/lib/logger';
 
 const router = Router();
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia' as const,
-});
+// Initialize Stripe via platform wrapper
+const stripe = getStripeClient();
 
 // Validation schemas
 const createDonationSchema = z.object({

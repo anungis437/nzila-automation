@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { withSpan } from '@nzila/os-core/telemetry'
 import { importLegacyRecordsAction, validateLegacyDataAction } from '@/lib/actions'
 
 /**
@@ -8,47 +9,51 @@ import { importLegacyRecordsAction, validateLegacyDataAction } from '@/lib/actio
  */
 
 export async function POST(request: Request) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const body = await request.json()
-    if (!Array.isArray(body)) {
-      return NextResponse.json(
-        { ok: false, error: 'Request body must be a JSON array' },
-        { status: 400 },
-      )
-    }
-    const result = await importLegacyRecordsAction(body)
-    return NextResponse.json(result)
-  } catch (err) {
-    return NextResponse.json(
-      { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500 },
-    )
-  }
+  return withRequestContext(request, () =>
+    withSpan('api.import.execute', { 'http.method': 'POST' }, async () => {
+      const auth = await authenticateUser()
+      if (!auth.ok) return auth.response
+      try {
+        const body = await request.json()
+        if (!Array.isArray(body)) {
+          return NextResponse.json(
+            { ok: false, error: 'Request body must be a JSON array' },
+            { status: 400 },
+          )
+        }
+        const result = await importLegacyRecordsAction(body)
+        return NextResponse.json(result)
+      } catch (err) {
+        return NextResponse.json(
+          { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
+          { status: 500 },
+        )
+      }
+    }),
+  )
 }
 
 export async function PUT(request: Request) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const body = await request.json()
-    if (!Array.isArray(body)) {
-      return NextResponse.json(
-        { ok: false, error: 'Request body must be a JSON array' },
-        { status: 400 },
-      )
-    }
-    const result = await validateLegacyDataAction(body)
-    return NextResponse.json(result)
-  } catch (err) {
-    return NextResponse.json(
-      { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500 },
-    )
-  }
+  return withRequestContext(request, () =>
+    withSpan('api.import.validate', { 'http.method': 'PUT' }, async () => {
+      const auth = await authenticateUser()
+      if (!auth.ok) return auth.response
+      try {
+        const body = await request.json()
+        if (!Array.isArray(body)) {
+          return NextResponse.json(
+            { ok: false, error: 'Request body must be a JSON array' },
+            { status: 400 },
+          )
+        }
+        const result = await validateLegacyDataAction(body)
+        return NextResponse.json(result)
+      } catch (err) {
+        return NextResponse.json(
+          { ok: false, error: err instanceof Error ? err.message : 'Unknown error' },
+          { status: 500 },
+        )
+      }
+    }),
+  )
 }

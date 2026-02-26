@@ -9,18 +9,15 @@
  * Week 7-8 Implementation
  */
 
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/ wrapper
-import Stripe from 'stripe';
+// Platform Stripe integration via @nzila/payments-stripe
+import { getStripeClient } from '@nzila/payments-stripe';
 import { db } from '../db';
 import * as schema from '../db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-import { logger } from '../../../lib/logger';
 import { logger } from '@/lib/logger';
 
-// Initialize Stripe (use test key in development)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy', {
-  apiVersion: '2025-02-24.acacia' as const,
-});
+// Initialize Stripe via platform wrapper
+const stripe = getStripeClient();
 
 // Payment processor types
 export type PaymentProcessor = 'stripe' | 'ach' | 'check' | 'cash' | 'paypal';

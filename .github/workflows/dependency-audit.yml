@@ -44,7 +44,7 @@ jobs:
       - name: Run pnpm audit (fail on critical)
         id: audit
         run: |
-          # Write report to file; allow non-zero so waiver policy is the gate
+          # Write report to file; allow non-zero so waiver policy is the gate (ga-check:exempt)
           pnpm audit --audit-level=critical --json > audit-report.json || true
           echo "Audit report written to audit-report.json"
 

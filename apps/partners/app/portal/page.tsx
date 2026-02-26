@@ -1,3 +1,6 @@
+import { Card } from '@nzila/ui'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import {
   RocketLaunchIcon,
   CurrencyDollarIcon,
@@ -7,12 +10,45 @@ import {
   ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline'
 
-const stats = [
-  { label: 'Active Deals', value: '—', icon: RocketLaunchIcon, change: null },
-  { label: 'YTD Commissions', value: '—', icon: CurrencyDollarIcon, change: null },
-  { label: 'Certifications', value: '0 / 6', icon: AcademicCapIcon, change: null },
-  { label: 'Partner Score', value: '—', icon: ChartBarIcon, change: null },
-]
+// ── Data fetching ───────────────────────────────────────────────────────────
+
+interface PartnerStats {
+  activeDeals: number | null
+  ytdCommissions: number | null
+  certifications: string
+  partnerScore: number | null
+}
+
+async function getPartnerStats(): Promise<PartnerStats> {
+  try {
+    const { db } = await import('@nzila/db')
+    const { sql } = await import('drizzle-orm')
+
+    const [dealsResult, commissionsResult] = await Promise.allSettled([
+      db.execute(sql`SELECT COUNT(*) as count FROM partner_deals WHERE status = 'active'`),
+      db.execute(sql`SELECT COALESCE(SUM(amount), 0) as total FROM partner_commissions WHERE EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW())`),
+    ])
+
+    return {
+      activeDeals: dealsResult.status === 'fulfilled'
+        ? Number((dealsResult.value as unknown as { rows: { count: number }[] }).rows?.[0]?.count ?? 0)
+        : null,
+      ytdCommissions: commissionsResult.status === 'fulfilled'
+        ? Number((commissionsResult.value as unknown as { rows: { total: number }[] }).rows?.[0]?.total ?? 0)
+        : null,
+      certifications: '0 / 6',
+      partnerScore: null, // Computed metric — future
+    }
+  } catch {
+    return { activeDeals: null, ytdCommissions: null, certifications: '0 / 6', partnerScore: null }
+  }
+}
+
+function formatStat(value: number | null, isCurrency = false): string {
+  if (value === null) return '—'
+  if (isCurrency) return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value)
+  return value.toLocaleString()
+}
 
 const actions = [
   { label: 'Register a new deal', href: '/portal/deals/new', primary: true },
@@ -21,7 +57,18 @@ const actions = [
   { label: 'Generate API keys', href: '/portal/api-hub' },
 ]
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { userId } = await auth()
+  if (!userId) redirect('/sign-in')
+
+  const data = await getPartnerStats()
+
+  const stats = [
+    { label: 'Active Deals', value: formatStat(data.activeDeals), icon: RocketLaunchIcon, change: data.activeDeals !== null ? 'Live from DB' : null },
+    { label: 'YTD Commissions', value: formatStat(data.ytdCommissions, true), icon: CurrencyDollarIcon, change: data.ytdCommissions !== null ? 'Live from DB' : null },
+    { label: 'Certifications', value: data.certifications, icon: AcademicCapIcon, change: null },
+    { label: 'Partner Score', value: formatStat(data.partnerScore), icon: ChartBarIcon, change: null },
+  ]
   return (
     <div className="max-w-6xl">
       {/* Header */}
@@ -41,22 +88,21 @@ export default function DashboardPage() {
       {/* KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
         {stats.map((s) => (
-          <div
-            key={s.label}
-            className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-sm transition"
-          >
-            <div className="flex items-center justify-between">
-              <s.icon className="w-5 h-5 text-slate-400" />
-              {s.change && (
-                <span className="flex items-center text-xs text-green-600 font-medium">
-                  <ArrowTrendingUpIcon className="w-3 h-3 mr-0.5" />
-                  {s.change}
-                </span>
-              )}
+          <Card key={s.label}>
+            <div className="p-5">
+              <div className="flex items-center justify-between">
+                <s.icon className="w-5 h-5 text-slate-400" />
+                {s.change && (
+                  <span className="flex items-center text-xs text-green-600 font-medium">
+                    <ArrowTrendingUpIcon className="w-3 h-3 mr-0.5" />
+                    {s.change}
+                  </span>
+                )}
+              </div>
+              <p className="mt-3 text-2xl font-bold text-slate-900">{s.value}</p>
+              <p className="text-xs text-slate-500 mt-1">{s.label}</p>
             </div>
-            <p className="mt-3 text-2xl font-bold text-slate-900">{s.value}</p>
-            <p className="text-xs text-slate-500 mt-1">{s.label}</p>
-          </div>
+          </Card>
         ))}
       </div>
 

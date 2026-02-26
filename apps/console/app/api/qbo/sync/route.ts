@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    logger.error('[QBO] Report sync failed:', message instanceof Error ? message : { detail: message })
+    logger.error('[QBO] Report sync failed', { detail: message })
 
     await platformDb
       .update(qboSyncRuns)

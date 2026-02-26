@@ -6,7 +6,10 @@ interface RateLimitEntry {
   resetAt: number;
 }
 
-const rateLimitStore = new Map<string, RateLimitEntry>();
+function createRateLimitStore() {
+  return new Map<string, RateLimitEntry>();
+}
+const rateLimitStore = createRateLimitStore();
 
 // Clean up old entries every 5 minutes
 setInterval(() => {

@@ -6,7 +6,6 @@
     "jsx": "preserve",
     "paths": {
       "@/*": ["./*"],
-      "@nzila/ui": ["../../packages/ui/src"],
       "@nzila/db": ["../../packages/db/src/index.ts"],
       "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
       "@nzila/db/client": ["../../packages/db/src/client.ts"],
@@ -24,7 +23,8 @@
       "@nzila/os-core/telemetry": ["../../packages/os-core/src/telemetry/index.ts"],
       "@nzila/blob": ["../../packages/blob/src/index.ts"],
       "@nzila/ai-sdk": ["../../packages/ai-sdk/src/index.ts"],
-      "@nzila/ai-sdk/types": ["../../packages/ai-sdk/src/types.ts"]
+      "@nzila/ai-sdk/types": ["../../packages/ai-sdk/src/types.ts"],
+      "@nzila/payments-stripe": ["../../packages/payments-stripe/src/index.ts"]
     }
   },
   "include": [

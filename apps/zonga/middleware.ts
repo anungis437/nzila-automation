@@ -1,13 +1,15 @@
 /**
- * Edge Middleware — Three-layer protection for Zonga.
- * Layer 1: Clerk authentication (skip for public + auth routes)
- * Layer 2: next-intl locale routing
- * Layer 3: Request-ID propagation (x-request-id header)
+ * Edge Middleware — Four-layer protection for Zonga.
+ * Layer 1: Rate limiting (skip in dev — HMR triggers too many requests)
+ * Layer 2: Clerk authentication (skip for public + auth routes)
+ * Layer 3: next-intl locale routing
+ * Layer 4: Request-ID propagation (x-request-id header)
  */
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import createMiddleware from 'next-intl/middleware';
-import { NextResponse, type NextRequest } from 'next/server';
-import { locales, defaultLocale } from '@/lib/locales';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import createMiddleware from 'next-intl/middleware'
+import { NextResponse, type NextRequest } from 'next/server'
+import { checkRateLimit, rateLimitHeaders } from '@nzila/os-core/rateLimit'
+import { locales, defaultLocale } from '@/lib/locales'
 
 /* ── Route matchers ── */
 const isPublicRoute = createRouteMatcher([
@@ -17,7 +19,8 @@ const isPublicRoute = createRouteMatcher([
   '/contact(.*)',
   '/artists(.*)',
   '/for-labels(.*)',
-]);
+  '/api/health(.*)',
+])
 
 const isMarketingPath = (pathname: string) =>
   ['/', '/about', '/pricing', '/contact', '/artists', '/for-labels'].some(
@@ -32,10 +35,35 @@ const intlMiddleware = createMiddleware({
   locales: [...locales],
   defaultLocale,
   localePrefix: 'always',
-});
+})
+
+/* ── Rate limiting ── */
+const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX ?? '120')
+const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS ?? '60000')
 
 /* ── Main middleware ── */
 export default clerkMiddleware(async (auth, request: NextRequest) => {
+  // ── Rate limiting (skip in dev — HMR triggers too many requests) ──────
+  if (process.env.NODE_ENV !== 'development') {
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      request.headers.get('x-real-ip') ??
+      'unknown'
+    const rl = checkRateLimit(ip, {
+      max: RATE_LIMIT_MAX,
+      windowMs: RATE_LIMIT_WINDOW_MS,
+    })
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Too Many Requests' },
+        {
+          status: 429,
+          headers: rateLimitHeaders(rl, RATE_LIMIT_MAX),
+        },
+      )
+    }
+  }
+
   /* Skip locale redirect for pure marketing & auth pages */
   if (isMarketingPath(request.nextUrl.pathname) || isClerkAuthPath(request.nextUrl.pathname)) {
     const response = NextResponse.next();

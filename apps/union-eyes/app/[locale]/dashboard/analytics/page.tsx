@@ -16,7 +16,6 @@ import {
   CheckCircle,
   Clock,
   Calendar,
-  AlertTriangle,
   Award,
   Briefcase,
   Target,
@@ -106,6 +105,7 @@ export default function AnalyticsPage() {
   }, [timeRange]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on mount
     loadAnalytics();
   }, [loadAnalytics]);
 

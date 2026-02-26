@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "LedgerIQ",
+    "tagline": "Virtual CFO Intelligence"
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "badge": "Trusted by 200+ Advisory Firms",
+    "title": "Financial Advisory,",
+    "titleHighlight": "Automated",
+    "description": "Empower your firm with AI-driven financial analysis, automated compliance reports, and real-time client insights across every engagement."
+  },
+  "stats": {
+    "clientsManaged": "5,000+",
+    "clientsLabel": "Clients Managed",
+    "accuracy": "99.5%",
+    "accuracyLabel": "Reconciliation Accuracy",
+    "jurisdictions": "40+",
+    "jurisdictionsLabel": "Tax Jurisdictions",
+    "turnaround": "<4h",
+    "turnaroundLabel": "Avg Report Time"
+  },
+  "features": {
+    "heading": "Enterprise CFO Intelligence",
+    "subheading": "Everything your advisory firm needs to scale",
+    "dashboard": "Client Dashboard",
+    "dashboardDesc": "Unified view of all client financials with health scores, cash flow forecasts, and real-time alerts across your portfolio.",
+    "ledger": "General Ledger",
+    "ledgerDesc": "Multi-entity journal management with CSV import, automated reconciliation, and audit-ready trail for every transaction.",
+    "reports": "Advisory Reports",
+    "reportsDesc": "AI-generated financial reports with configurable templates, trend analysis, and board-ready presentation formatting.",
+    "compliance": "Compliance Engine",
+    "complianceDesc": "Automated tax filing status, regulatory deadline tracking, and multi-jurisdictional compliance monitoring.",
+    "workflows": "Workflow Automation",
+    "workflowsDesc": "Drag-and-drop workflow builder for recurring engagements, onboarding sequences, and approval chains.",
+    "collaboration": "Team Collaboration",
+    "collaborationDesc": "Role-based access, dual-control workflows, secure document sharing, and client portal with self-service capabilities."
+  },
+  "mission": {
+    "heading": "Scaling Advisory with Intelligence",
+    "description": "LedgerIQ empowers accounting firms to manage 10x more clients without adding headcount. AI-driven insights surface critical issues before they become problems, while automation handles the repetitive work.",
+    "tagline": "Built in Canada for the world's most demanding advisory practices."
+  },
+  "cta": {
+    "heading": "Ready to Scale Your Advisory Practice?",
+    "description": "Join hundreds of firms using LedgerIQ to deliver better client outcomes, faster.",
+    "button": "Get Started Today"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "activeClients": "Active Clients",
+    "reportsGenerated": "Reports Generated",
+    "complianceScore": "Compliance Score",
+    "teamMembers": "Team Members",
+    "quickActions": "Quick Actions",
+    "newClient": "New Client",
+    "generateReport": "Generate Report",
+    "runReconciliation": "Run Reconciliation",
+    "viewAlerts": "View Alerts"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "ledger": "Ledger",
+    "documents": "Documents",
+    "tasks": "Tasks",
+    "reports": "Reports",
+    "integrations": "Integrations",
+    "workflows": "Workflows",
+    "alerts": "Alerts",
+    "advisoryAi": "Advisory AI",
+    "insights": "AI Insights",
+    "messages": "Messages",
+    "settings": "Settings"
+  }
+}

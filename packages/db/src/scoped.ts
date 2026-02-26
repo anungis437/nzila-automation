@@ -23,7 +23,7 @@
  * @module @nzila/db/scoped
  */
 import { db, type Database } from './client'
-import { eq, and, type SQL } from 'drizzle-orm'
+import { eq, and, type SQL, type InferSelectModel } from 'drizzle-orm'
 import type { PgTable, TableConfig } from 'drizzle-orm/pg-core'
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ export interface ReadOnlyScopedDb {
   select<T extends PgTable<TableConfig>>(
     table: T,
     extraWhere?: SQL,
-  ): ReturnType<Database['select']>
+  ): Promise<InferSelectModel<T>[]>
 
   /**
    * Transaction with read-only access inside Org scope.

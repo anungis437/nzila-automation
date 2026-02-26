@@ -5,7 +5,7 @@
  * Provides the standard withAudit / createAuditedScopedDb wrappers
  * so case-management API routes use audited, Org-isolated writes.
  */
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import {
   withAudit,
@@ -13,6 +13,7 @@ import {
   createScopedDb,
   type AuditedScopedDb,
 } from '@nzila/db'
+import { createRequestContext, runWithContext } from '@nzila/os-core'
 
 // ── Re-exports for route convenience ────────────────────────────────────────
 export { withAudit, createAuditedScopedDb }
@@ -63,4 +64,19 @@ export async function getAuditedDb(entityId: string): Promise<
  */
 export function getReadOnlyDb(entityId: string) {
   return createScopedDb({ orgId: entityId })
+}
+
+// ── Observability Helpers ────────────────────────────────────────────────────
+
+/**
+ * Wrap an API route handler with request context propagation.
+ * Ensures OTel traces, structured logs, and audit trails share a
+ * consistent request-scoped context.
+ */
+export async function withRequestContext<T>(
+  request: Request | NextRequest,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const ctx = createRequestContext(request)
+  return runWithContext(ctx, fn)
 }

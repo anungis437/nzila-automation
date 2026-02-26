@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "LedgerIQ",
+    "tagline": "Intelligence de directeur financier virtuel"
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "pricing": "Tarification",
+    "about": "À propos",
+    "signIn": "Connexion",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "badge": "Utilisé par plus de 200 cabinets conseil",
+    "title": "Conseil financier,",
+    "titleHighlight": "Automatisé",
+    "description": "Renforcez votre cabinet grâce à l'analyse financière alimentée par l'IA, aux rapports de conformité automatisés et aux perspectives client en temps réel."
+  },
+  "stats": {
+    "clientsManaged": "5 000+",
+    "clientsLabel": "Clients gérés",
+    "accuracy": "99,5 %",
+    "accuracyLabel": "Précision de rapprochement",
+    "jurisdictions": "40+",
+    "jurisdictionsLabel": "Juridictions fiscales",
+    "turnaround": "<4h",
+    "turnaroundLabel": "Temps moyen de rapport"
+  },
+  "features": {
+    "heading": "Intelligence de directeur financier d'entreprise",
+    "subheading": "Tout ce dont votre cabinet conseil a besoin pour évoluer",
+    "dashboard": "Tableau de bord client",
+    "dashboardDesc": "Vue unifiée des finances de tous les clients avec scores de santé, prévisions de trésorerie et alertes en temps réel.",
+    "ledger": "Grand livre",
+    "ledgerDesc": "Gestion des journaux multi-entités avec importation CSV, rapprochement automatisé et piste d'audit complète.",
+    "reports": "Rapports consultatifs",
+    "reportsDesc": "Rapports financiers générés par l'IA avec modèles configurables, analyse des tendances et formatage pour le conseil.",
+    "compliance": "Moteur de conformité",
+    "complianceDesc": "Suivi automatisé des déclarations fiscales, des échéances réglementaires et de la conformité multi-juridictionnelle.",
+    "workflows": "Automatisation des flux",
+    "workflowsDesc": "Constructeur de flux de travail par glisser-déposer pour les mandats récurrents et les séquences d'approbation.",
+    "collaboration": "Collaboration d'équipe",
+    "collaborationDesc": "Contrôle d'accès basé sur les rôles, flux de double contrôle, partage sécurisé de documents et portail client."
+  },
+  "mission": {
+    "heading": "Conseil à grande échelle avec intelligence",
+    "description": "LedgerIQ permet aux cabinets comptables de gérer 10 fois plus de clients sans embaucher. L'IA détecte les problèmes critiques avant qu'ils ne surviennent.",
+    "tagline": "Construit au Canada pour les pratiques consultatives les plus exigeantes au monde."
+  },
+  "cta": {
+    "heading": "Prêt à faire évoluer votre pratique consultative ?",
+    "description": "Rejoignez des centaines de cabinets utilisant LedgerIQ pour de meilleurs résultats, plus rapidement.",
+    "button": "Commencer aujourd'hui"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "overview": "Vue d'ensemble",
+    "activeClients": "Clients actifs",
+    "reportsGenerated": "Rapports générés",
+    "complianceScore": "Score de conformité",
+    "teamMembers": "Membres de l'équipe",
+    "quickActions": "Actions rapides",
+    "newClient": "Nouveau client",
+    "generateReport": "Générer un rapport",
+    "runReconciliation": "Lancer le rapprochement",
+    "viewAlerts": "Voir les alertes"
+  },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "clients": "Clients",
+    "ledger": "Grand livre",
+    "documents": "Documents",
+    "tasks": "Tâches",
+    "reports": "Rapports",
+    "integrations": "Intégrations",
+    "workflows": "Flux de travail",
+    "alerts": "Alertes",
+    "advisoryAi": "IA consultative",
+    "insights": "Perspectives IA",
+    "messages": "Messages",
+    "settings": "Paramètres"
+  }
+}

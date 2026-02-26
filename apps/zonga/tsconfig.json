@@ -11,7 +11,9 @@
       "@nzila/ui": ["../../packages/ui/src"],
       "@nzila/ui/*": ["../../packages/ui/src/*"],
       "@nzila/zonga-core": ["../../packages/zonga-core/src"],
-      "@nzila/zonga-core/*": ["../../packages/zonga-core/src/*"]
+      "@nzila/zonga-core/*": ["../../packages/zonga-core/src/*"],
+      "@nzila/ai-sdk": ["../../packages/ai-sdk/src"],
+      "@nzila/ml-sdk": ["../../packages/ml-sdk/src"]
     },
     "plugins": [{ "name": "next" }]
   },

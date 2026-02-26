@@ -96,7 +96,7 @@ export default function SocialFeedWidget() {
   const [filterPlatform, setFilterPlatform] = useState<SocialPlatform | 'all'>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [visibleItems, setVisibleItems] = useState(3);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   const fetchFeed = useCallback(async () => {
     try {
@@ -341,7 +341,10 @@ export function SocialFeedCompact() {
     }
   }, []);
 
-  useEffect(() => { fetchFeed(); }, [fetchFeed]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on mount
+    fetchFeed();
+  }, [fetchFeed]);
 
   const recentPosts = feedItems.slice(0, 3);
 

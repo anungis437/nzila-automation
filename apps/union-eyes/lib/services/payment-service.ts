@@ -19,8 +19,8 @@ import { eq, and } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 import { Document, Page, StyleSheet, Text, pdf } from '@react-pdf/renderer';
 import React from 'react';
-// eslint-disable-next-line no-restricted-imports -- TODO(platform-migration): migrate to @nzila/payments-stripe
-import Stripe from 'stripe';
+// Platform Stripe integration via @nzila/payments-stripe
+import { getStripeClient } from '@nzila/payments-stripe';
 import { sendPaymentConfirmation, sendPaymentFailure } from '@/lib/services/dues-notifications';
 
 // =============================================================================
@@ -170,14 +170,7 @@ export class PaymentService {
       strikeFund: string;
     };
   }): Promise<CheckoutSessionResult> {
-    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-    if (!stripeSecretKey) {
-      throw new Error('STRIPE_SECRET_KEY not configured');
-    }
-
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-06-20',
-    });
+    const stripe = getStripeClient();
 
     // Convert amount to cents (Stripe uses smallest currency unit)
     const amountInCents = Math.round(parseFloat(params.amount) * 100);

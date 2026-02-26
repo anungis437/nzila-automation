@@ -15,7 +15,10 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, join, relative } from 'node:path'
 
 const ROOT = resolve(__dirname, '../..')
-const APPS = ['console', 'partners', 'web', 'union-eyes']
+const APPS = [
+  'console', 'partners', 'web', 'union-eyes',
+  'cfo', 'shop-quoter', 'nacp-exams', 'zonga', 'abr', 'orchestrator-api',
+]
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -82,7 +85,9 @@ describe('Environment Contract', () => {
       it(`${app}: env schema is defined in os-core`, () => {
         const envPath = resolve(ROOT, 'packages/os-core/src/config/env.ts')
         const content = readContent(envPath)
-        const normalizedApp = app.replace('-', '')
+        // Normalize: 'nacp-exams' → 'nacpexams', 'orchestrator-api' → 'orchestrator'
+        // Schema names follow the pattern: nacpexamsSchema, orchestratorSchema
+        const normalizedApp = app.replace(/-api$/, '').replaceAll('-', '')
         // App schemas are defined as consoleSchema, partnersSchema, etc.
         expect(
           content.toLowerCase(),

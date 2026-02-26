@@ -5,9 +5,9 @@ import { redirect } from 'next/navigation';
  * most common entry-point for leadership users.
  */
 export default function FinancialIndexPage({
-  params,
+  _params,
 }: {
-  params: { locale: string };
+  _params: { locale: string };
 }) {
   // Redirect to the non-locale expenses page which has the full implementation.
   redirect('/dashboard/financial/expenses');

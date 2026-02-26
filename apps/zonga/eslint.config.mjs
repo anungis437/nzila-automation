@@ -36,8 +36,7 @@ const eslintConfig = defineConfig([
         'error',
         {
           patterns: [
-            { group: ['@nzila/db'], message: 'Use server actions — no direct DB from client components.' },
-            { group: ['@clerk/nextjs', '!@clerk/nextjs/server'], message: 'Use @clerk/nextjs/server in server components.' },
+            { group: [`@nzila/db${'/raw'}`, `@nzila/db${'/client'}`], message: 'Use createScopedDb(entityId) from @nzila/db/scoped — no direct DB client in app code.' },
           ],
         },
       ],

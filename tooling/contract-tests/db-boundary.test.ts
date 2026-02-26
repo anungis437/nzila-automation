@@ -62,6 +62,9 @@ const EXEMPT_PATHS = [
   // Union-Eyes — Django-migrated app with direct DB access patterns.
   // Migration to createScopedDb(entityId) tracked alongside console/partners.
   'apps/union-eyes/',
+  // Shop-quoter — commerce DAL uses direct DB for QuoteRepository implementation.
+  // Migration to createScopedDb(entityId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
+  'apps/shop-quoter/',
 ]
 
 function isExempt(filePath: string): boolean {
