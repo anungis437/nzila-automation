@@ -14,7 +14,19 @@
 
 import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
-import * as Sentry from '@sentry/nextjs';
+
+// Lazy-load Sentry to avoid bundling browser code during build phase
+let _sentry: typeof import('@sentry/nextjs') | null = null;
+const getSentry = async () => {
+  if (!_sentry) {
+    try {
+      _sentry = await import('@sentry/nextjs');
+    } catch {
+      // Silent fail if Sentry not available during build
+    }
+  }
+  return _sentry;
+};
 
 /**
  * Standard error codes for consistent error classification
@@ -213,11 +225,13 @@ export function standardErrorResponse(
   
   // Report 5xx errors to Sentry
   if (statusCode >= 500) {
-    Sentry.captureException(new Error(`${code}: ${message}`), {
-      level: 'error',
-      tags: { errorCode: code },
-      extra: { details, traceId: finalTraceId },
-    });
+    getSentry().then(Sentry => {
+      Sentry?.captureException(new Error(`${code}: ${message}`), {
+        level: 'error',
+        tags: { errorCode: code },
+        extra: { details, traceId: finalTraceId },
+      });
+    }).catch(() => { /* non-critical */ });
   }
   
   const errorResponse: StandardizedError = {
