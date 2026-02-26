@@ -393,6 +393,13 @@ const nextConfig: NextConfig = {
       };
     }
     
+    // Ignore optional peer deps that are not installed
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^@opentelemetry\/(winston-transport|exporter-jaeger)$/,
+      }),
+    );
+
     // Externalize server-only packages to prevent bundling Node.js builtin dependencies
     if (isServer) {
       config.externals = config.externals || {};
