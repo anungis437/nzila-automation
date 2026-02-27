@@ -13,3 +13,10 @@ export {
   computeSignatureHash,
   type GovernanceProofPack,
 } from './proof'
+
+export {
+  generateIntegrationsProofSection,
+  type IntegrationsProofSection,
+  type IntegrationProviderSnapshot,
+  type IntegrationsProofPorts,
+} from './integrations-proof'
