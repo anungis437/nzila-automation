@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -33,6 +34,7 @@ export async function listNotifications(opts?: {
 }): Promise<{ notifications: Notification[]; unreadCount: number }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('notifications:view')
 
   const page = opts?.page ?? 1
   const offset = (page - 1) * 50
@@ -84,6 +86,7 @@ export async function listNotifications(opts?: {
 export async function getUnreadCount(): Promise<number> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('notifications:view')
 
   try {
     const { unreadCount } = await listNotifications({ unreadOnly: false })
@@ -97,6 +100,7 @@ export async function getUnreadCount(): Promise<number> {
 export async function markNotificationRead(notificationId: string): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('notifications:view')
 
   try {
     await platformDb.execute(
@@ -115,6 +119,7 @@ export async function markNotificationRead(notificationId: string): Promise<{ su
 export async function markAllNotificationsRead(): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('notifications:view')
 
   try {
     await platformDb.execute(
@@ -140,6 +145,7 @@ export async function createNotification(data: {
 }): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('notifications:manage')
 
   try {
     await platformDb.execute(
@@ -158,6 +164,7 @@ export async function createNotification(data: {
 export async function deleteNotification(notificationId: string): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('notifications:manage')
 
   try {
     await platformDb.execute(

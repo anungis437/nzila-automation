@@ -8,6 +8,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -37,6 +38,7 @@ export async function askAdvisor(
 ): Promise<{ answer: string; sources: string[] }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('advisory_ai:use')
 
   try {
     logger.info('Advisory AI query', { actorId: userId, questionLength: question.length })
@@ -94,6 +96,7 @@ state your assumptions clearly. Format with markdown for readability.`
 export async function getAIInsights(): Promise<Insight[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('ai_insights:view')
 
   try {
     // Run anomaly detection via ML SDK
@@ -157,6 +160,7 @@ export async function getCashFlowForecast(months: number = 6): Promise<{
 } | null> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('advisory_ai:view')
 
   try {
     const prediction = await runPrediction({

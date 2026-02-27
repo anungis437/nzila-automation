@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -42,6 +43,7 @@ export async function getLedgerEntries(opts?: {
 }): Promise<LedgerSummary> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('ledger:view')
 
   const page = opts?.page ?? 1
   const pageSize = opts?.pageSize ?? 50
@@ -96,6 +98,7 @@ export interface ReconciliationResult {
 export async function runReconciliation(): Promise<ReconciliationResult> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('ledger:write')
 
   try {
     logger.info('Starting month-end reconciliation', { actorId: userId })
@@ -143,6 +146,7 @@ export async function runReconciliation(): Promise<ReconciliationResult> {
 export async function getFinancialOverview() {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('ledger:view')
 
   try {
     const summary = await buildFinancialSummary()

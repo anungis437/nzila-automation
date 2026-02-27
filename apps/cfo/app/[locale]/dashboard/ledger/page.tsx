@@ -6,6 +6,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import {
   BookOpen,
   TrendingUp,
@@ -28,6 +29,7 @@ export default async function LedgerPage({
 }) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('ledger:view')
 
   const params = await searchParams
   const page = Number(params.page ?? '1')

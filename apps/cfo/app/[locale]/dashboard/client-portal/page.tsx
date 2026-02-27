@@ -6,6 +6,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { TrendingUp, FileText, CalendarDays, HeartPulse, DollarSign, Clock } from 'lucide-react'
 import { listDocuments } from '@/lib/actions/misc-actions'
 import { getCashFlowForecast, getAIInsights } from '@/lib/actions/advisory-actions'
@@ -14,6 +15,7 @@ import { getTaxDeadlines } from '@/lib/actions/integration-actions'
 export default async function ClientPortalPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('client_portal:view')
 
   const [{ documents }, forecast, insights, deadlines] = await Promise.all([
     listDocuments({ pageSize: 5 }),

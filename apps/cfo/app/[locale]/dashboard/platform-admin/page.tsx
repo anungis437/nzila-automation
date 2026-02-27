@@ -6,7 +6,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { Building2, DollarSign, Users, TrendingUp } from 'lucide-react'
-import { requireRole } from '@/lib/rbac'
+import { requirePermission } from '@/lib/rbac'
 import { getPlatformMetrics, listFirms } from '@/lib/actions/platform-admin-actions'
 import { FirmActions } from '@/components/firm-actions'
 
@@ -15,7 +15,7 @@ export default async function PlatformAdminPage() {
   if (!userId) redirect('/sign-in')
 
   try {
-    await requireRole('platform_admin')
+    await requirePermission('platform_admin:view')
   } catch {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 p-8 text-center">

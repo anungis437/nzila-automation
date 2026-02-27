@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -33,6 +34,7 @@ export async function listDocuments(opts?: {
 }): Promise<{ documents: Document[]; total: number }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('documents:view')
 
   const page = opts?.page ?? 1
   const pageSize = opts?.pageSize ?? 25
@@ -66,6 +68,7 @@ export async function uploadDocument(data: {
 }): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('documents:upload')
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
@@ -100,6 +103,7 @@ export async function listTasks(opts?: {
 }): Promise<{ tasks: Task[]; total: number }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('tasks:view')
   const page = opts?.page ?? 1
   const offset = (page - 1) * 25
   try {
@@ -130,6 +134,7 @@ export async function createTask(data: {
 }): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('tasks:create')
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
@@ -150,6 +155,7 @@ export async function updateTaskStatus(
 ): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('tasks:complete')
   try {
     await platformDb.execute(
       sql`UPDATE audit_log SET metadata = metadata || ${JSON.stringify({ status })}::jsonb
@@ -178,6 +184,7 @@ export interface Alert {
 export async function listAlerts(): Promise<Alert[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('alerts:view')
   try {
     const result = (await platformDb.execute(
       sql`SELECT id, metadata->>'title' as title, metadata->>'severity' as severity,
@@ -198,6 +205,7 @@ export async function listAlerts(): Promise<Alert[]> {
 export async function acknowledgeAlert(alertId: string): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('alerts:view')
   try {
     await platformDb.execute(
       sql`UPDATE audit_log SET metadata = metadata || '{"acknowledged": true}'::jsonb
@@ -225,6 +233,7 @@ export interface Message {
 export async function listMessages(): Promise<Message[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('messages:view')
   try {
     const result = (await platformDb.execute(
       sql`SELECT id, metadata->>'from' as "from", metadata->>'subject' as subject,
@@ -248,6 +257,7 @@ export async function sendMessage(data: {
 }): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('messages:send')
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
@@ -276,6 +286,7 @@ export interface Workflow {
 export async function listWorkflows(): Promise<Workflow[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:view')
   try {
     const result = (await platformDb.execute(
       sql`SELECT id, metadata->>'name' as name, metadata->>'status' as status,
@@ -315,6 +326,7 @@ const DEFAULT_SETTINGS: CFOSettings = {
 export async function getSettings(): Promise<CFOSettings> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('settings:view')
   try {
     const [row] = (await platformDb.execute(
       sql`SELECT metadata FROM audit_log
@@ -333,6 +345,7 @@ export async function updateSettings(
 ): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('settings:manage')
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)

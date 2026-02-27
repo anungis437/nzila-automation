@@ -3,6 +3,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { Shield, ShieldAlert, ShieldCheck, Database } from 'lucide-react'
 import {
   getSecurityPosture,
@@ -22,6 +23,7 @@ function scoreBadge(score: number) {
 export default async function SecurityPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('security:view')
 
   const [posture, { events }, incidents, backups, compliance] = await Promise.all([
     getSecurityPosture(),

@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -42,6 +43,7 @@ export async function listAuditEntries(
 ): Promise<{ entries: AuditEntry[]; total: number; actions: string[] }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('audit:view')
 
   const page = filters?.page ?? 1
   const pageSize = filters?.pageSize ?? 50
@@ -114,6 +116,7 @@ export async function getAuditStats(): Promise<{
 }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('audit:view')
 
   try {
     const [stats] = (await platformDb.execute(

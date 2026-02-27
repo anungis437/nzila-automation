@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -37,6 +38,7 @@ export async function listReports(opts?: {
 }): Promise<ReportListResult> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('reports:view')
 
   const page = opts?.page ?? 1
   const pageSize = opts?.pageSize ?? 20
@@ -81,6 +83,7 @@ export async function generateReport(input: {
 }): Promise<{ success: boolean; reportId?: string; narrative?: string }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('reports:create')
 
   try {
     logger.info('Generating financial report', { type: input.type, period: input.period, actorId: userId })
@@ -132,6 +135,7 @@ export async function generateReport(input: {
 export async function getReportNarrative(reportId: string): Promise<string | null> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('reports:view')
 
   try {
     const [row] = (await platformDb.execute(
@@ -141,4 +145,17 @@ export async function getReportNarrative(reportId: string): Promise<string | nul
   } catch {
     return null
   }
+}
+
+/**
+ * Build the export URL for client-side download.
+ * The actual export is handled by the /api/reports/export route.
+ */
+export function getReportExportUrl(opts: {
+  reportId?: string
+  format: 'csv' | 'pdf'
+}): string {
+  const params = new URLSearchParams({ format: opts.format })
+  if (opts.reportId) params.set('reportId', opts.reportId)
+  return `/api/reports/export?${params.toString()}`
 }

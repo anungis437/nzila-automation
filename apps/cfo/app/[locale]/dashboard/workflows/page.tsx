@@ -4,6 +4,7 @@
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { Workflow, Play, Pause, CheckCircle2, XCircle, Plus } from 'lucide-react'
 import { listWorkflows, type Workflow as WF } from '@/lib/actions/misc-actions'
 import { listWorkflowInstances } from '@/lib/actions/workflow-actions'
@@ -21,6 +22,7 @@ function statusBadge(s: WF['status']) {
 export default async function WorkflowsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('workflows:view')
 
   const workflows = await listWorkflows()
   const instances = await listWorkflowInstances()

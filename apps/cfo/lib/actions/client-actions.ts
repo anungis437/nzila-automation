@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { platformDb } from '@nzila/db/platform'
 import { entities, entityMembers } from '@nzila/db/schema'
@@ -35,6 +36,7 @@ export async function listClients(opts?: {
 }): Promise<ClientListResult> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('clients:view')
 
   const page = opts?.page ?? 1
   const pageSize = opts?.pageSize ?? 20
@@ -104,17 +106,36 @@ export async function listClients(opts?: {
 export async function createClient(data: {
   name: string
   contactEmail?: string
+  jurisdiction?: string
+  incorporationNumber?: string
+  fiscalYearEnd?: string
+  industry?: string
+  businessType?: string
+  phone?: string
+  servicesNeeded?: string[]
+  notes?: string
 }): Promise<{ ok: boolean; id?: string; error?: string }> {
   const { userId } = await auth()
   if (!userId) return { ok: false, error: 'Unauthorized' }
+  await requirePermission('clients:create')
 
   try {
     const [entity] = await platformDb
       .insert(entities)
       .values({
         legalName: data.name,
-        jurisdiction: 'CA-ON',
+        jurisdiction: data.jurisdiction || 'CA-ON',
+        incorporationNumber: data.incorporationNumber || null,
+        fiscalYearEnd: data.fiscalYearEnd || null,
         status: 'active',
+        policyConfig: {
+          contactEmail: data.contactEmail || null,
+          industry: data.industry || null,
+          businessType: data.businessType || null,
+          phone: data.phone || null,
+          servicesNeeded: data.servicesNeeded || [],
+          notes: data.notes || null,
+        },
       })
       .returning({ id: entities.id })
 
@@ -130,6 +151,7 @@ export async function createClient(data: {
 export async function getClientDetail(clientId: string) {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('clients:view')
 
   try {
     const [client] = await platformDb

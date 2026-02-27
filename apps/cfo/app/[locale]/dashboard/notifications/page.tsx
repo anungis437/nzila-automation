@@ -3,6 +3,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { Bell } from 'lucide-react'
 import { listNotifications } from '@/lib/actions/notification-actions'
 import { NotificationList } from '@/components/notification-list'
@@ -10,6 +11,7 @@ import { NotificationList } from '@/components/notification-list'
 export default async function NotificationsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('notifications:view')
 
   const { notifications, unreadCount } = await listNotifications()
 

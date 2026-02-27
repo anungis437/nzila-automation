@@ -4,6 +4,7 @@
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { CheckCircle2, Circle, Clock, AlertTriangle, Plus } from 'lucide-react'
 import { listTasks, type Task } from '@/lib/actions/misc-actions'
 import { UpdateTaskStatusSelect } from '@/components/update-task-status'

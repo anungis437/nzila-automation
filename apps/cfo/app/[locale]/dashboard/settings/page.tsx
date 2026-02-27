@@ -5,6 +5,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { Settings } from 'lucide-react'
 import { getSettings } from '@/lib/actions/misc-actions'
 import { SettingsForm } from '@/components/settings-form'
@@ -12,6 +13,7 @@ import { SettingsForm } from '@/components/settings-form'
 export default async function SettingsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('settings:view')
 
   const settings = await getSettings()
 

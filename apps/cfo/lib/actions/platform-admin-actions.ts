@@ -10,7 +10,7 @@ import { auth } from '@clerk/nextjs/server'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
-import { requireRole } from '@/lib/rbac'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 
 /* ─── Types ─── */
@@ -45,7 +45,7 @@ const TIER_PRICES: Record<string, number> = {
 export async function getPlatformMetrics(): Promise<PlatformMetrics> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
-  await requireRole('platform_admin')
+  await requirePermission('platform_admin:manage')
 
   try {
     const firmRows = (await platformDb.execute(
@@ -89,7 +89,7 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
 export async function listFirms(): Promise<Firm[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
-  await requireRole('platform_admin')
+  await requirePermission('platform_admin:manage')
 
   try {
     const rows = (await platformDb.execute(
@@ -112,7 +112,7 @@ export async function listFirms(): Promise<Firm[]> {
 export async function suspendFirm(firmId: string): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
-  await requireRole('platform_admin')
+  await requirePermission('platform_admin:manage')
 
   try {
     await platformDb.execute(
@@ -135,7 +135,7 @@ export async function suspendFirm(firmId: string): Promise<{ success: boolean }>
 export async function reactivateFirm(firmId: string): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
-  await requireRole('platform_admin')
+  await requirePermission('platform_admin:manage')
 
   try {
     await platformDb.execute(
@@ -161,7 +161,7 @@ export async function updateFirmSubscription(
 ): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
-  await requireRole('platform_admin')
+  await requirePermission('platform_admin:manage')
 
   try {
     await platformDb.execute(

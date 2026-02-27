@@ -3,6 +3,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { getAuditStats } from '@/lib/actions/audit-actions'
 import { AuditLogViewer } from '@/components/audit-log-viewer'
 import { ScrollText, Users, Zap, CalendarDays } from 'lucide-react'
@@ -10,6 +11,7 @@ import { ScrollText, Users, Zap, CalendarDays } from 'lucide-react'
 export default async function AuditPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('audit:view')
 
   const stats = await getAuditStats()
 
