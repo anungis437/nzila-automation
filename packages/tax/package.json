@@ -8,9 +8,22 @@
     ".": "./src/index.ts",
     "./types": "./src/types.ts",
     "./deadlines": "./src/deadlines.ts",
+    "./cra-deadlines": "./src/cra-deadlines.ts",
     "./validation": "./src/validation.ts",
     "./governance": "./src/governance.ts",
-    "./evidence": "./src/evidence.ts"
+    "./evidence": "./src/evidence.ts",
+    "./rates": "./src/rates.ts",
+    "./bn-validation": "./src/bn-validation.ts",
+    "./installments": "./src/installments.ts",
+    "./prescribed-interest": "./src/prescribed-interest.ts",
+    "./gst-hst": "./src/gst-hst.ts",
+    "./payroll-thresholds": "./src/payroll-thresholds.ts",
+    "./penalties": "./src/penalties.ts",
+    "./personal-rates": "./src/personal-rates.ts",
+    "./dividend-tax": "./src/dividend-tax.ts",
+    "./data-versions": "./src/data-versions.ts",
+    "./salary-vs-dividend-advanced": "./src/salary-vs-dividend-advanced.ts",
+    "./bn-validation-bulk": "./src/bn-validation-bulk.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

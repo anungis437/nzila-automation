@@ -20,7 +20,20 @@ export type TaxYearStatus = z.infer<typeof TaxYearStatus>
 
 // ── Filing types ────────────────────────────────────────────────────────────
 
-export const TaxFilingType = z.enum(['T2', 'CO-17', 'Schedule50', 'T5', 'RL-3', 'Other'])
+export const TaxFilingType = z.enum([
+  'T1',             // Personal income
+  'T2',             // Corporate income
+  'T3',             // Trust income
+  'T4',             // Employment income (employer)
+  'T4A',            // Pension, retiring allowances, other income
+  'T5',             // Investment income
+  'T5013',          // Partnership information
+  'CO-17',          // Quebec corporate income
+  'Schedule50',     // Shareholder information
+  'RL-3',           // Quebec investment income
+  'PayrollRemittance', // CRA payroll source deduction remittance
+  'Other',
+])
 export type TaxFilingType = z.infer<typeof TaxFilingType>
 
 // ── Installment status ──────────────────────────────────────────────────────
@@ -192,13 +205,19 @@ export interface YearEndPackManifest {
     dividendResolutions?: string[]
   }
   tax: {
+    t1Filing?: string
     t2Filing?: string
+    t3Filing?: string
+    t4Filing?: string
+    t4aFiling?: string
+    t5013Filing?: string
     co17Filing?: string
     schedule50?: string
     installmentSummary?: string
     noticeOfAssessment?: string
     gstHstAnnualSummary?: string
     qstAnnualSummary?: string
+    payrollRemittanceSummary?: string
   }
   manifestHash: string
 }
