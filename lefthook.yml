@@ -8,12 +8,11 @@ pre-commit:
     gitleaks:
       glob: "*.{ts,tsx,js,jsx,json,env,yml,yaml,md,sh,ps1,py}"
       run: >
-        gitleaks detect
-        --source .
+        gitleaks git
+        --staged
         --config .gitleaks.toml
         --no-banner
         --verbose
-        --staged
       fail_text: |
         🔒 Gitleaks detected potential secrets in staged files.
         Review the output above and remove or rotate any exposed credentials.
