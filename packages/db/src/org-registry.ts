@@ -152,6 +152,17 @@ export const ORG_SCOPED_TABLES = [
   'commerceEvidenceArtifacts',
   'commerceSyncJobs',
   'commerceSyncReceipts',
+  'commerceSuppliers',
+  'commerceProducts',
+  'commerceInventory',
+  'commerceStockMovements',
+  'commercePurchaseOrders',
+  'commercePurchaseOrderLines',
+  'commerceMandateAllocations',
+  'commerceZohoSyncConfigs',
+  'commerceZohoSyncRecords',
+  'commerceZohoConflicts',
+  'commerceZohoCredentials',
 ] as const
 
 /**

@@ -172,9 +172,9 @@ describe('CFO-PAGE — Phase 2 routes have loading skeletons', () => {
 })
 
 describe('CFO-PAGE — Sidebar has all Phase 2 nav items', () => {
-  it('layout.tsx contains nav items for all Phase 2 routes', () => {
-    const layoutPath = join(ROOT, 'apps', 'cfo', 'app', '[locale]', 'dashboard', 'layout.tsx')
-    const content = readFileSync(layoutPath, 'utf-8')
+  it('dashboard-shell.tsx contains nav items for all Phase 2 routes', () => {
+    const shellPath = join(ROOT, 'apps', 'cfo', 'app', '[locale]', 'dashboard', 'dashboard-shell.tsx')
+    const content = readFileSync(shellPath, 'utf-8')
     for (const route of ['security', 'audit', 'platform-admin', 'client-portal', 'notifications']) {
       expect(content, `Sidebar missing href for ${route}`).toContain(`"${route}"`)
     }
