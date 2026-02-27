@@ -38,6 +38,7 @@ export default defineConfig({
       'packages/os-core',
       'packages/payments-stripe',
       'packages/qbo',
+      'packages/fx',
       'packages/tax',
       'packages/tools-runtime',
       'packages/ui',

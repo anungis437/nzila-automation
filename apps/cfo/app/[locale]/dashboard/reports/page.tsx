@@ -7,6 +7,7 @@
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import {
   FileText,
   BarChart3,
@@ -32,6 +33,7 @@ export default async function ReportsPage({
 }) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('reports:view')
 
   const params = await searchParams
   const page = Number(params.page ?? '1')

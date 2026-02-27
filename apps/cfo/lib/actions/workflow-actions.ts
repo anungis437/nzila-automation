@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -62,6 +63,7 @@ export async function createWorkflowTemplate(data: {
 }): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:create')
 
   try {
     await platformDb.execute(
@@ -88,6 +90,7 @@ export async function createWorkflowTemplate(data: {
 export async function getWorkflowTemplate(templateId: string): Promise<WorkflowTemplate | null> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:view')
 
   try {
     const [row] = (await platformDb.execute(
@@ -113,6 +116,7 @@ export async function getWorkflowTemplate(templateId: string): Promise<WorkflowT
 export async function startWorkflowInstance(templateId: string): Promise<{ success: boolean; instanceId?: string }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:create')
 
   try {
     const template = await getWorkflowTemplate(templateId)
@@ -159,6 +163,7 @@ export async function startWorkflowInstance(templateId: string): Promise<{ succe
 export async function getWorkflowInstance(instanceId: string): Promise<WorkflowInstance | null> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:view')
 
   try {
     const [row] = (await platformDb.execute(
@@ -185,6 +190,7 @@ export async function getWorkflowInstance(instanceId: string): Promise<WorkflowI
 export async function listWorkflowInstances(): Promise<WorkflowInstance[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:view')
 
   try {
     const rows = (await platformDb.execute(
@@ -214,6 +220,7 @@ export async function approveWorkflowStep(
 ): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:manage')
 
   try {
     const instance = await getWorkflowInstance(instanceId)
@@ -263,6 +270,7 @@ export async function rejectWorkflowStep(
 ): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('workflows:manage')
 
   try {
     const instance = await getWorkflowInstance(instanceId)

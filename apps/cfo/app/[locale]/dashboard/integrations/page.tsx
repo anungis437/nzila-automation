@@ -6,6 +6,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import {
   CheckCircle2,
   AlertCircle,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react'
 import { getIntegrationStatuses, getTaxDeadlines, type IntegrationStatus } from '@/lib/actions/integration-actions'
 import { SyncButton, ConnectButton } from '@/components/action-buttons'
+import { TaxDisclaimer } from '@/components/tax-disclaimer'
 
 function healthBadge(health: IntegrationStatus['health']) {
   switch (health) {
@@ -55,6 +57,7 @@ function providerIcon(p: IntegrationStatus['provider']) {
 export default async function IntegrationsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('integrations:view')
 
   const [integrations, deadlines] = await Promise.all([
     getIntegrationStatuses(),
@@ -171,6 +174,9 @@ export default async function IntegrationsPage() {
           </div>
         )}
       </div>
+
+      {/* Tax Disclaimer */}
+      <TaxDisclaimer variant="compact" />
     </div>
   )
 }

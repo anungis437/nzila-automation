@@ -3,6 +3,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { AlertTriangle, Info, Bell } from 'lucide-react'
 import { listAlerts, type Alert } from '@/lib/actions/misc-actions'
 import { AcknowledgeAlertButton } from '@/components/acknowledge-alert-button'
@@ -18,6 +19,7 @@ function alertStyle(severity: Alert['severity']) {
 export default async function AlertsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('alerts:view')
 
   const alerts = await listAlerts()
 

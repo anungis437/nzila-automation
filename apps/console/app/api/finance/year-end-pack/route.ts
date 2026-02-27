@@ -32,6 +32,7 @@ import {
 } from '@nzila/tax/evidence'
 import { evaluateTaxYearCloseGate } from '@nzila/tax/validation'
 import { buildTaxYearDeadlines, sortDeadlines } from '@nzila/tax/deadlines'
+import { calculateCorporateDeadlines } from '@nzila/tax/cra-deadlines'
 import {
   recordFinanceAuditEvent,
   FINANCE_AUDIT_ACTIONS,
@@ -166,6 +167,12 @@ export async function GET(req: NextRequest) {
   const deadlines = sortDeadlines(buildTaxYearDeadlines(taxYear))
   const basePath = yearEndPackBasePath(entityId, fiscalYear)
 
+  // Auto-calculated CRA statutory deadlines from the entity's FYE + province
+  const fye = profile?.fiscalYearEnd ?? '12-31'
+  const province = (profile?.provinceOfRegistration ?? 'ON') as import('@nzila/tax').Province
+  const fyYear = parseInt(fiscalYear.replace(/\D/g, ''), 10) || new Date().getFullYear()
+  const craDeadlines = calculateCorporateDeadlines(fye, fyYear, province, { isCcpc: true })
+
   // Find fiscal year close period
   const yearClosePeriod = periods.find(
     (p) => p.periodType === 'year' && p.startDate === taxYear.startDate && p.endDate === taxYear.endDate,
@@ -178,6 +185,7 @@ export async function GET(req: NextRequest) {
     completeness,
     closeGate,
     deadlines,
+    craDeadlines,
     basePath,
     yearClosePeriod: yearClosePeriod ?? null,
     artifacts: {

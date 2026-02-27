@@ -3,6 +3,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { Mail, MailOpen } from 'lucide-react'
 import { listMessages } from '@/lib/actions/misc-actions'
 import { MessagesWithCompose } from '@/components/messages-with-compose'
@@ -10,6 +11,7 @@ import { MessagesWithCompose } from '@/components/messages-with-compose'
 export default async function MessagesPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('messages:view')
 
   const messages = await listMessages()
 

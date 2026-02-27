@@ -7,6 +7,7 @@
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import { Users, Plus, Search, Building2, ArrowRight } from 'lucide-react'
 import { listClients } from '@/lib/actions/client-actions'
 
@@ -17,6 +18,7 @@ export default async function ClientsPage({
 }) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('clients:view')
 
   const params = await searchParams
   const page = Number(params.page ?? '1')

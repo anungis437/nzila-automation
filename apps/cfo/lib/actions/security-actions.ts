@@ -7,6 +7,7 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
+import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -67,6 +68,7 @@ export interface SecurityPosture {
 export async function getSecurityPosture(): Promise<SecurityPosture> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:view')
 
   try {
     // Security events summary
@@ -145,6 +147,7 @@ export async function listSecurityEvents(opts?: {
 }): Promise<{ events: SecurityEvent[]; total: number }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:view')
 
   const page = opts?.page ?? 1
   const offset = (page - 1) * 25
@@ -178,6 +181,7 @@ export async function listSecurityEvents(opts?: {
 export async function resolveSecurityEvent(eventId: string): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:manage')
 
   try {
     await platformDb.execute(
@@ -197,6 +201,7 @@ export async function listIncidents(opts?: {
 }): Promise<Incident[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:view')
 
   try {
     const statusFilter = opts?.status
@@ -223,11 +228,12 @@ export async function updateIncidentStatus(
 ): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:manage')
 
   try {
     await platformDb.execute(
       sql`UPDATE audit_log SET metadata = metadata || ${JSON.stringify({ status })}::jsonb
-      WHERE id = ${incidentId} AND action = 'security.incident'`,
+      WHERE id = ${incidentId} AND action = 'security.incident'``,
     )
     revalidatePath('/dashboard/security')
     return { success: true }
@@ -240,6 +246,7 @@ export async function updateIncidentStatus(
 export async function listBackups(): Promise<BackupRecord[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:view')
 
   try {
     const rows = (await platformDb.execute(
@@ -260,6 +267,7 @@ export async function listBackups(): Promise<BackupRecord[]> {
 export async function listComplianceItems(): Promise<ComplianceItem[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:view')
 
   try {
     const rows = (await platformDb.execute(
@@ -282,6 +290,7 @@ export async function listComplianceItems(): Promise<ComplianceItem[]> {
 export async function runSecurityScan(): Promise<{ success: boolean; findings: number }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('security:manage')
 
   try {
     await platformDb.execute(

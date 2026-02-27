@@ -252,10 +252,10 @@ describe('CFO-ACT — Platform admin actions contract', () => {
     expect(content).toContain('export async function updateFirmSubscription')
   })
 
-  it('enforces RBAC via requireRole', () => {
+  it('enforces RBAC via requirePermission', () => {
     const path = join(CFO_ACTIONS, 'platform-admin-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain('requireRole')
+    expect(content).toContain('requirePermission')
   })
 })
 

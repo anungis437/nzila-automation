@@ -7,11 +7,13 @@
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import {
   Users,
   FileText,
   RefreshCw,
   AlertTriangle,
+  Calculator,
 } from 'lucide-react'
 
 // ── Data fetching ───────────────────────────────────────────────────────────
@@ -64,11 +66,13 @@ const quickActions = [
   { label: 'Generate Report', href: 'reports/new', icon: FileText },
   { label: 'Run Reconciliation', href: 'ledger/reconcile', icon: RefreshCw },
   { label: 'View Alerts', href: 'alerts', icon: AlertTriangle },
+  { label: 'Tax Tools', href: 'tax-tools', icon: Calculator },
 ]
 
 export default async function DashboardPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('dashboard:view')
 
   const stats = await getDashboardStats()
 

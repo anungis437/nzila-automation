@@ -6,6 +6,7 @@
  */
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { requirePermission } from '@/lib/rbac'
 import {
   Brain,
   MessageSquare,
@@ -42,6 +43,7 @@ function severityBorder(s: Insight['severity']) {
 export default async function AdvisoryAIPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+  await requirePermission('advisory_ai:view')
 
   const [insights, forecast] = await Promise.all([
     getAIInsights(),

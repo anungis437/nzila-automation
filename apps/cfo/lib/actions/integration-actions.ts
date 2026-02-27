@@ -7,7 +7,10 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
-import { platformDb } from '@nzila/db/platform' // eslint-disable-line @typescript-eslint/no-unused-vars -- contract: CFO-ACT platformDb invariant
+import { requirePermission } from '@/lib/rbac'
+import { platformDb } from '@nzila/db/platform'
+import { taxProfiles } from '@nzila/db/schema'
+import { eq } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 import { getStripeClient } from '@nzila/payments-stripe'
 import { buildFinancialSummary } from '@/lib/qbo'
@@ -27,6 +30,7 @@ export interface IntegrationStatus {
 export async function getIntegrationStatuses(): Promise<IntegrationStatus[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('integrations:view')
 
   const integrations: IntegrationStatus[] = []
 
@@ -94,7 +98,7 @@ export async function getIntegrationStatuses(): Promise<IntegrationStatus[]> {
       connected: true,
       lastSync: new Date(),
       health: 'healthy',
-      details: `${deadlines?.length ?? 0} upcoming deadlines tracked`,
+      details: `${deadlines?.length ?? 0} upcoming deadlines tracked (CRA data)`,
     })
   } catch {
     integrations.push({
@@ -117,6 +121,7 @@ export async function triggerSync(provider: 'stripe' | 'quickbooks' | 'tax-engin
 }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('integrations:manage')
 
   try {
     logger.info('Integration sync triggered', { provider, actorId: userId })
@@ -154,12 +159,32 @@ export async function triggerSync(provider: 'stripe' | 'quickbooks' | 'tax-engin
   }
 }
 
-export async function getTaxDeadlines() {
+export async function getTaxDeadlines(entityId?: string) {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
+  await requirePermission('tax_tools:view')
 
   try {
-    return await getUpcomingDeadlines(new Date().getFullYear())
+    // Fetch entity tax profile for FYE/province if entityId provided
+    let fiscalYearEnd: string | undefined
+    let province: string | undefined
+
+    if (entityId) {
+      const [profile] = await platformDb
+        .select()
+        .from(taxProfiles)
+        .where(eq(taxProfiles.entityId, entityId))
+
+      if (profile) {
+        fiscalYearEnd = profile.fiscalYearEnd ?? undefined
+        province = profile.provinceOfRegistration ?? undefined
+      }
+    }
+
+    return await getUpcomingDeadlines(new Date().getFullYear(), {
+      fiscalYearEnd,
+      province,
+    })
   } catch (error) {
     logger.error('Failed to fetch tax deadlines', { error })
     return []
