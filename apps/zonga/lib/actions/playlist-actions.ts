@@ -6,7 +6,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -54,8 +54,7 @@ export async function listPlaylists(opts?: {
   search?: string
   creatorId?: string
 }): Promise<PlaylistListResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const page = opts?.page ?? 1
   const offset = (page - 1) * 25
@@ -75,12 +74,13 @@ export async function listPlaylists(opts?: {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'playlist.created'
+      AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: Playlist[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'playlist.created'`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'playlist.created' AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -99,8 +99,7 @@ export async function getPlaylistDetail(playlistId: string): Promise<{
   playlist: Playlist | null
   tracks: PlaylistTrack[]
 }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const [playlist] = (await platformDb.execute(
@@ -117,6 +116,7 @@ export async function getPlaylistDetail(playlistId: string): Promise<{
         created_at as "createdAt"
       FROM audit_log
       WHERE entity_id = ${playlistId} AND action = 'playlist.created'
+      AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [Playlist | undefined]
 
@@ -131,6 +131,7 @@ export async function getPlaylistDetail(playlistId: string): Promise<{
         COALESCE(CAST(metadata->>'position' AS INTEGER), 0) as position
       FROM audit_log
       WHERE action = 'playlist.track.added' AND metadata->>'playlistId' = ${playlistId}
+      AND org_id = ${ctx.entityId}
       ORDER BY CAST(metadata->>'position' AS INTEGER) ASC`,
     )) as unknown as { rows: PlaylistTrack[] }
 
@@ -152,19 +153,18 @@ export async function createPlaylist(data: {
   genre?: string
   isPublic?: boolean
 }): Promise<{ success: boolean; playlistId?: string }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const playlistId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('playlist.created', ${userId}, 'playlist', ${playlistId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('playlist.created', ${ctx.actorId}, 'playlist', ${playlistId}, ${ctx.entityId},
         ${JSON.stringify({
           ...data,
           id: playlistId,
-          creatorId: userId,
+          creatorId: ctx.actorId,
           trackCount: 0,
           isPublic: data.isPublic ?? true,
         })}::jsonb)`,
@@ -174,7 +174,7 @@ export async function createPlaylist(data: {
       action: 'playlist.created' as ZongaAuditAction,
       entityType: 'playlist' as ZongaEntityType,
       entityId: playlistId,
-      actorId: userId,
+      actorId: ctx.actorId,
       targetId: playlistId,
       metadata: { title: data.title },
     })
@@ -183,7 +183,7 @@ export async function createPlaylist(data: {
     const pack = buildEvidencePackFromAction({
       actionType: 'PLAYLIST_CREATED',
       entityId: playlistId,
-      executedBy: userId,
+      executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
     await processEvidencePack(pack)
@@ -206,8 +206,7 @@ export async function addTrackToPlaylist(data: {
   genre?: string
   position?: number
 }): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const entryId = crypto.randomUUID()
@@ -217,14 +216,15 @@ export async function addTrackToPlaylist(data: {
     if (position === undefined) {
       const [cnt] = (await platformDb.execute(
         sql`SELECT COUNT(*) as count FROM audit_log
-        WHERE action = 'playlist.track.added' AND metadata->>'playlistId' = ${data.playlistId}`,
+        WHERE action = 'playlist.track.added' AND metadata->>'playlistId' = ${data.playlistId}
+        AND org_id = ${ctx.entityId}`,
       )) as unknown as [{ count: number }]
       position = Number(cnt?.count ?? 0) + 1
     }
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('playlist.track.added', ${userId}, 'playlist_track', ${entryId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('playlist.track.added', ${ctx.actorId}, 'playlist_track', ${entryId}, ${ctx.entityId},
         ${JSON.stringify({
           ...data,
           position,
@@ -252,15 +252,14 @@ export async function removeTrackFromPlaylist(data: {
   playlistId: string
   assetId: string
 }): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const removalId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('playlist.track.removed', ${userId}, 'playlist_track', ${removalId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('playlist.track.removed', ${ctx.actorId}, 'playlist_track', ${removalId}, ${ctx.entityId},
         ${JSON.stringify({
           playlistId: data.playlistId,
           assetId: data.assetId,

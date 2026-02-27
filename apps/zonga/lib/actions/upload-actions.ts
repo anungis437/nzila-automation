@@ -7,7 +7,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -45,8 +45,7 @@ export interface AudioUploadActionResult {
 export async function uploadAudio(
   formData: FormData,
 ): Promise<AudioUploadActionResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const file = formData.get('file') as File | null
@@ -82,13 +81,13 @@ export async function uploadAudio(
         '{storageUrl}',
         ${JSON.stringify(storageUrl)}::jsonb
       )
-      WHERE id = ${meta.assetId}
+      WHERE id = ${meta.assetId} AND org_id = ${ctx.entityId}
     `)
 
     // Audit
     const audit = buildZongaAuditEvent({
       entityId: meta.creatorId,
-      actorId: userId,
+      actorId: ctx.actorId,
       action: ZongaAuditAction.CONTENT_UPLOAD,
       entityType: ZongaEntityType.CONTENT_ASSET,
       targetId: meta.assetId,
@@ -100,15 +99,15 @@ export async function uploadAudio(
       },
     })
     await platformDb.execute(sql`
-      INSERT INTO audit_log (entity_id, actor_id, action, metadata)
-      VALUES (${audit.entityId}, ${audit.actorId}, ${audit.action}, ${JSON.stringify(audit.metadata)}::jsonb)
+      INSERT INTO audit_log (entity_id, actor_id, action, metadata, org_id)
+      VALUES (${audit.entityId}, ${audit.actorId}, ${audit.action}, ${JSON.stringify(audit.metadata)}::jsonb, ${ctx.entityId})
     `)
 
     // Evidence pack
     const evidence = buildEvidencePackFromAction({
       actionType: 'uploadAudio',
       entityId: meta.assetId,
-      executedBy: userId,
+      executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
     await processEvidencePack(evidence)
@@ -147,8 +146,7 @@ export interface CoverUploadResult {
 export async function uploadCover(
   formData: FormData,
 ): Promise<CoverUploadResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const file = formData.get('file') as File | null
@@ -180,7 +178,7 @@ export async function uploadCover(
         '{coverArtUrl}',
         ${JSON.stringify(coverUrl)}::jsonb
       )
-      WHERE id = ${assetId}
+      WHERE id = ${assetId} AND org_id = ${ctx.entityId}
     `)
 
     revalidatePath('/dashboard/catalog')
@@ -199,8 +197,7 @@ export async function uploadCover(
  * Generate a new time-limited streaming URL for an existing audio file.
  */
 export async function getStreamUrl(blobPath: string): Promise<string> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   return getAudioStreamUrl(blobPath)
 }

@@ -6,7 +6,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -30,8 +30,7 @@ export interface Notification {
 export async function listNotifications(opts?: {
   unreadOnly?: boolean
 }): Promise<Notification[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const rows = (await platformDb.execute(
@@ -45,7 +44,8 @@ export async function listNotifications(opts?: {
         COALESCE((metadata->>'read')::boolean, false) as read,
         created_at as "createdAt"
       FROM audit_log
-      WHERE action = 'notification.created' AND metadata->>'userId' = ${userId}
+      WHERE action = 'notification.created' AND metadata->>'userId' = ${ctx.actorId}
+        AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT 100`,
     )) as unknown as { rows: Notification[] }
@@ -53,14 +53,16 @@ export async function listNotifications(opts?: {
     // Build read-set from notification.read events
     const readRows = (await platformDb.execute(
       sql`SELECT metadata->>'notificationId' as id FROM audit_log
-      WHERE action = 'notification.read' AND actor_id = ${userId}`,
+      WHERE action = 'notification.read' AND actor_id = ${ctx.actorId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as { rows: { id: string }[] }
 
     const readSet = new Set((readRows.rows ?? []).map((r) => r.id))
 
     const allReadAt = (await platformDb.execute(
       sql`SELECT created_at FROM audit_log
-      WHERE action = 'notification.read_all' AND actor_id = ${userId}
+      WHERE action = 'notification.read_all' AND actor_id = ${ctx.actorId}
+        AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as { rows: { created_at: Date }[] }
 
@@ -87,8 +89,7 @@ export async function listNotifications(opts?: {
 /* ─── Unread count ─── */
 
 export async function getUnreadCount(): Promise<number> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const notifications = await listNotifications({ unreadOnly: true })
@@ -102,13 +103,12 @@ export async function getUnreadCount(): Promise<number> {
 /* ─── Mark single as read ─── */
 
 export async function markAsRead(notificationId: string): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('notification.read', ${userId}, 'notification', ${crypto.randomUUID()},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('notification.read', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.entityId},
         ${JSON.stringify({ notificationId })}::jsonb)`,
     )
 
@@ -123,14 +123,13 @@ export async function markAsRead(notificationId: string): Promise<{ success: boo
 /* ─── Mark all as read ─── */
 
 export async function markAllRead(): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('notification.read_all', ${userId}, 'notification', ${crypto.randomUUID()},
-        ${JSON.stringify({ userId })}::jsonb)`,
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('notification.read_all', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.entityId},
+        ${JSON.stringify({ userId: ctx.actorId })}::jsonb)`,
     )
 
     revalidatePath('/dashboard/notifications')
@@ -154,8 +153,8 @@ export async function createNotification(data: {
     const notificationId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('notification.created', 'system', 'notification', ${notificationId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('notification.created', 'system', 'notification', ${notificationId}, 'system',
         ${JSON.stringify({
           userId: data.userId,
           type: data.type,

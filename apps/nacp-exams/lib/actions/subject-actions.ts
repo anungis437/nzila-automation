@@ -5,11 +5,10 @@
  *
  * Manages exam subjects (courses/papers), listing, and CRUD.
  */
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { CreateSubjectSchema } from '@nzila/nacp-core/schemas'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,10 +34,9 @@ export async function listSubjects(opts?: {
   level?: string
   search?: string
 }): Promise<{ subjects: SubjectRow[] }> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
-  let filter = sql`1=1`
+  let filter = sql`s.org_id = ${ctx.entityId}`
   if (opts?.level) {
     filter = sql`${filter} AND s.level = ${opts.level}`
   }
@@ -69,16 +67,17 @@ export async function listSubjects(opts?: {
 }
 
 export async function getSubjectStats(): Promise<SubjectStats> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const [totalRow] = await platformDb.execute(sql`
     SELECT COUNT(*)::int as total FROM subjects
+    WHERE org_id = ${ctx.entityId}
   `)
 
   const levelRows = await platformDb.execute(sql`
     SELECT level, COUNT(*)::int as count
     FROM subjects
+    WHERE org_id = ${ctx.entityId}
     GROUP BY level
     ORDER BY level
   `)
@@ -99,8 +98,7 @@ export async function createSubject(data: {
   questionCount?: number
   durationMinutes?: number
 }) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const parsed = CreateSubjectSchema.safeParse(data)
   if (!parsed.success) {
@@ -110,16 +108,17 @@ export async function createSubject(data: {
   const id = crypto.randomUUID()
 
   await platformDb.execute(sql`
-    INSERT INTO subjects (id, name, code, level, description, question_count, duration_minutes, created_by, created_at)
+    INSERT INTO subjects (id, org_id, name, code, level, description, question_count, duration_minutes, created_by, created_at)
     VALUES (
       ${id},
+      ${ctx.entityId},
       ${data.name},
       ${data.code},
       ${data.level},
       ${data.description ?? null},
       ${data.questionCount ?? 0},
       ${data.durationMinutes ?? 60},
-      ${userId},
+      ${ctx.actorId},
       NOW()
     )
   `)

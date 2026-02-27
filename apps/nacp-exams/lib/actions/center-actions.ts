@@ -5,13 +5,12 @@
  *
  * Manages exam center registration, listing, and status updates.
  */
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { CreateCenterSchema } from '@nzila/nacp-core/schemas'
 import { CenterStatus } from '@nzila/nacp-core/enums'
 import { buildExamEvidencePack } from '@/lib/evidence'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,10 +38,9 @@ export async function listCenters(opts?: {
   status?: string
   search?: string
 }): Promise<{ centers: CenterRow[] }> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
-  let filter = sql`1=1`
+  let filter = sql`ec.org_id = ${ctx.entityId}`
   if (opts?.status) {
     filter = sql`${filter} AND ec.status = ${opts.status}`
   }
@@ -74,8 +72,7 @@ export async function listCenters(opts?: {
 }
 
 export async function getCenterStats(): Promise<CenterStats> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const [row] = await platformDb.execute(sql`
     SELECT
@@ -84,6 +81,7 @@ export async function getCenterStats(): Promise<CenterStats> {
       COUNT(*) FILTER (WHERE status = 'pending')::int as pending,
       COUNT(*) FILTER (WHERE status = ${CenterStatus.SUSPENDED})::int as suspended
     FROM exam_centers
+    WHERE org_id = ${ctx.entityId}
   `)
 
   const r = row as Record<string, number>
@@ -106,8 +104,7 @@ export async function createCenter(data: {
   address?: string
   contactEmail?: string
 }) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const parsed = CreateCenterSchema.safeParse(data)
   if (!parsed.success) {
@@ -117,9 +114,10 @@ export async function createCenter(data: {
   const id = crypto.randomUUID()
 
   await platformDb.execute(sql`
-    INSERT INTO exam_centers (id, name, code, city, province, capacity, address, contact_email, status, created_by, created_at)
+    INSERT INTO exam_centers (id, org_id, name, code, city, province, capacity, address, contact_email, status, created_by, created_at)
     VALUES (
       ${id},
+      ${ctx.entityId},
       ${data.name},
       ${data.code},
       ${data.city},
@@ -128,7 +126,7 @@ export async function createCenter(data: {
       ${data.address ?? null},
       ${data.contactEmail ?? null},
       ${CenterStatus.ACTIVE},
-      ${userId},
+      ${ctx.actorId},
       NOW()
     )
   `)
@@ -137,7 +135,7 @@ export async function createCenter(data: {
     action: 'center.created',
     entityType: 'exam_center',
     entityId: id,
-    actorId: userId,
+    actorId: ctx.actorId,
     payload: { name: data.name, code: data.code, city: data.city },
   }).catch(() => {})
 
@@ -148,13 +146,12 @@ export async function updateCenterStatus(
   centerId: string,
   status: CenterStatus,
 ) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   await platformDb.execute(sql`
     UPDATE exam_centers
     SET status = ${status}, updated_at = NOW()
-    WHERE id = ${centerId}
+    WHERE id = ${centerId} AND org_id = ${ctx.entityId}
   `)
 
   return { success: true }

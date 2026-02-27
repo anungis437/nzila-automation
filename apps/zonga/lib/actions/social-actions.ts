@@ -6,7 +6,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -50,8 +50,7 @@ export interface SocialStats {
 /* ─── Follow ─── */
 
 export async function followUser(followingId: string, followingName?: string): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const followId = crypto.randomUUID()
@@ -60,8 +59,9 @@ export async function followUser(followingId: string, followingName?: string): P
     const [existing] = (await platformDb.execute(
       sql`SELECT entity_id FROM audit_log
       WHERE action = 'social.followed'
-        AND metadata->>'followerId' = ${userId}
+        AND metadata->>'followerId' = ${ctx.actorId}
         AND metadata->>'followingId' = ${followingId}
+        AND org_id = ${ctx.entityId}
       LIMIT 1`,
     )) as unknown as [{ entity_id: string } | undefined]
 
@@ -70,16 +70,16 @@ export async function followUser(followingId: string, followingName?: string): P
     }
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('social.followed', ${userId}, 'follow', ${followId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('social.followed', ${ctx.actorId}, 'follow', ${followId}, ${ctx.entityId},
         ${JSON.stringify({
-          followerId: userId,
+          followerId: ctx.actorId,
           followingId,
           followingName,
         })}::jsonb)`,
     )
 
-    logger.info('User followed', { followerId: userId, followingId })
+    logger.info('User followed', { followerId: ctx.actorId, followingId })
     return { success: true }
   } catch (error) {
     logger.error('followUser failed', { error })
@@ -88,22 +88,21 @@ export async function followUser(followingId: string, followingName?: string): P
 }
 
 export async function unfollowUser(followingId: string): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const unfollowId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('social.unfollowed', ${userId}, 'follow', ${unfollowId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('social.unfollowed', ${ctx.actorId}, 'follow', ${unfollowId}, ${ctx.entityId},
         ${JSON.stringify({
-          followerId: userId,
+          followerId: ctx.actorId,
           followingId,
         })}::jsonb)`,
     )
 
-    logger.info('User unfollowed', { followerId: userId, followingId })
+    logger.info('User unfollowed', { followerId: ctx.actorId, followingId })
     return { success: true }
   } catch (error) {
     logger.error('unfollowUser failed', { error })
@@ -112,8 +111,7 @@ export async function unfollowUser(followingId: string): Promise<{ success: bool
 }
 
 export async function listFollowers(creatorId: string): Promise<Follow[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const rows = (await platformDb.execute(
@@ -125,9 +123,11 @@ export async function listFollowers(creatorId: string): Promise<Follow[]> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'social.followed' AND metadata->>'followingId' = ${creatorId}
+        AND org_id = ${ctx.entityId}
         AND entity_id NOT IN (
           SELECT metadata->>'originalFollowId' FROM audit_log
           WHERE action = 'social.unfollowed' AND metadata->>'followingId' = ${creatorId}
+            AND org_id = ${ctx.entityId}
         )
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Follow[] }
@@ -140,9 +140,8 @@ export async function listFollowers(creatorId: string): Promise<Follow[]> {
 }
 
 export async function listFollowing(userId_?: string): Promise<Follow[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
-  const targetUser = userId_ ?? userId
+  const ctx = await resolveOrgContext()
+  const targetUser = userId_ ?? ctx.actorId
 
   try {
     const rows = (await platformDb.execute(
@@ -154,6 +153,7 @@ export async function listFollowing(userId_?: string): Promise<Follow[]> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'social.followed' AND metadata->>'followerId' = ${targetUser}
+        AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Follow[] }
 
@@ -170,23 +170,22 @@ export async function likeAsset(
   assetId: string,
   assetTitle?: string,
 ): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const likeId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('social.liked', ${userId}, 'like', ${likeId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('social.liked', ${ctx.actorId}, 'like', ${likeId}, ${ctx.entityId},
         ${JSON.stringify({
-          userId,
+          userId: ctx.actorId,
           assetId,
           assetTitle,
         })}::jsonb)`,
     )
 
-    logger.info('Asset liked', { userId, assetId })
+    logger.info('Asset liked', { userId: ctx.actorId, assetId })
     return { success: true }
   } catch (error) {
     logger.error('likeAsset failed', { error })
@@ -195,17 +194,16 @@ export async function likeAsset(
 }
 
 export async function unlikeAsset(assetId: string): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const unlikeId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('social.unliked', ${userId}, 'like', ${unlikeId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('social.unliked', ${ctx.actorId}, 'like', ${unlikeId}, ${ctx.entityId},
         ${JSON.stringify({
-          userId,
+          userId: ctx.actorId,
           assetId,
         })}::jsonb)`,
     )
@@ -218,18 +216,19 @@ export async function unlikeAsset(assetId: string): Promise<{ success: boolean }
 }
 
 export async function getAssetLikeCount(assetId: string): Promise<number> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const [likes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.liked' AND metadata->>'assetId' = ${assetId}`,
+      WHERE action = 'social.liked' AND metadata->>'assetId' = ${assetId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const [unlikes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.unliked' AND metadata->>'assetId' = ${assetId}`,
+      WHERE action = 'social.unliked' AND metadata->>'assetId' = ${assetId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     return Math.max(0, Number(likes?.total ?? 0) - Number(unlikes?.total ?? 0))
@@ -246,24 +245,23 @@ export async function postComment(data: {
   content: string
   userName?: string
 }): Promise<{ success: boolean; commentId?: string }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const commentId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('social.commented', ${userId}, 'comment', ${commentId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('social.commented', ${ctx.actorId}, 'comment', ${commentId}, ${ctx.entityId},
         ${JSON.stringify({
-          userId,
+          userId: ctx.actorId,
           userName: data.userName,
           assetId: data.assetId,
           content: data.content,
         })}::jsonb)`,
     )
 
-    logger.info('Comment posted', { userId, assetId: data.assetId })
+    logger.info('Comment posted', { userId: ctx.actorId, assetId: data.assetId })
     revalidatePath('/dashboard/catalog')
     return { success: true, commentId }
   } catch (error) {
@@ -273,8 +271,7 @@ export async function postComment(data: {
 }
 
 export async function listComments(assetId: string): Promise<Comment[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const rows = (await platformDb.execute(
@@ -287,6 +284,7 @@ export async function listComments(assetId: string): Promise<Comment[]> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'social.commented' AND metadata->>'assetId' = ${assetId}
+        AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Comment[] }
 
@@ -306,17 +304,16 @@ export async function tipCreator(data: {
   currency: string
   message?: string
 }): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const tipId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('social.tipped', ${userId}, 'tip', ${tipId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('social.tipped', ${ctx.actorId}, 'tip', ${tipId}, ${ctx.entityId},
         ${JSON.stringify({
-          senderId: userId,
+          senderId: ctx.actorId,
           creatorId: data.creatorId,
           creatorName: data.creatorName,
           amount: data.amount,
@@ -327,8 +324,8 @@ export async function tipCreator(data: {
 
     // Also record it as revenue for the creator
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('revenue.recorded', ${userId}, 'revenue', ${crypto.randomUUID()},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.entityId},
         ${JSON.stringify({
           type: RevenueType.TIP,
           creatorId: data.creatorId,
@@ -337,7 +334,7 @@ export async function tipCreator(data: {
         })}::jsonb)`,
     )
 
-    logger.info('Tip sent', { senderId: userId, creatorId: data.creatorId, amount: data.amount })
+    logger.info('Tip sent', { senderId: ctx.actorId, creatorId: data.creatorId, amount: data.amount })
     return { success: true }
   } catch (error) {
     logger.error('tipCreator failed', { error })
@@ -348,28 +345,31 @@ export async function tipCreator(data: {
 /* ─── Social Stats ─── */
 
 export async function getSocialStats(entityId: string): Promise<SocialStats> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const [followers] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followingId' = ${entityId}`,
+      WHERE action = 'social.followed' AND metadata->>'followingId' = ${entityId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const [following] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followerId' = ${entityId}`,
+      WHERE action = 'social.followed' AND metadata->>'followerId' = ${entityId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const [likes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.liked' AND metadata->>'userId' = ${entityId}`,
+      WHERE action = 'social.liked' AND metadata->>'userId' = ${entityId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const [comments] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.commented' AND metadata->>'userId' = ${entityId}`,
+      WHERE action = 'social.commented' AND metadata->>'userId' = ${entityId}
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     return {

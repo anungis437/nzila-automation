@@ -1,11 +1,15 @@
 /**
- * CROSS_ORG_AUTH_001 — "Cross-org / cross-tenant routes require admin auth"
+ * CROSS_ORG_AUTH_001 — "Cross-org / cross-tenant routes require platform-level auth"
  *
  * Any API route whose path contains `cross-org` or `cross-tenant` exposes
  * data spanning multiple organisations. These routes MUST:
  *   1. Use the `withApi()` framework (not bare function exports)
  *   2. Require authentication (`auth: { required: true }`)
- *   3. Gate to admin role (`minRole: 'admin'`)
+ *   3. Gate to platform-level role (`minRole: 'platform_lead'` or higher)
+ *
+ * SECURITY NOTE: `admin` (level 95) is an org-level role (local union exec).
+ * Cross-org data exposure cannot be gated at org-level — it requires
+ * platform-level access (platform_lead = 270, cto = 290, coo = 295, app_owner = 300).
  *
  * A bare `djangoProxy()` call without `withApi()` is a bypass vector
  * because the Django layer's `requireAuth` default only ensures Clerk
@@ -44,7 +48,10 @@ function isCrossOrgRoute(filePath: string): boolean {
 
 // ── Tests ───────────────────────────────────────────────────────────────────
 
-describe('CROSS_ORG_AUTH_001 — Cross-org routes require admin auth', () => {
+/** Platform-level roles that satisfy cross-org access (level >= 270) */
+const PLATFORM_MIN_ROLES = ['platform_lead', 'cto', 'coo', 'app_owner']
+
+describe('CROSS_ORG_AUTH_001 — Cross-org routes require platform-level auth', () => {
   const allRouteFiles = walkSync(APPS_DIR).filter(isCrossOrgRoute)
 
   it('discovers cross-org route files to scan', () => {
@@ -92,19 +99,24 @@ describe('CROSS_ORG_AUTH_001 — Cross-org routes require admin auth', () => {
     expect(violations, formatViolations(violations)).toHaveLength(0)
   })
 
-  it('every cross-org route requires admin role', () => {
+  it('every cross-org route requires platform-level role (not org-level admin)', () => {
     const violations: Violation[] = []
 
     for (const file of allRouteFiles) {
       const content = readContent(file)
-      // Must have minRole set to admin (or owner/superadmin which are above admin)
-      if (!content.includes("minRole: 'admin'") && !content.includes("minRole: 'owner'") && !content.includes("minRole: 'superadmin'")) {
+      // Must have minRole set to a platform-level role (>= platform_lead)
+      // org-level 'admin' (level 95) is NOT sufficient for cross-org data
+      const hasPlatformRole = PLATFORM_MIN_ROLES.some(
+        (role) => content.includes(`minRole: '${role}'`),
+      )
+      if (!hasPlatformRole) {
         violations.push({
           ruleId: 'CROSS_ORG_AUTH_001',
           filePath: relPath(file),
-          offendingValue: 'Missing minRole: "admin" — cross-org data requires admin gating',
+          offendingValue:
+            'Missing platform-level minRole — cross-org data must not be accessible by org-level admin',
           remediation:
-            'Add minRole: "admin" (or higher) to the auth config in withApi()',
+            'Set minRole: "platform_lead" (or higher: cto, coo, app_owner) in withApi() auth config',
         })
       }
     }
