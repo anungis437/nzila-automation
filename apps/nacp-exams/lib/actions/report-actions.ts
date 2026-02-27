@@ -6,10 +6,9 @@
  * Generates exam result summaries, pass-rate analytics, and
  * session completion reports.
  */
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -44,17 +43,16 @@ export interface SessionReport {
 // ── Queries ──────────────────────────────────────────────────────────────────
 
 export async function getReportSummary(): Promise<ReportSummary> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   try {
     const [row] = await platformDb.execute(sql`
       SELECT
-        (SELECT COUNT(*)::int FROM exam_sessions) as "totalSessions",
-        (SELECT COUNT(*)::int FROM exam_sessions WHERE status = 'completed') as "completedSessions",
-        (SELECT COUNT(*)::int FROM candidates) as "totalCandidates",
-        (SELECT COUNT(*)::int FROM submissions WHERE status = 'passed') as "passedCandidates",
-        (SELECT COALESCE(AVG(score), 0)::numeric FROM submissions WHERE score IS NOT NULL) as "avgScore"
+        (SELECT COUNT(*)::int FROM exam_sessions WHERE org_id = ${ctx.entityId}) as "totalSessions",
+        (SELECT COUNT(*)::int FROM exam_sessions WHERE org_id = ${ctx.entityId} AND status = 'completed') as "completedSessions",
+        (SELECT COUNT(*)::int FROM candidates WHERE org_id = ${ctx.entityId}) as "totalCandidates",
+        (SELECT COUNT(*)::int FROM submissions WHERE org_id = ${ctx.entityId} AND status = 'passed') as "passedCandidates",
+        (SELECT COALESCE(AVG(score), 0)::numeric FROM submissions WHERE org_id = ${ctx.entityId} AND score IS NOT NULL) as "avgScore"
     `)
 
     const r = row as Record<string, number>
@@ -82,8 +80,7 @@ export async function getReportSummary(): Promise<ReportSummary> {
 }
 
 export async function getSubjectPerformance(): Promise<{ subjects: SubjectPerformance[] }> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   try {
     const rows = await platformDb.execute(sql`
@@ -99,6 +96,7 @@ export async function getSubjectPerformance(): Promise<{ subjects: SubjectPerfor
         END as "passRate"
       FROM subjects s
       LEFT JOIN submissions sub ON sub.subject_id = s.id
+      WHERE s.org_id = ${ctx.entityId}
       GROUP BY s.id, s.name, s.code
       ORDER BY s.name
     `)
@@ -112,11 +110,10 @@ export async function getSubjectPerformance(): Promise<{ subjects: SubjectPerfor
 export async function getSessionReports(opts?: {
   status?: string
 }): Promise<{ reports: SessionReport[] }> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   try {
-    let filter = sql`1=1`
+    let filter = sql`es.org_id = ${ctx.entityId}`
     if (opts?.status) {
       filter = sql`${filter} AND es.status = ${opts.status}`
     }

@@ -6,11 +6,10 @@
  * Manages integrity artifacts, verification, and evidence-chain queries.
  * Integrates with @nzila/os-core evidence pipeline for tamper-proof seals.
  */
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { verifySeal } from '@/lib/evidence'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,8 +35,7 @@ export interface IntegrityDashboard {
 // ── Queries ──────────────────────────────────────────────────────────────────
 
 export async function getIntegrityDashboard(): Promise<IntegrityDashboard> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   try {
     const [statsRow] = await platformDb.execute(sql`
@@ -47,6 +45,7 @@ export async function getIntegrityDashboard(): Promise<IntegrityDashboard> {
         COUNT(*) FILTER (WHERE status = 'pending')::int as "pendingCount",
         COUNT(*) FILTER (WHERE status = 'failed')::int as "failedCount"
       FROM integrity_artifacts
+      WHERE org_id = ${ctx.entityId}
     `)
 
     const recentRows = await platformDb.execute(sql`
@@ -59,6 +58,7 @@ export async function getIntegrityDashboard(): Promise<IntegrityDashboard> {
         status,
         created_at as "createdAt"
       FROM integrity_artifacts
+      WHERE org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT 20
     `)
@@ -88,13 +88,12 @@ export async function getIntegrityDashboard(): Promise<IntegrityDashboard> {
 }
 
 export async function verifyArtifact(artifactId: string) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const [artifact] = await platformDb.execute(sql`
     SELECT seal_hash as "sealHash", entity_type as "entityType", entity_id as "entityId"
     FROM integrity_artifacts
-    WHERE id = ${artifactId}
+    WHERE id = ${artifactId} AND org_id = ${ctx.entityId}
   `)
 
   if (!artifact) {
@@ -110,8 +109,8 @@ export async function verifyArtifact(artifactId: string) {
 
     await platformDb.execute(sql`
       UPDATE integrity_artifacts
-      SET status = ${valid ? 'verified' : 'failed'}, verified_at = NOW(), verified_by = ${userId}
-      WHERE id = ${artifactId}
+      SET status = ${valid ? 'verified' : 'failed'}, verified_at = NOW(), verified_by = ${ctx.actorId}
+      WHERE id = ${artifactId} AND org_id = ${ctx.entityId}
     `)
 
     return { success: true, valid }

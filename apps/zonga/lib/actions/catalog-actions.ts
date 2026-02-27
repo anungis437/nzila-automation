@@ -6,7 +6,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -35,8 +35,7 @@ export async function listCatalogAssets(opts?: {
   type?: string
   status?: string
 }): Promise<CatalogListResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const page = opts?.page ?? 1
   const pageSize = opts?.pageSize ?? 25
@@ -55,14 +54,16 @@ export async function listCatalogAssets(opts?: {
         metadata->>'isrc' as isrc,
         created_at as "createdAt"
       FROM audit_log
-      WHERE action = 'asset.created' OR action = 'asset.published'
+      WHERE (action = 'asset.created' OR action = 'asset.published')
+        AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT ${pageSize} OFFSET ${offset}`,
     )) as unknown as { rows: ContentAsset[] }
 
     const [countResult] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'asset.created' OR action = 'asset.published'`,
+      WHERE (action = 'asset.created' OR action = 'asset.published')
+        AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const total = Number(countResult?.total ?? 0)
@@ -85,8 +86,7 @@ export async function createContentAsset(data: {
   creatorName?: string
   duration?: number
 }): Promise<{ success: boolean; assetId?: string; error?: unknown }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const parsed = CreateContentAssetSchema.safeParse(data)
   if (!parsed.success) {
@@ -98,8 +98,8 @@ export async function createContentAsset(data: {
     const assetId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('asset.created', ${userId}, 'content_asset', ${assetId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('asset.created', ${ctx.actorId}, 'content_asset', ${assetId}, ${ctx.entityId},
         ${JSON.stringify({ ...data, status: AssetStatus.DRAFT, id: assetId })}::jsonb)`,
     )
 
@@ -107,7 +107,7 @@ export async function createContentAsset(data: {
       action: ZongaAuditAction.CONTENT_UPLOAD,
       entityType: ZongaEntityType.CONTENT_ASSET,
       entityId: assetId,
-      actorId: userId,
+      actorId: ctx.actorId,
       targetId: assetId,
       metadata: { title: data.title, type: data.type },
     })
@@ -116,7 +116,7 @@ export async function createContentAsset(data: {
     const pack = buildEvidencePackFromAction({
       actionType: 'CONTENT_ASSET_CREATED',
       entityId: assetId,
-      executedBy: userId,
+      executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
     await processEvidencePack(pack)
@@ -130,13 +130,12 @@ export async function createContentAsset(data: {
 }
 
 export async function publishAsset(assetId: string): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('asset.published', ${userId}, 'content_asset', ${assetId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('asset.published', ${ctx.actorId}, 'content_asset', ${assetId}, ${ctx.entityId},
         ${JSON.stringify({ status: AssetStatus.PUBLISHED, publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
@@ -144,7 +143,7 @@ export async function publishAsset(assetId: string): Promise<{ success: boolean 
       action: ZongaAuditAction.CONTENT_PUBLISH,
       entityType: ZongaEntityType.CONTENT_ASSET,
       entityId: assetId,
-      actorId: userId,
+      actorId: ctx.actorId,
       targetId: assetId,
     })
     logger.info('Content asset published', { ...auditEvent })
@@ -166,8 +165,7 @@ export async function publishAsset(assetId: string): Promise<{ success: boolean 
 }
 
 export async function getAssetDetail(assetId: string): Promise<ContentAsset | null> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const [row] = (await platformDb.execute(
@@ -183,6 +181,7 @@ export async function getAssetDetail(assetId: string): Promise<ContentAsset | nu
         created_at as "createdAt"
       FROM audit_log
       WHERE entity_id = ${assetId} AND entity_type = 'content_asset'
+        AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT 1`,
     )) as unknown as [ContentAsset | undefined]

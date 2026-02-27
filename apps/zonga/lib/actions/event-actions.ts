@@ -6,7 +6,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -72,8 +72,7 @@ export async function listEvents(opts?: {
   page?: number
   status?: string
 }): Promise<EventListResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const page = opts?.page ?? 1
   const offset = (page - 1) * 25
@@ -99,13 +98,13 @@ export async function listEvents(opts?: {
         metadata->>'genre' as genre,
         created_at as "createdAt"
       FROM audit_log
-      WHERE action = 'event.created' OR action = 'event.published'
+      WHERE (action = 'event.created' OR action = 'event.published') AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: ZongaEvent[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'event.%' AND action != 'event.ticket.purchased'`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'event.%' AND action != 'event.ticket.purchased' AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -126,8 +125,7 @@ export async function getEventDetail(eventId: string): Promise<{
   ticketsSold: number
   ticketRevenue: number
 }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const [event] = (await platformDb.execute(
@@ -149,7 +147,7 @@ export async function getEventDetail(eventId: string): Promise<{
         metadata->>'genre' as genre,
         created_at as "createdAt"
       FROM audit_log
-      WHERE entity_id = ${eventId} AND action LIKE 'event.%'
+      WHERE entity_id = ${eventId} AND action LIKE 'event.%' AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [ZongaEvent | undefined]
 
@@ -167,7 +165,7 @@ export async function getEventDetail(eventId: string): Promise<{
         metadata->>'stripeSessionId' as "stripeSessionId",
         created_at as "createdAt"
       FROM audit_log
-      WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${eventId}
+      WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${eventId} AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Ticket[] }
 
@@ -209,15 +207,14 @@ export async function createEvent(data: {
   performers?: string[]
   genre?: string
 }): Promise<{ success: boolean; eventId?: string }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const eventId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('event.created', ${userId}, 'event', ${eventId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('event.created', ${ctx.actorId}, 'event', ${eventId}, ${ctx.entityId},
         ${JSON.stringify({
           ...data,
           id: eventId,
@@ -230,7 +227,7 @@ export async function createEvent(data: {
       action: 'event.created' as ZongaAuditAction,
       entityType: 'event' as ZongaEntityType,
       entityId: eventId,
-      actorId: userId,
+      actorId: ctx.actorId,
       targetId: eventId,
       metadata: { title: data.title, venue: data.venue },
     })
@@ -239,7 +236,7 @@ export async function createEvent(data: {
     const pack = buildEvidencePackFromAction({
       actionType: 'EVENT_CREATED',
       entityId: eventId,
-      executedBy: userId,
+      executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
     await processEvidencePack(pack)
@@ -257,17 +254,16 @@ export async function createEvent(data: {
 export async function publishEvent(
   eventId: string,
 ): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('event.published', ${userId}, 'event', ${eventId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('event.published', ${ctx.actorId}, 'event', ${eventId}, ${ctx.entityId},
         ${JSON.stringify({ status: 'published', publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
-    logger.info('Event published', { eventId, actorId: userId })
+    logger.info('Event published', { eventId, actorId: ctx.actorId })
     revalidatePath('/dashboard/events')
     return { success: true }
   } catch (error) {
@@ -289,8 +285,7 @@ export async function purchaseTicket(data: {
   successUrl: string
   cancelUrl: string
 }): Promise<{ success: boolean; checkoutUrl?: string }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const ticketId = crypto.randomUUID()
@@ -317,8 +312,8 @@ export async function purchaseTicket(data: {
 
     // Record ticket purchase (pending until webhook confirms)
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('event.ticket.purchased', ${userId}, 'ticket', ${ticketId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('event.ticket.purchased', ${ctx.actorId}, 'ticket', ${ticketId}, ${ctx.entityId},
         ${JSON.stringify({
           eventId: data.eventId,
           eventTitle: data.eventTitle,
@@ -334,8 +329,8 @@ export async function purchaseTicket(data: {
 
     // Record revenue event
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('revenue.recorded', ${userId}, 'revenue', ${crypto.randomUUID()},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.entityId},
         ${JSON.stringify({
           type: 'ticket_sale',
           eventId: data.eventId,
@@ -364,16 +359,15 @@ export async function listTickets(opts?: {
   eventId?: string
   page?: number
 }): Promise<TicketListResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const page = opts?.page ?? 1
   const offset = (page - 1) * 25
 
   try {
     const whereClause = opts?.eventId
-      ? sql`WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${opts.eventId}`
-      : sql`WHERE action = 'event.ticket.purchased'`
+      ? sql`WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${opts.eventId} AND org_id = ${ctx.entityId}`
+      : sql`WHERE action = 'event.ticket.purchased' AND org_id = ${ctx.entityId}`
 
     const rows = (await platformDb.execute(
       sql`SELECT

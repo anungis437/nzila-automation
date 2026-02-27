@@ -9,13 +9,13 @@
  *   3. `runAIExtraction`  → OCR/handwriting recognition for paper submissions
  *   4. `runPrediction`    → Candidate performance prediction + integrity risk
  */
-import { auth } from '@clerk/nextjs/server'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 import { runAICompletion, runAIEmbed, runAIExtraction } from '@/lib/ai-client'
 import { runPrediction } from '@/lib/ml-client'
 import { buildExamEvidencePack } from '@/lib/evidence'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 /* ─── Types ─── */
 
@@ -55,19 +55,19 @@ export async function checkSubmissionSimilarity(
   sessionId: string,
   submissionIds: string[],
 ): Promise<SimilarityResult[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   if (submissionIds.length < 2) return []
 
   try {
-    logger.info('Running plagiarism check', { actorId: userId, sessionId, count: submissionIds.length })
+    logger.info('Running plagiarism check', { actorId: ctx.actorId, sessionId, count: submissionIds.length })
 
-    // Fetch submission texts
+    // Fetch submission texts (org-scoped)
     const submissions = (await platformDb.execute(
       sql`SELECT entity_id as id, metadata->>'answerText' as text
       FROM audit_log
-      WHERE entity_id = ANY(${submissionIds})
+      WHERE org_id = ${ctx.entityId}
+        AND entity_id = ANY(${submissionIds})
         AND action = 'submission.recorded'
       ORDER BY created_at DESC`,
     )) as unknown as Array<{ id: string; text: string }>
@@ -109,7 +109,7 @@ export async function checkSubmissionSimilarity(
         action: 'PLAGIARISM_FLAGGED',
         entityType: 'exam_session',
         entityId: sessionId,
-        actorId: userId,
+        actorId: ctx.actorId,
         payload: { flaggedPairs: results.filter((r) => r.flagged).length },
       })
     }
@@ -129,8 +129,7 @@ export async function generateQuestions(opts: {
   count: number
   existingQuestions?: string[]
 }): Promise<GeneratedQuestion[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const existingContext = opts.existingQuestions?.length
@@ -178,11 +177,10 @@ export async function extractPaperSubmission(
   imageBase64: string,
   candidateId: string,
 ): Promise<PaperExtraction | null> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
-    logger.info('Extracting paper submission', { actorId: userId, candidateId })
+    logger.info('Extracting paper submission', { actorId: ctx.actorId, candidateId })
 
     const data = await runAIExtraction(imageBase64, 'paper-exam-ocr', {
       profile: 'nacp-exams-extract',
@@ -193,7 +191,7 @@ export async function extractPaperSubmission(
       action: 'PAPER_EXTRACTION',
       entityType: 'candidate',
       entityId: candidateId,
-      actorId: userId,
+      actorId: ctx.actorId,
       payload: { inputLength: imageBase64.length },
     })
 
@@ -214,8 +212,7 @@ export async function assessIntegrityRisk(
   sessionId: string,
   candidateId: string,
 ): Promise<IntegrityRisk | null> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     // Try ML model first
@@ -228,7 +225,7 @@ export async function assessIntegrityRisk(
       return mlResult as unknown as IntegrityRisk
     }
 
-    // Fallback: AI heuristic from submission metadata
+    // Fallback: AI heuristic from submission metadata (org-scoped)
     const submissions = (await platformDb.execute(
       sql`SELECT
         metadata->>'timingMs' as "timingMs",
@@ -236,7 +233,8 @@ export async function assessIntegrityRisk(
         metadata->>'pasteEvents' as "pasteEvents",
         metadata->>'wordCount' as "wordCount"
       FROM audit_log
-      WHERE entity_id = ${candidateId}
+      WHERE org_id = ${ctx.entityId}
+        AND entity_id = ${candidateId}
         AND action = 'submission.recorded'
       ORDER BY created_at`,
     )) as unknown as Array<Record<string, string>>

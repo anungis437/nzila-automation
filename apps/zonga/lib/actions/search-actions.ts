@@ -6,7 +6,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -34,8 +34,7 @@ export interface SearchResults {
 /* ─── Global Search ─── */
 
 export async function globalSearch(query: string): Promise<SearchResults> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   if (!query || query.trim().length < 2) {
     return { assets: [], creators: [], events: [], playlists: [], total: 0 }
@@ -55,6 +54,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'asset.created'
+        AND org_id = ${ctx.entityId}
         AND (
           LOWER(metadata->>'title') LIKE ${pattern}
           OR LOWER(metadata->>'creatorName') LIKE ${pattern}
@@ -75,6 +75,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'creator.registered'
+        AND org_id = ${ctx.entityId}
         AND (
           LOWER(metadata->>'name') LIKE ${pattern}
           OR LOWER(metadata->>'email') LIKE ${pattern}
@@ -95,6 +96,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'event.created'
+        AND org_id = ${ctx.entityId}
         AND (
           LOWER(metadata->>'title') LIKE ${pattern}
           OR LOWER(metadata->>'venue') LIKE ${pattern}
@@ -115,6 +117,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'playlist.created'
+        AND org_id = ${ctx.entityId}
         AND (
           LOWER(metadata->>'title') LIKE ${pattern}
           OR LOWER(metadata->>'description') LIKE ${pattern}
@@ -144,8 +147,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
 /* ─── Trending / Featured ─── */
 
 export async function getTrending(): Promise<SearchResult[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     // Assets with most likes in the last 30 days
@@ -159,6 +161,7 @@ export async function getTrending(): Promise<SearchResult[]> {
       FROM audit_log a
       LEFT JOIN audit_log b ON b.entity_id = a.metadata->>'assetId' AND b.action = 'asset.created'
       WHERE a.action = 'social.liked'
+        AND a.org_id = ${ctx.entityId}
         AND a.created_at >= NOW() - INTERVAL '30 days'
       GROUP BY a.metadata->>'assetId', b.metadata->>'title', b.metadata->>'creatorName', b.metadata->>'genre'
       ORDER BY like_count DESC
@@ -178,8 +181,7 @@ export async function getTrending(): Promise<SearchResult[]> {
 /* ─── Recently Played ─── */
 
 export async function getRecentlyPlayed(): Promise<SearchResult[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const rows = (await platformDb.execute(
@@ -191,7 +193,8 @@ export async function getRecentlyPlayed(): Promise<SearchResult[]> {
         a.created_at as "createdAt"
       FROM audit_log a
       LEFT JOIN audit_log b ON b.entity_id = a.metadata->>'assetId' AND b.action = 'asset.created'
-      WHERE a.action = 'stream.played' AND a.actor_id = ${userId}
+      WHERE a.action = 'stream.played' AND a.actor_id = ${ctx.actorId}
+        AND a.org_id = ${ctx.entityId}
       ORDER BY a.created_at DESC
       LIMIT 20`,
     )) as unknown as { rows: Omit<SearchResult, 'type'>[] }

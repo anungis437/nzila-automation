@@ -5,7 +5,7 @@
  */
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
@@ -33,8 +33,7 @@ export async function listReleases(opts?: {
   page?: number
   status?: string
 }): Promise<ReleaseListResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const page = opts?.page ?? 1
   const offset = (page - 1) * 25
@@ -50,13 +49,14 @@ export async function listReleases(opts?: {
         metadata->>'releaseDate' as "releaseDate",
         metadata->>'upc' as upc,
         created_at as "createdAt"
-      FROM audit_log WHERE action = 'release.created' OR action = 'release.published'
+      FROM audit_log WHERE (action = 'release.created' OR action = 'release.published')
+      AND org_id = ${ctx.entityId}
       ORDER BY created_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: Release[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'release.%'`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'release.%' AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -76,8 +76,7 @@ export async function createRelease(data: {
   trackCount?: number
   releaseDate?: string
 }): Promise<{ success: boolean; releaseId?: string; error?: unknown }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   const parsed = CreateReleaseSchema.safeParse(data)
   if (!parsed.success) {
@@ -89,8 +88,8 @@ export async function createRelease(data: {
     const releaseId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('release.created', ${userId}, 'release', ${releaseId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('release.created', ${ctx.actorId}, 'release', ${releaseId}, ${ctx.entityId},
         ${JSON.stringify({ ...data, status: ReleaseStatus.DRAFT, id: releaseId })}::jsonb)`,
     )
 
@@ -98,7 +97,7 @@ export async function createRelease(data: {
       action: ZongaAuditAction.RELEASE_PUBLISH,
       entityType: ZongaEntityType.RELEASE,
       entityId: releaseId,
-      actorId: userId,
+      actorId: ctx.actorId,
       targetId: releaseId,
       metadata: { title: data.title, type: data.type },
     })
@@ -115,13 +114,12 @@ export async function createRelease(data: {
 export async function publishRelease(
   releaseId: string,
 ): Promise<{ success: boolean }> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('release.published', ${userId}, 'release', ${releaseId},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
+      VALUES ('release.published', ${ctx.actorId}, 'release', ${releaseId}, ${ctx.entityId},
         ${JSON.stringify({ status: ReleaseStatus.RELEASED, publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
@@ -129,7 +127,7 @@ export async function publishRelease(
       action: ZongaAuditAction.RELEASE_PUBLISH,
       entityType: ZongaEntityType.RELEASE,
       entityId: releaseId,
-      actorId: userId,
+      actorId: ctx.actorId,
       targetId: releaseId,
     })
     logger.info('Release published', { ...auditEvent })
@@ -145,7 +143,7 @@ export async function publishRelease(
     const pack = buildEvidencePackFromAction({
       actionType: 'RELEASE_PUBLISHED',
       entityId: releaseId,
-      executedBy: userId,
+      executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
     await processEvidencePack(pack)
@@ -169,18 +167,17 @@ export interface AnalyticsOverview {
 }
 
 export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     const [streams] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream'`,
+      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream' AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const [downloads] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'download'`,
+      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'download' AND org_id = ${ctx.entityId}`,
     )) as unknown as [{ total: number }]
 
     const topAssets = (await platformDb.execute(
@@ -189,7 +186,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
         COALESCE(metadata->>'assetTitle', metadata->>'assetId') as title,
         COUNT(*) as streams
       FROM audit_log
-      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream'
+      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream' AND org_id = ${ctx.entityId}
       GROUP BY metadata->>'assetId', COALESCE(metadata->>'assetTitle', metadata->>'assetId')
       ORDER BY streams DESC LIMIT 10`,
     )) as unknown as { rows: Array<{ assetId: string; title: string; streams: number }> }
@@ -198,7 +195,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
       sql`SELECT
         TO_CHAR(created_at, 'YYYY-MM') as month,
         COALESCE(SUM(CAST(metadata->>'amount' AS NUMERIC)), 0) as amount
-      FROM audit_log WHERE action = 'revenue.recorded'
+      FROM audit_log WHERE action = 'revenue.recorded' AND org_id = ${ctx.entityId}
       GROUP BY TO_CHAR(created_at, 'YYYY-MM')
       ORDER BY month DESC LIMIT 12`,
     )) as unknown as { rows: Array<{ month: string; amount: number }> }
@@ -252,8 +249,7 @@ export interface IntegrityResult {
 }
 
 export async function getIntegrityChecks(): Promise<IntegrityResult> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
     // Run ML-based content integrity check

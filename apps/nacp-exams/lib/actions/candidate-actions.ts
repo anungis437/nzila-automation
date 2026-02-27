@@ -5,13 +5,12 @@
  *
  * Manages candidate registration, listing, and status updates.
  */
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { CreateCandidateSchema } from '@nzila/nacp-core/schemas'
 import { CandidateStatus } from '@nzila/nacp-core/enums'
 import { buildExamEvidencePack } from '@/lib/evidence'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,10 +39,9 @@ export async function listCandidates(opts?: {
   status?: string
   search?: string
 }): Promise<{ candidates: CandidateRow[] }> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
-  let filter = sql`1=1`
+  let filter = sql`c.org_id = ${ctx.entityId}`
   if (opts?.status) {
     filter = sql`${filter} AND c.status = ${opts.status}`
   }
@@ -76,8 +74,7 @@ export async function listCandidates(opts?: {
 }
 
 export async function getCandidateStats(): Promise<CandidateStats> {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const [row] = await platformDb.execute(sql`
     SELECT
@@ -87,6 +84,7 @@ export async function getCandidateStats(): Promise<CandidateStats> {
       COUNT(*) FILTER (WHERE status = ${CandidateStatus.ELIGIBLE})::int as completed,
       COUNT(*) FILTER (WHERE status = ${CandidateStatus.SUSPENDED})::int as suspended
     FROM candidates
+    WHERE org_id = ${ctx.entityId}
   `)
 
   const r = row as Record<string, number>
@@ -108,8 +106,7 @@ export async function registerCandidate(data: {
   dateOfBirth: string
   sessionId: string
 }) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   const parsed = CreateCandidateSchema.safeParse(data)
   if (!parsed.success) {
@@ -120,9 +117,10 @@ export async function registerCandidate(data: {
   const candidateNumber = `NACP-${Date.now().toString(36).toUpperCase()}`
 
   await platformDb.execute(sql`
-    INSERT INTO candidates (id, first_name, last_name, email, date_of_birth, candidate_number, status, session_id, created_by, created_at)
+    INSERT INTO candidates (id, org_id, first_name, last_name, email, date_of_birth, candidate_number, status, session_id, created_by, created_at)
     VALUES (
       ${id},
+      ${ctx.entityId},
       ${data.firstName},
       ${data.lastName},
       ${data.email},
@@ -130,7 +128,7 @@ export async function registerCandidate(data: {
       ${candidateNumber},
       ${CandidateStatus.REGISTERED},
       ${data.sessionId},
-      ${userId},
+      ${ctx.actorId},
       NOW()
     )
   `)
@@ -139,7 +137,7 @@ export async function registerCandidate(data: {
     action: 'candidate.registered',
     entityType: 'candidate',
     entityId: id,
-    actorId: userId,
+    actorId: ctx.actorId,
     payload: { candidateNumber, sessionId: data.sessionId },
   }).catch(() => {})
 
@@ -150,20 +148,19 @@ export async function updateCandidateStatus(
   candidateId: string,
   status: CandidateStatus,
 ) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const ctx = await resolveOrgContext()
 
   await platformDb.execute(sql`
     UPDATE candidates
     SET status = ${status}, updated_at = NOW()
-    WHERE id = ${candidateId}
+    WHERE id = ${candidateId} AND org_id = ${ctx.entityId}
   `)
 
   await buildExamEvidencePack({
     action: 'candidate.status_changed',
     entityType: 'candidate',
     entityId: candidateId,
-    actorId: userId,
+    actorId: ctx.actorId,
     payload: { newStatus: status },
   }).catch(() => {})
 
