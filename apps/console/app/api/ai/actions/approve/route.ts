@@ -3,7 +3,7 @@
  * API — AI Actions: Approve / Reject
  * POST /api/ai/actions/approve
  *
- * RBAC: entity_admin or appropriate approver role.
+ * RBAC: org_admin or appropriate approver role.
  * Moves from awaiting_approval → approved/rejected.
  */
 import { NextRequest, NextResponse } from 'next/server'
@@ -14,7 +14,7 @@ import {
   AiActionApproveRequestSchema,
   appendAiAuditEvent,
 } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { asAiError } from '@/lib/catch-utils'
 import { createLogger } from '@nzila/os-core'
 
@@ -41,9 +41,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Action not found' }, { status: 404 })
     }
 
-    // 2. RBAC: entity_admin required
-    const access = await requireEntityAccess(action.entityId, {
-      minRole: 'entity_admin',
+    // 2. RBAC: org_admin required
+    const access = await requireOrgAccess(action.orgId, {
+      minRole: 'org_admin',
     })
     if (!access.ok) return access.response
 
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // 5. Audit event
     await appendAiAuditEvent({
-      entityId: action.entityId,
+      orgId: action.orgId,
       actorClerkUserId: access.context.userId,
       action: approved ? 'ai.action_approved' : 'ai.action_rejected',
       targetType: 'ai_action',

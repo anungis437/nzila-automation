@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     const client = await customerRepo.create({
-      entityId: body.entityId ?? 'default',
+      orgId: body.orgId ?? 'default',
       name: body.name,
       email: body.email ?? null,
       phone: body.phone ?? null,

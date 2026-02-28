@@ -5,7 +5,7 @@
  *
  * @invariant ABR_ORG_CONTEXT_001: Every ABR API route resolves org context
  * @invariant ABR_AUTH_REQUIRED_002: Every non-public ABR route calls auth
- * @invariant ABR_NO_UNSCOPD_BODY_003: entityId/orgId never taken from raw request body
+ * @invariant ABR_NO_UNSCOPD_BODY_003: orgId/orgId never taken from raw request body
  * @invariant ABR_ISOLATION_PROOF_004: ABR exposes an isolation-proof endpoint
  */
 import { describe, it, expect } from 'vitest'
@@ -75,7 +75,7 @@ function isPublicRoute(routeFile: string): boolean {
 const AUTH_PATTERNS = [
   /authenticateUser\s*\(/,
   /withRequestContext\s*\(/,
-  /requireEntityAccess\s*\(/,
+  /requireOrgAccess\s*\(/,
   /requirePlatformRole\s*\(/,
   /auth\s*\(\)/,
   /verifyWebhookSignature\s*\(/,
@@ -106,11 +106,11 @@ describe('ABR_AUTH_REQUIRED_002 — Every ABR route calls auth', () => {
 
 // ── ABR_NO_UNSCOPD_BODY_003 ────────────────────────────────────────────────
 
-describe('ABR_NO_UNSCOPD_BODY_003 — orgId/entityId never from request body', () => {
+describe('ABR_NO_UNSCOPD_BODY_003 — orgId/orgId never from request body', () => {
   const BODY_ORG_PATTERN =
-    /(?:req|request)\.(?:body|json\(\))\s*\.\s*(?:entityId|orgId)|body\s*\.\s*(?:entityId|orgId)(?!\s*===\s*auth)/
+    /(?:req|request)\.(?:body|json\(\))\s*\.\s*(?:orgId|orgId)|body\s*\.\s*(?:orgId|orgId)(?!\s*===\s*auth)/
 
-  it('no ABR route takes orgId/entityId directly from request body', () => {
+  it('no ABR route takes orgId/orgId directly from request body', () => {
     const routes = findRouteFiles(join(ABR_ROOT, 'app'))
     const violations: string[] = []
 

@@ -40,13 +40,13 @@ See `Control-Test-Plan.md` → CT-09 for the full annual review procedure.
 
 | Artifact | Format | Control | Storage Path | Retention |
 |---|---|---|---|---|
-| BCP document (versioned) | PDF | DR-03 | `evidence/{entity_id}/dr-bcp/{YYYY}/bcp-review/BCP-{YYYY}/bcp-document-v{version}.pdf` | PERMANENT |
+| BCP document (versioned) | PDF | DR-03 | `evidence/{org_id}/dr-bcp/{YYYY}/bcp-review/BCP-{YYYY}/bcp-document-v{version}.pdf` | PERMANENT |
 | BCP review sign-off | JSON | DR-03 | Same path | PERMANENT |
 | Evidence pack index | JSON | DR-03 | Same path | PERMANENT |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id` (e.g., `BCP-2026`), `sha256`, `created_by`, `retention_class = 'PERMANENT'`
+- `org_id`, `artifact_id` (e.g., `BCP-2026`), `sha256`, `created_by`, `retention_class = 'PERMANENT'`
 
 ### Hashing Expectation
 

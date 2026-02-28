@@ -10,7 +10,7 @@
  * 1. Transitions defined as data (declarative)
  * 2. Guards: pure predicates evaluated before transition
  * 3. Role checks: array of allowed OrgRole values
- * 4. Org match: entityId must match on context
+ * 4. Org match: orgId must match on context
  * 5. Produces eventsToEmit[] + actionsToSchedule[] (no inline side effects)
  * 6. Audit: every transition produces an AuditEvent-compatible record
  *
@@ -26,7 +26,7 @@ import type { OrgRole } from '@nzila/commerce-core/enums'
  */
 export interface TransitionContext<TRole extends string = OrgRole> {
   /** The org this resource belongs to */
-  readonly entityId: string
+  readonly orgId: string
   /** The actor attempting the transition */
   readonly actorId: string
   /** Actor's role within the org */
@@ -85,7 +85,7 @@ export interface MachineDefinition<TState extends string, TEntity = unknown, TRo
   readonly name: string
   /** All possible states */
   readonly states: readonly TState[]
-  /** Initial state for new entities */
+  /** Initial state for new orgs */
   readonly initialState: TState
   /** Terminal states (no transitions out) */
   readonly terminalStates: readonly TState[]
@@ -128,7 +128,7 @@ export type TransitionResult<TState extends string> =
  * Evaluation order:
  * 1. Check: is current state terminal?
  * 2. Find matching transition definition (from → to)
- * 3. Check: org match (entityId in context === entityId on resource)
+ * 3. Check: org match (orgId in context === orgId on resource)
  * 4. Check: role allowed
  * 5. Evaluate: all guard predicates
  * 6. Return: success with events + actions, or failure with reason
@@ -163,10 +163,10 @@ export function attemptTransition<TState extends string, TEntity = unknown, TRol
   }
 
   // 3. Org match
-  if (ctx.entityId !== resourceEntityId) {
+  if (ctx.orgId !== resourceEntityId) {
     return {
       ok: false,
-      reason: `Org mismatch: actor org "${ctx.entityId}" ≠ resource org "${resourceEntityId}"`,
+      reason: `Org mismatch: actor org "${ctx.orgId}" ≠ resource org "${resourceEntityId}"`,
       code: 'ORG_MISMATCH',
     }
   }
@@ -215,7 +215,7 @@ export function getAvailableTransitions<TState extends string, TEntity = unknown
   entity: TEntity,
 ): readonly TransitionDef<TState, TEntity, TRole>[] {
   if (machine.terminalStates.includes(currentState)) return []
-  if (ctx.entityId !== resourceEntityId) return []
+  if (ctx.orgId !== resourceEntityId) return []
 
   return machine.transitions.filter((t) => {
     if (t.from !== currentState) return false

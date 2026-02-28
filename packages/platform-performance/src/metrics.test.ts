@@ -16,7 +16,7 @@ vi.mock('@nzila/db/platform', () => ({
 vi.mock('@nzila/db/schema', () => ({
   platformRequestMetrics: {
     route: 'route',
-    entityId: 'entity_id',
+    orgId: 'org_id',
     latencyMs: 'latency_ms',
     statusCode: 'status_code',
     recordedAt: 'recorded_at',

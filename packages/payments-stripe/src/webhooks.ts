@@ -56,7 +56,7 @@ export function extractEntityIdFromEvent(event: Stripe.Event): string | null {
   // Check metadata on the object itself
   if (obj.metadata && typeof obj.metadata === 'object') {
     const meta = obj.metadata as Record<string, string>
-    if (meta.entity_id) return meta.entity_id
+    if (meta.org_id) return meta.org_id
   }
 
   // For charges, check the payment_intent metadata
@@ -64,7 +64,7 @@ export function extractEntityIdFromEvent(event: Stripe.Event): string | null {
     const pi = obj.payment_intent as Record<string, unknown>
     if (pi.metadata && typeof pi.metadata === 'object') {
       const meta = pi.metadata as Record<string, string>
-      if (meta.entity_id) return meta.entity_id
+      if (meta.org_id) return meta.org_id
     }
   }
 

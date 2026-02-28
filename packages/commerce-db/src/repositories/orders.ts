@@ -20,7 +20,7 @@ export async function listOrders(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -41,7 +41,7 @@ export async function getOrderById(
   ctx: CommerceReadContext,
   orderId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceOrders,
     eq(commerceOrders.id, orderId),
@@ -53,7 +53,7 @@ export async function getOrderByRef(
   ctx: CommerceReadContext,
   ref: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceOrders,
     eq(commerceOrders.ref, ref),
@@ -65,7 +65,7 @@ export async function listOrderLines(
   ctx: CommerceReadContext,
   orderId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceOrderLines,
     eq(commerceOrderLines.orderId, orderId),
@@ -93,7 +93,7 @@ export async function createOrder(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -114,7 +114,7 @@ export async function updateOrder(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -142,7 +142,7 @@ export async function createOrderLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -164,7 +164,7 @@ export async function updateOrderLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -181,7 +181,7 @@ export async function deleteOrderLine(
   lineId: string,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

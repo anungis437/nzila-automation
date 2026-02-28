@@ -41,7 +41,7 @@ export async function createDeal(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_deal',
@@ -61,7 +61,7 @@ export async function createDeal(
   // await repo.create({
   //   ...parsed.data,
   //   id,
-  //   entityId: ctx.entityId,
+  //   orgId: ctx.orgId,
   //   refNumber,
   //   stage: TradeDealStage.LEAD,
   // })
@@ -88,7 +88,7 @@ export async function transitionDeal(
 
   // TODO: fetch current deal stage from DB
   // const repo = createTradeDealRepository(scopedDb)
-  // const deal = await repo.findById(parsed.data.dealId, ctx.entityId)
+  // const deal = await repo.findById(parsed.data.dealId, ctx.orgId)
   // if (!deal) return { ok: false, data: null, error: 'Deal not found', auditEntries: [] }
   // const currentStage = deal.stage
 
@@ -96,7 +96,7 @@ export async function transitionDeal(
   const currentStage = TradeDealStage.LEAD
 
   const transitionCtx: TradeTransitionContext = {
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     meta: parsed.data.metadata ?? {},
@@ -105,7 +105,7 @@ export async function transitionDeal(
   const result = attemptDealTransition(
     tradeDealMachine,
     transitionCtx,
-    { entityId: ctx.entityId, stage: currentStage },
+    { orgId: ctx.orgId, stage: currentStage },
     parsed.data.toStage,
   )
 
@@ -120,7 +120,7 @@ export async function transitionDeal(
 
   const auditEntry = buildTransitionAuditEntry(result, {
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_deal',
@@ -128,7 +128,7 @@ export async function transitionDeal(
   })
 
   // TODO: persist stage update + audit entry + emit events
-  // await repo.updateStage(parsed.data.dealId, ctx.entityId, parsed.data.toStage)
+  // await repo.updateStage(parsed.data.dealId, ctx.orgId, parsed.data.toStage)
   // for (const event of result.eventsToEmit) { await eventBus.emit(event) }
   // for (const action of result.actionsToSchedule) { await sagaRunner.schedule(action) }
 
@@ -152,11 +152,11 @@ export async function getDealTransitions(
   const currentStage = TradeDealStage.LEAD
 
   const available = getAvailableDealTransitions(tradeDealMachine, {
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     meta: {},
-  }, { entityId: ctx.entityId, stage: currentStage })
+  }, { orgId: ctx.orgId, stage: currentStage })
 
   return {
     ok: true,
@@ -173,7 +173,7 @@ export async function listDeals(opts?: {
 }): Promise<TradeServiceResult<{ deals: TradeDeal[]; total: number }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
 
   return {
     ok: true,
@@ -188,9 +188,9 @@ export async function getDeal(
 ): Promise<TradeServiceResult<TradeDeal | null>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
   // const repo = createTradeDealRepository(readonlyDb)
-  // const deal = await repo.findById(dealId, ctx.entityId)
+  // const deal = await repo.findById(dealId, ctx.orgId)
 
   return {
     ok: true,

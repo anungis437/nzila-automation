@@ -46,9 +46,9 @@ export interface QuoteToOrderPorts {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function toOrgContext(ctx: { entityId: string; actorId: string; correlationId: string }): OrgContext {
+function toOrgContext(ctx: { orgId: string; actorId: string; correlationId: string }): OrgContext {
   return {
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: OrgRole.ADMIN,
     permissions: [],

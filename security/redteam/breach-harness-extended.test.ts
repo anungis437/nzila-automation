@@ -44,7 +44,7 @@ const ROOT = join(__dirname, '..', '..')
 // ── RED-TEAM-009: Cross-Org Read via Forged orgId ───────────────────────────
 
 describe('RED-TEAM-009 — Cross-Org read via forged orgId must be structurally impossible', () => {
-  it('ScopedDb forces entity_id filter on every SELECT — no caller override', () => {
+  it('ScopedDb forces org_id filter on every SELECT — no caller override', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
@@ -91,15 +91,15 @@ describe('RED-TEAM-009 — Cross-Org read via forged orgId must be structurally 
 // ── RED-TEAM-010: Cross-Org Write via Forged orgId ──────────────────────────
 
 describe('RED-TEAM-010 — Cross-Org write via forged orgId must be blocked', () => {
-  it('ScopedDb forces entity_id into every INSERT record', () => {
+  it('ScopedDb forces org_id into every INSERT record', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
-    // entity_id is injected, overriding any caller-provided value
+    // org_id is injected, overriding any caller-provided value
     expect(content).toContain('orgId, // force orgId on every row')
   })
 
-  it('ScopedDb forces entity_id filter on every UPDATE', () => {
+  it('ScopedDb forces org_id filter on every UPDATE', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
@@ -108,7 +108,7 @@ describe('RED-TEAM-010 — Cross-Org write via forged orgId must be blocked', ()
     expect(content).toContain('eq(entityCol, orgId)')
   })
 
-  it('ScopedDb forces entity_id filter on every DELETE', () => {
+  it('ScopedDb forces org_id filter on every DELETE', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
@@ -271,7 +271,7 @@ describe('RED-TEAM-014 — Evidence pack re-seal is blocked', () => {
   it('seal() a second time throws', () => {
     const draft = createEvidencePackDraft({
       packId: 'RT-014',
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       controlFamily: 'integrity',
       eventType: 'control-test',
       eventId: 'evt-1',
@@ -298,7 +298,7 @@ describe('RED-TEAM-015 — Draft evidence packs cannot be persisted', () => {
   it('assertSealed throws for draft packs', () => {
     const draft = createEvidencePackDraft({
       packId: 'RT-015',
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       controlFamily: 'integrity',
       eventType: 'control-test',
       eventId: 'evt-1',
@@ -326,17 +326,17 @@ describe('RED-TEAM-015 — Draft evidence packs cannot be persisted', () => {
 describe('RED-TEAM-016 — Forged evidence pack detected by verify-pack', () => {
   const tmpDir = join(ROOT, '.tmp-redteam-016')
 
-  it('verify-pack rejects tampered pack (modified entityId)', () => {
+  it('verify-pack rejects tampered pack (modified orgId)', () => {
     mkdirSync(tmpDir, { recursive: true })
     try {
       const index = {
         packId: 'FORGE-001',
-        entityId: '00000000-0000-0000-0000-000000000001',
+        orgId: '00000000-0000-0000-0000-000000000001',
         artifacts: [{ sha256: 'a'.repeat(64), filename: 'x.json' }],
       }
       const seal = generateSeal(index, { sealedAt: '2026-01-01T00:00:00Z' })
       // Tamper
-      const forged = { ...index, entityId: 'FORGED-ORG', seal }
+      const forged = { ...index, orgId: 'FORGED-ORG', seal }
       writeFileSync(join(tmpDir, 'pack.json'), JSON.stringify(forged))
 
       const result = verifyPackIndex(join(tmpDir, 'pack.json'))
@@ -380,7 +380,7 @@ describe('RED-TEAM-017 — Redacted packs must be re-sealed', () => {
   it('redactAndReseal produces a fresh seal', () => {
     const index = {
       packId: 'REDACT-001',
-      entityId: 'ent-001',
+      orgId: 'ent-001',
       clerkUserId: 'should-be-stripped',
       artifacts: [
         { sha256: 'a'.repeat(64), artifactType: 'test', filename: 'a.json' },
@@ -411,13 +411,13 @@ describe('RED-TEAM-017 — Redacted packs must be re-sealed', () => {
 // ── RED-TEAM-018: Non-Org Table Access via ScopedDb ─────────────────────────
 
 describe('RED-TEAM-018 — Non-Org tables cannot be accessed via ScopedDb', () => {
-  it('ScopedDb throws when table has no entity_id column', () => {
+  it('ScopedDb throws when table has no org_id column', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
 
     // getEntityIdColumn throws on missing column
     expect(content).toContain('getEntityIdColumn')
-    expect(content).toContain('does not have an entity_id column')
+    expect(content).toContain('does not have an org_id column')
     expect(content).toContain('ScopedDbError')
   })
 
@@ -437,6 +437,6 @@ describe('RED-TEAM-018 — Non-Org tables cannot be accessed via ScopedDb', () =
 
     const content = readFileSync(testPath, 'utf-8')
     expect(content).toContain('INV-20')
-    expect(content).toContain('every table with entity_id')
+    expect(content).toContain('every table with org_id')
   })
 })

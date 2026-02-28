@@ -64,10 +64,10 @@ export async function checkSubmissionSimilarity(
 
     // Fetch submission texts (org-scoped)
     const submissions = (await platformDb.execute(
-      sql`SELECT entity_id as id, metadata->>'answerText' as text
+      sql`SELECT org_id as id, metadata->>'answerText' as text
       FROM audit_log
-      WHERE org_id = ${ctx.entityId}
-        AND entity_id = ANY(${submissionIds})
+      WHERE org_id = ${ctx.orgId}
+        AND org_id = ANY(${submissionIds})
         AND action = 'submission.recorded'
       ORDER BY created_at DESC`,
     )) as unknown as Array<{ id: string; text: string }>
@@ -108,7 +108,7 @@ export async function checkSubmissionSimilarity(
       const pack = await buildExamEvidencePack({
         action: 'PLAGIARISM_FLAGGED',
         entityType: 'exam_session',
-        entityId: sessionId,
+        orgId: sessionId,
         actorId: ctx.actorId,
         payload: { flaggedPairs: results.filter((r) => r.flagged).length },
       })
@@ -190,7 +190,7 @@ export async function extractPaperSubmission(
     const pack = await buildExamEvidencePack({
       action: 'PAPER_EXTRACTION',
       entityType: 'candidate',
-      entityId: candidateId,
+      orgId: candidateId,
       actorId: ctx.actorId,
       payload: { inputLength: imageBase64.length },
     })
@@ -233,8 +233,8 @@ export async function assessIntegrityRisk(
         metadata->>'pasteEvents' as "pasteEvents",
         metadata->>'wordCount' as "wordCount"
       FROM audit_log
-      WHERE org_id = ${ctx.entityId}
-        AND entity_id = ${candidateId}
+      WHERE org_id = ${ctx.orgId}
+        AND org_id = ${candidateId}
         AND action = 'submission.recorded'
       ORDER BY created_at`,
     )) as unknown as Array<Record<string, string>>

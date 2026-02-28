@@ -13,7 +13,7 @@ import {
   pgEnum,
   date,
 } from 'drizzle-orm/pg-core'
-import { entities, people } from './entities'
+import { orgs, people } from './orgs'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
 
@@ -70,9 +70,9 @@ export const voteChoiceEnum = pgEnum('vote_choice', [
 
 export const meetings = pgTable('meetings', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   kind: meetingKindEnum('kind').notNull(),
   meetingDate: timestamp('meeting_date', { withTimezone: true }).notNull(),
   location: text('location'),
@@ -86,9 +86,9 @@ export const meetings = pgTable('meetings', {
 
 export const resolutions = pgTable('resolutions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   kind: resolutionKindEnum('kind').notNull(),
   title: text('title').notNull(),
   bodyMarkdown: text('body_markdown'),
@@ -106,9 +106,9 @@ export const resolutions = pgTable('resolutions', {
 
 export const approvals = pgTable('approvals', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   subjectType: approvalSubjectTypeEnum('subject_type').notNull(),
   subjectId: uuid('subject_id').notNull(),
   approvalType: approvalTypeEnum('approval_type').notNull(),
@@ -124,9 +124,9 @@ export const approvals = pgTable('approvals', {
 
 export const votes = pgTable('votes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   approvalId: uuid('approval_id')
     .notNull()
     .references(() => approvals.id),

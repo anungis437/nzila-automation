@@ -5,9 +5,8 @@
  * align to. Each domain extends the base `OrgContext<R>` with
  * its own role union. DB contexts extend `DbContext`.
  *
- * Migration path: domains that still use `entityId` should alias
- * it to `orgId` during the transition period, then drop `entityId`
- * entirely in a follow-up PR.
+ * All domains use `orgId` as the canonical org identity field.
+ * The `orgId` alias has been removed.
  *
  * @module @nzila/org/context
  *
@@ -103,46 +102,4 @@ export function toDbContext(ctx: OrgContext): DbContext {
   }
 }
 
-/**
- * Bridge for domains still using `entityId`.
- * Maps the legacy field to `orgId` for the canonical context.
- *
- * @deprecated — Use `orgId` natively. This helper will be removed
- *   once all verticals have migrated.
- */
-export function fromEntityId<R extends string>(legacy: {
-  readonly entityId: string
-  readonly actorId: string
-  readonly role: R
-  readonly permissions: readonly string[]
-  readonly requestId: string
-  readonly correlationId?: string
-}): OrgContext<R> {
-  return {
-    orgId: legacy.entityId,
-    actorId: legacy.actorId,
-    role: legacy.role,
-    permissions: legacy.permissions,
-    requestId: legacy.requestId,
-    correlationId: legacy.correlationId,
-  }
-}
 
-/**
- * Bridge for DB contexts still using `entityId`.
- *
- * @deprecated — Use `orgId` natively.
- */
-export function fromEntityIdDb(legacy: {
-  readonly entityId: string
-  readonly actorId: string
-  readonly correlationId?: string
-  readonly actorRole?: string
-}): DbContext {
-  return {
-    orgId: legacy.entityId,
-    actorId: legacy.actorId,
-    correlationId: legacy.correlationId,
-    actorRole: legacy.actorRole,
-  }
-}

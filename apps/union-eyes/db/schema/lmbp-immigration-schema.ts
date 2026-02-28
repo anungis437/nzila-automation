@@ -203,7 +203,7 @@ export const lmbpComplianceAlerts = pgTable("lmbp_compliance_alerts", {
   alertType: text("alert_type").notNull(), // 'work_permit_expiry' | 'lmbp_letter_missing' | 'mentorship_incomplete' | 'gss_delay' | 'compliance_report_due'
   severity: text("severity").notNull(), // 'low' | 'medium' | 'high' | 'critical'
   
-  // Associated entities
+  // Associated orgs
   foreignWorkerId: uuid("foreign_worker_id"),
   employerId: uuid("employer_id"),
   lmbpLetterId: uuid("lmbp_letter_id"),

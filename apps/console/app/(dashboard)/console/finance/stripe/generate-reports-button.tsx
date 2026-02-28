@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export function GenerateReportsButton({ entityId }: { entityId: string }) {
+export function GenerateReportsButton({ orgId }: { orgId: string }) {
   const [loading, setLoading] = useState(false)
   const [month, setMonth] = useState(() => {
     const d = new Date()
@@ -20,7 +20,7 @@ export function GenerateReportsButton({ entityId }: { entityId: string }) {
       const res = await fetch('/api/stripe/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entityId, startDate, endDate }),
+        body: JSON.stringify({ orgId, startDate, endDate }),
       })
 
       if (!res.ok) {
@@ -57,11 +57,11 @@ export function GenerateReportsButton({ entityId }: { entityId: string }) {
 }
 
 export function GenerateReportsAiActionButton({
-  entityId,
+  orgId,
   appKey = 'console',
   profileKey = 'finance',
 }: {
-  entityId: string
+  orgId: string
   appKey?: string
   profileKey?: string
 }) {
@@ -86,7 +86,7 @@ export function GenerateReportsAiActionButton({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          entityId,
+          orgId,
           appKey,
           profileKey,
           period: {

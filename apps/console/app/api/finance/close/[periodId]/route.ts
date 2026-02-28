@@ -3,7 +3,7 @@
  * API — Close Period Detail
  * GET /api/finance/close/[periodId]  → close period with tasks, exceptions, approvals
  *
- * PR5 — Entity-scoped auth via requireEntityAccess
+ * PR5 — Org-scoped auth via requireOrgAccess
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'

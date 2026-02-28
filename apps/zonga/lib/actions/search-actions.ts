@@ -46,7 +46,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search assets
     const assetRows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'title' as title,
         metadata->>'creatorName' as subtitle,
         metadata->>'status' as status,
@@ -54,7 +54,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'asset.created'
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
         AND (
           LOWER(metadata->>'title') LIKE ${pattern}
           OR LOWER(metadata->>'creatorName') LIKE ${pattern}
@@ -67,7 +67,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search creators
     const creatorRows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'name' as title,
         metadata->>'email' as subtitle,
         metadata->>'status' as status,
@@ -75,7 +75,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'creator.registered'
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
         AND (
           LOWER(metadata->>'name') LIKE ${pattern}
           OR LOWER(metadata->>'email') LIKE ${pattern}
@@ -88,7 +88,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search events
     const eventRows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'title' as title,
         metadata->>'venue' as subtitle,
         metadata->>'status' as status,
@@ -96,7 +96,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'event.created'
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
         AND (
           LOWER(metadata->>'title') LIKE ${pattern}
           OR LOWER(metadata->>'venue') LIKE ${pattern}
@@ -109,7 +109,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search playlists
     const playlistRows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'title' as title,
         metadata->>'description' as subtitle,
         metadata->>'visibility' as status,
@@ -117,7 +117,7 @@ export async function globalSearch(query: string): Promise<SearchResults> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'playlist.created'
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
         AND (
           LOWER(metadata->>'title') LIKE ${pattern}
           OR LOWER(metadata->>'description') LIKE ${pattern}
@@ -159,9 +159,9 @@ export async function getTrending(): Promise<SearchResult[]> {
         b.metadata->>'genre' as genre,
         COUNT(*) as like_count
       FROM audit_log a
-      LEFT JOIN audit_log b ON b.entity_id = a.metadata->>'assetId' AND b.action = 'asset.created'
+      LEFT JOIN audit_log b ON b.org_id = a.metadata->>'assetId' AND b.action = 'asset.created'
       WHERE a.action = 'social.liked'
-        AND a.org_id = ${ctx.entityId}
+        AND a.org_id = ${ctx.orgId}
         AND a.created_at >= NOW() - INTERVAL '30 days'
       GROUP BY a.metadata->>'assetId', b.metadata->>'title', b.metadata->>'creatorName', b.metadata->>'genre'
       ORDER BY like_count DESC
@@ -192,9 +192,9 @@ export async function getRecentlyPlayed(): Promise<SearchResult[]> {
         b.metadata->>'genre' as genre,
         a.created_at as "createdAt"
       FROM audit_log a
-      LEFT JOIN audit_log b ON b.entity_id = a.metadata->>'assetId' AND b.action = 'asset.created'
+      LEFT JOIN audit_log b ON b.org_id = a.metadata->>'assetId' AND b.action = 'asset.created'
       WHERE a.action = 'stream.played' AND a.actor_id = ${ctx.actorId}
-        AND a.org_id = ${ctx.entityId}
+        AND a.org_id = ${ctx.orgId}
       ORDER BY a.created_at DESC
       LIMIT 20`,
     )) as unknown as { rows: Omit<SearchResult, 'type'>[] }

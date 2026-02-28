@@ -107,7 +107,7 @@ describe('INV-11 — Every API route has authorization', () => {
   const AUTH_PATTERNS = [
     'authorize(',
     'withAuth(',
-    'requireEntityAccess(',
+    'requireOrgAccess(',
     'requirePlatformRole(',
     'authenticateUser(',
     'requireAuth(',
@@ -172,7 +172,7 @@ describe('INV-11 — Every API route has authorization', () => {
         expect(
           hasAuth,
           `API route ${relPath} is missing authorization. ` +
-            'Every non-public route must call authorize(), withAuth(), or requireEntityAccess().',
+            'Every non-public route must call authorize(), withAuth(), or requireOrgAccess().',
         ).toBe(true)
       })
     }

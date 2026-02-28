@@ -4,7 +4,7 @@
  * Customers, opportunities, quotes, orders, invoices, fulfillment,
  * payments, credit notes, refunds, disputes.
  *
- * Every table is scoped by entity_id (org identity).
+ * Every table is scoped by org_id (org identity).
  * Follows existing patterns from operations.ts and equity.ts.
  */
 import {
@@ -19,7 +19,7 @@ import {
   varchar,
   boolean,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── Commerce Enums ──────────────────────────────────────────────────────────
 
@@ -129,9 +129,9 @@ export const commerceSyncStatusEnum = pgEnum('commerce_sync_status', [
 
 export const commerceCustomers = pgTable('commerce_customers', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   name: text('name').notNull(),
   email: text('email'),
   phone: text('phone'),
@@ -147,9 +147,9 @@ export const commerceCustomers = pgTable('commerce_customers', {
 
 export const commerceOpportunities = pgTable('commerce_opportunities', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   customerId: uuid('customer_id')
     .notNull()
     .references(() => commerceCustomers.id),
@@ -167,9 +167,9 @@ export const commerceOpportunities = pgTable('commerce_opportunities', {
 
 export const commerceQuotes = pgTable('commerce_quotes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   customerId: uuid('customer_id')
     .notNull()
     .references(() => commerceCustomers.id),
@@ -194,9 +194,9 @@ export const commerceQuotes = pgTable('commerce_quotes', {
 
 export const commerceQuoteVersions = pgTable('commerce_quote_versions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   quoteId: uuid('quote_id')
     .notNull()
     .references(() => commerceQuotes.id),
@@ -210,9 +210,9 @@ export const commerceQuoteVersions = pgTable('commerce_quote_versions', {
 
 export const commerceQuoteLines = pgTable('commerce_quote_lines', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   quoteId: uuid('quote_id')
     .notNull()
     .references(() => commerceQuotes.id),
@@ -232,9 +232,9 @@ export const commerceQuoteLines = pgTable('commerce_quote_lines', {
 
 export const commerceOrders = pgTable('commerce_orders', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   customerId: uuid('customer_id')
     .notNull()
     .references(() => commerceCustomers.id),
@@ -259,9 +259,9 @@ export const commerceOrders = pgTable('commerce_orders', {
 
 export const commerceOrderLines = pgTable('commerce_order_lines', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   orderId: uuid('order_id')
     .notNull()
     .references(() => commerceOrders.id),
@@ -282,9 +282,9 @@ export const commerceOrderLines = pgTable('commerce_order_lines', {
 
 export const commerceInvoices = pgTable('commerce_invoices', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   orderId: uuid('order_id')
     .notNull()
     .references(() => commerceOrders.id),
@@ -313,9 +313,9 @@ export const commerceInvoices = pgTable('commerce_invoices', {
 
 export const commerceInvoiceLines = pgTable('commerce_invoice_lines', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   invoiceId: uuid('invoice_id')
     .notNull()
     .references(() => commerceInvoices.id),
@@ -334,9 +334,9 @@ export const commerceInvoiceLines = pgTable('commerce_invoice_lines', {
 
 export const commerceFulfillmentTasks = pgTable('commerce_fulfillment_tasks', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   orderId: uuid('order_id')
     .notNull()
     .references(() => commerceOrders.id),
@@ -357,9 +357,9 @@ export const commerceFulfillmentTasks = pgTable('commerce_fulfillment_tasks', {
 
 export const commercePayments = pgTable('commerce_payments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   invoiceId: uuid('invoice_id')
     .notNull()
     .references(() => commerceInvoices.id),
@@ -375,9 +375,9 @@ export const commercePayments = pgTable('commerce_payments', {
 
 export const commerceCreditNotes = pgTable('commerce_credit_notes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   invoiceId: uuid('invoice_id')
     .notNull()
     .references(() => commerceInvoices.id),
@@ -393,9 +393,9 @@ export const commerceCreditNotes = pgTable('commerce_credit_notes', {
 
 export const commerceRefunds = pgTable('commerce_refunds', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   paymentId: uuid('payment_id')
     .notNull()
     .references(() => commercePayments.id),
@@ -414,9 +414,9 @@ export const commerceRefunds = pgTable('commerce_refunds', {
 
 export const commerceDisputes = pgTable('commerce_disputes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   invoiceId: uuid('invoice_id')
     .notNull()
     .references(() => commerceInvoices.id),
@@ -434,9 +434,9 @@ export const commerceDisputes = pgTable('commerce_disputes', {
 
 export const commerceEvidenceArtifacts = pgTable('commerce_evidence_artifacts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   type: commerceEvidenceTypeEnum('type').notNull(),
   targetEntityType: text('target_entity_type').notNull(), // quote, order, invoice, etc.
   targetEntityId: uuid('target_entity_id').notNull(),
@@ -450,9 +450,9 @@ export const commerceEvidenceArtifacts = pgTable('commerce_evidence_artifacts', 
 
 export const commerceSyncJobs = pgTable('commerce_sync_jobs', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   provider: varchar('provider', { length: 30 }).notNull(), // qbo, stripe, etc.
   type: varchar('type', { length: 30 }).notNull(), // invoice_sync, payment_sync, etc.
   status: commerceSyncStatusEnum('status').notNull().default('pending'),
@@ -468,9 +468,9 @@ export const commerceSyncJobs = pgTable('commerce_sync_jobs', {
 
 export const commerceSyncReceipts = pgTable('commerce_sync_receipts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   syncJobId: uuid('sync_job_id')
     .notNull()
     .references(() => commerceSyncJobs.id),
@@ -538,9 +538,9 @@ export const commerceZohoConflictResolutionEnum = pgEnum('commerce_zoho_conflict
 
 export const commerceSuppliers = pgTable('commerce_suppliers', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   name: text('name').notNull(),
   contactName: text('contact_name'),
   email: text('email'),
@@ -562,9 +562,9 @@ export const commerceSuppliers = pgTable('commerce_suppliers', {
 
 export const commerceProducts = pgTable('commerce_products', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   sku: varchar('sku', { length: 50 }).notNull(),
   name: text('name').notNull(),
   nameFr: text('name_fr'),
@@ -592,9 +592,9 @@ export const commerceProducts = pgTable('commerce_products', {
 
 export const commerceInventory = pgTable('commerce_inventory', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   productId: uuid('product_id')
     .notNull()
     .references(() => commerceProducts.id),
@@ -617,9 +617,9 @@ export const commerceInventory = pgTable('commerce_inventory', {
 
 export const commerceStockMovements = pgTable('commerce_stock_movements', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   inventoryId: uuid('inventory_id')
     .notNull()
     .references(() => commerceInventory.id),
@@ -640,9 +640,9 @@ export const commerceStockMovements = pgTable('commerce_stock_movements', {
 
 export const commercePurchaseOrders = pgTable('commerce_purchase_orders', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   supplierId: uuid('supplier_id')
     .notNull()
     .references(() => commerceSuppliers.id),
@@ -668,9 +668,9 @@ export const commercePurchaseOrders = pgTable('commerce_purchase_orders', {
 
 export const commercePurchaseOrderLines = pgTable('commerce_purchase_order_lines', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   purchaseOrderId: uuid('purchase_order_id')
     .notNull()
     .references(() => commercePurchaseOrders.id),
@@ -693,9 +693,9 @@ export const commercePurchaseOrderLines = pgTable('commerce_purchase_order_lines
 
 export const commerceMandateAllocations = pgTable('commerce_mandate_allocations', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   orderId: uuid('order_id')
     .notNull()
     .references(() => commerceOrders.id),
@@ -722,9 +722,9 @@ export const commerceMandateAllocations = pgTable('commerce_mandate_allocations'
 
 export const commerceZohoSyncConfigs = pgTable('commerce_zoho_sync_configs', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   name: text('name').notNull(),
   nzilaTable: varchar('nzila_table', { length: 50 }).notNull(), // commerce_customers, commerce_quotes, etc.
   zohoModule: varchar('zoho_module', { length: 50 }).notNull(), // Contacts, Deals, Invoices, etc.
@@ -745,9 +745,9 @@ export const commerceZohoSyncConfigs = pgTable('commerce_zoho_sync_configs', {
 
 export const commerceZohoSyncRecords = pgTable('commerce_zoho_sync_records', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   configId: uuid('config_id')
     .notNull()
     .references(() => commerceZohoSyncConfigs.id),
@@ -769,9 +769,9 @@ export const commerceZohoSyncRecords = pgTable('commerce_zoho_sync_records', {
 
 export const commerceZohoConflicts = pgTable('commerce_zoho_conflicts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   syncRecordId: uuid('sync_record_id')
     .notNull()
     .references(() => commerceZohoSyncRecords.id),
@@ -791,9 +791,9 @@ export const commerceZohoConflicts = pgTable('commerce_zoho_conflicts', {
 
 export const commerceZohoCredentials = pgTable('commerce_zoho_credentials', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id)
+    .references(() => orgs.id)
     .unique(), // one per org
   accessToken: text('access_token').notNull(), // encrypted
   refreshToken: text('refresh_token').notNull(), // encrypted

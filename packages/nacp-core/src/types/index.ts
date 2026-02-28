@@ -2,7 +2,7 @@
  * @nzila/nacp-core — Domain Types
  *
  * All NACP exam management domain types. No DB, no framework — pure TypeScript.
- * Nzila convention: org scoping uses "entityId" (the Nzila entity_id column).
+ * Nzila convention: org scoping uses "orgId" (the Nzila org_id column).
  *
  * @module @nzila/nacp-core/types
  */
@@ -33,17 +33,12 @@ export type CandidateRef = string & { readonly __brand: 'CandidateRef' }
  * NACP org context carried through every request.
  *
  * `orgId` is the canonical field (aligns with @nzila/org).
- * `entityId` is retained as a deprecated alias during migration.
  *
  * @see {@link @nzila/org OrgContext} for the canonical base type.
  */
 export interface NacpOrgContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
   /** Authenticated user performing the action. */
   readonly actorId: string
   /** User's role within this org. */
@@ -58,7 +53,7 @@ export interface NacpOrgContext {
 
 export interface Exam {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly title: string
   readonly code: string
   readonly subjectId: string
@@ -75,7 +70,7 @@ export interface Exam {
 
 export interface ExamSession {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly examId: string
   readonly centerId: string
   readonly ref: SessionRef
@@ -96,7 +91,7 @@ export interface ExamSession {
 
 export interface Subject {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly name: string
   readonly code: string
   readonly level: SubjectLevel
@@ -108,7 +103,7 @@ export interface Subject {
 
 export interface Center {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly name: string
   readonly code: string
   readonly province: string
@@ -125,7 +120,7 @@ export interface Center {
 
 export interface Candidate {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly ref: CandidateRef
   readonly firstName: string
   readonly lastName: string
@@ -142,7 +137,7 @@ export interface Candidate {
 
 export interface Submission {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly sessionId: string
   readonly candidateId: string
   readonly examId: string
@@ -164,7 +159,7 @@ export interface Submission {
 
 export interface IntegrityArtifact {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly sessionId: string
   readonly hash: IntegrityHash
   readonly status: IntegrityStatus
@@ -179,7 +174,7 @@ export interface IntegrityArtifact {
 
 export interface SyncQueueItem {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly entityType: string
   readonly action: 'create' | 'update'
   readonly payload: Readonly<Record<string, unknown>>
@@ -194,7 +189,7 @@ export interface SyncQueueItem {
 
 export interface NacpOutboxRecord {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly eventType: string
   readonly payload: Readonly<Record<string, unknown>>
   readonly status: 'pending' | 'dispatched' | 'failed'

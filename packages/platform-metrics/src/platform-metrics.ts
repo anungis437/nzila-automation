@@ -8,7 +8,7 @@
  */
 import { platformDb } from '@nzila/db/platform'
 import {
-  entities,
+  orgs,
   auditEvents,
   ueCases,
   zongaRevenueEvents,
@@ -55,7 +55,7 @@ export async function getPlatformOverviewMetrics(
     claimsResult,
     quotesResult,
   ] = await Promise.all([
-    platformDb.select({ total: count().as('total') }).from(entities),
+    platformDb.select({ total: count().as('total') }).from(orgs),
     platformDb.select({ total: count().as('total') }).from(auditEvents),
     platformDb
       .select({ total: count().as('total') })
@@ -93,7 +93,7 @@ export async function getOrgOverviewMetrics(
       platformDb
         .select({ total: count().as('total') })
         .from(auditEvents)
-        .where(eq(auditEvents.entityId, orgId)),
+        .where(eq(auditEvents.orgId, orgId)),
       platformDb
         .select({ total: count().as('total') })
         .from(automationCommands)
@@ -101,19 +101,19 @@ export async function getOrgOverviewMetrics(
       platformDb
         .select({ total: count().as('total') })
         .from(nacpExamSessions)
-        .where(eq(nacpExamSessions.entityId, orgId)),
+        .where(eq(nacpExamSessions.orgId, orgId)),
       platformDb
         .select({ total: count().as('total') })
         .from(zongaRevenueEvents)
-        .where(eq(zongaRevenueEvents.entityId, orgId)),
+        .where(eq(zongaRevenueEvents.orgId, orgId)),
       platformDb
         .select({ total: count().as('total') })
         .from(ueCases)
-        .where(eq(ueCases.entityId, orgId)),
+        .where(eq(ueCases.orgId, orgId)),
       platformDb
         .select({ total: count().as('total') })
         .from(commerceQuotes)
-        .where(eq(commerceQuotes.entityId, orgId)),
+        .where(eq(commerceQuotes.orgId, orgId)),
     ])
 
   return {

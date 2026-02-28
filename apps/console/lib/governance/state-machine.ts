@@ -23,7 +23,7 @@ import { createLogger } from '@nzila/os-core'
 import {
   governanceActions,
   approvals,
-  entities,
+  orgs,
 } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
 import {
@@ -41,7 +41,7 @@ const logger = createLogger('state-machine')
 // ── Types ───────────────────────────────────────────────────────────────────
 
 export interface CreateActionInput {
-  entityId: string
+  orgId: string
   actionType: GovernanceActionType
   payload: Record<string, unknown>
   createdBy: string // clerk_user_id
@@ -49,7 +49,7 @@ export interface CreateActionInput {
 
 export interface SubmitActionInput {
   actionId: string
-  entityId: string
+  orgId: string
   submittedBy: string
   /** Context for policy evaluation (shares outstanding, amount, etc.) */
   context?: {
@@ -63,7 +63,7 @@ export interface SubmitActionInput {
 
 export interface ApproveActionInput {
   actionId: string
-  entityId: string
+  orgId: string
   approvalId: string
   decidedBy: string
   decision: 'approved' | 'rejected'
@@ -72,7 +72,7 @@ export interface ApproveActionInput {
 
 export interface ExecuteActionInput {
   actionId: string
-  entityId: string
+  orgId: string
   executedBy: string
 }
 
@@ -94,7 +94,7 @@ export async function createGovernanceAction(
   const [action] = await platformDb
     .insert(governanceActions)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       actionType: input.actionType,
       payload: input.payload,
       status: 'draft',
@@ -103,7 +103,7 @@ export async function createGovernanceAction(
     .returning({ id: governanceActions.id })
 
   await recordAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.createdBy,
     action: AUDIT_ACTIONS.GOVERNANCE_ACTION_CREATE,
     targetType: 'governance_action',
@@ -134,7 +134,7 @@ export async function submitGovernanceAction(
   const [action] = await platformDb
     .select()
     .from(governanceActions)
-    .where(and(eq(governanceActions.entityId, input.entityId), eq(governanceActions.id, input.actionId)))
+    .where(and(eq(governanceActions.orgId, input.orgId), eq(governanceActions.id, input.actionId)))
     .limit(1)
 
   if (!action) {
@@ -149,9 +149,9 @@ export async function submitGovernanceAction(
 
   // 2. Load entity policy config
   const [entity] = await platformDb
-    .select({ policyConfig: entities.policyConfig })
-    .from(entities)
-    .where(eq(entities.id, input.entityId))
+    .select({ policyConfig: orgs.policyConfig })
+    .from(orgs)
+    .where(eq(orgs.id, input.orgId))
     .limit(1)
 
   const policyConfig = (entity?.policyConfig ?? {}) as Partial<PolicyConfig>
@@ -184,7 +184,7 @@ export async function submitGovernanceAction(
     const [approval] = await platformDb
       .insert(approvals)
       .values({
-        entityId: input.entityId,
+        orgId: input.orgId,
         subjectType: 'governance_action',
         subjectId: input.actionId,
         approvalType: req.kind === 'board_approval' ? 'board' : 'shareholder',
@@ -196,7 +196,7 @@ export async function submitGovernanceAction(
     approvalIds.push(approval.id)
 
     await recordAuditEvent({
-      entityId: input.entityId,
+      orgId: input.orgId,
       actorClerkUserId: input.submittedBy,
       action: AUDIT_ACTIONS.APPROVAL_CREATE,
       targetType: 'approval',
@@ -218,10 +218,10 @@ export async function submitGovernanceAction(
       requirements: evaluation as unknown as Record<string, unknown>,
       updatedAt: new Date(),
     })
-    .where(and(eq(governanceActions.entityId, input.entityId), eq(governanceActions.id, input.actionId)))
+    .where(and(eq(governanceActions.orgId, input.orgId), eq(governanceActions.id, input.actionId)))
 
   await recordAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.submittedBy,
     action: AUDIT_ACTIONS.GOVERNANCE_ACTION_SUBMIT,
     targetType: 'governance_action',
@@ -251,7 +251,7 @@ export async function decideApproval(
   const [approval] = await platformDb
     .select()
     .from(approvals)
-    .where(and(eq(approvals.entityId, input.entityId), eq(approvals.id, input.approvalId)))
+    .where(and(eq(approvals.orgId, input.orgId), eq(approvals.id, input.approvalId)))
     .limit(1)
 
   if (!approval) {
@@ -272,10 +272,10 @@ export async function decideApproval(
       notes: input.notes ?? null,
       updatedAt: new Date(),
     })
-    .where(and(eq(approvals.entityId, input.entityId), eq(approvals.id, input.approvalId)))
+    .where(and(eq(approvals.orgId, input.orgId), eq(approvals.id, input.approvalId)))
 
   await recordAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.decidedBy,
     action: AUDIT_ACTIONS.APPROVAL_DECIDE,
     targetType: 'approval',
@@ -288,7 +288,7 @@ export async function decideApproval(
   const allApprovals = await platformDb
     .select()
     .from(approvals)
-    .where(and(eq(approvals.entityId, input.entityId), eq(approvals.subjectType, 'governance_action')))
+    .where(and(eq(approvals.orgId, input.orgId), eq(approvals.subjectType, 'governance_action')))
 
   const hasRejection = allApprovals.some((a) => a.status === 'rejected')
   const allApproved = allApprovals.every((a) => a.status === 'approved')
@@ -308,10 +308,10 @@ export async function decideApproval(
   await platformDb
     .update(governanceActions)
     .set({ status: newActionStatus as 'approved' | 'rejected', updatedAt: new Date() })
-    .where(and(eq(governanceActions.entityId, input.entityId), eq(governanceActions.id, input.actionId)))
+    .where(and(eq(governanceActions.orgId, input.orgId), eq(governanceActions.id, input.actionId)))
 
   await recordAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.decidedBy,
     action:
       newActionStatus === 'approved'
@@ -357,7 +357,7 @@ export async function executeGovernanceAction(
   const [action] = await platformDb
     .select()
     .from(governanceActions)
-    .where(and(eq(governanceActions.entityId, input.entityId), eq(governanceActions.id, input.actionId)))
+    .where(and(eq(governanceActions.orgId, input.orgId), eq(governanceActions.id, input.actionId)))
     .limit(1)
 
   if (!action) {
@@ -378,7 +378,7 @@ export async function executeGovernanceAction(
   const allApprovals = await platformDb
     .select()
     .from(approvals)
-    .where(and(eq(approvals.entityId, input.entityId), eq(approvals.subjectType, 'governance_action')))
+    .where(and(eq(approvals.orgId, input.orgId), eq(approvals.subjectType, 'governance_action')))
 
   const unapproved = allApprovals.filter((a) => a.status !== 'approved')
   if (unapproved.length > 0) {
@@ -407,7 +407,7 @@ export async function executeGovernanceAction(
     evidencePackRequest = buildEvidencePackFromAction({
       actionId: action.id,
       actionType: action.actionType,
-      entityId: action.entityId,
+      orgId: action.orgId,
       executedBy: input.executedBy,
       resolutionDocument: resolution
         ? {
@@ -431,11 +431,11 @@ export async function executeGovernanceAction(
       executedAt: now,
       updatedAt: now,
     })
-    .where(and(eq(governanceActions.entityId, input.entityId), eq(governanceActions.id, input.actionId)))
+    .where(and(eq(governanceActions.orgId, input.orgId), eq(governanceActions.id, input.actionId)))
 
   // 6. Audit event
   await recordAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.executedBy,
     action: AUDIT_ACTIONS.GOVERNANCE_ACTION_EXECUTE,
     targetType: 'governance_action',
@@ -459,12 +459,12 @@ export async function executeGovernanceAction(
 
 export async function getGovernanceActionWithApprovals(
   actionId: string,
-  entityId: string,
+  orgId: string,
 ) {
   const [action] = await platformDb
     .select()
     .from(governanceActions)
-    .where(and(eq(governanceActions.entityId, entityId), eq(governanceActions.id, actionId)))
+    .where(and(eq(governanceActions.orgId, orgId), eq(governanceActions.id, actionId)))
     .limit(1)
 
   if (!action) return null
@@ -472,7 +472,7 @@ export async function getGovernanceActionWithApprovals(
   const actionApprovals = await platformDb
     .select()
     .from(approvals)
-    .where(and(eq(approvals.entityId, entityId), eq(approvals.subjectType, 'governance_action')))
+    .where(and(eq(approvals.orgId, orgId), eq(approvals.subjectType, 'governance_action')))
 
   return { ...action, approvals: actionApprovals }
 }

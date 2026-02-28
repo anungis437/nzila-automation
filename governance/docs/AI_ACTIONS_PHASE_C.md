@@ -69,7 +69,7 @@ Phase C introduces a full **propose → policy-check → approve → execute →
 |---|---|---|
 | `id` | uuid | Primary key |
 | `action_id` | uuid | FK → `ai_actions.id` |
-| `entity_id` | uuid | FK → `entities.id` |
+| `org_id` | uuid | FK → `entities.id` |
 | `status` | enum | `started`, `success`, `failed` |
 | `started_at` | timestamp | Auto-set on creation |
 | `finished_at` | timestamp | Set on completion |
@@ -83,7 +83,7 @@ Phase C introduces a full **propose → policy-check → approve → execute →
 | Column | Type | Description |
 |---|---|---|
 | `id` | uuid | Primary key |
-| `entity_id` | uuid | FK → `entities.id` |
+| `org_id` | uuid | FK → `entities.id` |
 | `source_id` | uuid | FK → `ai_knowledge_sources.id` |
 | `status` | enum | `queued` → `chunked` → `embedded` → `stored` |
 | `metrics_json` | jsonb | Chunk count, embedding count, etc. |
@@ -106,7 +106,7 @@ Phase C introduces a full **propose → policy-check → approve → execute →
 
 ```typescript
 {
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string(),
   profileKey: z.string(),
   period: {
@@ -128,7 +128,7 @@ Phase C introduces a full **propose → policy-check → approve → execute →
 
 ```typescript
 {
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string(),
   profileKey: z.string(),
   source: {
@@ -202,7 +202,7 @@ Every execution produces an attestation document:
 }
 ```
 
-Stored at: `exports/{entityId}/attestations/{YYYY}/{MM}/{actionType}/{runId}/attestation.json`
+Stored at: `exports/{orgId}/attestations/{YYYY}/{MM}/{actionType}/{runId}/attestation.json`
 
 ## API Routes
 
@@ -221,7 +221,7 @@ The `collectAiActionEvidence()` function gathers all attestation documents, inge
 ```typescript
 import { collectAiActionEvidence } from '@nzila/ai-core/actions/evidence-pack'
 
-const appendix = await collectAiActionEvidence(entityId, '2026-02')
+const appendix = await collectAiActionEvidence(orgId, '2026-02')
 // → { actions: [...], summary: { totalActions, attestationCount, ... } }
 ```
 

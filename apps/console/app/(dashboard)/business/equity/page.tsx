@@ -15,11 +15,11 @@ interface EntityEquity {
 }
 
 export default function EquityHubPage() {
-  const [entities, setEntities] = useState<EntityEquity[]>([])
+  const [orgs, setEntities] = useState<EntityEquity[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -35,7 +35,7 @@ export default function EquityHubPage() {
         </p>
         <h1 className="text-2xl font-bold text-gray-900">EquityOS</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Share register, cap table, and shareholding management across all entities.
+          Share register, cap table, and shareholding management across all orgs.
         </p>
       </div>
 
@@ -55,22 +55,22 @@ export default function EquityHubPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Loading entities...</p>
-      ) : entities.length === 0 ? (
+        <p className="text-gray-400 text-sm">Loading orgs...</p>
+      ) : orgs.length === 0 ? (
         <div className="text-center py-12 text-gray-400">
           <DocumentDuplicateIcon className="h-12 w-12 mx-auto mb-3" />
-          <p className="font-medium">No entities yet</p>
+          <p className="font-medium">No orgs yet</p>
           <p className="text-sm mt-1">Create an entity to start managing equity.</p>
-          <Link href="/business/entities" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
+          <Link href="/business/orgs" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
             Go to Entities →
           </Link>
         </div>
       ) : (
         <div className="space-y-3">
-          {entities.map((entity) => (
+          {orgs.map((entity) => (
             <Link
               key={entity.id}
-              href={`/business/entities/${entity.id}/equity`}
+              href={`/business/orgs/${entity.id}/equity`}
               className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all"
             >
               <div>

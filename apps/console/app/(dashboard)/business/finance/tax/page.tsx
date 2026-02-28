@@ -18,7 +18,7 @@ interface Entity {
 
 interface TaxYear {
   id: string
-  entityId: string
+  orgId: string
   fiscalYearLabel: string
   startDate: string
   endDate: string
@@ -30,7 +30,7 @@ interface TaxYear {
 
 interface TaxProfile {
   id: string
-  entityId: string
+  orgId: string
   federalBn: string | null
   provinceOfRegistration: string | null
   fiscalYearEnd: string | null
@@ -74,16 +74,16 @@ function computeUrgency(dueDateStr: string): { daysRemaining: number; urgency: D
 }
 
 export default function TaxDashboardPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
   const [taxYears, setTaxYears] = useState<TaxYear[]>([])
   const [profile, setProfile] = useState<TaxProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [yearLoading, setYearLoading] = useState(false)
 
-  // Load entities on mount
+  // Load orgs on mount
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then((data: Entity[]) => {
         setEntities(data)
@@ -100,8 +100,8 @@ export default function TaxDashboardPage() {
     setYearLoading(true)
 
     Promise.all([
-      fetch(`/api/finance/tax/years?entityId=${selectedEntityId}`).then((r) => r.json()),
-      fetch(`/api/finance/tax/profiles?entityId=${selectedEntityId}`).then((r) => r.json()),
+      fetch(`/api/finance/tax/years?orgId=${selectedEntityId}`).then((r) => r.json()),
+      fetch(`/api/finance/tax/profiles?orgId=${selectedEntityId}`).then((r) => r.json()),
     ])
       .then(([years, profiles]) => {
         setTaxYears(years)
@@ -111,7 +111,7 @@ export default function TaxDashboardPage() {
       .finally(() => setYearLoading(false))
   }, [selectedEntityId])
 
-  const selectedEntity = entities.find((e) => e.id === selectedEntityId)
+  const selectedEntity = orgs.find((e) => e.id === selectedEntityId)
 
   // Compute upcoming deadlines for all open tax years
   const upcomingDeadlines = taxYears
@@ -147,7 +147,7 @@ export default function TaxDashboardPage() {
       </div>
 
       {/* Entity selector */}
-      {entities.length > 1 && (
+      {orgs.length > 1 && (
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">Entity</label>
           <select
@@ -156,7 +156,7 @@ export default function TaxDashboardPage() {
             className="w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             aria-label="Select entity"
           >
-            {entities.map((e) => (
+            {orgs.map((e) => (
               <option key={e.id} value={e.id}>{e.legalName}</option>
             ))}
           </select>
@@ -164,7 +164,7 @@ export default function TaxDashboardPage() {
       )}
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Loading entities...</p>
+        <p className="text-gray-400 text-sm">Loading orgs...</p>
       ) : (
         <div className="space-y-8">
           {/* Tax Profile Summary */}

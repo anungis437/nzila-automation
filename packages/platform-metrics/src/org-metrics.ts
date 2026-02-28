@@ -81,7 +81,7 @@ async function computeOperationalEfficiency(
     .from(ueCases)
     .where(
       and(
-        eq(ueCases.entityId, orgId),
+        eq(ueCases.orgId, orgId),
         eq(ueCases.status, 'resolved'),
         gte(ueCases.createdAt, windowStart),
       ),
@@ -105,7 +105,7 @@ async function computeSlaAdherence(orgId: string): Promise<number> {
       ),
     })
     .from(ueCases)
-    .where(eq(ueCases.entityId, orgId))
+    .where(eq(ueCases.orgId, orgId))
 
   const { total, onTime } = result[0] ?? { total: 0, onTime: 0 }
   if (total === 0) return 100
@@ -129,7 +129,7 @@ async function computeRevenueVelocity(
     .from(zongaRevenueEvents)
     .where(
       and(
-        eq(zongaRevenueEvents.entityId, orgId),
+        eq(zongaRevenueEvents.orgId, orgId),
         gte(zongaRevenueEvents.createdAt, windowStart),
       ),
     )
@@ -150,13 +150,13 @@ async function computeUserEngagement(
       .select({ total: count().as('total') })
       .from(auditEvents)
       .where(
-        and(eq(auditEvents.entityId, orgId), gte(auditEvents.createdAt, windowStart)),
+        and(eq(auditEvents.orgId, orgId), gte(auditEvents.createdAt, windowStart)),
       ),
     platformDb
       .select({ total: count().as('total') })
       .from(commerceCustomers)
       .where(
-        and(eq(commerceCustomers.entityId, orgId), gte(commerceCustomers.createdAt, windowStart)),
+        and(eq(commerceCustomers.orgId, orgId), gte(commerceCustomers.createdAt, windowStart)),
       ),
   ])
 

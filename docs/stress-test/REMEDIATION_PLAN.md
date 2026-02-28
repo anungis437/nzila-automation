@@ -113,8 +113,8 @@ OR integration test suite in `apps/console/app/api/__tests__/`
 
 ```ts
 describe('Org isolation — runtime HTTP proofs', () => {
-  let orgAHeaders: Headers  // session claims entityId = ORG_A_ID
-  let orgBHeaders: Headers  // session claims entityId = ORG_B_ID
+  let orgAHeaders: Headers  // session claims orgId = ORG_A_ID
+  let orgBHeaders: Headers  // session claims orgId = ORG_B_ID
   let orgAResourceId: string  // resource seeded under ORG_A
 
   beforeAll(async () => {
@@ -138,10 +138,10 @@ describe('Org isolation — runtime HTTP proofs', () => {
     expect(res.status).toBe(401)
   })
 
-  it('D. Forged entityId in body is ignored — auth entityId from session wins', async () => {
+  it('D. Forged orgId in body is ignored — auth orgId from session wins', async () => {
     const res = await fetch(`/api/some-mutation`, {
       method: 'POST', headers: orgBHeaders,
-      body: JSON.stringify({ entityId: ORG_A_ID })  // forged
+      body: JSON.stringify({ orgId: ORG_A_ID })  // forged
     })
     // Should only operate on OrgB's context or 403
     expect([200, 403]).toContain(res.status)
@@ -162,8 +162,8 @@ describe('Org isolation — runtime HTTP proofs', () => {
 | ------ | -------- |
 | `tooling/contract-tests/org-isolation-runtime.test.ts` | New — 5 runtime tests |
 | `tooling/contract-tests/fixtures/orgs.ts` | New — seeded OrgA + OrgB fixtures |
-| `apps/console/app/api/` route handlers | Verify `authorize()` call exists; add `authorizeEntityAccess()` where missing |
-| `packages/os-core/src/policy/authorize.ts` | Ensure `authorizeEntityAccess()` is called from console routes for entity-level access |
+| `apps/console/app/api/` route handlers | Verify `authorize()` call exists; add `authorizeOrgAccess()` where missing |
+| `packages/os-core/src/policy/authorize.ts` | Ensure `authorizeOrgAccess()` is called from console routes for entity-level access |
 
 ### CI Integration
 
@@ -349,7 +349,7 @@ describe('Health routes', () => {
 **Severity:** 🟡 SOFT PASS  
 **Status: ✅ CLOSED — route exists at `apps/console/app/api/audit/verify-chain/route.ts`**
 
-Supports `chainType: 'audit' | 'ledger'` — verified by `audit-taxonomy.test.ts` assertions covering `existsSync` check + chain-type support. Auth: `requireEntityAccess` with platform bypass for `platform_admin`.
+Supports `chainType: 'audit' | 'ledger'` — verified by `audit-taxonomy.test.ts` assertions covering `existsSync` check + chain-type support. Auth: `requireOrgAccess` with platform bypass for `platform_admin`.
 
 ---
 
@@ -369,7 +369,7 @@ Also fixed: lefthook pre-commit hook was using `npx gitleaks@latest` (which fail
 **Severity:** 🟡 SOFT PASS  
 **Status: ✅ CLOSED — `people/route.ts` now calls `recordAuditEvent(AUDIT_ACTIONS.MEMBER_ADD)` + 7 new tests in `audit-taxonomy.test.ts`**
 
-- Added `import { recordAuditEvent, AUDIT_ACTIONS }` to `apps/console/app/api/entities/[entityId]/people/route.ts`
+- Added `import { recordAuditEvent, AUDIT_ACTIONS }` to `apps/console/app/api/entities/[orgId]/people/route.ts`
 - POST handler now emits `AUDIT_ACTIONS.MEMBER_ADD` after person creation
 - New `describe('Audit Call-site — REM-09 member management')` block with 7 assertions
 
@@ -409,7 +409,7 @@ Verified via `gh api .../branches/main/protection` — all fields confirmed in A
 ## REM-13 — Org ID in `RequestContext` and Log Entries
 
 **Severity:** 🟡 HIGH SOFT PASS (GA target)  
-**Discovered by:** GA Readiness Gate §2.2 — `RequestContext` interface has `userId`, `requestId`, `traceId` but no `orgId` / `entityId`.
+**Discovered by:** GA Readiness Gate §2.2 — `RequestContext` interface has `userId`, `requestId`, `traceId` but no `orgId` / `orgId`.
 
 ### Current State
 
@@ -423,7 +423,7 @@ export interface RequestContext {
   userId?: string      // ✅ present
   startedAt: number
   appName?: string
-  // orgId / entityId → MISSING ❌
+  // orgId / orgId → MISSING ❌
 }
 ```
 
@@ -438,7 +438,7 @@ export interface RequestContext {
   traceId?: string
   spanId?: string
   userId?: string
-  orgId?: string        // ← ADD: entityId from AuthContext
+  orgId?: string        // ← ADD: orgId from AuthContext
   startedAt: number
   appName?: string
 }
@@ -490,8 +490,8 @@ export function createRequestContext(
 During a cross-org incident at 3 AM, every log line must identify which Org the request belongs to without requiring a cross-join against audit records. Without `orgId` in logs, incident response requires:
 
 1. Find `requestId` in logs
-2. Cross-reference `audit_events` to find `entityId`
-3. Map `entityId` → org name
+2. Cross-reference `audit_events` to find `orgId`
+3. Map `orgId` → org name
 
 With `orgId` in logs:
 

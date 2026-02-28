@@ -25,7 +25,7 @@ export async function createPartnerPayoutSession(opts: {
 }) {
   const currency = opts.currency ?? 'usd'
   return createCheckoutSession({
-    entityId: opts.partnerId,
+    orgId: opts.partnerId,
     lineItems: [
       {
         name: opts.description,

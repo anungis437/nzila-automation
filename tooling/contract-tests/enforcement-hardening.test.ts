@@ -86,13 +86,13 @@ describe('INV-13 — Audit table immutability at DB level', () => {
     expect(content).toContain("previousHash: text('previous_hash')")
   })
 
-  it('audit_events references entities.id (entity scoped)', () => {
+  it('audit_events references orgs.id (entity scoped)', () => {
     const schemaPath = join(ROOT, 'packages', 'db', 'src', 'schema', 'operations.ts')
     const content = readFileSync(schemaPath, 'utf-8')
-    // Must have entityId column with notNull and references
-    expect(content).toContain("entity_id")
+    // Must have orgId column with notNull and references
+    expect(content).toContain("org_id")
     expect(content).toContain(".notNull()")
-    expect(content).toContain("entities.id")
+    expect(content).toContain("orgs.id")
   })
 
   it('migration includes prevent_audit_mutation trigger', () => {

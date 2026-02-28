@@ -1,8 +1,8 @@
 /**
  * Contract Test — Org Isolation Runtime (REM-02)
  *
- * Verifies static guarantees that every entityId-scoped route enforces
- * entity membership before trusting the caller's entityId claim.
+ * Verifies static guarantees that every orgId-scoped route enforces
+ * org membership before trusting the caller's orgId claim.
  *
  * These are static analysis tests — they inspect source files and do NOT
  * make network requests.
@@ -11,11 +11,11 @@
  * runtime HTTP tests confirm cross-org rejection."
  *
  * Checks:
- *   1. Every route that accepts entityId in path/body calls an entity-access guard
- *   2. No route reads entityId from the request body/params WITHOUT an auth guard
- *   3. The authorizeEntityAccess function exists in os-core (policy module)
- *   4. requireEntityAccess in api-guards wraps authorizeEntityAccess
- *   5. No route bypasses auth by setting entityId purely from request input
+ *   1. Every route that accepts orgId in path/body calls an org-access guard
+ *   2. No route reads orgId from the request body/params WITHOUT an auth guard
+ *   3. The authorizeOrgAccess function exists in os-core (policy module)
+ *   4. requireOrgAccess in api-guards wraps authorizeOrgAccess
+ *   5. No route bypasses auth by setting orgId purely from request input
  */
 import { describe, it, expect } from 'vitest'
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
@@ -56,8 +56,8 @@ function allApiRoutes(): string[] {
 
 // Auth guard patterns recognised as org-boundary enforcement
 const ORG_GUARD_PATTERNS = [
-  /requireEntityAccess\s*\(/,
-  /authorizeEntityAccess\s*\(/,
+  /requireOrgAccess\s*\(/,
+  /authorizeOrgAccess\s*\(/,
   /authenticateUser\s*\(/,
   /withAuth\s*\(/,
   /authorize\s*\(/,
@@ -103,33 +103,33 @@ function isPublicRoute(path: string): boolean {
 describe('Org Isolation — REM-02 contract', () => {
   // ── Core infrastructure ─────────────────────────────────────────────────────
 
-  it('authorizeEntityAccess function exists in os-core policy module', () => {
+  it('authorizeOrgAccess function exists in os-core policy module', () => {
     const content = read(OS_CORE_POLICY)
-    expect(content).toContain('authorizeEntityAccess')
+    expect(content).toContain('authorizeOrgAccess')
   })
 
-  it('authorizeEntityAccess is exported from os-core policy barrel', () => {
+  it('authorizeOrgAccess is exported from os-core policy barrel', () => {
     const policy = read(join(ROOT, 'packages/os-core/src/policy/index.ts'))
-    expect(policy).toContain('authorizeEntityAccess')
+    expect(policy).toContain('authorizeOrgAccess')
   })
 
-  it('console api-guards wraps entity access enforcement', () => {
+  it('console api-guards wraps org access enforcement', () => {
     const content = read(CONSOLE_API_GUARDS)
     expect(content).not.toBe('')
     expect(
-      content.includes('requireEntityAccess') ||
-      content.includes('authorizeEntityAccess') ||
-      content.includes('entity_members')
+      content.includes('requireOrgAccess') ||
+      content.includes('authorizeOrgAccess') ||
+      content.includes('org_members')
     ).toBe(true)
   })
 
-  it('partners api-guards wraps entity access enforcement (if exists)', () => {
+  it('partners api-guards wraps org access enforcement (if exists)', () => {
     if (!existsSync(PARTNERS_API_GUARDS)) return // partners may share console guards
     const content = read(PARTNERS_API_GUARDS)
     expect(
-      content.includes('requireEntityAccess') ||
-      content.includes('authorizeEntityAccess') ||
-      content.includes('entity_members')
+      content.includes('requireOrgAccess') ||
+      content.includes('authorizeOrgAccess') ||
+      content.includes('org_members')
     ).toBe(true)
   })
 
@@ -160,9 +160,9 @@ describe('Org Isolation — REM-02 contract', () => {
     ).toHaveLength(0)
   })
 
-  it('no route uses entityId from request body without a prior auth guard', () => {
-    // Pattern: parses body → extracts entityId → uses it BEFORE any auth call
-    // We check that auth call appears BEFORE entityId usage
+  it('no route uses orgId from request body without a prior auth guard', () => {
+    // Pattern: parses body → extracts orgId → uses it BEFORE any auth call
+    // We check that auth call appears BEFORE orgId usage
     const violations: string[] = []
 
     for (const route of routes) {
@@ -178,7 +178,7 @@ describe('Org Isolation — REM-02 contract', () => {
         if (ORG_GUARD_PATTERNS.some((p) => p.test(line))) {
           firstAuthLine = Math.min(firstAuthLine, idx)
         }
-        if (/parsed\.data\.entityId|body\.entityId|params\.entityId/.test(line) &&
+        if (/parsed\.data\.orgId|body\.orgId|params\.orgId/.test(line) &&
             /await|return|db\./.test(line)) {
           firstEntityIdUseLine = Math.min(firstEntityIdUseLine, idx)
         }
@@ -191,7 +191,7 @@ describe('Org Isolation — REM-02 contract', () => {
 
     expect(
       violations,
-      `Routes that use entityId before auth guard:\n${violations.join('\n')}`
+      `Routes that use orgId before auth guard:\n${violations.join('\n')}`
     ).toHaveLength(0)
   })
 
@@ -201,9 +201,9 @@ describe('Org Isolation — REM-02 contract', () => {
     const content = read(OS_CORE_POLICY)
     // Must query entity membership — the key cross-org isolation mechanism
     expect(
-      content.includes('entity_members') ||
-      content.includes('entityMembers') ||
-      content.includes('entityId')
+      content.includes('org_members') ||
+      content.includes('orgMembers') ||
+      content.includes('orgId')
     ).toBe(true)
   })
 

@@ -22,7 +22,7 @@ export async function listSuppliers(
   ctx: CommerceReadContext,
   opts: PaginationOpts & { status?: SupplierStatus; search?: string } = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -62,7 +62,7 @@ export async function getSupplierById(
   ctx: CommerceReadContext,
   supplierId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceSuppliers,
     eq(commerceSuppliers.id, supplierId),
@@ -74,7 +74,7 @@ export async function getSupplierByZohoId(
   ctx: CommerceReadContext,
   zohoVendorId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commerceSuppliers)
   return rows.find((r) => r.zohoVendorId === zohoVendorId) ?? null
 }
@@ -99,7 +99,7 @@ export async function createSupplier(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -127,7 +127,7 @@ export async function updateSupplier(
   }>,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -141,7 +141,7 @@ export async function updateSupplier(
 
 export async function deleteSupplier(ctx: CommerceDbContext, supplierId: string) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

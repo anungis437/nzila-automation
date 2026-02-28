@@ -42,7 +42,7 @@ export interface MultiCurrencyEntry {
   /** Memo/description */
   memo?: string
   /** Entity this entry belongs to */
-  entityId: string
+  orgId: string
 }
 
 /** Trial balance line in functional currency */

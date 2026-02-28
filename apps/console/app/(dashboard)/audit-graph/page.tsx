@@ -7,7 +7,7 @@
  */
 import { requireRole, getUserRole } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
-import { auditEvents, entities } from '@nzila/db/schema'
+import { auditEvents, orgs } from '@nzila/db/schema'
 import { eq, count, sql, desc, gte } from 'drizzle-orm'
 import { createHash } from 'crypto'
 import {
@@ -55,7 +55,7 @@ async function getAuditChain(
 
   const rows = orgId
     ? await baseQuery
-        .where(eq(auditEvents.entityId, orgId))
+        .where(eq(auditEvents.orgId, orgId))
         .orderBy(desc(auditEvents.createdAt))
         .limit(limit)
     : await baseQuery.orderBy(desc(auditEvents.createdAt)).limit(limit)
@@ -80,7 +80,7 @@ async function getCrossAppDensity(orgId: string | null): Promise<CrossAppDensity
 
   const rows = orgId
     ? await baseQuery
-        .where(eq(auditEvents.entityId, orgId))
+        .where(eq(auditEvents.orgId, orgId))
         .groupBy(auditEvents.targetType)
         .orderBy(desc(sql`event_count`))
     : await baseQuery

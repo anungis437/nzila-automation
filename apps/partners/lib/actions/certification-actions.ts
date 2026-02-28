@@ -149,7 +149,7 @@ export async function completeModule(
     const status = isCompleted ? 'completed' : 'in-progress'
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('cert.progress', ${userId}, 'certification', ${trackId},
         ${JSON.stringify({
           trackId,
@@ -164,7 +164,7 @@ export async function completeModule(
       await buildPartnerEvidencePack({
         actionId: crypto.randomUUID(),
         actionType: 'CERTIFICATION_COMPLETED',
-        entityId: trackId,
+        orgId: trackId,
         executedBy: userId,
       })
     }

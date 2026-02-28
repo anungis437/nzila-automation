@@ -35,7 +35,7 @@ export async function listNotifications(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'userId' as "userId",
         metadata->>'type' as type,
         metadata->>'title' as title,
@@ -45,7 +45,7 @@ export async function listNotifications(opts?: {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'notification.created' AND metadata->>'userId' = ${ctx.actorId}
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT 100`,
     )) as unknown as { rows: Notification[] }
@@ -54,7 +54,7 @@ export async function listNotifications(opts?: {
     const readRows = (await platformDb.execute(
       sql`SELECT metadata->>'notificationId' as id FROM audit_log
       WHERE action = 'notification.read' AND actor_id = ${ctx.actorId}
-        AND org_id = ${ctx.entityId}`,
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as { rows: { id: string }[] }
 
     const readSet = new Set((readRows.rows ?? []).map((r) => r.id))
@@ -62,7 +62,7 @@ export async function listNotifications(opts?: {
     const allReadAt = (await platformDb.execute(
       sql`SELECT created_at FROM audit_log
       WHERE action = 'notification.read_all' AND actor_id = ${ctx.actorId}
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as { rows: { created_at: Date }[] }
 
@@ -108,7 +108,7 @@ export async function markAsRead(notificationId: string): Promise<{ success: boo
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('notification.read', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.entityId},
+      VALUES ('notification.read', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.orgId},
         ${JSON.stringify({ notificationId })}::jsonb)`,
     )
 
@@ -128,7 +128,7 @@ export async function markAllRead(): Promise<{ success: boolean }> {
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('notification.read_all', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.entityId},
+      VALUES ('notification.read_all', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.orgId},
         ${JSON.stringify({ userId: ctx.actorId })}::jsonb)`,
     )
 

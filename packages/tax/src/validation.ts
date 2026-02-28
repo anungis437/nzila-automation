@@ -49,12 +49,12 @@ export function evaluateTaxYearCloseGate(input: CloseGateInput): TaxYearCloseGat
     blockers.push('T2 filing artifact not uploaded. Upload the signed T2 PDF before closing.')
   }
 
-  // CO-17 check (QC entities only)
+  // CO-17 check (QC orgs only)
   const co17Required = input.province === 'QC'
   const co17 = input.filings.find((f) => f.filingType === 'CO-17')
   const co17Filed = !!(co17?.documentId && co17.sha256)
   if (co17Required && !co17Filed) {
-    blockers.push('CO-17 filing artifact not uploaded. Quebec entities must upload CO-17 before closing.')
+    blockers.push('CO-17 filing artifact not uploaded. Quebec orgs must upload CO-17 before closing.')
   }
 
   // All indirect tax periods filed
@@ -98,8 +98,8 @@ export function enforceSoD(
   actorRole: FinanceRole,
   preparedByClerkUserId: string,
 ): { allowed: boolean; reason?: string } {
-  // entity_admin can override with documented exception
-  if (actorRole === 'entity_admin') {
+  // org_admin can override with documented exception
+  if (actorRole === 'org_admin') {
     return { allowed: true }
   }
 

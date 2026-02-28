@@ -7,7 +7,7 @@
  * Features:
  * - API key authentication
  * - Full and incremental sync
- * - Employee and department entities
+ * - Employee and department orgs
  * - Time off/leave tracking
  * 
  * @see https://documentation.bamboohr.com/docs
@@ -127,9 +127,9 @@ export class BambooHRAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities.filter(e => e !== 'time_off');
+      const orgs = options.orgs || this.capabilities.supportedEntities.filter(e => e !== 'time_off');
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, action: 'start' });
 

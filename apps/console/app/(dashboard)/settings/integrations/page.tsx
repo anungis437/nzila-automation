@@ -13,7 +13,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { platformDb } from '@nzila/db/platform'
-import { entities, entityMembers, qboConnections } from '@nzila/db/schema'
+import { orgs, orgMembers, qboConnections } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
 import { PuzzlePieceIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { Card } from '@nzila/ui'
@@ -28,9 +28,9 @@ interface QboStatus {
   connectedAt?: string | null
 }
 
-async function getQboStatus(entityId: string): Promise<QboStatus> {
+async function getQboStatus(orgId: string): Promise<QboStatus> {
   const connection = await platformDb.query.qboConnections.findFirst({
-    where: and(eq(qboConnections.entityId, entityId), eq(qboConnections.isActive, true)),
+    where: and(eq(qboConnections.orgId, orgId), eq(qboConnections.isActive, true)),
     orderBy: [desc(qboConnections.connectedAt)],
   })
   if (!connection) return { connected: false }
@@ -80,28 +80,28 @@ function StatusBanner({
 export default async function IntegrationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ qbo?: string; reason?: string; entityId?: string }>
+  searchParams: Promise<{ qbo?: string; reason?: string; orgId?: string }>
 }) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
   const params = await searchParams
 
-  // Load entities the user belongs to
+  // Load orgs the user belongs to
   const memberships = await platformDb
-    .select({ entityId: entityMembers.entityId })
-    .from(entityMembers)
-    .where(eq(entityMembers.clerkUserId, userId))
+    .select({ orgId: orgMembers.orgId })
+    .from(orgMembers)
+    .where(eq(orgMembers.clerkUserId, userId))
     .limit(10)
 
   // Load entity names
-  const entityIds = memberships.map((m) => m.entityId)
+  const entityIds = memberships.map((m) => m.orgId)
   const entityRows =
     entityIds.length > 0
-      ? await platformDb.select().from(entities).where(eq(entities.id, entityIds[0]))
+      ? await platformDb.select().from(orgs).where(eq(orgs.id, entityIds[0]))
       : []
 
-  const primaryEntityId = params.entityId ?? entityIds[0]
+  const primaryEntityId = params.orgId ?? entityIds[0]
 
   // Load QBO status for primary entity
   const qboStatus = primaryEntityId
@@ -124,7 +124,7 @@ export default async function IntegrationsPage({
       {/* OAuth result banner */}
       <StatusBanner qbo={params.qbo ?? null} reason={params.reason ?? null} />
 
-      {/* Entity selector (if multiple entities) */}
+      {/* Entity selector (if multiple orgs) */}
       {entityRows.length > 0 && (
         <p className="text-xs text-gray-400 mb-4">
           Showing integrations for:{' '}
@@ -159,7 +159,7 @@ export default async function IntegrationsPage({
 
                 {primaryEntityId ? (
                   <QboConnectButton
-                    entityId={primaryEntityId}
+                    orgId={primaryEntityId}
                     connected={qboStatus.connected}
                     realmId={qboStatus.realmId}
                     companyName={qboStatus.companyName}
@@ -205,7 +205,7 @@ export default async function IntegrationsPage({
             abbr: 'X',
             color: 'bg-sky-600',
             name: 'Xero',
-            desc: 'Alternative accounting software integration for non-QBO entities.',
+            desc: 'Alternative accounting software integration for non-QBO orgs.',
           },
           {
             abbr: 'P',

@@ -123,7 +123,7 @@ describe('ConversionRequestSchema', () => {
 describe('EntityCurrencyConfigSchema', () => {
   it('accepts valid config with defaults', () => {
     const result = EntityCurrencyConfigSchema.parse({
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
     })
     expect(result.functionalCurrency).toBe('CAD')
     expect(result.transactionCurrencies).toEqual(['CAD'])
@@ -133,7 +133,7 @@ describe('EntityCurrencyConfigSchema', () => {
 
   it('accepts full config', () => {
     const result = EntityCurrencyConfigSchema.parse({
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       functionalCurrency: 'USD',
       transactionCurrencies: ['USD', 'CAD', 'EUR'],
       rateSource: 'ecb',
@@ -144,9 +144,9 @@ describe('EntityCurrencyConfigSchema', () => {
     expect(result.autoRevalue).toBe(true)
   })
 
-  it('rejects non-UUID entityId', () => {
+  it('rejects non-UUID orgId', () => {
     expect(() => EntityCurrencyConfigSchema.parse({
-      entityId: 'not-a-uuid',
+      orgId: 'not-a-uuid',
     })).toThrow()
   })
 })

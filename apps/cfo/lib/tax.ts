@@ -280,7 +280,7 @@ export function getUpcomingDeadlines(
     dueDate: d.dueDate,
     daysRemaining: daysUntil(d.dueDate),
     urgency: computeUrgency(d.dueDate),
-    entityId: 'default',
+    orgId: 'default',
     type: d.type as import('@nzila/tax').DeadlineInfo['type'],
     rule: d.rule,
   })).sort((a, b) => {

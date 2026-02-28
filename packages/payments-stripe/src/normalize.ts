@@ -35,13 +35,13 @@ import { SUPPORTED_EVENT_TYPES } from './types'
  *
  * @param event The parsed Stripe event
  * @param webhookEventId The DB id of the stripeWebhookEvents row
- * @param entityId The entity this event belongs to
+ * @param orgId The entity this event belongs to
  * @returns The normalization result
  */
 export async function normalizeAndPersist(
   event: Stripe.Event,
   webhookEventId: string,
-  entityId: string,
+  orgId: string,
 ): Promise<NormalizeResult> {
   const eventType = event.type as string
 
@@ -49,7 +49,7 @@ export async function normalizeAndPersist(
     return { kind: 'skipped', reason: `Unsupported event type: ${eventType}` }
   }
 
-  const result = normalizeEvent(event, webhookEventId, entityId)
+  const result = normalizeEvent(event, webhookEventId, orgId)
 
   if (result.kind === 'skipped') {
     return result
@@ -61,7 +61,7 @@ export async function normalizeAndPersist(
       await persistPayment(result.data)
       break
     case 'refund':
-      await persistRefund(result.data, entityId)
+      await persistRefund(result.data, orgId)
       break
     case 'dispute':
       await persistDispute(result.data)
@@ -85,29 +85,29 @@ export async function normalizeAndPersist(
 function normalizeEvent(
   event: Stripe.Event,
   webhookEventId: string,
-  entityId: string,
+  orgId: string,
 ): NormalizeResult {
   const obj = event.data.object as unknown as Record<string, unknown>
 
   switch (event.type) {
     case 'checkout.session.completed':
-      return normalizeCheckoutSession(obj, webhookEventId, entityId, event)
+      return normalizeCheckoutSession(obj, webhookEventId, orgId, event)
 
     case 'payment_intent.succeeded':
     case 'payment_intent.payment_failed':
-      return normalizePaymentIntent(obj, webhookEventId, entityId, event)
+      return normalizePaymentIntent(obj, webhookEventId, orgId, event)
 
     case 'charge.refunded':
-      return normalizeChargeRefunded(obj, entityId, event)
+      return normalizeChargeRefunded(obj, orgId, event)
 
     case 'charge.dispute.created':
-      return normalizeDisputeCreated(obj, entityId, event)
+      return normalizeDisputeCreated(obj, orgId, event)
 
     case 'payout.paid':
-      return normalizePayoutPaid(obj, entityId, event)
+      return normalizePayoutPaid(obj, orgId, event)
 
     case 'invoice.paid':
-      return normalizeInvoicePaid(obj, webhookEventId, entityId, event)
+      return normalizeInvoicePaid(obj, webhookEventId, orgId, event)
 
     default:
       return { kind: 'skipped', reason: `Unhandled event type: ${event.type}` }
@@ -119,12 +119,12 @@ function normalizeEvent(
 function normalizeCheckoutSession(
   obj: Record<string, unknown>,
   webhookEventId: string,
-  entityId: string,
+  orgId: string,
   event: Stripe.Event,
 ): NormalizeResult {
   const meta = (obj.metadata as Record<string, string>) ?? {}
   const data: NormalizedPayment = {
-    entityId,
+    orgId,
     stripeObjectId: obj.id as string,
     objectType: 'checkout_session',
     status: obj.status as string ?? 'complete',
@@ -140,12 +140,12 @@ function normalizeCheckoutSession(
 function normalizePaymentIntent(
   obj: Record<string, unknown>,
   webhookEventId: string,
-  entityId: string,
+  orgId: string,
   event: Stripe.Event,
 ): NormalizeResult {
   const meta = (obj.metadata as Record<string, string>) ?? {}
   const data: NormalizedPayment = {
-    entityId,
+    orgId,
     stripeObjectId: obj.id as string,
     objectType: 'payment_intent',
     status: obj.status as string,
@@ -160,7 +160,7 @@ function normalizePaymentIntent(
 
 function normalizeChargeRefunded(
   obj: Record<string, unknown>,
-  entityId: string,
+  orgId: string,
   _event: Stripe.Event,
 ): NormalizeResult {
   const refunds = obj.refunds as { data: Array<Record<string, unknown>> } | undefined
@@ -170,7 +170,7 @@ function normalizeChargeRefunded(
   }
 
   const data: NormalizedRefund = {
-    entityId,
+    orgId,
     refundId: latestRefund.id as string,
     paymentStripeObjectId: (obj.payment_intent as string) ?? (obj.id as string),
     amountCents: BigInt((latestRefund.amount as number) ?? 0),
@@ -182,12 +182,12 @@ function normalizeChargeRefunded(
 
 function normalizeDisputeCreated(
   obj: Record<string, unknown>,
-  entityId: string,
+  orgId: string,
   _event: Stripe.Event,
 ): NormalizeResult {
   const evidenceDetails = obj.evidence_details as Record<string, unknown> | undefined
   const data: NormalizedDispute = {
-    entityId,
+    orgId,
     disputeId: obj.id as string,
     paymentStripeObjectId: (obj.payment_intent as string) ?? '',
     amountCents: BigInt((obj.amount as number) ?? 0),
@@ -203,11 +203,11 @@ function normalizeDisputeCreated(
 
 function normalizePayoutPaid(
   obj: Record<string, unknown>,
-  entityId: string,
+  orgId: string,
   _event: Stripe.Event,
 ): NormalizeResult {
   const data: NormalizedPayout = {
-    entityId,
+    orgId,
     payoutId: obj.id as string,
     amountCents: BigInt((obj.amount as number) ?? 0),
     currency: ((obj.currency as string) ?? 'cad').toUpperCase(),
@@ -223,12 +223,12 @@ function normalizePayoutPaid(
 function normalizeInvoicePaid(
   obj: Record<string, unknown>,
   webhookEventId: string,
-  entityId: string,
+  orgId: string,
   event: Stripe.Event,
 ): NormalizeResult {
   const meta = (obj.metadata as Record<string, string>) ?? {}
   const data: NormalizedPayment = {
-    entityId,
+    orgId,
     stripeObjectId: obj.id as string,
     objectType: 'invoice',
     status: 'paid',
@@ -247,7 +247,7 @@ async function persistPayment(data: NormalizedPayment): Promise<void> {
   await db
     .insert(stripePayments)
     .values({
-      entityId: data.entityId,
+      orgId: data.orgId,
       stripeObjectId: data.stripeObjectId,
       objectType: data.objectType,
       status: data.status,
@@ -259,7 +259,7 @@ async function persistPayment(data: NormalizedPayment): Promise<void> {
     })
 }
 
-async function persistRefund(data: NormalizedRefund, entityId: string): Promise<void> {
+async function persistRefund(data: NormalizedRefund, orgId: string): Promise<void> {
   // Try to find the related payment by stripe object ID
   const [payment] = await db
     .select({ id: stripePayments.id })
@@ -270,7 +270,7 @@ async function persistRefund(data: NormalizedRefund, entityId: string): Promise<
   await db
     .insert(stripeRefunds)
     .values({
-      entityId,
+      orgId,
       refundId: data.refundId,
       paymentId: payment?.id ?? null,
       amountCents: data.amountCents,
@@ -290,7 +290,7 @@ async function persistDispute(data: NormalizedDispute): Promise<void> {
   await db
     .insert(stripeDisputes)
     .values({
-      entityId: data.entityId,
+      orgId: data.orgId,
       disputeId: data.disputeId,
       paymentId: payment?.id ?? null,
       amountCents: data.amountCents,
@@ -305,7 +305,7 @@ async function persistPayout(data: NormalizedPayout): Promise<void> {
   await db
     .insert(stripePayouts)
     .values({
-      entityId: data.entityId,
+      orgId: data.orgId,
       payoutId: data.payoutId,
       amountCents: data.amountCents,
       currency: data.currency,

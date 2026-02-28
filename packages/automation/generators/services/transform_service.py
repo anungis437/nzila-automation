@@ -79,7 +79,7 @@ class ServiceTransformer:
         for match in re.finditer(schema_pattern, self.original_content):
             imports['schema_imports'].append({
                 'full': match.group(0),
-                'entities': [e.strip() for e in match.group(1).split(',')],
+                'orgs': [e.strip() for e in match.group(1).split(',')],
                 'path': match.group(2),
             })
             

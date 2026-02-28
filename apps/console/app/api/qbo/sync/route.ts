@@ -3,7 +3,7 @@
  * API — QBO Report Sync
  * POST /api/qbo/sync
  *
- * Body: { entityId, reportType, periodStart?, periodEnd? }
+ * Body: { orgId, reportType, periodStart?, periodEnd? }
  *
  * Triggers a synchronous QBO report pull:
  *   1. Loads active connection + tokens for the entity
@@ -20,7 +20,7 @@ import { z } from 'zod'
 import { platformDb } from '@nzila/db/platform'
 import { qboConnections, qboTokens, qboSyncRuns, qboReports } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createQboClient } from '@nzila/qbo/client'
 import { getValidToken, isAccessTokenExpired } from '@nzila/qbo/oauth'
 import type { QboTokenSet } from '@nzila/qbo/types'
@@ -41,7 +41,7 @@ const REPORT_NAME_MAP: Record<string, string> = {
 }
 
 const QboSyncSchema = z.object({
-  entityId: z.string().min(1),
+  orgId: z.string().min(1),
   reportType: z.string().min(1),
   periodStart: z.string().optional(),
   periodEnd: z.string().optional(),
@@ -50,9 +50,9 @@ const QboSyncSchema = z.object({
 export async function POST(req: NextRequest) {
   const parsed = QboSyncSchema.safeParse(await req.json())
   if (!parsed.success) {
-    return NextResponse.json({ error: 'entityId and reportType required' }, { status: 400 })
+    return NextResponse.json({ error: 'orgId and reportType required' }, { status: 400 })
   }
-  const { entityId, reportType, periodStart, periodEnd } = parsed.data
+  const { orgId, reportType, periodStart, periodEnd } = parsed.data
 
   const qboReportName = REPORT_NAME_MAP[reportType as string]
   if (!qboReportName) {
@@ -62,14 +62,14 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const access = await requireEntityAccess(entityId, { minRole: 'entity_secretary' })
+  const access = await requireOrgAccess(orgId, { minRole: 'org_secretary' })
   if (!access.ok) return access.response
 
   // ── Load connection ─────────────────────────────────────────────────────
 
   const connection = await platformDb.query.qboConnections.findFirst({
     where: and(
-      eq(qboConnections.entityId, entityId),
+      eq(qboConnections.orgId, orgId),
       eq(qboConnections.isActive, true),
     ),
   })
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
   const [syncRun] = await platformDb
     .insert(qboSyncRuns)
     .values({
-      entityId,
+      orgId,
       connectionId: connection.id,
       reportType: reportType as typeof qboSyncRuns.$inferInsert['reportType'],
       periodStart: periodStart ?? null,
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     const [reportRow] = await platformDb
       .insert(qboReports)
       .values({
-        entityId,
+        orgId,
         syncRunId: syncRun.id,
         reportType: reportType as typeof qboReports.$inferInsert['reportType'],
         periodStart: periodStart ?? null,

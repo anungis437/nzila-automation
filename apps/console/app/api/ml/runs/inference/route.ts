@@ -6,7 +6,7 @@
  * RBAC: any active entity member.
  *
  * Query params:
- *   entityId    required
+ *   orgId    required
  *   modelId     optional — filter to a specific model
  *   limit       optional — default 20, max 100
  */
@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { mlInferenceRuns, mlModels } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('ml:runs:inference')
@@ -25,21 +25,21 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityId = searchParams.get('entityId')
+    const orgId = searchParams.get('orgId')
     const modelId = searchParams.get('modelId')
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '20', 10), 100)
 
-    if (!entityId) {
-      return NextResponse.json({ error: 'entityId is required' }, { status: 400 })
+    if (!orgId) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
     }
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     const rows = await platformDb
       .select({
         id: mlInferenceRuns.id,
-        entityId: mlInferenceRuns.entityId,
+        orgId: mlInferenceRuns.orgId,
         modelId: mlInferenceRuns.modelId,
         modelKey: mlModels.modelKey,
         status: mlInferenceRuns.status,
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
       .innerJoin(mlModels, eq(mlInferenceRuns.modelId, mlModels.id))
       .where(
         and(
-          eq(mlInferenceRuns.entityId, entityId),
+          eq(mlInferenceRuns.orgId, orgId),
           ...(modelId ? [eq(mlInferenceRuns.modelId, modelId)] : []),
         ),
       )
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       rows.map((r) => ({
         id: r.id,
-        entityId: r.entityId,
+        orgId: r.orgId,
         modelId: r.modelId,
         modelKey: r.modelKey,
         status: r.status,

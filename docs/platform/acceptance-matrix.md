@@ -15,7 +15,7 @@
 | Build succeeds | Full Turborepo build completes | `turbo run build` |
 | No feature drift | PR contains only scoped changes, no bonus features | Code review |
 | Layering respected | `route → service → domain → adapter` — no shortcuts | Code review |
-| Org terminology | `orgId` only — no `tenantId`, `companyId`, `entityId` as org synonym | Contract test + review |
+| Org terminology | `orgId` only — no `tenantId`, `companyId`, `orgId` as org synonym | Contract test + review |
 
 ---
 
@@ -143,11 +143,11 @@
 
 ---
 
-### PR 4.2 — entityId → orgId Refactor
+### PR 4.2 — orgId → orgId Refactor
 
 | Gate | Criteria |
 | ---- | -------- |
-| No masquerading | Zero `entityId` used as org identifier outside legitimate domain entities |
+| No masquerading | Zero `orgId` used as org identifier outside legitimate domain entities |
 | DB repos updated | All DB repos accept `orgId` explicitly |
 | Tests updated | All tests + contract tests use `orgId` |
 | Contract tests pass | Updated contract tests pass |
@@ -158,9 +158,9 @@
 
 | Gate | Criteria |
 | ---- | -------- |
-| CONTEXT_SEMANTICS_ENFORCED_001 | Fail if `resolveOrgContext` returns `{ entityId }` without `{ orgId }` |
-| Server action guard | Fail if `ctx.entityId` used in org filters in server actions |
-| Regression prevented | New code cannot introduce `entityId` as org synonym |
+| CONTEXT_SEMANTICS_ENFORCED_001 | Fail if `resolveOrgContext` returns `{ orgId }` without `{ orgId }` |
+| Server action guard | Fail if `ctx.orgId` used in org filters in server actions |
+| Regression prevented | New code cannot introduce `orgId` as org synonym |
 
 ---
 

@@ -67,29 +67,29 @@ export function createMlClient(config: MlSdkConfig) {
     /**
      * Get all models for an entity (all statuses).
      */
-    getAllModels(entityId: string, status?: string): Promise<MlModelResponse[]> {
-      return get<MlModelResponse[]>('/api/ml/models', { entityId, status })
+    getAllModels(orgId: string, status?: string): Promise<MlModelResponse[]> {
+      return get<MlModelResponse[]>('/api/ml/models', { orgId, status })
     },
 
     /**
      * Get all active models for an entity.
      */
-    getActiveModels(entityId: string): Promise<MlActiveModelResponse[]> {
-      return get<MlActiveModelResponse[]>('/api/ml/models/active', { entityId })
+    getActiveModels(orgId: string): Promise<MlActiveModelResponse[]> {
+      return get<MlActiveModelResponse[]>('/api/ml/models/active', { orgId })
     },
 
     /**
      * Get recent training runs for an entity.
      */
-    getTrainingRuns(entityId: string, limit = 20): Promise<MlTrainingRunResponse[]> {
-      return get<MlTrainingRunResponse[]>('/api/ml/runs/training', { entityId, limit })
+    getTrainingRuns(orgId: string, limit = 20): Promise<MlTrainingRunResponse[]> {
+      return get<MlTrainingRunResponse[]>('/api/ml/runs/training', { orgId, limit })
     },
 
     /**
      * Get recent inference runs for an entity.
      */
-    getInferenceRuns(entityId: string, limit = 20): Promise<MlInferenceRunResponse[]> {
-      return get<MlInferenceRunResponse[]>('/api/ml/runs/inference', { entityId, limit })
+    getInferenceRuns(orgId: string, limit = 20): Promise<MlInferenceRunResponse[]> {
+      return get<MlInferenceRunResponse[]>('/api/ml/runs/inference', { orgId, limit })
     },
 
     /**

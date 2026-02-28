@@ -63,7 +63,7 @@ function getProvider(providerKey: string): AiProviderClient {
 // ── Resolve capability profile ──────────────────────────────────────────────
 
 export async function resolveProfile(opts: {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
 }): Promise<ResolvedCapabilityProfile> {
@@ -75,7 +75,7 @@ export async function resolveProfile(opts: {
     .from(aiCapabilityProfiles)
     .where(
       and(
-        eq(aiCapabilityProfiles.entityId, opts.entityId),
+        eq(aiCapabilityProfiles.orgId, opts.orgId),
         eq(aiCapabilityProfiles.appKey, opts.appKey),
         eq(aiCapabilityProfiles.environment, environment),
         eq(aiCapabilityProfiles.profileKey, opts.profileKey),
@@ -97,7 +97,7 @@ export async function resolveProfile(opts: {
 
   return {
     id: row.id,
-    entityId: row.entityId,
+    orgId: row.orgId,
     appKey: row.appKey,
     environment: row.environment,
     profileKey: row.profileKey,
@@ -133,7 +133,7 @@ export interface ResolvedDeployment {
  * Falls back to env vars if no route is configured (backward-compatible).
  */
 export async function resolveDeployment(opts: {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   feature: 'chat' | 'generate' | 'embed' | 'rag_query' | 'extract'
@@ -156,7 +156,7 @@ export async function resolveDeployment(opts: {
     .innerJoin(aiModels, eq(aiDeployments.modelId, aiModels.id))
     .where(
       and(
-        eq(aiDeploymentRoutes.entityId, opts.entityId),
+        eq(aiDeploymentRoutes.orgId, opts.orgId),
         eq(aiDeploymentRoutes.appKey, opts.appKey),
         eq(aiDeploymentRoutes.profileKey, opts.profileKey),
         eq(aiDeploymentRoutes.feature, opts.feature),
@@ -254,7 +254,7 @@ export async function generate(req: AiGenerateRequest): Promise<AiGenerateRespon
 
   // 2. Budget check
   await checkBudget({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
   })
@@ -295,7 +295,7 @@ export async function generate(req: AiGenerateRequest): Promise<AiGenerateRespon
 
   // 5. Select provider + model via deployment route (DB-backed registry)
   const deployment = await resolveDeployment({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
     feature: 'generate',
@@ -326,7 +326,7 @@ export async function generate(req: AiGenerateRequest): Promise<AiGenerateRespon
 
   // 8. Log request
   const logged = await logAiRequest({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
     feature: 'generate',
@@ -349,7 +349,7 @@ export async function generate(req: AiGenerateRequest): Promise<AiGenerateRespon
   // 9. Record spend
   if (costUsd) {
     await recordSpend({
-      entityId: req.entityId,
+      orgId: req.orgId,
       appKey: req.appKey,
       profileKey: req.profileKey,
       costUsd,
@@ -388,7 +388,7 @@ export async function* chatStream(
   const profile = await resolveProfile(req)
 
   enforcePolicy(profile, 'chat', req.dataClass, { streaming: true, requiredModality: 'text' })
-  await checkBudget({ entityId: req.entityId, appKey: req.appKey, profileKey: req.profileKey })
+  await checkBudget({ orgId: req.orgId, appKey: req.appKey, profileKey: req.profileKey })
 
   // Build messages
   let messages: ChatMessage[] = []
@@ -423,7 +423,7 @@ export async function* chatStream(
   })
 
   const chatDeployment = await resolveDeployment({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
     feature: 'chat',
@@ -461,7 +461,7 @@ export async function* chatStream(
 
   // Log after stream completes
   await logAiRequest({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
     feature: 'chat',
@@ -483,7 +483,7 @@ export async function* chatStream(
 
   if (costUsd) {
     await recordSpend({
-      entityId: req.entityId,
+      orgId: req.orgId,
       appKey: req.appKey,
       profileKey: req.profileKey,
       costUsd,
@@ -496,7 +496,7 @@ export async function* chatStream(
 export async function embed(req: AiEmbedRequest): Promise<AiEmbedResponse> {
   const env = getAiEnv()
   const profile = await resolveProfile({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
   })
@@ -506,10 +506,10 @@ export async function embed(req: AiEmbedRequest): Promise<AiEmbedResponse> {
   }
 
   enforcePolicy(profile, 'embed', req.dataClass, { requiredModality: 'embeddings' })
-  await checkBudget({ entityId: req.entityId, appKey: req.appKey, profileKey: req.profileKey })
+  await checkBudget({ orgId: req.orgId, appKey: req.appKey, profileKey: req.profileKey })
 
   const embedDeployment = await resolveDeployment({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
     feature: 'embed',
@@ -528,7 +528,7 @@ export async function embed(req: AiEmbedRequest): Promise<AiEmbedResponse> {
   const costUsd = result.tokensUsed * 0.0000001 // ada-002 approx pricing
 
   const logged = await logAiRequest({
-    entityId: req.entityId,
+    orgId: req.orgId,
     appKey: req.appKey,
     profileKey: req.profileKey,
     feature: 'embed',
@@ -547,7 +547,7 @@ export async function embed(req: AiEmbedRequest): Promise<AiEmbedResponse> {
   })
 
   if (costUsd) {
-    await recordSpend({ entityId: req.entityId, appKey: req.appKey, profileKey: req.profileKey, costUsd })
+    await recordSpend({ orgId: req.orgId, appKey: req.appKey, profileKey: req.profileKey, costUsd })
   }
 
   return {

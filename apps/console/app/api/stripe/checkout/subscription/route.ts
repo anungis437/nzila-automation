@@ -15,7 +15,7 @@ import { authenticateUser } from '@/lib/api-guards'
 import { recordAuditEvent } from '@/lib/audit-db'
 
 const Schema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   priceId: z.string().min(1),
   customerId: z.string().optional(),
   ventureId: z.string().optional(),
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     )
   }
 
-  const { entityId, priceId, customerId, ventureId, trialDays } = parsed.data
+  const { orgId, priceId, customerId, ventureId, trialDays } = parsed.data
 
   const origin = req.headers.get('origin') ?? 'http://localhost:3001'
   const successUrl = `${origin}/settings/billing/success?session_id={CHECKOUT_SESSION_ID}`
@@ -44,17 +44,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const { sessionId, url } = await createSubscriptionCheckoutSession({
       priceId,
-      entityId,
+      orgId,
       customerId,
       ventureId,
       successUrl,
       cancelUrl,
       trialDays,
-      metadata: { entity_id: entityId },
+      metadata: { org_id: orgId },
     })
 
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.subscription_checkout_created',

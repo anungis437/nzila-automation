@@ -1,8 +1,8 @@
 /**
- * Nzila OS — Core entity tables
+ * Nzila OS — Core org tables
  *
- * Every object in the system is scoped by entity_id.
- * These tables define the legal entities and the people involved.
+ * Every object in the system is scoped by org_id.
+ * These tables define the organisations and the people involved.
  */
 import {
   pgTable,
@@ -17,11 +17,11 @@ import {
 
 // ── Enums ───────────────────────────────────────────────────────────────────
 
-export const entityStatusEnum = pgEnum('entity_status', ['active', 'inactive'])
+export const orgStatusEnum = pgEnum('org_status', ['active', 'inactive'])
 
 export const personTypeEnum = pgEnum('person_type', ['individual', 'entity'])
 
-export const entityRoleKindEnum = pgEnum('entity_role_kind', [
+export const orgRoleKindEnum = pgEnum('org_role_kind', [
   'director',
   'officer',
   'shareholder',
@@ -29,21 +29,21 @@ export const entityRoleKindEnum = pgEnum('entity_role_kind', [
   'auditor',
 ])
 
-export const entityMemberRoleEnum = pgEnum('entity_member_role', [
-  'entity_admin',
-  'entity_secretary',
-  'entity_viewer',
+export const orgMemberRoleEnum = pgEnum('org_member_role', [
+  'org_admin',
+  'org_secretary',
+  'org_viewer',
 ])
 
-export const entityMemberStatusEnum = pgEnum('entity_member_status', [
+export const orgMemberStatusEnum = pgEnum('org_member_status', [
   'active',
   'suspended',
   'removed',
 ])
 
-// ── 1) entities ─────────────────────────────────────────────────────────────
+// ── 1) orgs ─────────────────────────────────────────────────────────────────────
 
-export const entities = pgTable('entities', {
+export const orgs = pgTable('orgs', {
   id: uuid('id').primaryKey().defaultRandom(),
   legalName: text('legal_name').notNull(),
   jurisdiction: varchar('jurisdiction', { length: 10 }).notNull(), // e.g. CA-ON
@@ -51,7 +51,7 @@ export const entities = pgTable('entities', {
   registeredOfficeAddress: jsonb('registered_office_address'),
   fiscalYearEnd: varchar('fiscal_year_end', { length: 5 }), // MM-DD
   policyConfig: jsonb('policy_config').default({}), // threshold overrides
-  status: entityStatusEnum('status').notNull().default('active'),
+  status: orgStatusEnum('status').notNull().default('active'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -68,17 +68,17 @@ export const people = pgTable('people', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
-// ── 3) entity_roles ─────────────────────────────────────────────────────────
+// ── 3) org_roles ─────────────────────────────────────────────────────────────────
 
-export const entityRoles = pgTable('entity_roles', {
+export const orgRoles = pgTable('org_roles', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   personId: uuid('person_id')
     .notNull()
     .references(() => people.id),
-  role: entityRoleKindEnum('role').notNull(),
+  role: orgRoleKindEnum('role').notNull(),
   title: text('title'), // e.g. CEO, Secretary
   startDate: date('start_date').notNull(),
   endDate: date('end_date'),
@@ -86,16 +86,16 @@ export const entityRoles = pgTable('entity_roles', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
-// ── 4) entity_members (console access) ──────────────────────────────────────
+// ── 4) org_members (console access) ──────────────────────────────────────────────
 
-export const entityMembers = pgTable('entity_members', {
+export const orgMembers = pgTable('org_members', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   clerkUserId: text('clerk_user_id').notNull(),
-  role: entityMemberRoleEnum('role').notNull(),
-  status: entityMemberStatusEnum('status').notNull().default('active'),
+  role: orgMemberRoleEnum('role').notNull(),
+  status: orgMemberStatusEnum('status').notNull().default('active'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })

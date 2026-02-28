@@ -15,7 +15,7 @@
 | `@nzila/web` | 3000 | Next.js 16 | None (public) | N/A | Low |
 | `@nzila/console` | 3001 | Next.js 16 | Clerk | `authorize()` + entity-scoped | **High** |
 | `@nzila/partners` | 3002 | Next.js 16 | Clerk | `authorize()` + entity-scoped | **High** |
-| `@nzila/union-eyes` | 3003 | Next.js 16 | Clerk (optional) | `entityId` via URL param ⚠️ | **High** |
+| `@nzila/union-eyes` | 3003 | Next.js 16 | Clerk (optional) | `orgId` via URL param ⚠️ | **High** |
 | `@nzila/orchestrator-api` | 4000 | Fastify 5 | Env-scoped tokens | N/A (CI-triggered) | Medium |
 
 ### Packages
@@ -129,13 +129,13 @@
 
 ### Current Mechanism
 - **Application-layer isolation** via `authorize()` from `@nzila/os-core/policy`
-- `entity_members` table gates user → entity access (roles: admin, editor, viewer)
+- `org_members` table gates user → entity access (roles: admin, editor, viewer)
 - `partner_entities` gates partner → entity relationships
 - Every API route must call `authorize()` (enforced by `api-authz-coverage.test.ts`)
 
 ### Known Issues
 - **No database-level RLS** — all isolation is application-layer
-- Union Eyes passes `entityId` as URL parameter — code comment says "in production, derive from session instead" ⚠️
+- Union Eyes passes `orgId` as URL parameter — code comment says "in production, derive from session instead" ⚠️
 - No dedicated cross-org boundary tests (only auth coverage tests)
 - Error messages not audited for org enumeration leakage
 
@@ -153,7 +153,7 @@
 | R-06 | No Dependabot/Renovate | Stale dependencies, unpatched CVEs | Medium | No automated dependency update PRs | PR 2 |
 | R-07 | No Trivy container scanning | Vulnerable base images ship to prod | Medium | Only CycloneDX SBOM, no container scan | PR 3 |
 | R-08 | No cross-org boundary tests | Org data leakage | **Critical** | No explicit cross-org read/write failure tests | PR 9 |
-| R-09 | Union Eyes `entityId` from URL | Org enumeration / spoofing | High | Should derive from session | PR 9 |
+| R-09 | Union Eyes `orgId` from URL | Org enumeration / spoofing | High | Should derive from session | PR 9 |
 | R-10 | No orchestrator security headers | Clickjacking, MIME sniffing on API | Low | Missing `@fastify/helmet` | PR 6 |
 | R-11 | No structured logging standard | PII in logs, no correlation | Medium | Logger exists but no redaction/correlation enforcement | PR 11 |
 | R-12 | No E2E tests | Critical flows untested end-to-end | Medium | No Playwright setup | PR 15 |

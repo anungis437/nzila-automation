@@ -150,7 +150,7 @@ All schema logic lives in packages/os-core/src/evidence/generate-evidence-index.
 
   // Parse CLI args — thin layer only
   const packId = values['pack-id'] ?? fatal('--pack-id is required')
-  const entityId = values['entity-id'] ?? fatal('--entity-id is required')
+  const orgId = values['entity-id'] ?? fatal('--entity-id is required')
   const controlFamily = (values['control-family'] ?? fatal('--control-family is required')) as ControlFamily
   const eventType = (values['event-type'] ?? fatal('--event-type is required')) as EvidenceEventType
   const eventId = values['event-id'] ?? fatal('--event-id is required')
@@ -192,7 +192,7 @@ All schema logic lives in packages/os-core/src/evidence/generate-evidence-index.
 
   const request: EvidencePackRequest = {
     packId,
-    entityId,
+    orgId,
     controlFamily,
     eventType,
     eventId,

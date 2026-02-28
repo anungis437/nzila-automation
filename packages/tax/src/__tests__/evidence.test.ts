@@ -56,7 +56,7 @@ describe('artifact constants', () => {
 // ── Manifest builder ────────────────────────────────────────────────────────
 
 const fullInput = {
-  entityId: 'ent-001',
+  orgId: 'ent-001',
   fiscalYear: 'FY2025',
   financial: {
     trialBalance: 'blob://tb.xlsx',
@@ -84,7 +84,7 @@ const fullInput = {
 describe('buildYearEndManifest', () => {
   it('produces manifest with sha256 hash', () => {
     const manifest = buildYearEndManifest(fullInput)
-    expect(manifest.entityId).toBe('ent-001')
+    expect(manifest.orgId).toBe('ent-001')
     expect(manifest.fiscalYear).toBe('FY2025')
     expect(manifest.manifestHash).toBeTruthy()
     expect(manifest.manifestHash).toMatch(/^[a-f0-9]{64}$/)
@@ -157,7 +157,7 @@ describe('serializeManifest', () => {
     const buf = serializeManifest(manifest)
     expect(buf).toBeInstanceOf(Buffer)
     const parsed = JSON.parse(buf.toString('utf-8'))
-    expect(parsed.entityId).toBe('ent-001')
+    expect(parsed.orgId).toBe('ent-001')
     expect(parsed.manifestHash).toBe(manifest.manifestHash)
   })
 })

@@ -5,7 +5,7 @@
  * PATCH  /api/finance/tax/years/[taxYearId]   → update status
  *
  * PR5 — Governance enforcement:
- *  • Entity-scoped auth
+ *  • Org-scoped auth
  *  • Close gate + governance requirements enforced on PATCH to 'closed'
  *  • Hash-chained audit events
  */
@@ -22,7 +22,7 @@ import {
   financeGovernanceLinks,
 } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { evaluateTaxYearCloseGate } from '@nzila/tax/validation'
 import { evaluateFinanceGovernanceRequirements } from '@nzila/tax/governance'
 import { buildTaxYearDeadlines } from '@nzila/tax/deadlines'
@@ -46,7 +46,7 @@ export async function GET(
     return NextResponse.json({ error: 'Tax year not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(taxYear.entityId)
+  const access = await requireOrgAccess(taxYear.orgId)
   if (!access.ok) return access.response
 
   // Fetch related data for close gate evaluation
@@ -54,8 +54,8 @@ export async function GET(
     platformDb.select().from(taxFilings).where(eq(taxFilings.taxYearId, taxYearId)),
     platformDb.select().from(taxNotices).where(eq(taxNotices.taxYearId, taxYearId)),
     platformDb.select().from(taxInstallments).where(eq(taxInstallments.taxYearId, taxYearId)),
-    platformDb.select().from(indirectTaxPeriods).where(eq(indirectTaxPeriods.entityId, taxYear.entityId)),
-    platformDb.select().from(taxProfiles).where(eq(taxProfiles.entityId, taxYear.entityId)),
+    platformDb.select().from(indirectTaxPeriods).where(eq(indirectTaxPeriods.orgId, taxYear.orgId)),
+    platformDb.select().from(taxProfiles).where(eq(taxProfiles.orgId, taxYear.orgId)),
   ])
 
   const profile = profiles[0]
@@ -80,7 +80,7 @@ export async function GET(
 
   const deadlines = buildTaxYearDeadlines({
     id: taxYear.id,
-    entityId: taxYear.entityId,
+    orgId: taxYear.orgId,
     fiscalYearLabel: taxYear.fiscalYearLabel,
     federalFilingDeadline: taxYear.federalFilingDeadline,
     federalPaymentDeadline: taxYear.federalPaymentDeadline,
@@ -121,8 +121,8 @@ export async function PATCH(
     return NextResponse.json({ error: 'Tax year not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(existing.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(existing.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -132,9 +132,9 @@ export async function PATCH(
     const [filings, notices, indirectPrds, profiles, links] = await Promise.all([
       platformDb.select().from(taxFilings).where(eq(taxFilings.taxYearId, taxYearId)),
       platformDb.select().from(taxNotices).where(eq(taxNotices.taxYearId, taxYearId)),
-      platformDb.select().from(indirectTaxPeriods).where(eq(indirectTaxPeriods.entityId, existing.entityId)),
-      platformDb.select().from(taxProfiles).where(eq(taxProfiles.entityId, existing.entityId)),
-      platformDb.select().from(financeGovernanceLinks).where(eq(financeGovernanceLinks.entityId, existing.entityId)),
+      platformDb.select().from(indirectTaxPeriods).where(eq(indirectTaxPeriods.orgId, existing.orgId)),
+      platformDb.select().from(taxProfiles).where(eq(taxProfiles.orgId, existing.orgId)),
+      platformDb.select().from(financeGovernanceLinks).where(eq(financeGovernanceLinks.orgId, existing.orgId)),
     ])
 
     const profile = profiles[0]
@@ -223,7 +223,7 @@ export async function PATCH(
       : FINANCE_AUDIT_ACTIONS.TAX_YEAR_CREATE // 'open' transition
 
   await recordFinanceAuditEvent({
-    entityId: existing.entityId,
+    orgId: existing.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: auditAction,

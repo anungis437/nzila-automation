@@ -3,7 +3,7 @@
  *
  * Validates the structural contract of every commerce repository module:
  *   1. Every exported function exists and is callable
- *   2. Every function's first parameter is named ctx (orgId/entityId present)
+ *   2. Every function's first parameter is named ctx (orgId/orgId present)
  *   3. Write functions use createAuditedScopedDb (not just createScopedDb)
  *   4. Module exports match the expected API surface
  *
@@ -49,17 +49,17 @@ function extractFirstParam(source: string, fnName: string): string | null {
 // ── Test: Types module ──────────────────────────────────────────────────────
 
 describe('types module', () => {
-  it('exports CommerceDbContext with entityId and actorId', () => {
+  it('exports CommerceDbContext with orgId and actorId', () => {
     const source = readSource('src/types.ts')
-    expect(source).toContain('entityId')
+    expect(source).toContain('orgId')
     expect(source).toContain('actorId')
     expect(source).toContain('CommerceDbContext')
   })
 
-  it('exports CommerceReadContext with entityId', () => {
+  it('exports CommerceReadContext with orgId', () => {
     const source = readSource('src/types.ts')
     expect(source).toContain('CommerceReadContext')
-    expect(source).toContain('entityId')
+    expect(source).toContain('orgId')
   })
 
   it('exports PaginationOpts and PaginatedResult', () => {
@@ -381,10 +381,10 @@ describe('org isolation contract', () => {
     'src/repositories/sync.ts',
   ]
 
-  it('every repository passes ctx.entityId as orgId to scoped db', () => {
+  it('every repository passes ctx.orgId as orgId to scoped db', () => {
     for (const file of repoFiles) {
       const source = readSource(file)
-      // Every scoped DB call must use ctx.entityId
+      // Every scoped DB call must use ctx.orgId
       const scopedCalls = source.match(/createScopedDb|createAuditedScopedDb/g) ?? []
       expect(
         scopedCalls.length,
@@ -392,8 +392,8 @@ describe('org isolation contract', () => {
       ).toBeGreaterThan(0)
       expect(
         source,
-        `${file} must pass ctx.entityId`,
-      ).toContain('ctx.entityId')
+        `${file} must pass ctx.orgId`,
+      ).toContain('ctx.orgId')
     }
   })
 

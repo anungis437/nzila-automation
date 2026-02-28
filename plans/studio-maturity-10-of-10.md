@@ -331,7 +331,7 @@ import { buildEvidencePackFromAction, processEvidencePack } from '@nzila/os-core
 // On any governance action:
 const pack = buildEvidencePackFromAction({
   actionType: 'QUOTE_APPROVED',
-  entityId,
+  orgId,
   actorId,
   artifacts: [/* documents, snapshots, approvals */],
 });
@@ -362,7 +362,7 @@ const audit = buildTransitionAuditEntry({
   entityType: CommerceEntityType.Quote,
   action: AuditAction.StatusTransition,
   from: 'DRAFT', to: 'PRICING',
-  actorId, entityId,
+  actorId, orgId,
 });
 ```
 

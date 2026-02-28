@@ -32,7 +32,7 @@ export async function createParty(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_party',
@@ -44,7 +44,7 @@ export async function createParty(
 
   // TODO: persist party + audit entry via trade-db repository
   // const repo = createTradePartyRepository(scopedDb)
-  // await repo.create({ ...parsed.data, id, entityId: ctx.entityId })
+  // await repo.create({ ...parsed.data, id, orgId: ctx.orgId })
 
   revalidatePath('/trade/parties')
 
@@ -63,7 +63,7 @@ export async function updateParty(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_party',
@@ -75,7 +75,7 @@ export async function updateParty(
 
   // TODO: persist via trade-db repository
   // const repo = createTradePartyRepository(scopedDb)
-  // await repo.update(parsed.data.id, { ...parsed.data, entityId: ctx.entityId })
+  // await repo.update(parsed.data.id, { ...parsed.data, orgId: ctx.orgId })
 
   revalidatePath('/trade/parties')
 
@@ -89,9 +89,9 @@ export async function listParties(opts?: {
 }): Promise<TradeServiceResult<{ parties: TradeParty[]; total: number }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
   // const repo = createTradePartyRepository(readonlyDb)
-  // const result = await repo.findAll({ entityId: ctx.entityId, ...opts })
+  // const result = await repo.findAll({ orgId: ctx.orgId, ...opts })
 
   return {
     ok: true,

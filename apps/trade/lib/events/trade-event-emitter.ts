@@ -47,7 +47,7 @@ export function createTradeEvent<TPayload extends Record<string, unknown>>(
   type: TradeEventType,
   payload: TPayload,
   metadata: {
-    entityId: string
+    orgId: string
     actorId: string
     correlationId: string
     causationId?: string
@@ -90,7 +90,7 @@ export function createIntegrationHandler(dispatcher: {
   }): Promise<{ id: string; status: string }>
 }): TradeEventHandler {
   return async (event) => {
-    const { entityId, correlationId } = event.metadata
+    const { orgId, correlationId } = event.metadata
 
     // Route events to appropriate integration channels
     const routing = getEventRouting(event.type)
@@ -98,9 +98,9 @@ export function createIntegrationHandler(dispatcher: {
 
     for (const route of routing) {
       await dispatcher.dispatch({
-        orgId: entityId,
+        orgId: orgId,
         channel: route.channel,
-        recipientRef: route.recipientRef ?? entityId,
+        recipientRef: route.recipientRef ?? orgId,
         payload: {
           eventType: event.type,
           eventId: event.id,

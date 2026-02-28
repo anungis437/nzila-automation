@@ -84,7 +84,7 @@ export default async function IntegrityPage() {
                 <tr key={a.id} className="border-b border-gray-50 hover:bg-gray-50/50">
                   <td className="px-4 py-3 font-mono text-xs text-navy">{a.id.slice(0, 8)}…</td>
                   <td className="px-4 py-3 text-gray-600">{a.entityType}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-400">{a.entityId?.slice(0, 8) ?? '—'}…</td>
+                  <td className="px-4 py-3 font-mono text-xs text-gray-400">{a.orgId?.slice(0, 8) ?? '—'}…</td>
                   <td className="px-4 py-3 text-gray-500 text-xs">
                     {a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'}
                   </td>

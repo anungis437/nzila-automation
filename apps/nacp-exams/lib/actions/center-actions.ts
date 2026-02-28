@@ -40,7 +40,7 @@ export async function listCenters(opts?: {
 }): Promise<{ centers: CenterRow[] }> {
   const ctx = await resolveOrgContext()
 
-  let filter = sql`ec.org_id = ${ctx.entityId}`
+  let filter = sql`ec.org_id = ${ctx.orgId}`
   if (opts?.status) {
     filter = sql`${filter} AND ec.status = ${opts.status}`
   }
@@ -81,7 +81,7 @@ export async function getCenterStats(): Promise<CenterStats> {
       COUNT(*) FILTER (WHERE status = 'pending')::int as pending,
       COUNT(*) FILTER (WHERE status = ${CenterStatus.SUSPENDED})::int as suspended
     FROM exam_centers
-    WHERE org_id = ${ctx.entityId}
+    WHERE org_id = ${ctx.orgId}
   `)
 
   const r = row as Record<string, number>
@@ -117,7 +117,7 @@ export async function createCenter(data: {
     INSERT INTO exam_centers (id, org_id, name, code, city, province, capacity, address, contact_email, status, created_by, created_at)
     VALUES (
       ${id},
-      ${ctx.entityId},
+      ${ctx.orgId},
       ${data.name},
       ${data.code},
       ${data.city},
@@ -134,7 +134,7 @@ export async function createCenter(data: {
   await buildExamEvidencePack({
     action: 'center.created',
     entityType: 'exam_center',
-    entityId: id,
+    orgId: id,
     actorId: ctx.actorId,
     payload: { name: data.name, code: data.code, city: data.city },
   }).catch(() => {})
@@ -151,7 +151,7 @@ export async function updateCenterStatus(
   await platformDb.execute(sql`
     UPDATE exam_centers
     SET status = ${status}, updated_at = NOW()
-    WHERE id = ${centerId} AND org_id = ${ctx.entityId}
+    WHERE id = ${centerId} AND org_id = ${ctx.orgId}
   `)
 
   return { success: true }

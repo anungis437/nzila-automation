@@ -30,7 +30,7 @@ export async function listPurchaseOrders(
   ctx: CommerceReadContext,
   opts: PaginationOpts & { status?: POStatus; supplierId?: string } = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -61,7 +61,7 @@ export async function getPurchaseOrderById(
   ctx: CommerceReadContext,
   purchaseOrderId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commercePurchaseOrders,
     eq(commercePurchaseOrders.id, purchaseOrderId),
@@ -73,7 +73,7 @@ export async function getPurchaseOrderByRef(
   ctx: CommerceReadContext,
   ref: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commercePurchaseOrders)
   return rows.find((r) => r.ref === ref) ?? null
 }
@@ -82,7 +82,7 @@ export async function getPurchaseOrderByZohoId(
   ctx: CommerceReadContext,
   zohoPoId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commercePurchaseOrders)
   return rows.find((r) => r.zohoPoId === zohoPoId) ?? null
 }
@@ -91,7 +91,7 @@ export async function getPurchaseOrderLines(
   ctx: CommerceReadContext,
   purchaseOrderId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commercePurchaseOrderLines)
   return rows
     .filter((r) => r.purchaseOrderId === purchaseOrderId)
@@ -121,7 +121,7 @@ export async function getPurchaseOrdersForSupplier(
 }
 
 export async function getPurchaseOrdersSummary(ctx: CommerceReadContext) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const pos = await db.select(commercePurchaseOrders)
 
   const counts = {
@@ -182,7 +182,7 @@ export async function createPurchaseOrder(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -213,7 +213,7 @@ export async function addPurchaseOrderLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -250,7 +250,7 @@ export async function updatePurchaseOrder(
   }>,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -282,7 +282,7 @@ export async function updatePurchaseOrderLine(
   }>,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -313,7 +313,7 @@ export async function deletePurchaseOrderLine(
   lineId: string,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -332,7 +332,7 @@ export async function deletePurchaseOrder(
   purchaseOrderId: string,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -373,9 +373,9 @@ export async function receiveLineItem(
   lineId: string,
   quantityReceived: number,
 ) {
-  const lines = await ctx.entityId // Need to fetch
+  const lines = await ctx.orgId // Need to fetch
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -427,7 +427,7 @@ export async function cancelPurchaseOrder(
 // ── Ref Generation ────────────────────────────────────────────────────────
 
 export async function generatePORef(ctx: CommerceReadContext): Promise<string> {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const pos = await db.select(commercePurchaseOrders)
 
   const year = new Date().getFullYear()
@@ -447,7 +447,7 @@ export async function generatePORef(ctx: CommerceReadContext): Promise<string> {
 
 async function recalculatePOTotals(ctx: CommerceDbContext, purchaseOrderId: string) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

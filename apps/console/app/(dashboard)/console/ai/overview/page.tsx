@@ -50,7 +50,7 @@ interface OverviewMetrics {
   knowledgeSourceCount: number
 }
 
-async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
+async function getOverviewMetrics(orgId: string): Promise<OverviewMetrics> {
   // Request metrics
   const requestStats = await platformDb
     .select({
@@ -61,7 +61,7 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
       avgLatency: avg(aiRequests.latencyMs),
     })
     .from(aiRequests)
-    .where(eq(aiRequests.entityId, entityId))
+    .where(eq(aiRequests.orgId, orgId))
 
   const stats = requestStats[0] ?? { total: 0, tokensIn: '0', tokensOut: '0', costUsd: '0', avgLatency: '0' }
 
@@ -72,7 +72,7 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
       count: count(),
     })
     .from(aiRequests)
-    .where(eq(aiRequests.entityId, entityId))
+    .where(eq(aiRequests.orgId, orgId))
     .groupBy(aiRequests.status)
 
   const statusMap: Record<string, number> = {}
@@ -87,7 +87,7 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
       count: count(),
     })
     .from(aiRequests)
-    .where(eq(aiRequests.entityId, entityId))
+    .where(eq(aiRequests.orgId, orgId))
     .groupBy(aiRequests.appKey)
     .orderBy(desc(count()))
     .limit(10)
@@ -99,7 +99,7 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
       count: count(),
     })
     .from(aiRequests)
-    .where(eq(aiRequests.entityId, entityId))
+    .where(eq(aiRequests.orgId, orgId))
     .groupBy(aiRequests.feature)
     .orderBy(desc(count()))
 
@@ -110,7 +110,7 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
       count: count(),
     })
     .from(aiActions)
-    .where(eq(aiActions.entityId, entityId))
+    .where(eq(aiActions.orgId, orgId))
     .groupBy(aiActions.status)
 
   let actionTotal = 0
@@ -130,7 +130,7 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
   const budgets = await platformDb
     .select()
     .from(aiUsageBudgets)
-    .where(eq(aiUsageBudgets.entityId, entityId))
+    .where(eq(aiUsageBudgets.orgId, orgId))
     .orderBy(desc(aiUsageBudgets.month))
     .limit(10)
 
@@ -147,13 +147,13 @@ async function getOverviewMetrics(entityId: string): Promise<OverviewMetrics> {
   const [routeCount] = await platformDb
     .select({ count: count() })
     .from(aiDeploymentRoutes)
-    .where(eq(aiDeploymentRoutes.entityId, entityId))
+    .where(eq(aiDeploymentRoutes.orgId, orgId))
 
   // Knowledge source count
   const [ksCount] = await platformDb
     .select({ count: count() })
     .from(aiKnowledgeSources)
-    .where(eq(aiKnowledgeSources.entityId, entityId))
+    .where(eq(aiKnowledgeSources.orgId, orgId))
 
   return {
     totalRequests: stats.total,

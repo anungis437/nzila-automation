@@ -107,7 +107,7 @@ tout en établissant l'isolation par organisation ?
 3. Préservation des ID héritées dans `externalIds`/`metadata`
 4. Mode de validation préliminaire (dry-run) pour pré-vérification
 5. Import par lot avec rapports de diagnostic par enregistrement
-6. Injection de `OrgContext.entityId` pour chaque opération
+6. Injection de `OrgContext.orgId` pour chaque opération
 
 **Référence code :** [`packages/shop-quoter/`](../../packages/shop-quoter/)
 

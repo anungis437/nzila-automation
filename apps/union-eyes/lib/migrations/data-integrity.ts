@@ -162,7 +162,7 @@ async function checkTenantOrganizationMapping(
 }
 
 /**
- * Check for orphaned records (references to non-existent entities)
+ * Check for orphaned records (references to non-existent orgs)
  */
 async function checkOrphanedRecords(issues: IntegrityIssue[]): Promise<void> {
   // Check claims with non-existent profiles

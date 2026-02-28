@@ -18,9 +18,9 @@ async function getDashboardStats(): Promise<DashboardStats> {
     const { sql } = await import("drizzle-orm");
 
     const [casesResult, reportsResult, membersResult] = await Promise.allSettled([
-      db.execute(sql`SELECT COUNT(*) as count FROM entities WHERE type = 'case' AND status = 'active'`),
+      db.execute(sql`SELECT COUNT(*) as count FROM orgs WHERE type = 'case' AND status = 'active'`),
       db.execute(sql`SELECT COUNT(*) as count FROM audit_log WHERE action = 'report_generated'`),
-      db.execute(sql`SELECT COUNT(*) as count FROM entity_members`),
+      db.execute(sql`SELECT COUNT(*) as count FROM org_members`),
     ]);
 
     return {

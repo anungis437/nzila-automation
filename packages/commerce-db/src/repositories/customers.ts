@@ -20,13 +20,13 @@ export async function listCustomers(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
   const rows = await db.select(commerceCustomers)
   // Sort by most-recently-created first and apply pagination in-memory
-  // (ScopedDb auto-filters by entity_id)
+  // (ScopedDb auto-filters by org_id)
   const sorted = rows.sort(
     (a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -43,7 +43,7 @@ export async function getCustomerById(
   ctx: CommerceReadContext,
   customerId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceCustomers,
     eq(commerceCustomers.id, customerId),
@@ -66,7 +66,7 @@ export async function createCustomer(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -88,7 +88,7 @@ export async function updateCustomer(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -105,7 +105,7 @@ export async function deleteCustomer(
   customerId: string,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

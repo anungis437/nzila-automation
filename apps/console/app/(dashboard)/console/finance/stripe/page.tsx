@@ -20,11 +20,11 @@ import { GenerateReportsButton } from './generate-reports-button'
 
 export const dynamic = 'force-dynamic'
 
-async function getStripeData(entityId: string) {
+async function getStripeData(orgId: string) {
   const [connection] = await platformDb
     .select()
     .from(stripeConnections)
-    .where(eq(stripeConnections.entityId, entityId))
+    .where(eq(stripeConnections.orgId, orgId))
     .limit(1)
 
   const [latestEvent] = await platformDb
@@ -35,7 +35,7 @@ async function getStripeData(entityId: string) {
       processingStatus: stripeWebhookEvents.processingStatus,
     })
     .from(stripeWebhookEvents)
-    .where(eq(stripeWebhookEvents.entityId, entityId))
+    .where(eq(stripeWebhookEvents.orgId, orgId))
     .orderBy(desc(stripeWebhookEvents.receivedAt))
     .limit(1)
 
@@ -47,14 +47,14 @@ async function getStripeData(entityId: string) {
       received: sql<number>`count(*) filter (where ${stripeWebhookEvents.processingStatus} = 'received')`,
     })
     .from(stripeWebhookEvents)
-    .where(eq(stripeWebhookEvents.entityId, entityId))
+    .where(eq(stripeWebhookEvents.orgId, orgId))
 
   const pendingRefunds = await platformDb
     .select()
     .from(stripeRefunds)
     .where(
       and(
-        eq(stripeRefunds.entityId, entityId),
+        eq(stripeRefunds.orgId, orgId),
         eq(stripeRefunds.status, 'pending_approval'),
       ),
     )
@@ -71,14 +71,14 @@ async function getStripeData(entityId: string) {
       occurredAt: stripePayments.occurredAt,
     })
     .from(stripePayments)
-    .where(eq(stripePayments.entityId, entityId))
+    .where(eq(stripePayments.orgId, orgId))
     .orderBy(desc(stripePayments.occurredAt))
     .limit(10)
 
   const recentReports = await platformDb
     .select()
     .from(stripeReports)
-    .where(eq(stripeReports.entityId, entityId))
+    .where(eq(stripeReports.orgId, orgId))
     .orderBy(desc(stripeReports.generatedAt))
     .limit(5)
 
@@ -92,32 +92,32 @@ async function getStripeData(entityId: string) {
   }
 }
 
-// TODO: In production, entityId should come from the user's session context.
+// TODO: In production, orgId should come from the user's session context.
 // For now, we use a query param or first entity.
 export default async function StripeFinancePage({
   searchParams,
 }: {
-  searchParams: Promise<{ entityId?: string }>
+  searchParams: Promise<{ orgId?: string }>
 }) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
   const params = await searchParams
-  const entityId = params.entityId
+  const orgId = params.orgId
 
-  if (!entityId) {
+  if (!orgId) {
     return (
       <div className="p-8">
         <h1 className="text-2xl font-bold mb-4">Stripe Integration</h1>
         <p className="text-gray-500">
           Select an entity to view Stripe integration details.
-          Pass <code className="text-sm bg-gray-100 px-1 rounded">?entityId=UUID</code> in the URL.
+          Pass <code className="text-sm bg-gray-100 px-1 rounded">?orgId=UUID</code> in the URL.
         </p>
       </div>
     )
   }
 
-  const data = await getStripeData(entityId)
+  const data = await getStripeData(orgId)
 
   return (
     <div className="p-8 space-y-8">
@@ -193,7 +193,7 @@ export default async function StripeFinancePage({
             </span>
           )}
         </h2>
-        <RefundQueue refunds={data.pendingRefunds} entityId={entityId} />
+        <RefundQueue refunds={data.pendingRefunds} orgId={orgId} />
       </section>
 
       {/* Recent Payments */}
@@ -236,7 +236,7 @@ export default async function StripeFinancePage({
       {/* Reports */}
       <section className="bg-white border rounded-lg p-6">
         <h2 className="text-lg font-semibold mb-4">Reports</h2>
-        <GenerateReportsButton entityId={entityId} />
+        <GenerateReportsButton orgId={orgId} />
         {data.recentReports.length > 0 && (
           <table className="w-full text-sm mt-4">
             <thead>

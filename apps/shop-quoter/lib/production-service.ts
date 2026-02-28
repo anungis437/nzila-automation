@@ -51,7 +51,7 @@ export interface OrderLine {
 }
 
 export interface CreateOrderInput {
-  entityId: string
+  orgId: string
   customerId: string
   quoteId?: string
   lines: OrderLine[]
@@ -139,14 +139,14 @@ export interface ProductionDashboard {
 // Reference Number Generation
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function generateOrderRef(entityId: string): Promise<string> {
+async function generateOrderRef(orgId: string): Promise<string> {
   const year = new Date().getFullYear()
   const prefix = `ORD-${year}-`
 
   const [latest] = await db
     .select({ ref: commerceOrders.ref })
     .from(commerceOrders)
-    .where(and(eq(commerceOrders.entityId, entityId), sql`${commerceOrders.ref} LIKE ${prefix + '%'}`))
+    .where(and(eq(commerceOrders.orgId, orgId), sql`${commerceOrders.ref} LIKE ${prefix + '%'}`))
     .orderBy(desc(commerceOrders.ref))
     .limit(1)
 
@@ -180,16 +180,16 @@ function calculateLineTotals(lines: OrderLine[]): { subtotal: number; taxTotal: 
 }
 
 export async function createOrder(input: CreateOrderInput): Promise<OrderWithDetails> {
-  logger.info('Creating order', { entityId: input.entityId, customerId: input.customerId })
+  logger.info('Creating order', { orgId: input.orgId, customerId: input.customerId })
 
-  const ref = await generateOrderRef(input.entityId)
+  const ref = await generateOrderRef(input.orgId)
   const { subtotal, taxTotal, total } = calculateLineTotals(input.lines)
 
   // Create order
   const [order] = await db
     .insert(commerceOrders)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       customerId: input.customerId,
       quoteId: input.quoteId ?? null,
       ref,
@@ -211,7 +211,7 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderWithDet
     const lineTotal = line.quantity * line.unitPrice * discountMultiplier
 
     return {
-      entityId: input.entityId,
+      orgId: input.orgId,
       orderId: order.id,
       description: line.description,
       sku: line.sku ?? null,
@@ -454,7 +454,7 @@ export async function allocateInventory(input: AllocationInput): Promise<typeof 
     })
     .where(eq(commerceInventory.productId, input.productId))
 
-  // Get order for entityId
+  // Get order for orgId
   const [order] = await db.select().from(commerceOrders).where(eq(commerceOrders.id, input.orderId)).limit(1)
 
   if (!order) {
@@ -465,7 +465,7 @@ export async function allocateInventory(input: AllocationInput): Promise<typeof 
   const [allocation] = await db
     .insert(commerceMandateAllocations)
     .values({
-      entityId: order.entityId,
+      orgId: order.orgId,
       orderId: input.orderId,
       productId: input.productId,
       inventoryId: inventory.id,
@@ -536,7 +536,7 @@ export async function fulfillAllocation(
 
   // Record stock movement
   await db.insert(commerceStockMovements).values({
-    entityId: allocation.entityId,
+    orgId: allocation.orgId,
     inventoryId: allocation.inventoryId,
     productId: allocation.productId,
     movementType: 'out',
@@ -622,7 +622,7 @@ export async function autoAllocateOrder(
     const [product] = await db
       .select()
       .from(commerceProducts)
-      .where(and(eq(commerceProducts.entityId, order.entityId), eq(commerceProducts.sku, line.sku)))
+      .where(and(eq(commerceProducts.orgId, order.orgId), eq(commerceProducts.sku, line.sku)))
       .limit(1)
 
     if (!product) {
@@ -670,14 +670,14 @@ export async function autoAllocateOrder(
 // Production Dashboard
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getProductionDashboard(entityId: string): Promise<ProductionDashboard> {
+export async function getProductionDashboard(orgId: string): Promise<ProductionDashboard> {
   // Get orders in active states
   const orders = await db
     .select()
     .from(commerceOrders)
     .where(
       and(
-        eq(commerceOrders.entityId, entityId),
+        eq(commerceOrders.orgId, orgId),
         or(
           eq(commerceOrders.status, 'confirmed'),
           eq(commerceOrders.status, 'fulfillment'),
@@ -840,7 +840,7 @@ export async function getProductionDashboard(entityId: string): Promise<Producti
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface OrderListFilter {
-  entityId: string
+  orgId: string
   status?: OrderStatus | OrderStatus[]
   customerId?: string
   dateFrom?: Date
@@ -849,7 +849,7 @@ export interface OrderListFilter {
 }
 
 export async function listOrders(filter: OrderListFilter): Promise<OrderWithDetails[]> {
-  const conditions = [eq(commerceOrders.entityId, filter.entityId)]
+  const conditions = [eq(commerceOrders.orgId, filter.orgId)]
 
   if (filter.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]

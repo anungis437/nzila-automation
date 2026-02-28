@@ -81,12 +81,12 @@ export async function uploadAudio(
         '{storageUrl}',
         ${JSON.stringify(storageUrl)}::jsonb
       )
-      WHERE id = ${meta.assetId} AND org_id = ${ctx.entityId}
+      WHERE id = ${meta.assetId} AND org_id = ${ctx.orgId}
     `)
 
     // Audit
     const audit = buildZongaAuditEvent({
-      entityId: meta.creatorId,
+      orgId: meta.creatorId,
       actorId: ctx.actorId,
       action: ZongaAuditAction.CONTENT_UPLOAD,
       entityType: ZongaEntityType.CONTENT_ASSET,
@@ -100,13 +100,13 @@ export async function uploadAudio(
     })
     await platformDb.execute(sql`
       INSERT INTO audit_log (entity_id, actor_id, action, metadata, org_id)
-      VALUES (${audit.entityId}, ${audit.actorId}, ${audit.action}, ${JSON.stringify(audit.metadata)}::jsonb, ${ctx.entityId})
+      VALUES (${audit.orgId}, ${audit.actorId}, ${audit.action}, ${JSON.stringify(audit.metadata)}::jsonb, ${ctx.orgId})
     `)
 
     // Evidence pack
     const evidence = buildEvidencePackFromAction({
       actionType: 'uploadAudio',
-      entityId: meta.assetId,
+      orgId: meta.assetId,
       executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
@@ -178,7 +178,7 @@ export async function uploadCover(
         '{coverArtUrl}',
         ${JSON.stringify(coverUrl)}::jsonb
       )
-      WHERE id = ${assetId} AND org_id = ${ctx.entityId}
+      WHERE id = ${assetId} AND org_id = ${ctx.orgId}
     `)
 
     revalidatePath('/dashboard/catalog')

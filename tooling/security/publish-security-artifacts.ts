@@ -70,7 +70,7 @@ async function publishSecurityArtifacts(): Promise<void> {
     const { processEvidencePack } = await import('@nzila/os-core/evidence/generate-evidence-index')
     await processEvidencePack({
       evidenceDir: '',
-      entityId: process.env.NZILA_ENTITY_ID ?? '',
+      orgId: process.env.NZILA_ORG_ID ?? '',
       periodLabel,
       tag: 'security',
       additionalArtifacts: evidenceArtifacts,

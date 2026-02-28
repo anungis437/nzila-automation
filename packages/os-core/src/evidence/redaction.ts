@@ -52,7 +52,7 @@ const PARTNER_STRIPPED_FIELDS = [
  */
 const PUBLIC_STRIPPED_FIELDS = [
   ...PARTNER_STRIPPED_FIELDS,
-  'entityId',
+  'orgId',
   'partnerId',
   'orgId',
 ]

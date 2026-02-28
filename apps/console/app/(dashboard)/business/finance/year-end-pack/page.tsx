@@ -32,7 +32,7 @@ interface PackData {
   taxYear: TaxYear
   profile: { provinceOfRegistration: string } | null
   manifest: {
-    entityId: string
+    orgId: string
     fiscalYear: string
     generatedAt: string
     financial: Record<string, string | undefined>
@@ -103,7 +103,7 @@ function ArtifactRow({
 }
 
 export default function YearEndPackPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
   const [taxYears, setTaxYears] = useState<TaxYear[]>([])
   const [selectedFiscalYear, setSelectedFiscalYear] = useState<string | null>(null)
@@ -112,7 +112,7 @@ export default function YearEndPackPage() {
   const [packLoading, setPackLoading] = useState(false)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then((d: Entity[]) => {
         setEntities(d)
@@ -124,7 +124,7 @@ export default function YearEndPackPage() {
 
   useEffect(() => {
     if (!selectedEntityId) return
-    fetch(`/api/finance/tax/years?entityId=${selectedEntityId}`)
+    fetch(`/api/finance/tax/years?orgId=${selectedEntityId}`)
       .then((r) => r.json())
       .then((years: TaxYear[]) => {
         setTaxYears(years)
@@ -138,7 +138,7 @@ export default function YearEndPackPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show spinner immediately before async fetch
     setPackLoading(true)
     fetch(
-      `/api/finance/year-end-pack?entityId=${selectedEntityId}&fiscalYear=${encodeURIComponent(selectedFiscalYear)}`,
+      `/api/finance/year-end-pack?orgId=${selectedEntityId}&fiscalYear=${encodeURIComponent(selectedFiscalYear)}`,
     )
       .then((r) => r.json())
       .then(setData)
@@ -164,7 +164,7 @@ export default function YearEndPackPage() {
 
       {/* Selectors */}
       <div className="flex gap-4 mb-6">
-        {entities.length > 1 && (
+        {orgs.length > 1 && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Entity</label>
             <select
@@ -177,7 +177,7 @@ export default function YearEndPackPage() {
               className="w-56 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
               aria-label="Select entity"
             >
-              {entities.map((e) => (
+              {orgs.map((e) => (
                 <option key={e.id} value={e.id}>{e.legalName}</option>
               ))}
             </select>

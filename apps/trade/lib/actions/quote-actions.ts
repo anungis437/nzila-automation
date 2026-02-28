@@ -33,7 +33,7 @@ export async function createQuote(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_quote',
@@ -54,7 +54,7 @@ export async function createQuote(
   // await repo.create({
   //   ...parsed.data,
   //   id,
-  //   entityId: ctx.entityId,
+  //   orgId: ctx.orgId,
   //   total,
   //   status: TradeQuoteStatus.DRAFT,
   // })
@@ -76,7 +76,7 @@ export async function transitionQuote(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_quote',
@@ -104,7 +104,7 @@ export async function listQuotesForDeal(
 ): Promise<TradeServiceResult<{ quotes: TradeQuote[] }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
 
   return {
     ok: true,

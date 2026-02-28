@@ -19,7 +19,7 @@ export interface Document {
   id: string
   name: string
   type: 'invoice' | 'receipt' | 'contract' | 'report' | 'statement' | 'other'
-  entityId: string | null
+  orgId: string | null
   uploadedBy: string
   uploadedAt: Date
   size: number | null
@@ -30,7 +30,7 @@ export async function listDocuments(opts?: {
   page?: number
   pageSize?: number
   type?: string
-  entityId?: string
+  orgId?: string
 }): Promise<{ documents: Document[]; total: number }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
@@ -43,7 +43,7 @@ export async function listDocuments(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT id, metadata->>'name' as name, metadata->>'type' as type,
-        entity_id as "entityId", actor_id as "uploadedBy",
+        org_id as "orgId", actor_id as "uploadedBy",
         created_at as "uploadedAt", (metadata->>'size')::int as size,
         metadata->>'url' as url
       FROM audit_log WHERE action = 'document.uploaded'
@@ -62,7 +62,7 @@ export async function listDocuments(opts?: {
 export async function uploadDocument(data: {
   name: string
   type: Document['type']
-  entityId?: string
+  orgId?: string
   size?: number
   url?: string
 }): Promise<{ success: boolean }> {
@@ -71,8 +71,8 @@ export async function uploadDocument(data: {
   await requirePermission('documents:upload')
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('document.uploaded', ${userId}, 'document', ${data.entityId ?? 'platform'},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
+      VALUES ('document.uploaded', ${userId}, 'document', ${data.orgId ?? 'platform'},
         ${JSON.stringify(data)}::jsonb)`,
     )
     revalidatePath('/dashboard/documents')
@@ -93,7 +93,7 @@ export interface Task {
   assignedTo: string | null
   dueDate: Date | null
   createdAt: Date
-  entityId: string | null
+  orgId: string | null
 }
 
 export async function listTasks(opts?: {
@@ -111,7 +111,7 @@ export async function listTasks(opts?: {
       sql`SELECT id, metadata->>'title' as title, metadata->>'status' as status,
         metadata->>'priority' as priority, metadata->>'assignedTo' as "assignedTo",
         (metadata->>'dueDate')::timestamptz as "dueDate",
-        created_at as "createdAt", entity_id as "entityId"
+        created_at as "createdAt", org_id as "orgId"
       FROM audit_log WHERE action = 'task.created' OR action = 'task.updated'
       ORDER BY created_at DESC LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: Task[] }
@@ -130,15 +130,15 @@ export async function createTask(data: {
   priority: Task['priority']
   assignedTo?: string
   dueDate?: string
-  entityId?: string
+  orgId?: string
 }): Promise<{ success: boolean }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
   await requirePermission('tasks:create')
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
-      VALUES ('task.created', ${userId}, 'task', ${data.entityId ?? 'platform'},
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
+      VALUES ('task.created', ${userId}, 'task', ${data.orgId ?? 'platform'},
         ${JSON.stringify({ ...data, status: 'pending' })}::jsonb)`,
     )
     revalidatePath('/dashboard/tasks')
@@ -260,7 +260,7 @@ export async function sendMessage(data: {
   await requirePermission('messages:send')
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('message.sent', ${userId}, 'message', 'platform',
         ${JSON.stringify({ from: userId, subject: data.subject, preview: data.body.slice(0, 120), to: data.to, body: data.body, read: true })}::jsonb)`,
     )
@@ -330,7 +330,7 @@ export async function getSettings(): Promise<CFOSettings> {
   try {
     const [row] = (await platformDb.execute(
       sql`SELECT metadata FROM audit_log
-      WHERE action = 'settings.updated' AND entity_id = 'cfo-platform'
+      WHERE action = 'settings.updated' AND org_id = 'cfo-platform'
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [{ metadata: Partial<CFOSettings> } | undefined]
     if (!row) return DEFAULT_SETTINGS
@@ -348,7 +348,7 @@ export async function updateSettings(
   await requirePermission('settings:manage')
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('settings.updated', ${userId}, 'settings', 'cfo-platform',
         ${JSON.stringify(settings)}::jsonb)`,
     )

@@ -118,7 +118,7 @@ export interface OfflineSyncRecord {
   id: string;
   deviceId: string;
   entityType: string;
-  entityId: string;
+  orgId: string;
   operation: 'create' | 'update' | 'delete';
   payload: Record<string, unknown>;
   timestamp: Date;
@@ -514,7 +514,7 @@ export class MobileOfflineSyncEngine {
       .values({
         deviceId,
         entityType: operation.entityType,
-        entityId: operation.entityId,
+        orgId: operation.orgId,
         operation: operation.operation,
         payload: operation.payload,
         clientTimestamp: operation.clientTimestamp || new Date(),
@@ -591,7 +591,7 @@ export class MobileOfflineSyncEngine {
       .where(
         and(
           eq(mobileSyncQueue.entityType, record.entityType),
-          eq(mobileSyncQueue.entityId, record.entityId),
+          eq(mobileSyncQueue.orgId, record.orgId),
           eq(mobileSyncQueue.status, 'synced'),
           sql`${mobileSyncQueue.processedAt} > ${record.clientTimestamp}`
         )
@@ -607,13 +607,13 @@ export class MobileOfflineSyncEngine {
   private async executeSync(record: typeof mobileSyncQueue.$inferSelect): Promise<void> {
     switch (record.operation) {
       case 'create':
-        logger.info('MobileOfflineSyncEngine.applyCreate', { entityType: record.entityType, entityId: record.entityId });
+        logger.info('MobileOfflineSyncEngine.applyCreate', { entityType: record.entityType, orgId: record.orgId });
         break;
       case 'update':
-        logger.info('MobileOfflineSyncEngine.applyUpdate', { entityType: record.entityType, entityId: record.entityId });
+        logger.info('MobileOfflineSyncEngine.applyUpdate', { entityType: record.entityType, orgId: record.orgId });
         break;
       case 'delete':
-        logger.info('MobileOfflineSyncEngine.applyDelete', { entityType: record.entityType, entityId: record.entityId });
+        logger.info('MobileOfflineSyncEngine.applyDelete', { entityType: record.entityType, orgId: record.orgId });
         break;
     }
   }
@@ -951,7 +951,7 @@ export class MobileAPIGateway {
   }
 
   /**
-   * Get delta sync for entities
+   * Get delta sync for orgs
    */
   async getDeltaSync(params: {
     entityType: string;
@@ -966,7 +966,7 @@ export class MobileAPIGateway {
     const records = await db
       .select({
         operation: mobileSyncQueue.operation,
-        entityId: mobileSyncQueue.entityId,
+        orgId: mobileSyncQueue.orgId,
         payload: mobileSyncQueue.payload,
       })
       .from(mobileSyncQueue)
@@ -981,7 +981,7 @@ export class MobileAPIGateway {
 
     const created = records.filter(record => record.operation === 'create').map(record => record.payload);
     const updated = records.filter(record => record.operation === 'update').map(record => record.payload);
-    const deleted = records.filter(record => record.operation === 'delete').map(record => record.entityId);
+    const deleted = records.filter(record => record.operation === 'delete').map(record => record.orgId);
 
     return {
       created,
@@ -1049,19 +1049,19 @@ export class MobileAPIGateway {
     deviceId: string;
     operation: 'create' | 'update' | 'delete';
     entityType: string;
-    entityId?: string;
+    orgId?: string;
     payload: unknown;
     clientTimestamp: Date;
-  }): Promise<{ accepted: boolean; entityId?: string }> {
+  }): Promise<{ accepted: boolean; orgId?: string }> {
     const syncId = await mobileOfflineSyncEngine.queueOperation(request.deviceId, {
       entityType: request.entityType,
-      entityId: request.entityId || syncIdFallback(request),
+      orgId: request.orgId || syncIdFallback(request),
       operation: request.operation,
       payload: request.payload as Record<string, unknown>,
       clientTimestamp: request.clientTimestamp,
     });
 
-    return { accepted: true, entityId: request.entityId || syncId };
+    return { accepted: true, orgId: request.orgId || syncId };
   }
 }
 

@@ -28,7 +28,7 @@ export interface UseCasePrioritySignalResult {
  * Returns null score with fallback display if no inference has run yet.
  */
 export function useCasePrioritySignal(
-  entityId: string,
+  orgId: string,
   caseId: string,
   getToken: () => Promise<string | null>,
 ): UseCasePrioritySignalResult {
@@ -37,7 +37,7 @@ export function useCasePrioritySignal(
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!entityId || !caseId) return
+    if (!orgId || !caseId) return
     let cancelled = false
 
     ;(async () => {
@@ -52,7 +52,7 @@ export function useCasePrioritySignal(
         const endDate = today.toISOString().slice(0, 10)
 
         const result = await client.getUEPriorityScores({
-          entityId,
+          orgId,
           startDate,
           endDate,
           limit: 500,
@@ -75,7 +75,7 @@ export function useCasePrioritySignal(
     return () => {
       cancelled = true
     }
-  }, [entityId, caseId, getToken])
+  }, [orgId, caseId, getToken])
 
   return { score, isLoading, error }
 }
@@ -89,7 +89,7 @@ export interface UseCaseSlaRiskSignalResult {
 }
 
 export function useCaseSlaRiskSignal(
-  entityId: string,
+  orgId: string,
   caseId: string,
   getToken: () => Promise<string | null>,
 ): UseCaseSlaRiskSignalResult {
@@ -98,7 +98,7 @@ export function useCaseSlaRiskSignal(
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!entityId || !caseId) return
+    if (!orgId || !caseId) return
     let cancelled = false
 
     ;(async () => {
@@ -111,7 +111,7 @@ export function useCaseSlaRiskSignal(
         const endDate = today.toISOString().slice(0, 10)
 
         const result = await client.getUESlaRiskScores({
-          entityId,
+          orgId,
           startDate,
           endDate,
           limit: 500,
@@ -133,7 +133,7 @@ export function useCaseSlaRiskSignal(
     return () => {
       cancelled = true
     }
-  }, [entityId, caseId, getToken])
+  }, [orgId, caseId, getToken])
 
   return { score, isLoading, error }
 }
@@ -152,7 +152,7 @@ export interface CaseSignalMap {
  * Maps caseId → signal for O(1) lookup in the list render.
  */
 export function useCaseListSignals(
-  entityId: string,
+  orgId: string,
   startDate: string,
   endDate: string,
   getToken: () => Promise<string | null>,
@@ -163,15 +163,15 @@ export function useCaseListSignals(
   const [error, setError] = useState<string | null>(null)
 
   const fetch = useCallback(async () => {
-    if (!entityId || !startDate || !endDate) return
+    if (!orgId || !startDate || !endDate) return
     setIsLoading(true)
     setError(null)
 
     try {
       const client = makeMlClient(getToken)
       const [priorityResult, slaResult] = await Promise.all([
-        client.getUEPriorityScores({ entityId, startDate, endDate, limit: 500 }),
-        client.getUESlaRiskScores({ entityId, startDate, endDate, limit: 500 }),
+        client.getUEPriorityScores({ orgId, startDate, endDate, limit: 500 }),
+        client.getUESlaRiskScores({ orgId, startDate, endDate, limit: 500 }),
       ])
 
       setPriorityMap(new Map(priorityResult.items.map((s) => [s.caseId, s])))
@@ -181,7 +181,7 @@ export function useCaseListSignals(
     } finally {
       setIsLoading(false)
     }
-  }, [entityId, startDate, endDate, getToken])
+  }, [orgId, startDate, endDate, getToken])
 
   useEffect(() => {
     void fetch()

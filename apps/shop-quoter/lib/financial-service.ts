@@ -33,7 +33,7 @@ export type InvoiceStatus =
   | 'refunded'
 
 export interface CreateInvoiceInput {
-  entityId: string
+  orgId: string
   orderId: string
   dueDate?: Date
   notes?: string
@@ -108,14 +108,14 @@ export interface InvoiceAging {
 // Reference Number Generation
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function generateInvoiceRef(entityId: string): Promise<string> {
+async function generateInvoiceRef(orgId: string): Promise<string> {
   const year = new Date().getFullYear()
   const prefix = `INV-${year}-`
 
   const [latest] = await db
     .select({ ref: commerceInvoices.ref })
     .from(commerceInvoices)
-    .where(and(eq(commerceInvoices.entityId, entityId), sql`${commerceInvoices.ref} LIKE ${prefix + '%'}`))
+    .where(and(eq(commerceInvoices.orgId, orgId), sql`${commerceInvoices.ref} LIKE ${prefix + '%'}`))
     .orderBy(desc(commerceInvoices.ref))
     .limit(1)
 
@@ -135,7 +135,7 @@ async function generateInvoiceRef(entityId: string): Promise<string> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function createInvoiceFromOrder(input: CreateInvoiceInput): Promise<InvoiceWithDetails> {
-  logger.info('Creating invoice from order', { entityId: input.entityId, orderId: input.orderId })
+  logger.info('Creating invoice from order', { orgId: input.orgId, orderId: input.orderId })
 
   // Get order with lines
   const [order] = await db.select().from(commerceOrders).where(eq(commerceOrders.id, input.orderId)).limit(1)
@@ -157,14 +157,14 @@ export async function createInvoiceFromOrder(input: CreateInvoiceInput): Promise
     throw new Error(`Customer ${order.customerId} not found`)
   }
 
-  const ref = await generateInvoiceRef(input.entityId)
+  const ref = await generateInvoiceRef(input.orgId)
   const dueDate = input.dueDate ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Default NET 30
 
   // Create invoice
   const [invoice] = await db
     .insert(commerceInvoices)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       orderId: input.orderId,
       customerId: order.customerId,
       ref,
@@ -183,7 +183,7 @@ export async function createInvoiceFromOrder(input: CreateInvoiceInput): Promise
 
   // Create invoice lines from order lines
   const invoiceLineValues = orderLines.map((ol, idx) => ({
-    entityId: input.entityId,
+    orgId: input.orgId,
     invoiceId: invoice.id,
     orderLineId: ol.id,
     description: ol.description,
@@ -330,7 +330,7 @@ export async function recordPayment(input: RecordPaymentInput): Promise<typeof c
   const [payment] = await db
     .insert(commercePayments)
     .values({
-      entityId: invoice.entityId,
+      orgId: invoice.orgId,
       invoiceId: input.invoiceId,
       amount: input.amount.toFixed(2),
       method: input.method,
@@ -378,7 +378,7 @@ export async function getPaymentsByInvoice(invoiceId: string): Promise<(typeof c
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface InvoiceListFilter {
-  entityId: string
+  orgId: string
   status?: InvoiceStatus | InvoiceStatus[]
   customerId?: string
   dateFrom?: Date
@@ -387,7 +387,7 @@ export interface InvoiceListFilter {
 }
 
 export async function listInvoices(filter: InvoiceListFilter): Promise<InvoiceWithDetails[]> {
-  const conditions = [eq(commerceInvoices.entityId, filter.entityId)]
+  const conditions = [eq(commerceInvoices.orgId, filter.orgId)]
 
   if (filter.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]
@@ -470,7 +470,7 @@ export async function listInvoices(filter: InvoiceListFilter): Promise<InvoiceWi
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getFinancialSummary(
-  entityId: string,
+  orgId: string,
   from: Date,
   to: Date,
 ): Promise<FinancialSummary> {
@@ -480,7 +480,7 @@ export async function getFinancialSummary(
     .from(commerceInvoices)
     .where(
       and(
-        eq(commerceInvoices.entityId, entityId),
+        eq(commerceInvoices.orgId, orgId),
         gte(commerceInvoices.createdAt, from),
         lte(commerceInvoices.createdAt, to),
       ),
@@ -492,7 +492,7 @@ export async function getFinancialSummary(
     .from(commercePayments)
     .where(
       and(
-        eq(commercePayments.entityId, entityId),
+        eq(commercePayments.orgId, orgId),
         gte(commercePayments.paidAt, from),
         lte(commercePayments.paidAt, to),
       ),
@@ -602,7 +602,7 @@ export async function getFinancialSummary(
   }
 }
 
-export async function getAgingReport(entityId: string): Promise<AgingReport> {
+export async function getAgingReport(orgId: string): Promise<AgingReport> {
   const now = new Date()
 
   // Get all unpaid invoices
@@ -611,7 +611,7 @@ export async function getAgingReport(entityId: string): Promise<AgingReport> {
     .from(commerceInvoices)
     .where(
       and(
-        eq(commerceInvoices.entityId, entityId),
+        eq(commerceInvoices.orgId, orgId),
         sql`${commerceInvoices.status} NOT IN ('paid', 'refunded', 'resolved')`,
         sql`${commerceInvoices.amountDue} > 0`,
       ),
@@ -688,7 +688,7 @@ export interface RevenueRecognition {
 }
 
 export async function getRevenueRecognition(
-  entityId: string,
+  orgId: string,
   from: Date,
   to: Date,
 ): Promise<RevenueRecognition> {
@@ -698,7 +698,7 @@ export async function getRevenueRecognition(
     .from(commercePayments)
     .where(
       and(
-        eq(commercePayments.entityId, entityId),
+        eq(commercePayments.orgId, orgId),
         gte(commercePayments.paidAt, from),
         lte(commercePayments.paidAt, to),
       ),
@@ -730,7 +730,7 @@ export async function getRevenueRecognition(
     .from(commerceInvoices)
     .where(
       and(
-        eq(commerceInvoices.entityId, entityId),
+        eq(commerceInvoices.orgId, orgId),
         lte(commerceInvoices.issuedAt, to),
         sql`${commerceInvoices.status} NOT IN ('paid', 'refunded', 'resolved')`,
       ),

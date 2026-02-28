@@ -18,7 +18,7 @@ export type NzilaRole = PlatformRole
 
 /**
  * Firm-level roles — control access within an accounting firm.
- * Stored in entity_members.firmRole (Clerk org metadata).
+ * Stored in org_members.firmRole (Clerk org metadata).
  */
 export type FirmRole =
   | 'firm_owner'          // Managing partner — full control, billing, firm settings

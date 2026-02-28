@@ -192,7 +192,7 @@ def mock_calibration_data():
     """Return mock calibration benchmark"""
     return {
         "union-eyes": {
-            "entities": 4773,
+            "orgs": 4773,
             "complexity": "EXTREME",
             "actual_weeks": 12,
             "description": "Union management platform"

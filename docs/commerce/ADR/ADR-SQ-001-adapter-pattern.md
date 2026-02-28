@@ -17,7 +17,7 @@ coupling in business logic files.
 
 We need to migrate this data into the NzilaOS commerce engine, which uses:
 
-- Org-scoped entities (`entityId` on every row)
+- Org-scoped entities (`orgId` on every row)
 - Declarative state machines for lifecycle management
 - Hash-chained audit trails for evidence generation
 - Pure-function pricing with margin floor validation

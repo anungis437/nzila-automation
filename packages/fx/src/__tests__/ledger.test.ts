@@ -15,7 +15,7 @@ import type { MultiCurrencyEntry } from '../ledger'
 import type { CurrencyCode, EntityCurrencyConfig, MonetaryAmount } from '../types'
 
 const cadConfig: EntityCurrencyConfig = {
-  entityId: '00000000-0000-0000-0000-000000000001',
+  orgId: '00000000-0000-0000-0000-000000000001',
   functionalCurrency: 'CAD',
   transactionCurrencies: ['CAD', 'USD', 'EUR'],
   rateSource: 'manual',
@@ -105,7 +105,7 @@ describe('calculateExposure', () => {
       },
       credit: null,
       date: '2025-01-15',
-      entityId: 'entity-1',
+      orgId: 'entity-1',
     },
     {
       entryId: 'E002',
@@ -119,7 +119,7 @@ describe('calculateExposure', () => {
         rateSource: 'manual',
       },
       date: '2025-01-15',
-      entityId: 'entity-1',
+      orgId: 'entity-1',
     },
     {
       entryId: 'E003',
@@ -133,7 +133,7 @@ describe('calculateExposure', () => {
       },
       credit: null,
       date: '2025-01-15',
-      entityId: 'entity-1',
+      orgId: 'entity-1',
     },
   ]
 
@@ -169,7 +169,7 @@ describe('calculateExposure', () => {
         },
         credit: null,
         date: '2025-01-15',
-        entityId: 'entity-1',
+        orgId: 'entity-1',
       },
     ]
 
@@ -198,7 +198,7 @@ describe('multiCurrencyTrialBalance', () => {
       },
       credit: null,
       date: '2025-01-15',
-      entityId: 'entity-1',
+      orgId: 'entity-1',
     },
     {
       entryId: 'E002',
@@ -212,7 +212,7 @@ describe('multiCurrencyTrialBalance', () => {
       },
       credit: null,
       date: '2025-01-20',
-      entityId: 'entity-1',
+      orgId: 'entity-1',
     },
     {
       entryId: 'E003',
@@ -226,7 +226,7 @@ describe('multiCurrencyTrialBalance', () => {
         rateSource: 'manual',
       },
       date: '2025-01-15',
-      entityId: 'entity-1',
+      orgId: 'entity-1',
     },
   ]
 

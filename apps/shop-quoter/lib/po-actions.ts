@@ -45,7 +45,7 @@ interface POLineInput {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function createPOAction(input: {
-  entityId: string
+  orgId: string
   supplierId: string
   lines: POLineInput[]
   expectedDeliveryDate?: string
@@ -60,7 +60,7 @@ export async function createPOAction(input: {
     }
 
     const poInput: CreatePOInput = {
-      entityId: input.entityId,
+      orgId: input.orgId,
       supplierId: input.supplierId,
       lines: input.lines,
       expectedDeliveryDate: input.expectedDeliveryDate ? new Date(input.expectedDeliveryDate) : undefined,
@@ -106,7 +106,7 @@ export async function getPOAction(poId: string): Promise<ActionResult<POWithLine
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function listPOsAction(filter: {
-  entityId: string
+  orgId: string
   status?: POStatus | POStatus[]
   supplierId?: string
   fromDate?: string
@@ -120,7 +120,7 @@ export async function listPOsAction(filter: {
     }
 
     const result = await listPurchaseOrders({
-      entityId: filter.entityId,
+      orgId: filter.orgId,
       status: filter.status,
       supplierId: filter.supplierId,
       fromDate: filter.fromDate ? new Date(filter.fromDate) : undefined,
@@ -261,7 +261,7 @@ export async function receivePOLineAction(input: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getPOSummaryAction(input: {
-  entityId: string
+  orgId: string
   fromDate?: string
   toDate?: string
 }): Promise<ActionResult<POSummary>> {
@@ -272,7 +272,7 @@ export async function getPOSummaryAction(input: {
     }
 
     const result = await getPOSummary(
-      input.entityId,
+      input.orgId,
       input.fromDate ? new Date(input.fromDate) : undefined,
       input.toDate ? new Date(input.toDate) : undefined,
     )

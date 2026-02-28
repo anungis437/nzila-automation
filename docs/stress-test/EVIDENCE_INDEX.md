@@ -44,10 +44,10 @@
 | ID | Type | Path | Key Extract |
 |----|------|------|-------------|
 | E04-a | Auth engine | `packages/os-core/src/policy/authorize.ts` | `resolveRole(session)` reads `session.sessionClaims['nzila_role']`; `session.orgId` from Clerk; `auth()` from `@clerk/nextjs/server` |
-| E04-b | Entity access check | `packages/os-core/src/policy/authorize.ts` L145 `authorizeEntityAccess()` | `db.select().from(partnerEntities).where(eq(partnerId, ctx.partnerId) AND eq(entityId, entityId))` |
-| E04-c | `entity_members` schema | `packages/db/src/schema/entities.ts` | `pgTable('entity_members', { entityId, userId, role, status })` |
+| E04-b | Entity access check | `packages/os-core/src/policy/authorize.ts` L145 `authorizeOrgAccess()` | `db.select().from(partnerEntities).where(eq(partnerId, ctx.partnerId) AND eq(orgId, orgId))` |
+| E04-c | `org_members` schema | `packages/db/src/schema/orgs.ts` | `pgTable('org_members', { orgId, userId, role, status })` |
 | E04-d | Contract test — auth in routes | `tooling/contract-tests/org-isolation.test.ts` L51 | `every route.ts calls an auth function` — 9/9 PASS |
-| E04-e | Contract test — entityId not from body | `tooling/contract-tests/org-isolation.test.ts` L88 | `no route takes entityId directly from request body` — PASS |
+| E04-e | Contract test — orgId not from body | `tooling/contract-tests/org-isolation.test.ts` L88 | `no route takes orgId directly from request body` — PASS |
 | E04-f | Contract test — DB queries scoped | `tooling/contract-tests/org-isolation.test.ts` L108 | `route files with DB queries include an entity scope` — PASS |
 | E04-g | Contract test — policy re-exports | `tooling/contract-tests/org-isolation.test.ts` L143 | `os-core policy re-exports authorize for uniform enforcement` — PASS |
 | E04-h | **GAP** — No runtime HTTP cross-org tests | — | Cross-org READ/WRITE supertest scenarios do not exist |
@@ -74,7 +74,7 @@
 | ID | Type | Path | Key Extract |
 |----|------|------|-------------|
 | E06-a | Hash chain implementation | `packages/os-core/src/hash.ts` | `computeEntryHash()` SHA-256 via `createHash('sha256')`, `verifyChain()` |
-| E06-b | Audit schema | `packages/db/src/schema/operations.ts` L164 | `pgTable('audit_events', { hash: text.notNull(), previousHash: text, entityId: uuid.references(entities.id) })` |
+| E06-b | Audit schema | `packages/db/src/schema/operations.ts` L164 | `pgTable('audit_events', { hash: text.notNull(), previousHash: text, orgId: uuid.references(entities.id) })` |
 | E06-c | Audit record insertion | `apps/console/lib/audit-db.ts` | imports `computeEntryHash`, queries prev hash, inserts with computed hash |
 | E06-d | Chain verification function | `apps/console/lib/audit-db.ts` `verifyEntityAuditChain()` | Fetches ordered audit_events for entity, calls `verifyChain()` |
 | E06-e | Audit action taxonomy | `apps/console/lib/audit-db.ts` `AUDIT_ACTIONS` const | 27 action types including `MEMBER_ROLE_CHANGE`, `EVIDENCE_PACK_SEAL`, governance lifecycle |

@@ -5,7 +5,7 @@
  * (GST/HST + QST) governance tracking. We do NOT calculate tax.
  * We enforce controls, deadlines, approvals, and evidence integrity.
  *
- * All scoped by entity_id for multi-entity from day one.
+ * All scoped by org_id for multi-entity from day one.
  */
 import {
   pgTable,
@@ -19,7 +19,7 @@ import {
   boolean,
   numeric,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
 
@@ -85,16 +85,16 @@ export const indirectTaxPeriodStatusEnum = pgEnum('indirect_tax_period_status', 
 
 export const taxProfiles = pgTable('tax_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   federalBn: varchar('federal_bn', { length: 15 }), // BN (Business Number)
   provinceOfRegistration: varchar('province_of_registration', { length: 5 }), // ON | QC | etc
   fiscalYearEnd: varchar('fiscal_year_end', { length: 5 }), // MM-DD
   accountantName: text('accountant_name'),
   accountantEmail: text('accountant_email'),
   craProgramAccounts: jsonb('cra_program_accounts').default({}), // { RC: "...", RP: "...", RT: "..." }
-  rqProgramAccounts: jsonb('rq_program_accounts').default({}), // for QC entities
+  rqProgramAccounts: jsonb('rq_program_accounts').default({}), // for QC orgs
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -103,9 +103,9 @@ export const taxProfiles = pgTable('tax_profiles', {
 
 export const taxYears = pgTable('tax_years', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   fiscalYearLabel: varchar('fiscal_year_label', { length: 10 }).notNull(), // FY2026
   startDate: date('start_date').notNull(),
   endDate: date('end_date').notNull(),
@@ -122,9 +122,9 @@ export const taxYears = pgTable('tax_years', {
 
 export const taxFilings = pgTable('tax_filings', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   taxYearId: uuid('tax_year_id')
     .notNull()
     .references(() => taxYears.id),
@@ -142,9 +142,9 @@ export const taxFilings = pgTable('tax_filings', {
 
 export const taxInstallments = pgTable('tax_installments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   taxYearId: uuid('tax_year_id')
     .notNull()
     .references(() => taxYears.id),
@@ -161,9 +161,9 @@ export const taxInstallments = pgTable('tax_installments', {
 
 export const taxNotices = pgTable('tax_notices', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   taxYearId: uuid('tax_year_id')
     .notNull()
     .references(() => taxYears.id),
@@ -180,9 +180,9 @@ export const taxNotices = pgTable('tax_notices', {
 
 export const indirectTaxAccounts = pgTable('indirect_tax_accounts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   taxType: indirectTaxTypeEnum('tax_type').notNull(),
   filingFrequency: indirectTaxFilingFrequencyEnum('filing_frequency').notNull(),
   programAccountNumber: varchar('program_account_number', { length: 20 }),
@@ -194,9 +194,9 @@ export const indirectTaxAccounts = pgTable('indirect_tax_accounts', {
 
 export const indirectTaxPeriods = pgTable('indirect_tax_periods', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   accountId: uuid('account_id')
     .notNull()
     .references(() => indirectTaxAccounts.id),

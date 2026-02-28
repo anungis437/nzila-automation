@@ -169,7 +169,7 @@ class BoardReporter:
 1. Launched production-ready platforms (CongoWave, ABR Insights)
 2. Achieved 80% backbone architecture completion
 3. Expanded to {portfolio.get('total_verticals', 10)} business verticals
-4. Generated {portfolio.get('total_entities', 12500):,} entities across platforms
+4. Generated {portfolio.get('total_entities', 12500):,} orgs across platforms
 
 ### Upcoming Milestones
 - Q2 2026: Series A preparation

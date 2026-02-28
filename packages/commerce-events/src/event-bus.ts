@@ -41,7 +41,7 @@ export function createDomainEvent<TPayload = Record<string, unknown>>(
     type,
     payload: Object.freeze(payload) as Readonly<TPayload>,
     metadata: {
-      entityId: metadata.entityId,
+      orgId: metadata.orgId,
       actorId: metadata.actorId,
       correlationId: metadata.correlationId,
       causationId: metadata.causationId ?? null,
@@ -58,7 +58,7 @@ export function createDomainEvent<TPayload = Record<string, unknown>>(
 export function domainEventsFromTransition(
   eventsToEmit: readonly { type: string; payload: Record<string, unknown> }[],
   meta: {
-    entityId: string
+    orgId: string
     actorId: string
     correlationId: string
     causationId?: string | null
@@ -67,7 +67,7 @@ export function domainEventsFromTransition(
 ): DomainEvent[] {
   return eventsToEmit.map((e) =>
     createDomainEvent(e.type, e.payload, {
-      entityId: meta.entityId,
+      orgId: meta.orgId,
       actorId: meta.actorId,
       correlationId: meta.correlationId,
       causationId: meta.causationId ?? null,

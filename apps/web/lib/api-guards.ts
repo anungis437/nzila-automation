@@ -21,7 +21,7 @@ import { auth } from '@clerk/nextjs/server'
  *
  * @see packages/db/src/audit.ts for the full implementation
  */
-export function withAudit<T>(scopedDb: T, context: { actorId: string; entityId: string }): T {
+export function withAudit<T>(scopedDb: T, context: { actorId: string; orgId: string }): T {
   // Web app has no @nzila/db — this is a forward-declaration stub.
   // When the web app gains DB access, replace with: import { withAudit } from '@nzila/db'
   void context

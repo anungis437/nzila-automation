@@ -23,13 +23,13 @@ Infrastructure changes produce evidence for Change Management (CM-05) and DR (DR
 
 | Artifact | Format | Storage Path | Retention |
 |---|---|---|---|
-| IaC plan output | JSON/text | `evidence/{entity_id}/change-mgmt/{YYYY}/{MM}/iac-changes/{change_id}/plan.json` | 7_YEARS |
+| IaC plan output | JSON/text | `evidence/{org_id}/change-mgmt/{YYYY}/{MM}/iac-changes/{change_id}/plan.json` | 7_YEARS |
 | IaC apply log | JSON/text | Same path, `apply-log.json` | 7_YEARS |
 | Config export (post-change) | JSON | Same path, `config-export.json` | 7_YEARS |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id`, `sha256`, `created_by`, `retention_class = '7_YEARS'`
+- `org_id`, `artifact_id`, `sha256`, `created_by`, `retention_class = '7_YEARS'`
 
 ### Hashing Expectation
 

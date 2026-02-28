@@ -37,30 +37,30 @@ describe('INV-21 — Scoped DAL Structural Guarantees', () => {
 
   // ── 2) Org filter on every query ─────────────────────────────────────────
 
-  it('select() always calls getEntityIdColumn and applies eq() filter', () => {
+  it('select() always calls getOrgIdColumn and applies eq() filter', () => {
     const content = readFileSync(SCOPED_PATH, 'utf-8')
-    // Every select implementation must call getEntityIdColumn
+    // Every select implementation must call getOrgIdColumn
     const selectBlocks = content.match(/select\s*\(.*?\)\s*\{[\s\S]*?\}/g) ?? []
     const hasOrgFilter = selectBlocks.some(
       (block) =>
-        block.includes('getEntityIdColumn') ||
-        block.includes('entityCol') ||
-        block.includes('entityFilter'),
+        block.includes('getOrgIdColumn') ||
+        block.includes('orgCol') ||
+        block.includes('orgFilter'),
     )
-    expect(hasOrgFilter, 'select() must enforce Org filter via getEntityIdColumn').toBe(true)
+    expect(hasOrgFilter, 'select() must enforce Org filter via getOrgIdColumn').toBe(true)
   })
 
-  it('insert() always injects orgId / entityId into rows', () => {
+  it('insert() always injects orgId / orgId into rows', () => {
     const content = readFileSync(SCOPED_PATH, 'utf-8')
     // Insert must spread orgId into values
-    expect(content).toMatch(/entityId:\s*orgId/)
+    expect(content).toMatch(/orgId:\s*orgId/)
   })
 
   it('update() always applies Org filter', () => {
     const content = readFileSync(SCOPED_PATH, 'utf-8')
     const updateBlocks = content.match(/update\s*\(.*?\)\s*\{[\s\S]*?\}/g) ?? []
     const hasOrgFilter = updateBlocks.some(
-      (block) => block.includes('getEntityIdColumn') || block.includes('entityFilter'),
+      (block) => block.includes('getOrgIdColumn') || block.includes('orgFilter'),
     )
     expect(hasOrgFilter, 'update() must enforce Org filter').toBe(true)
   })
@@ -69,16 +69,16 @@ describe('INV-21 — Scoped DAL Structural Guarantees', () => {
     const content = readFileSync(SCOPED_PATH, 'utf-8')
     const deleteBlocks = content.match(/delete\s*\(.*?\)\s*\{[\s\S]*?\}/g) ?? []
     const hasOrgFilter = deleteBlocks.some(
-      (block) => block.includes('getEntityIdColumn') || block.includes('entityFilter'),
+      (block) => block.includes('getOrgIdColumn') || block.includes('orgFilter'),
     )
     expect(hasOrgFilter, 'delete() must enforce Org filter').toBe(true)
   })
 
-  // ── 3) Table without entity_id throws ────────────────────────────────────
+  // ── 3) Table without org_id throws ────────────────────────────────────
 
-  it('getEntityIdColumn throws when entity_id column is missing', () => {
+  it('getOrgIdColumn throws when org_id column is missing', () => {
     const content = readFileSync(SCOPED_PATH, 'utf-8')
-    expect(content).toContain('does not have an entity_id column')
+    expect(content).toContain('does not have an org_id column')
     expect(content).toContain('throw new ScopedDbError')
   })
 
@@ -121,9 +121,9 @@ describe('INV-21 — Scoped DAL Structural Guarantees', () => {
     expect(content).toContain('AuditedScopedDbOptions')
   })
 
-  it('withAudit validates context.entityId matches scopedDb', () => {
+  it('withAudit validates context.orgId matches scopedDb', () => {
     const content = readFileSync(AUDIT_PATH, 'utf-8')
-    expect(content).toMatch(/context\.entityId.*scopedDb/)
+    expect(content).toMatch(/context\.orgId.*scopedDb/)
   })
 
   // ── 7) Audit is mandatory on mutations ───────────────────────────────────

@@ -14,21 +14,21 @@ def analyze_cross_platform_patterns() -> Dict[str, Any]:
 
     # Define platforms with their verticals
     platforms = [
-        {"id": "union_eyes", "vertical": "Uniontech", "entities": 4773},
-        {"id": "abr_insights", "vertical": "EdTech/Legaltech", "entities": 132},
-        {"id": "cora", "vertical": "Agrotech", "entities": 80},
-        {"id": "congowave", "vertical": "Entertainment", "entities": 83},
-        {"id": "cyberlearn", "vertical": "EdTech", "entities": 30},
-        {"id": "court_lens", "vertical": "Legaltech", "entities": 682},
-        {"id": "c3uo", "vertical": "Fintech", "entities": 485},
-        {"id": "sentryiq", "vertical": "Insurtech", "entities": 79},
-        {"id": "trade_os", "vertical": "Trade", "entities": 337},
-        {"id": "eexports", "vertical": "Trade", "entities": 78},
-        {"id": "shop_quoter", "vertical": "Commerce", "entities": 93},
-        {"id": "ponduops", "vertical": "Agrotech", "entities": 220},
-        {"id": "insight_cfo", "vertical": "Fintech", "entities": 37},
-        {"id": "stsa", "vertical": "Fintech", "entities": 95},
-        {"id": "memora", "vertical": "Healthtech", "entities": 150},
+        {"id": "union_eyes", "vertical": "Uniontech", "orgs": 4773},
+        {"id": "abr_insights", "vertical": "EdTech/Legaltech", "orgs": 132},
+        {"id": "cora", "vertical": "Agrotech", "orgs": 80},
+        {"id": "congowave", "vertical": "Entertainment", "orgs": 83},
+        {"id": "cyberlearn", "vertical": "EdTech", "orgs": 30},
+        {"id": "court_lens", "vertical": "Legaltech", "orgs": 682},
+        {"id": "c3uo", "vertical": "Fintech", "orgs": 485},
+        {"id": "sentryiq", "vertical": "Insurtech", "orgs": 79},
+        {"id": "trade_os", "vertical": "Trade", "orgs": 337},
+        {"id": "eexports", "vertical": "Trade", "orgs": 78},
+        {"id": "shop_quoter", "vertical": "Commerce", "orgs": 93},
+        {"id": "ponduops", "vertical": "Agrotech", "orgs": 220},
+        {"id": "insight_cfo", "vertical": "Fintech", "orgs": 37},
+        {"id": "stsa", "vertical": "Fintech", "orgs": 95},
+        {"id": "memora", "vertical": "Healthtech", "orgs": 150},
     ]
 
     # Analyze verticals
@@ -38,7 +38,7 @@ def analyze_cross_platform_patterns() -> Dict[str, Any]:
         if v not in verticals:
             verticals[v] = {"platforms": [], "total_entities": 0}
         verticals[v]["platforms"].append(p["id"])
-        verticals[v]["total_entities"] += p["entities"]
+        verticals[v]["total_entities"] += p["orgs"]
 
     # Identify shared patterns
     shared_patterns = identify_shared_patterns()

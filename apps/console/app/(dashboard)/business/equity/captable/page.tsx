@@ -14,11 +14,11 @@ interface Entity {
 }
 
 export default function CapTablePage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -41,21 +41,21 @@ export default function CapTablePage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Loading entities...</p>
-      ) : entities.length === 0 ? (
+        <p className="text-gray-400 text-sm">Loading orgs...</p>
+      ) : orgs.length === 0 ? (
         <div className="text-center py-12 text-gray-400">
           <DocumentDuplicateIcon className="h-12 w-12 mx-auto mb-3" />
-          <p className="font-medium">No entities yet</p>
-          <Link href="/business/entities" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
+          <p className="font-medium">No orgs yet</p>
+          <Link href="/business/orgs" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
             Create an entity first →
           </Link>
         </div>
       ) : (
         <div className="space-y-3">
-          {entities.map((entity) => (
+          {orgs.map((entity) => (
             <Link
               key={entity.id}
-              href={`/business/entities/${entity.id}/equity`}
+              href={`/business/orgs/${entity.id}/equity`}
               className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all"
             >
               <div>

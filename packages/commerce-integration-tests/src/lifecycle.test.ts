@@ -90,11 +90,11 @@ const ORG_A = 'org-alpha'
 const ORG_B = 'org-beta'
 
 const ctx = (
-  entityId: string = ORG_A,
+  orgId: string = ORG_A,
   role: OrgRole = OrgRole.ADMIN,
   actorId: string = 'actor-001',
 ): TransitionContext => ({
-  entityId,
+  orgId,
   actorId,
   role,
   meta: {},
@@ -102,7 +102,7 @@ const ctx = (
 
 function quoteEntity(overrides?: Partial<QuoteEntity>): QuoteEntity {
   return {
-    entityId: ORG_A,
+    orgId: ORG_A,
     grandTotal: 5_000,
     approvalFlags: [],
     marginPercent: 25,
@@ -116,7 +116,7 @@ function quoteEntity(overrides?: Partial<QuoteEntity>): QuoteEntity {
 
 function orderEntity(overrides?: Partial<OrderEntity>): OrderEntity {
   return {
-    entityId: ORG_A,
+    orgId: ORG_A,
     grandTotal: 5_000,
     lineCount: 3,
     quoteSnapshotHash: 'sha256-abc123',
@@ -126,7 +126,7 @@ function orderEntity(overrides?: Partial<OrderEntity>): OrderEntity {
 
 function invoiceEntity(overrides?: Partial<InvoiceEntity>): InvoiceEntity {
   return {
-    entityId: ORG_A,
+    orgId: ORG_A,
     grandTotal: 5_000,
     hasEvidencePack: true,
     lineCount: 3,
@@ -137,11 +137,11 @@ function invoiceEntity(overrides?: Partial<InvoiceEntity>): InvoiceEntity {
 function makeAuditCtx(
   entityType: CommerceEntityType = CommerceEntityType.QUOTE,
   targetEntityId: string = 'q-1',
-  entityId: string = ORG_A,
+  orgId: string = ORG_A,
 ): TransitionAuditContext {
   return {
     id: crypto.randomUUID(),
-    entityId,
+    orgId,
     actorId: 'actor-001',
     role: OrgRole.ADMIN,
     entityType,
@@ -254,7 +254,7 @@ describe('Org Isolation — cross-org rejection', () => {
   })
 
   describe('audit entries are org-scoped', () => {
-    it('audit entry entityId always matches transition context', () => {
+    it('audit entry orgId always matches transition context', () => {
       const result = attemptTransition(
         quoteMachine,
         QuoteStatus.DRAFT,
@@ -268,7 +268,7 @@ describe('Org Isolation — cross-org rejection', () => {
 
       const auditCtx = makeAuditCtx(CommerceEntityType.QUOTE, 'q-1', ORG_A)
       const entry = buildTransitionAuditEntry(result, auditCtx)
-      expect(entry.entityId).toBe(ORG_A)
+      expect(entry.orgId).toBe(ORG_A)
       expect(entry.actorId).toBe('actor-001')
     })
   })
@@ -638,7 +638,7 @@ describe('Audit + Evidence integration', () => {
     })
 
     const pack = buildCommerceEvidencePack({
-      entityId: ORG_A,
+      orgId: ORG_A,
       commerceEntityType: 'quote',
       commerceEntityId: 'q-1',
       createdBy: 'actor-001',
@@ -646,7 +646,7 @@ describe('Audit + Evidence integration', () => {
       timestamp: '2026-01-15T10:00:00Z',
     }, [artifact], entries)
 
-    expect(pack.entityId).toBe(ORG_A)
+    expect(pack.orgId).toBe(ORG_A)
     expect(pack.artifacts).toHaveLength(1)
     expect(pack.auditTrailEntries).toHaveLength(2)
 
@@ -669,7 +669,7 @@ describe('Audit + Evidence integration', () => {
     })
 
     const pack = buildCommerceEvidencePack({
-      entityId: ORG_A,
+      orgId: ORG_A,
       commerceEntityType: 'quote',
       commerceEntityId: 'q-1',
       createdBy: 'actor-001',
@@ -773,7 +773,7 @@ describe('Event Bus + Saga integration', () => {
 
     for (const evt of result.eventsToEmit) {
       const domainEvent = createDomainEvent(evt.type, evt.payload, {
-        entityId: ORG_A,
+        orgId: ORG_A,
         actorId: 'actor-001',
         correlationId: 'corr-1',
       })
@@ -782,7 +782,7 @@ describe('Event Bus + Saga integration', () => {
 
     expect(received.length).toBeGreaterThanOrEqual(1)
     expect(received.some(e => e.type === 'quote.accepted')).toBe(true)
-    expect(received[0]!.metadata.entityId).toBe(ORG_A)
+    expect(received[0]!.metadata.orgId).toBe(ORG_A)
   })
 
   it('saga orchestrator tracks execution history', async () => {
@@ -812,7 +812,7 @@ describe('Event Bus + Saga integration', () => {
     const event = createDomainEvent(
       'test.started',
       { value: 'hello' },
-      { entityId: ORG_A, actorId: 'actor-001', correlationId: 'c-1' },
+      { orgId: ORG_A, actorId: 'actor-001', correlationId: 'c-1' },
     )
     await bus.emitAndWait(event)
 
@@ -853,7 +853,7 @@ describe('Event Bus + Saga integration', () => {
     const event = createDomainEvent(
       'fail.trigger',
       { v: 'test' },
-      { entityId: ORG_A, actorId: 'actor-001', correlationId: 'c-fail' },
+      { orgId: ORG_A, actorId: 'actor-001', correlationId: 'c-fail' },
     )
     await bus.emitAndWait(event)
 
@@ -865,7 +865,7 @@ describe('Event Bus + Saga integration', () => {
     expect(exec.error).toContain('step-c')
   })
 
-  it('saga carries org context (entityId) through execution', async () => {
+  it('saga carries org context (orgId) through execution', async () => {
     const orchestrator = createSagaOrchestrator(bus)
     let capturedEntityId = ''
 
@@ -876,7 +876,7 @@ describe('Event Bus + Saga integration', () => {
         {
           name: 'capture-org',
           execute: async (sagaCtx) => {
-            capturedEntityId = sagaCtx.entityId
+            capturedEntityId = sagaCtx.orgId
             return { ok: true as const, data: undefined }
           },
           compensate: async () => ({ ok: true as const, data: undefined }),
@@ -889,13 +889,13 @@ describe('Event Bus + Saga integration', () => {
     const event = createDomainEvent(
       'org.test',
       {},
-      { entityId: ORG_B, actorId: 'actor-B', correlationId: 'c-org' },
+      { orgId: ORG_B, actorId: 'actor-B', correlationId: 'c-org' },
     )
     await bus.emitAndWait(event)
 
     expect(capturedEntityId).toBe(ORG_B)
     const exec = orchestrator.executions()[0]!
-    expect(exec.entityId).toBe(ORG_B)
+    expect(exec.orgId).toBe(ORG_B)
   })
 
   it('compensation continues even when a compensate step throws', async () => {
@@ -926,7 +926,7 @@ describe('Event Bus + Saga integration', () => {
 
     orchestrator.register(saga)
     const event = createDomainEvent('comp.fail', {}, {
-      entityId: ORG_A, actorId: 'a', correlationId: 'c',
+      orgId: ORG_A, actorId: 'a', correlationId: 'c',
     })
     await bus.emitAndWait(event)
 

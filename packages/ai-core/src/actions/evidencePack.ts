@@ -34,7 +34,7 @@ export interface AiActionEvidence {
 
 export interface AiActionsEvidenceAppendix {
   schemaVersion: '1.0'
-  entityId: string
+  orgId: string
   periodLabel: string
   collectedAt: string
   actions: AiActionEvidence[]
@@ -53,12 +53,12 @@ export interface AiActionsEvidenceAppendix {
  * Collect all AI action evidence for an entity in a given period.
  * Returns an appendix structure suitable for inclusion in evidence packs.
  *
- * @param entityId - The entity UUID
+ * @param orgId - The entity UUID
  * @param periodLabel - e.g., "2026-02"
  * @param actionTypes - Filter by action types (defaults to all known)
  */
 export async function collectAiActionEvidence(
-  entityId: string,
+  orgId: string,
   periodLabel: string,
   actionTypes?: string[],
 ): Promise<AiActionsEvidenceAppendix> {
@@ -70,7 +70,7 @@ export async function collectAiActionEvidence(
     .from(aiActions)
     .where(
       and(
-        eq(aiActions.entityId, entityId),
+        eq(aiActions.orgId, orgId),
         eq(aiActions.evidencePackEligible, true),
       ),
     )
@@ -84,7 +84,7 @@ export async function collectAiActionEvidence(
   if (periodActions.length === 0) {
     return {
       schemaVersion: '1.0',
-      entityId,
+      orgId,
       periodLabel,
       collectedAt: new Date().toISOString(),
       actions: [],
@@ -118,7 +118,7 @@ export async function collectAiActionEvidence(
         .from(documents)
         .where(
           and(
-            eq(documents.entityId, entityId),
+            eq(documents.orgId, orgId),
             eq(documents.linkedType, 'ai_action'),
             inArray(documents.linkedId, actionIds),
           ),
@@ -179,7 +179,7 @@ export async function collectAiActionEvidence(
 
   return {
     schemaVersion: '1.0',
-    entityId,
+    orgId,
     periodLabel,
     collectedAt: new Date().toISOString(),
     actions: actionEvidence,

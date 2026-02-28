@@ -94,7 +94,7 @@ export const conflictDisclosures = pgTable("conflict_disclosures", {
   conflictDescription: text("conflict_description").notNull(),
   
   // Parties involved
-  relatedParties: jsonb("related_parties"), // Array of related individuals/entities
+  relatedParties: jsonb("related_parties"), // Array of related individuals/orgs
   relatedTransactionIds: jsonb("related_transaction_ids"), // If transaction-specific
   
   // Financial interest
@@ -176,7 +176,7 @@ export const recusalTracking = pgTable("recusal_tracking", {
   recusalType: varchar("recusal_type", { length: 50 }).notNull(), // "vote", "decision", "discussion", "meeting"
   recusalReason: text("recusal_reason").notNull(),
   
-  // Related entities
+  // Related orgs
   relatedMatter: text("related_matter"), // Description of matter requiring recusal
   relatedMeetingId: uuid("related_meeting_id"),
   relatedVoteId: uuid("related_vote_id"),

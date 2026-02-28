@@ -1,9 +1,9 @@
 /**
  * Nzila Business OS - Probabilistic Cardinality Estimators
  * 
- * Provides HyperLogLog-based estimators for counting unique entities
+ * Provides HyperLogLog-based estimators for counting unique orgs
  * with minimal memory footprint. Useful for:
- * - Counting unique shareholders across entities
+ * - Counting unique shareholders across orgs
  * - Unique user tracking across platforms
  * - Entity deduplication in portfolio analytics
  * 
@@ -303,7 +303,7 @@ export interface ShareholderRecord {
 }
 
 /**
- * Estimate unique shareholders across multiple entities
+ * Estimate unique shareholders across multiple orgs
  */
 export function estimateUniqueShareholders(
   shareholders: ShareholderRecord[],
@@ -319,14 +319,14 @@ export function estimateUniqueShareholders(
  * Merge multiple entity-level estimators into portfolio-level estimate
  */
 export function mergeEntityEstimators(
-  entityEstimates: Array<{ entityId: string; hll: HyperLogLog }>
+  entityEstimates: Array<{ orgId: string; hll: HyperLogLog }>
 ): MergeResult {
   const merged = HyperLogLog.mergeAll(entityEstimates.map(e => e.hll))
   
   return {
     totalEstimate: merged.count(),
     sources: entityEstimates.map(e => ({
-      sourceId: e.entityId,
+      sourceId: e.orgId,
       estimate: e.hll.count(),
     })),
   }
@@ -341,7 +341,7 @@ export function mergeEntityEstimators(
  * This can be stored in the database and updated incrementally
  */
 export interface EntityCardinality {
-  entityId: string
+  orgId: string
   hllState: HyperLogLogState
   lastUpdated: string
   itemType: 'shareholders' | 'members' | 'users' | 'contacts'
@@ -352,7 +352,7 @@ export interface EntityCardinality {
  * Note: In production, this would interact with a database
  */
 export function getEntityCardinalityTracker(
-  entityId: string,
+  orgId: string,
   itemType: EntityCardinality['itemType'],
   existingState?: HyperLogLogState
 ): HyperLogLog {

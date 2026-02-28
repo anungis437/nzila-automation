@@ -16,7 +16,7 @@ import { resolveOrgContext } from '@/lib/resolve-org'
 export interface IntegrityArtifactRow {
   id: string
   entityType: string
-  entityId: string
+  orgId: string
   action: string
   sealHash: string
   status: string
@@ -45,20 +45,20 @@ export async function getIntegrityDashboard(): Promise<IntegrityDashboard> {
         COUNT(*) FILTER (WHERE status = 'pending')::int as "pendingCount",
         COUNT(*) FILTER (WHERE status = 'failed')::int as "failedCount"
       FROM integrity_artifacts
-      WHERE org_id = ${ctx.entityId}
+      WHERE org_id = ${ctx.orgId}
     `)
 
     const recentRows = await platformDb.execute(sql`
       SELECT
         id,
         entity_type as "entityType",
-        entity_id as "entityId",
+        org_id as "orgId",
         action,
         seal_hash as "sealHash",
         status,
         created_at as "createdAt"
       FROM integrity_artifacts
-      WHERE org_id = ${ctx.entityId}
+      WHERE org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT 20
     `)
@@ -91,9 +91,9 @@ export async function verifyArtifact(artifactId: string) {
   const ctx = await resolveOrgContext()
 
   const [artifact] = await platformDb.execute(sql`
-    SELECT seal_hash as "sealHash", entity_type as "entityType", entity_id as "entityId"
+    SELECT seal_hash as "sealHash", entity_type as "entityType", org_id as "orgId"
     FROM integrity_artifacts
-    WHERE id = ${artifactId} AND org_id = ${ctx.entityId}
+    WHERE id = ${artifactId} AND org_id = ${ctx.orgId}
   `)
 
   if (!artifact) {
@@ -110,7 +110,7 @@ export async function verifyArtifact(artifactId: string) {
     await platformDb.execute(sql`
       UPDATE integrity_artifacts
       SET status = ${valid ? 'verified' : 'failed'}, verified_at = NOW(), verified_by = ${ctx.actorId}
-      WHERE id = ${artifactId} AND org_id = ${ctx.entityId}
+      WHERE id = ${artifactId} AND org_id = ${ctx.orgId}
     `)
 
     return { success: true, valid }

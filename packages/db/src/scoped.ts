@@ -10,7 +10,7 @@
  *   - createScopedDb({ orgId })          → READ-ONLY by default
  *   - createAuditedScopedDb(...)         → write-enabled, auto-audited (see audit.ts)
  *
- * Legacy string-form createScopedDb(entityId) is preserved for backward
+ * Legacy string-form createScopedDb(orgId) is preserved for backward
  * compatibility but returns full CRUD and is deprecated.
  *
  * Usage:
@@ -18,7 +18,7 @@
  *
  *   const db = createScopedDb({ orgId: ctx.orgId })
  *   const meetings = await db.select(tables.meetings)
- *   // → automatically WHERE entity_id = orgId
+ *   // → automatically WHERE org_id = orgId
  *
  * @module @nzila/db/scoped
  */
@@ -53,18 +53,12 @@ export interface ReadOnlyScopedDb {
    */
   readonly orgId: string
 
-  /**
-   * Alias for orgId — backward compatibility.
-   * @deprecated Use `orgId` instead.
-   */
-  readonly entityId: string
-
   /** Optional correlation ID for this scope. */
   readonly correlationId?: string
 
   /**
    * SELECT from a table, auto-scoped to orgId.
-   * Throws if the table lacks an `entity_id` column.
+   * Throws if the table lacks an `org_id` column.
    */
   select<T extends PgTable<TableConfig>>(
     table: T,
@@ -89,7 +83,7 @@ export interface ReadOnlyScopedDb {
 export interface ScopedDb extends ReadOnlyScopedDb {
   /**
    * INSERT into a table, auto-injecting orgId into every row.
-   * Throws if the table lacks an `entity_id` column.
+   * Throws if the table lacks an `org_id` column.
    */
   insert<T extends PgTable<TableConfig>>(
     table: T,
@@ -98,7 +92,7 @@ export interface ScopedDb extends ReadOnlyScopedDb {
 
   /**
    * UPDATE a table, auto-scoped to orgId.
-   * Throws if the table lacks an `entity_id` column.
+   * Throws if the table lacks an `org_id` column.
    */
   update<T extends PgTable<TableConfig>>(
     table: T,
@@ -108,7 +102,7 @@ export interface ScopedDb extends ReadOnlyScopedDb {
 
   /**
    * DELETE from a table, auto-scoped to orgId.
-   * Throws if the table lacks an `entity_id` column.
+   * Throws if the table lacks an `org_id` column.
    */
   delete<T extends PgTable<TableConfig>>(
     table: T,
@@ -126,14 +120,14 @@ export interface ScopedDb extends ReadOnlyScopedDb {
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /**
- * Resolves the `entity_id` column from a Drizzle table definition.
+ * Resolves the `org_id` column from a Drizzle table definition.
  * Throws with an explicit error if the column does not exist —
  * this is a structural enforcement, not a soft warning.
  */
-function getEntityIdColumn(table: PgTable<TableConfig>): any {
+function getOrgIdColumn(table: PgTable<TableConfig>): any {
   const tableColumns = (table as any)
   // Drizzle exposes columns as direct properties on the table object
-  const col = tableColumns['entityId'] ?? tableColumns['entity_id']
+  const col = tableColumns['orgId'] ?? tableColumns['org_id']
   if (!col) {
     const tableName =
       (table as any)[Symbol.for('drizzle:Name')] ??
@@ -143,8 +137,8 @@ function getEntityIdColumn(table: PgTable<TableConfig>): any {
         .find((v) => typeof v === 'string') ??
       'unknown'
     throw new ScopedDbError(
-      `Table "${tableName}" does not have an entity_id column. ` +
-        'All tables accessed via ScopedDb must include entity_id for Org isolation. ' +
+      `Table "${tableName}" does not have an org_id column. ` +
+        'All tables accessed via ScopedDb must include org_id for Org isolation. ' +
         'Use rawDb (from @nzila/db/raw) only in the OS platform layer for unscoped tables.',
     )
   }
@@ -196,28 +190,28 @@ export class ReadOnlyViolationError extends ScopedDbError {
  */
 export function createScopedDb(opts: ScopedDbOptions): ReadOnlyScopedDb
 /** @deprecated Use object form: createScopedDb({ orgId }) */
-export function createScopedDb(entityId: string): ScopedDb
+export function createScopedDb(orgId: string): ScopedDb
 /** @internal */
-export function createScopedDb(entityId: string, txClient: any): ScopedDb
+export function createScopedDb(orgId: string, txClient: any): ScopedDb
 export function createScopedDb(
-  optsOrEntityId: ScopedDbOptions | string,
+  optsOrOrgId: ScopedDbOptions | string,
   txClient?: any,
 ): ReadOnlyScopedDb | ScopedDb {
   // ── Guard: null/undefined always throws ScopedDbError ─────────────────
-  if (optsOrEntityId === null || optsOrEntityId === undefined) {
+  if (optsOrOrgId === null || optsOrOrgId === undefined) {
     throw new ScopedDbError(
-      'createScopedDb() requires a non-empty entityId or ScopedDbOptions. ' +
+      'createScopedDb() requires a non-empty orgId or ScopedDbOptions. ' +
         'Org isolation cannot be guaranteed without a valid Org scope.',
     )
   }
 
   // ── Backward compat: string form returns full ScopedDb (deprecated) ────
-  if (typeof optsOrEntityId === 'string') {
-    return createFullScopedDb(optsOrEntityId, txClient)
+  if (typeof optsOrOrgId === 'string') {
+    return createFullScopedDb(optsOrOrgId, txClient)
   }
 
   // ── Object form: returns read-only surface ─────────────────────────────
-  const { orgId, correlationId } = optsOrEntityId
+  const { orgId, correlationId } = optsOrOrgId
 
   if (!orgId || typeof orgId !== 'string') {
     throw new ScopedDbError(
@@ -229,15 +223,14 @@ export function createScopedDb(
   const client: Database = txClient ?? db
 
   function scopedSelect(c: any, table: PgTable<TableConfig>, extraWhere?: SQL) {
-    const entityCol = getEntityIdColumn(table)
-    const entityFilter = eq(entityCol, orgId)
-    const where = extraWhere ? and(entityFilter, extraWhere) : entityFilter
+    const orgCol = getOrgIdColumn(table)
+    const orgFilter = eq(orgCol, orgId)
+    const where = extraWhere ? and(orgFilter, extraWhere) : orgFilter
     return c.select().from(table).where(where)
   }
 
   const readOnlyDb: ReadOnlyScopedDb = {
     orgId,
-    entityId: orgId,
     correlationId,
 
     select(table, extraWhere) {
@@ -248,7 +241,6 @@ export function createScopedDb(
       return (client as any).transaction(async (tx: any) => {
         const txReadOnly: ReadOnlyScopedDb = {
           orgId,
-          entityId: orgId,
           correlationId,
           select(table, extraWhere) {
             return scopedSelect(tx, table, extraWhere)
@@ -257,7 +249,6 @@ export function createScopedDb(
             return tx.transaction(async (nested: any) => {
               const nestedReadOnly: ReadOnlyScopedDb = {
                 orgId,
-                entityId: orgId,
                 correlationId,
                 select(t, ew) { return scopedSelect(nested, t, ew) },
                 transaction: () => { throw new ScopedDbError('Nested transactions beyond 2 levels not supported') },
@@ -278,7 +269,7 @@ export function createScopedDb(
 
 /**
  * Create a full CRUD Org-scoped database. Internal — used by:
- * - Backward-compatible string-form createScopedDb(entityId)
+ * - Backward-compatible string-form createScopedDb(orgId)
  * - createAuditedScopedDb() in audit.ts (wraps this with audit middleware)
  *
  * @internal
@@ -286,7 +277,7 @@ export function createScopedDb(
 export function createFullScopedDb(orgId: string, txClient?: any): ScopedDb {
   if (!orgId || typeof orgId !== 'string') {
     throw new ScopedDbError(
-      'createScopedDb() requires a non-empty entityId string. ' +
+      'createScopedDb() requires a non-empty orgId string. ' +
         'Org isolation cannot be guaranteed without a valid Org scope.',
     )
   }
@@ -295,38 +286,37 @@ export function createFullScopedDb(orgId: string, txClient?: any): ScopedDb {
 
   const scopedDb: ScopedDb = {
     orgId,
-    entityId: orgId,
     correlationId: undefined,
 
     select(table, extraWhere) {
-      const entityCol = getEntityIdColumn(table)
-      const entityFilter = eq(entityCol, orgId)
-      const where = extraWhere ? and(entityFilter, extraWhere) : entityFilter
+      const orgCol = getOrgIdColumn(table)
+      const orgFilter = eq(orgCol, orgId)
+      const where = extraWhere ? and(orgFilter, extraWhere) : orgFilter
       return (client as any).select().from(table).where(where)
     },
 
     insert(table, values) {
-      const _entityCol = getEntityIdColumn(table) // validate column exists
+      const _orgCol = getOrgIdColumn(table) // validate column exists
       const rows = Array.isArray(values) ? values : [values]
       const injected = rows.map((row) => ({
         ...row,
-        entityId: orgId, // force orgId on every row
+        orgId: orgId, // force orgId on every row
       }))
       const toInsert = injected.length === 1 ? injected[0] : injected
       return (client as any).insert(table).values(toInsert)
     },
 
     update(table, values, extraWhere) {
-      const entityCol = getEntityIdColumn(table)
-      const entityFilter = eq(entityCol, orgId)
-      const where = extraWhere ? and(entityFilter, extraWhere) : entityFilter
+      const orgCol = getOrgIdColumn(table)
+      const orgFilter = eq(orgCol, orgId)
+      const where = extraWhere ? and(orgFilter, extraWhere) : orgFilter
       return (client as any).update(table).set(values).where(where)
     },
 
     delete(table, extraWhere) {
-      const entityCol = getEntityIdColumn(table)
-      const entityFilter = eq(entityCol, orgId)
-      const where = extraWhere ? and(entityFilter, extraWhere) : entityFilter
+      const orgCol = getOrgIdColumn(table)
+      const orgFilter = eq(orgCol, orgId)
+      const where = extraWhere ? and(orgFilter, extraWhere) : orgFilter
       return (client as any).delete(table).where(where)
     },
 

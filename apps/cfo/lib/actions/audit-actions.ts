@@ -19,7 +19,7 @@ export interface AuditEntry {
   action: string
   actorId: string
   entityType: string | null
-  entityId: string | null
+  orgId: string | null
   metadata: Record<string, unknown>
   ipAddress: string | null
   createdAt: Date
@@ -81,7 +81,7 @@ export async function listAuditEntries(
 
     const rows = (await platformDb.execute(
       sql`SELECT id, action, actor_id as "actorId",
-        entity_type as "entityType", entity_id as "entityId",
+        entity_type as "entityType", org_id as "orgId",
         metadata, metadata->>'ipAddress' as "ipAddress",
         created_at as "createdAt"
       FROM audit_log WHERE 1=1 ${whereClause}

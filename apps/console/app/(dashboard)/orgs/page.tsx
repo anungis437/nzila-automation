@@ -125,7 +125,7 @@ export default function EntitiesPage() {
           {entities.map((entity) => (
             <Link
               key={entity.id}
-              href={`/business/entities/${entity.id}`}
+              href={`/orgs/${entity.id}`}
               className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition"
             >
               <div className="flex items-center gap-4">

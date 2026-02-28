@@ -101,10 +101,10 @@ describe('PR8: AuthZ — webhook routes verify signatures', () => {
   })
 })
 
-// ── 4. Union-Eyes entityId derivation ─────────────────────────────────────
+// ── 4. Union-Eyes orgId derivation ─────────────────────────────────────
 
-describe('PR8: AuthZ — union-eyes entityId derivation warning', () => {
-  it('documents that union-eyes entityId should come from session, not URL params', () => {
+describe('PR8: AuthZ — union-eyes orgId derivation warning', () => {
+  it('documents that union-eyes orgId should come from session, not URL params', () => {
     const ueLib = resolve(ROOT, 'apps/union-eyes/lib')
     const entries = existsSync(ueLib)
       ? readdirSync(ueLib, { withFileTypes: true, recursive: true })

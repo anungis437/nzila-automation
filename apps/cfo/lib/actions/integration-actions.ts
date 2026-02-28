@@ -147,7 +147,7 @@ export async function triggerSync(provider: 'stripe' | 'quickbooks' | 'tax-engin
     const pack = buildEvidencePackFromAction({
       actionId: `sync-${provider}-${Date.now()}`,
       actionType: 'INTEGRATION_SYNC',
-      entityId: provider,
+      orgId: provider,
       executedBy: userId,
     })
     await processEvidencePack(pack)
@@ -159,21 +159,21 @@ export async function triggerSync(provider: 'stripe' | 'quickbooks' | 'tax-engin
   }
 }
 
-export async function getTaxDeadlines(entityId?: string) {
+export async function getTaxDeadlines(orgId?: string) {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
   await requirePermission('tax_tools:view')
 
   try {
-    // Fetch entity tax profile for FYE/province if entityId provided
+    // Fetch entity tax profile for FYE/province if orgId provided
     let fiscalYearEnd: string | undefined
     let province: string | undefined
 
-    if (entityId) {
+    if (orgId) {
       const [profile] = await platformDb
         .select()
         .from(taxProfiles)
-        .where(eq(taxProfiles.entityId, entityId))
+        .where(eq(taxProfiles.orgId, orgId))
 
       if (profile) {
         fiscalYearEnd = profile.fiscalYearEnd ?? undefined

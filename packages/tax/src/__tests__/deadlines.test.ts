@@ -55,7 +55,7 @@ describe('daysUntil', () => {
 describe('buildTaxYearDeadlines', () => {
   const taxYear = {
     id: 'ty-001',
-    entityId: 'ent-001',
+    orgId: 'ent-001',
     fiscalYearLabel: 'FY2025',
     federalFilingDeadline: '2026-06-30',
     federalPaymentDeadline: '2026-02-28',
@@ -88,10 +88,10 @@ describe('buildTaxYearDeadlines', () => {
     expect(fedPayment.urgency).toBe('red') // Feb 28 is overdue
   })
 
-  it('populates entityId and taxYearId on each deadline', () => {
+  it('populates orgId and taxYearId on each deadline', () => {
     const result = buildTaxYearDeadlines(taxYear, refDate)
     for (const d of result) {
-      expect(d.entityId).toBe('ent-001')
+      expect(d.orgId).toBe('ent-001')
       expect(d.taxYearId).toBe('ty-001')
     }
   })
@@ -100,7 +100,7 @@ describe('buildTaxYearDeadlines', () => {
 describe('buildInstallmentDeadline', () => {
   it('sets urgency green for paid installment even if overdue', () => {
     const result = buildInstallmentDeadline(
-      { entityId: 'e1', taxYearId: 'ty1', dueDate: '2026-01-15', status: 'paid' },
+      { orgId: 'e1', taxYearId: 'ty1', dueDate: '2026-01-15', status: 'paid' },
       'Q4 Installment',
       refDate,
     )
@@ -111,7 +111,7 @@ describe('buildInstallmentDeadline', () => {
 
   it('sets urgency red for unpaid overdue installment', () => {
     const result = buildInstallmentDeadline(
-      { entityId: 'e1', taxYearId: 'ty1', dueDate: '2026-01-15', status: 'due' },
+      { orgId: 'e1', taxYearId: 'ty1', dueDate: '2026-01-15', status: 'due' },
       'Q4 Installment',
       refDate,
     )
@@ -122,7 +122,7 @@ describe('buildInstallmentDeadline', () => {
 describe('buildIndirectTaxDeadlines', () => {
   it('returns 2 deadlines (filing + payment)', () => {
     const result = buildIndirectTaxDeadlines(
-      { entityId: 'e1', taxType: 'GST/HST', filingDue: '2026-04-30', paymentDue: '2026-04-30', status: 'open' },
+      { orgId: 'e1', taxType: 'GST/HST', filingDue: '2026-04-30', paymentDue: '2026-04-30', status: 'open' },
       refDate,
     )
     expect(result).toHaveLength(2)
@@ -132,7 +132,7 @@ describe('buildIndirectTaxDeadlines', () => {
 
   it('marks filed period filing as green', () => {
     const result = buildIndirectTaxDeadlines(
-      { entityId: 'e1', taxType: 'GST/HST', filingDue: '2026-01-15', paymentDue: '2026-01-15', status: 'filed' },
+      { orgId: 'e1', taxType: 'GST/HST', filingDue: '2026-01-15', paymentDue: '2026-01-15', status: 'filed' },
       refDate,
     )
     expect(result[0].urgency).toBe('green') // filed
@@ -141,7 +141,7 @@ describe('buildIndirectTaxDeadlines', () => {
 
   it('marks paid period as green for both filing and payment', () => {
     const result = buildIndirectTaxDeadlines(
-      { entityId: 'e1', taxType: 'GST/HST', filingDue: '2026-01-15', paymentDue: '2026-01-15', status: 'paid' },
+      { orgId: 'e1', taxType: 'GST/HST', filingDue: '2026-01-15', paymentDue: '2026-01-15', status: 'paid' },
       refDate,
     )
     expect(result[0].urgency).toBe('green')
@@ -152,9 +152,9 @@ describe('buildIndirectTaxDeadlines', () => {
 describe('sortDeadlines', () => {
   it('sorts red before yellow before green', () => {
     const deadlines = [
-      { label: 'A', dueDate: '2026-06-01', daysRemaining: 92, urgency: 'green' as const, entityId: 'e', type: 'federal_filing' as const },
-      { label: 'B', dueDate: '2026-01-01', daysRemaining: -59, urgency: 'red' as const, entityId: 'e', type: 'federal_payment' as const },
-      { label: 'C', dueDate: '2026-03-15', daysRemaining: 14, urgency: 'yellow' as const, entityId: 'e', type: 'installment' as const },
+      { label: 'A', dueDate: '2026-06-01', daysRemaining: 92, urgency: 'green' as const, orgId: 'e', type: 'federal_filing' as const },
+      { label: 'B', dueDate: '2026-01-01', daysRemaining: -59, urgency: 'red' as const, orgId: 'e', type: 'federal_payment' as const },
+      { label: 'C', dueDate: '2026-03-15', daysRemaining: 14, urgency: 'yellow' as const, orgId: 'e', type: 'installment' as const },
     ]
     const sorted = sortDeadlines(deadlines)
     expect(sorted.map((d) => d.urgency)).toEqual(['red', 'yellow', 'green'])
@@ -162,8 +162,8 @@ describe('sortDeadlines', () => {
 
   it('sorts by days remaining within same urgency', () => {
     const deadlines = [
-      { label: 'B', dueDate: '2026-03-25', daysRemaining: 24, urgency: 'yellow' as const, entityId: 'e', type: 'federal_filing' as const },
-      { label: 'A', dueDate: '2026-03-10', daysRemaining: 9, urgency: 'yellow' as const, entityId: 'e', type: 'federal_payment' as const },
+      { label: 'B', dueDate: '2026-03-25', daysRemaining: 24, urgency: 'yellow' as const, orgId: 'e', type: 'federal_filing' as const },
+      { label: 'A', dueDate: '2026-03-10', daysRemaining: 9, urgency: 'yellow' as const, orgId: 'e', type: 'federal_payment' as const },
     ]
     const sorted = sortDeadlines(deadlines)
     expect(sorted[0].label).toBe('A')
@@ -172,8 +172,8 @@ describe('sortDeadlines', () => {
 
   it('does not mutate the original array', () => {
     const original = [
-      { label: 'A', dueDate: '2026-06-01', daysRemaining: 92, urgency: 'green' as const, entityId: 'e', type: 'federal_filing' as const },
-      { label: 'B', dueDate: '2026-01-01', daysRemaining: -59, urgency: 'red' as const, entityId: 'e', type: 'federal_payment' as const },
+      { label: 'A', dueDate: '2026-06-01', daysRemaining: 92, urgency: 'green' as const, orgId: 'e', type: 'federal_filing' as const },
+      { label: 'B', dueDate: '2026-01-01', daysRemaining: -59, urgency: 'red' as const, orgId: 'e', type: 'federal_payment' as const },
     ]
     const sorted = sortDeadlines(original)
     expect(original[0].label).toBe('A') // unchanged

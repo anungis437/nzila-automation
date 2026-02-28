@@ -63,7 +63,7 @@ function makeArtifact(id = 'art-1') {
 function makeDraft() {
   return createEvidencePackDraft({
     packId: 'TEST-001',
-    entityId: '00000000-0000-0000-0000-000000000001',
+    orgId: '00000000-0000-0000-0000-000000000001',
     controlFamily: 'integrity',
     eventType: 'control-test',
     eventId: 'test-event-001',
@@ -214,7 +214,7 @@ describe('INV-16 — Redacted packs are re-sealed', () => {
   function makeSealedIndex(): SealablePackIndex & { seal: ReturnType<typeof generateSeal> } {
     const index: SealablePackIndex = {
       packId: 'TEST-001',
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       controlFamily: 'integrity',
       eventType: 'control-test',
       summary: 'Test',
@@ -282,7 +282,7 @@ describe('buildLocalEvidencePackIndex includes valid seal', () => {
   it('returns an index with a seal field', () => {
     const request = {
       packId: 'TEST-LOCAL-001',
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       controlFamily: 'integrity' as const,
       eventType: 'control-test' as const,
       eventId: 'ev-001',
@@ -314,7 +314,7 @@ describe('buildLocalEvidencePackIndex includes valid seal', () => {
   it('local index seal verifies correctly', () => {
     const request = {
       packId: 'TEST-LOCAL-002',
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       controlFamily: 'integrity' as const,
       eventType: 'control-test' as const,
       eventId: 'ev-002',
@@ -383,7 +383,7 @@ describe('INV-17 — verify-pack CLI is available and functional', () => {
     try {
       const index: SealablePackIndex = {
         packId: 'VERIFY-TEST-001',
-        entityId: '00000000-0000-0000-0000-000000000001',
+        orgId: '00000000-0000-0000-0000-000000000001',
         artifacts: [
           { sha256: 'a'.repeat(64), filename: 'art-1.json' },
         ],
@@ -410,14 +410,14 @@ describe('INV-17 — verify-pack CLI is available and functional', () => {
     try {
       const index: SealablePackIndex = {
         packId: 'VERIFY-TEST-002',
-        entityId: '00000000-0000-0000-0000-000000000001',
+        orgId: '00000000-0000-0000-0000-000000000001',
         artifacts: [
           { sha256: 'a'.repeat(64), filename: 'art-1.json' },
         ],
       }
       const seal = generateSeal(index, { sealedAt: FIXED_TIMESTAMP })
-      // Tamper with entityId after sealing
-      const tamperedIndex = { ...index, entityId: 'TAMPERED', seal }
+      // Tamper with orgId after sealing
+      const tamperedIndex = { ...index, orgId: 'TAMPERED', seal }
 
       const indexPath = join(tmpDir, 'evidence-pack-index.json')
       writeFileSync(indexPath, JSON.stringify(tamperedIndex, null, 2))

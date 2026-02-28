@@ -24,7 +24,7 @@ export async function buildOrchestratorEvidencePack(action: OrchestratorEvidence
   const pack = await buildEvidencePackFromAction({
     actionId: action.correlationId,
     actionType: action.type,
-    entityId: action.correlationId,
+    orgId: action.correlationId,
     executedBy: action.actor,
   })
 

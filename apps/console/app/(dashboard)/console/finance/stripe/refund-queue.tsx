@@ -11,10 +11,10 @@ interface PendingRefund {
 
 export function RefundQueue({
   refunds,
-  entityId,
+  orgId,
 }: {
   refunds: PendingRefund[]
-  entityId: string
+  orgId: string
 }) {
   const [processing, setProcessing] = useState<string | null>(null)
 
@@ -28,7 +28,7 @@ export function RefundQueue({
       const res = await fetch('/api/stripe/refunds/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entityId, refundId, action }),
+        body: JSON.stringify({ orgId, refundId, action }),
       })
       if (!res.ok) {
         const err = await res.json()

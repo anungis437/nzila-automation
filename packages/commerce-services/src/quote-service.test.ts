@@ -25,7 +25,7 @@ const TEST_ACTOR = 'actor-test-001'
 
 function makeCtx(overrides?: Partial<OrgContext>): OrgContext {
   return {
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     actorId: TEST_ACTOR,
     role: OrgRole.SALES,
     permissions: [],
@@ -37,7 +37,7 @@ function makeCtx(overrides?: Partial<OrgContext>): OrgContext {
 function makeQuoteEntity(overrides?: Partial<QuoteEntity>): QuoteEntity {
   return {
     id: 'quote-001',
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     ref: 'QUO-NZI-000001',
     customerId: 'cust-001',
     opportunityId: null,
@@ -146,7 +146,7 @@ describe('QuoteService', () => {
       if (!result.ok) return
 
       expect(result.data.status).toBe(QuoteStatus.DRAFT)
-      expect(result.data.entityId).toBe(TEST_ORG)
+      expect(result.data.orgId).toBe(TEST_ORG)
       expect(result.data.customerId).toBe('cust-001')
       expect(result.data.pricingTier).toBe(PricingTier.STANDARD)
       expect(result.data.currency).toBe('CAD')
@@ -157,12 +157,12 @@ describe('QuoteService', () => {
       expect(repo.nextRef).toHaveBeenCalledWith(ctx)
     })
 
-    it('calls repo.createQuote with org entityId', async () => {
+    it('calls repo.createQuote with org orgId', async () => {
       await service.createQuote(ctx, sampleInput)
       expect(repo.createQuote).toHaveBeenCalledTimes(1)
       const call = (repo.createQuote as ReturnType<typeof vi.fn>).mock.calls[0]!
       expect(call[0]).toBe(ctx)
-      expect(call[1].entityId).toBe(TEST_ORG)
+      expect(call[1].orgId).toBe(TEST_ORG)
     })
 
     it('stores initial lines via repo', async () => {
@@ -184,7 +184,7 @@ describe('QuoteService', () => {
       const entry = result.auditEntries[0]!
       expect(entry.action).toBe(AuditAction.CREATE)
       expect(entry.entityType).toBe(CommerceEntityType.QUOTE)
-      expect(entry.entityId).toBe(TEST_ORG)
+      expect(entry.orgId).toBe(TEST_ORG)
       expect(entry.actorId).toBe(TEST_ACTOR)
     })
 
@@ -296,7 +296,7 @@ describe('QuoteService', () => {
 
       expect(result.auditEntries).toHaveLength(1)
       const entry = result.auditEntries[0]!
-      expect(entry.entityId).toBe(TEST_ORG)
+      expect(entry.orgId).toBe(TEST_ORG)
       expect(entry.actorId).toBe(TEST_ACTOR)
       expect(entry.entityType).toBe(CommerceEntityType.QUOTE)
     })
@@ -349,7 +349,7 @@ describe('QuoteService', () => {
       expect(result.ok).toBe(true)
       if (!result.ok) return
       expect(result.auditEntries).toHaveLength(1)
-      expect(result.auditEntries[0]!.entityId).toBe(TEST_ORG)
+      expect(result.auditEntries[0]!.orgId).toBe(TEST_ORG)
     })
   })
 
@@ -516,18 +516,18 @@ describe('QuoteService', () => {
   // ── Org Isolation ───────────────────────────────────────────────────────
 
   describe('org isolation', () => {
-    it('passes entityId through to all repository calls', async () => {
-      const orgCtx = makeCtx({ entityId: 'org-isolated-001' })
+    it('passes orgId through to all repository calls', async () => {
+      const orgCtx = makeCtx({ orgId: 'org-isolated-001' })
       await service.createQuote(orgCtx, sampleInput)
 
       const createCall = (repo.createQuote as ReturnType<typeof vi.fn>).mock.calls[0]!
-      expect(createCall[0].entityId).toBe('org-isolated-001')
-      expect(createCall[1].entityId).toBe('org-isolated-001')
+      expect(createCall[0].orgId).toBe('org-isolated-001')
+      expect(createCall[1].orgId).toBe('org-isolated-001')
     })
 
-    it('transition checks use quote entityId for org match', () => {
-      const quote = makeQuoteEntity({ entityId: 'org-A' })
-      const orgACtx = makeCtx({ entityId: 'org-A' })
+    it('transition checks use quote orgId for org match', () => {
+      const quote = makeQuoteEntity({ orgId: 'org-A' })
+      const orgACtx = makeCtx({ orgId: 'org-A' })
       const result = service.priceQuote(orgACtx, quote, sampleLines, 100)
 
       // Should succeed — org matches
@@ -554,13 +554,13 @@ describe('QuoteService', () => {
       expect(completeResult.ok && completeResult.auditEntries.length).toBeGreaterThanOrEqual(1)
     })
 
-    it('audit entries carry correct entityId and actorId', async () => {
+    it('audit entries carry correct orgId and actorId', async () => {
       const result = await service.createQuote(ctx, sampleInput)
       expect(result.ok).toBe(true)
       if (!result.ok) return
 
       for (const entry of result.auditEntries) {
-        expect(entry.entityId).toBe(TEST_ORG)
+        expect(entry.orgId).toBe(TEST_ORG)
         expect(entry.actorId).toBe(TEST_ACTOR)
       }
     })

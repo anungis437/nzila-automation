@@ -90,7 +90,7 @@ The AI Control Plane is the **single gateway** through which all Nzila apps acce
 Every request goes through this pipeline:
 
 1. **Verify entity membership** (Clerk RBAC)
-2. **Load capability profile** (entityId + appKey + env + profileKey)
+2. **Load capability profile** (orgId + appKey + env + profileKey)
 3. **Check feature + modality allowed**
 4. **Check data class allowed**
 5. **Apply PII redaction** (per profile's `redactionMode`)
@@ -135,7 +135,7 @@ const ai = createAiClient({
 
 // Non-streaming generate
 const result = await ai.generate({
-  entityId: 'uuid',
+  orgId: 'uuid',
   appKey: 'memora',
   profileKey: 'clinical',
   promptKey: 'companion_greeting',
@@ -145,7 +145,7 @@ const result = await ai.generate({
 
 // Streaming chat
 const { stream } = await ai.chatStream({
-  entityId: 'uuid',
+  orgId: 'uuid',
   appKey: 'memora',
   profileKey: 'default',
   input: [
@@ -161,7 +161,7 @@ for await (const chunk of stream) {
 
 // Structured extraction
 const invoice = await ai.extract({
-  entityId: 'uuid',
+  orgId: 'uuid',
   appKey: 'console',
   profileKey: 'default',
   promptKey: 'extract_invoice',
@@ -198,7 +198,7 @@ import { storeAiArtifactAsDocument } from '@nzila/ai-core'
 
 await storeAiArtifactAsDocument({
   content: approvedDraftMarkdown,
-  entityId: 'uuid',
+  orgId: 'uuid',
   classification: 'confidential',
   category: 'resolution',
   title: 'AI-drafted Board Resolution',

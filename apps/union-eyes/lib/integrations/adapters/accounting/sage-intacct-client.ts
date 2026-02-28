@@ -26,7 +26,7 @@ export interface SageIntacctConfig {
   userPassword: string;
   senderId: string;
   senderPassword: string;
-  entityId?: string; // For multi-entity setups
+  orgId?: string; // For multi-entity setups
   environment?: 'production' | 'sandbox';
 }
 
@@ -174,7 +174,7 @@ export class SageIntacctClient {
         <userid>${this.config.userId}</userid>
         <companyid>${this.config.companyId}</companyid>
         <password>${this.config.userPassword}</password>
-        ${this.config.entityId ? `<locationid>${this.config.entityId}</locationid>` : ''}
+        ${this.config.orgId ? `<locationid>${this.config.orgId}</locationid>` : ''}
       </login>
     </authentication>
     <content>

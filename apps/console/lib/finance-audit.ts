@@ -15,7 +15,7 @@ export type { FinanceAuditAction }
 // ── Record a finance-scoped audit event ─────────────────────────────────────
 
 export interface FinanceAuditInput {
-  entityId: string
+  orgId: string
   actorClerkUserId: string
   actorRole?: string
   action: FinanceAuditAction
@@ -33,7 +33,7 @@ export interface FinanceAuditInput {
  */
 export async function recordFinanceAuditEvent(input: FinanceAuditInput) {
   return recordAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.actorClerkUserId,
     actorRole: input.actorRole,
     action: input.action,

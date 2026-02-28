@@ -48,11 +48,11 @@ export async function getReportSummary(): Promise<ReportSummary> {
   try {
     const [row] = await platformDb.execute(sql`
       SELECT
-        (SELECT COUNT(*)::int FROM exam_sessions WHERE org_id = ${ctx.entityId}) as "totalSessions",
-        (SELECT COUNT(*)::int FROM exam_sessions WHERE org_id = ${ctx.entityId} AND status = 'completed') as "completedSessions",
-        (SELECT COUNT(*)::int FROM candidates WHERE org_id = ${ctx.entityId}) as "totalCandidates",
-        (SELECT COUNT(*)::int FROM submissions WHERE org_id = ${ctx.entityId} AND status = 'passed') as "passedCandidates",
-        (SELECT COALESCE(AVG(score), 0)::numeric FROM submissions WHERE org_id = ${ctx.entityId} AND score IS NOT NULL) as "avgScore"
+        (SELECT COUNT(*)::int FROM exam_sessions WHERE org_id = ${ctx.orgId}) as "totalSessions",
+        (SELECT COUNT(*)::int FROM exam_sessions WHERE org_id = ${ctx.orgId} AND status = 'completed') as "completedSessions",
+        (SELECT COUNT(*)::int FROM candidates WHERE org_id = ${ctx.orgId}) as "totalCandidates",
+        (SELECT COUNT(*)::int FROM submissions WHERE org_id = ${ctx.orgId} AND status = 'passed') as "passedCandidates",
+        (SELECT COALESCE(AVG(score), 0)::numeric FROM submissions WHERE org_id = ${ctx.orgId} AND score IS NOT NULL) as "avgScore"
     `)
 
     const r = row as Record<string, number>
@@ -96,7 +96,7 @@ export async function getSubjectPerformance(): Promise<{ subjects: SubjectPerfor
         END as "passRate"
       FROM subjects s
       LEFT JOIN submissions sub ON sub.subject_id = s.id
-      WHERE s.org_id = ${ctx.entityId}
+      WHERE s.org_id = ${ctx.orgId}
       GROUP BY s.id, s.name, s.code
       ORDER BY s.name
     `)
@@ -113,7 +113,7 @@ export async function getSessionReports(opts?: {
   const ctx = await resolveOrgContext()
 
   try {
-    let filter = sql`es.org_id = ${ctx.entityId}`
+    let filter = sql`es.org_id = ${ctx.orgId}`
     if (opts?.status) {
       filter = sql`${filter} AND es.status = ${opts.status}`
     }

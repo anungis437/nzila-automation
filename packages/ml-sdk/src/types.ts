@@ -11,7 +11,7 @@ export type { MlModelStatus, MlRunStatus, MlModelKey, MlDatasetKey, FeatureSpec,
 
 export interface MlModelResponse {
   id: string
-  entityId: string
+  orgId: string
   modelKey: string
   algorithm: string
   version: number
@@ -30,7 +30,7 @@ export interface MlModelResponse {
 
 export interface MlActiveModelResponse {
   id: string
-  entityId: string
+  orgId: string
   modelKey: string
   algorithm: string
   version: number
@@ -48,7 +48,7 @@ export interface MlActiveModelResponse {
 
 export interface MlTrainingRunResponse {
   id: string
-  entityId: string
+  orgId: string
   modelKey: string
   datasetId: string
   status: string
@@ -61,7 +61,7 @@ export interface MlTrainingRunResponse {
 
 export interface MlInferenceRunResponse {
   id: string
-  entityId: string
+  orgId: string
   modelId: string
   modelKey: string
   status: string
@@ -105,7 +105,7 @@ export interface StripeTxnScoreResponse {
 }
 
 export interface MlScoresDailyParams {
-  entityId: string
+  orgId: string
   startDate: string
   endDate: string
   modelKey?: string
@@ -113,7 +113,7 @@ export interface MlScoresDailyParams {
 }
 
 export interface MlScoresTxnParams {
-  entityId: string
+  orgId: string
   startDate: string
   endDate: string
   minScore?: number
@@ -149,7 +149,7 @@ export interface UEPriorityScoreResponse {
   modelKey: string
   inferenceRunId: string | null
   createdAt: string
-  /** Only present when includeFeatures=true and caller is entity_admin */
+  /** Only present when includeFeatures=true and caller is org_admin */
   features?: Record<string, unknown>
 }
 
@@ -164,12 +164,12 @@ export interface UESlaRiskScoreResponse {
   modelKey: string
   inferenceRunId: string | null
   createdAt: string
-  /** Only present when includeFeatures=true and caller is entity_admin */
+  /** Only present when includeFeatures=true and caller is org_admin */
   features?: Record<string, unknown>
 }
 
 export interface UEPriorityScoresParams {
-  entityId: string
+  orgId: string
   startDate: string
   endDate: string
   priority?: string
@@ -179,7 +179,7 @@ export interface UEPriorityScoresParams {
 }
 
 export interface UESlaRiskScoresParams {
-  entityId: string
+  orgId: string
   startDate: string
   endDate: string
   /** Filter by breach prediction: true | false */

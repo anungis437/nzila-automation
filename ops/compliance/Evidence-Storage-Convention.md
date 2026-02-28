@@ -53,12 +53,12 @@ The `@nzila/blob` SDK's `container(name)` function calls `createIfNotExists()` o
 ### 4.1 Evidence Container
 
 ```
-evidence/{entity_id}/{control_family}/{YYYY}/{MM}/{artifact_type}/{artifact_id}/{filename}
+evidence/{org_id}/{control_family}/{YYYY}/{MM}/{artifact_type}/{artifact_id}/{filename}
 ```
 
 | Segment | Rules | Examples |
 |---|---|---|
-| `entity_id` | UUID or slug from `entities.slug` | `memora-inc`, `acme-holdings` |
+| `org_id` | UUID or slug from `entities.slug` | `memora-inc`, `acme-holdings` |
 | `control_family` | Kebab-case, matches Required-Evidence-Map families | `access`, `change-mgmt`, `incident-response`, `dr-bcp`, `integrity`, `sdlc`, `retention` |
 | `YYYY` | 4-digit year | `2026` |
 | `MM` | 2-digit month (or `QN` for quarterly, omit for annual) | `02`, `Q1` |
@@ -81,7 +81,7 @@ evidence/memora-inc/change-mgmt/2026/02/release-checklist/v2.3.0/release-checkli
 ### 4.2 MinuteBook Container
 
 ```
-minutebook/{entity_id}/{document_type}/{YYYY}/{document_id}/{filename}
+minutebook/{org_id}/{document_type}/{YYYY}/{document_id}/{filename}
 ```
 
 | Segment | Examples |
@@ -100,7 +100,7 @@ minutebook/memora-inc/meetings/2026/mtg-2026-003/minutes-agm-2026.pdf
 ### 4.3 Exports Container
 
 ```
-exports/{entity_id}/{export_type}/{YYYY}/{MM}/{export_id}/{filename}
+exports/{org_id}/{export_type}/{YYYY}/{MM}/{export_id}/{filename}
 ```
 
 **Examples:**
@@ -140,7 +140,7 @@ Each artifact is tagged with a retention class that maps to Azure Blob lifecycle
 ### Implementation
 
 Retention is enforced via:
-1. **Blob index tags**: `retention_class=7_YEARS`, `entity_id=memora-inc`, `control_family=ir`
+1. **Blob index tags**: `retention_class=7_YEARS`, `org_id=memora-inc`, `control_family=ir`
 2. **Azure Blob lifecycle management rules**: policies filter on tags and move/delete accordingly
 3. **`documents` table**: `retention_class` column for queryable metadata
 4. **Legal holds**: Azure Blob immutability policies applied per-blob when legal hold is active
@@ -161,7 +161,7 @@ Every blob should have these Azure Blob index tags set at upload time:
 
 | Tag | Required | Example |
 |---|---|---|
-| `entity_id` | Yes | `memora-inc` |
+| `org_id` | Yes | `memora-inc` |
 | `control_family` | Yes (evidence container) | `incident-response` |
 | `retention_class` | Yes | `7_YEARS` |
 | `classification` | Yes | `INTERNAL` / `CONFIDENTIAL` / `RESTRICTED` |
@@ -219,7 +219,7 @@ import { uploadBuffer } from '@nzila/blob';
 
 const result = await uploadBuffer({
   container: 'evidence',
-  blobPath: `${entityId}/incident-response/2026/02/postmortem/${incidentId}/postmortem.pdf`,
+  blobPath: `${orgId}/incident-response/2026/02/postmortem/${incidentId}/postmortem.pdf`,
   buffer: fileBuffer,
   contentType: 'application/pdf',
 });
@@ -231,7 +231,7 @@ const result = await uploadBuffer({
 
 ### Required Steps After Upload
 
-1. **Store metadata**: Insert row in `documents` table with `blob_container`, `blob_path`, `sha256`, `content_type`, `size_bytes`, `retention_class`, `entity_id`
+1. **Store metadata**: Insert row in `documents` table with `blob_container`, `blob_path`, `sha256`, `content_type`, `size_bytes`, `retention_class`, `org_id`
 2. **Create audit event**: Insert row in `audit_events` with `action = 'document_uploaded'`, hash chain continuation
 3. **Set blob tags**: Apply index tags (see Section 7) via Azure SDK or at upload time
 4. **Return confirmation**: Include `sha256` in API response for client-side verification

@@ -40,7 +40,7 @@ export async function listCreators(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id, metadata->>'name' as name,
+        org_id as id, metadata->>'name' as name,
         metadata->>'email' as email,
         metadata->>'status' as status,
         metadata->>'genre' as genre,
@@ -50,13 +50,13 @@ export async function listCreators(opts?: {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'creator.registered'
-      AND org_id = ${ctx.entityId}
+      AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT ${pageSize} OFFSET ${offset}`,
     )) as unknown as { rows: Creator[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'creator.registered' AND org_id = ${ctx.entityId}`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'creator.registered' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -89,13 +89,13 @@ export async function registerCreator(data: {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata, org_id)
       VALUES ('creator.registered', ${ctx.actorId}, 'creator', ${creatorId},
-        ${JSON.stringify({ ...data, status: CreatorStatus.ACTIVE, id: creatorId })}::jsonb, ${ctx.entityId})`,
+        ${JSON.stringify({ ...data, status: CreatorStatus.ACTIVE, id: creatorId })}::jsonb, ${ctx.orgId})`,
     )
 
     const auditEvent = buildZongaAuditEvent({
       action: ZongaAuditAction.CREATOR_ACTIVATE,
       entityType: ZongaEntityType.CREATOR,
-      entityId: creatorId,
+      orgId: creatorId,
       actorId: ctx.actorId,
       targetId: creatorId,
       metadata: { name: data.name },
@@ -104,7 +104,7 @@ export async function registerCreator(data: {
 
     const pack = buildEvidencePackFromAction({
       actionType: 'CREATOR_REGISTERED',
-      entityId: creatorId,
+      orgId: creatorId,
       executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
@@ -129,35 +129,35 @@ export async function getCreatorDetail(creatorId: string): Promise<{
   try {
     const [creator] = (await platformDb.execute(
       sql`SELECT
-        entity_id as id, metadata->>'name' as name,
+        org_id as id, metadata->>'name' as name,
         metadata->>'email' as email,
         metadata->>'status' as status,
         metadata->>'genre' as genre,
         metadata->>'country' as country,
         created_at as "createdAt"
       FROM audit_log
-      WHERE entity_id = ${creatorId} AND entity_type = 'creator'
-      AND org_id = ${ctx.entityId}
+      WHERE org_id = ${creatorId} AND entity_type = 'creator'
+      AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [Creator | undefined]
 
     const [assetCount] = (await platformDb.execute(
       sql`SELECT COUNT(*) as count FROM audit_log
       WHERE metadata->>'creatorId' = ${creatorId} AND action = 'asset.created'
-      AND org_id = ${ctx.entityId}`,
+      AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ count: number }]
 
     const [revenueSum] = (await platformDb.execute(
       sql`SELECT COALESCE(SUM(CAST(metadata->>'amount' AS NUMERIC)), 0) as total
       FROM audit_log
       WHERE metadata->>'creatorId' = ${creatorId} AND action = 'revenue.recorded'
-      AND org_id = ${ctx.entityId}`,
+      AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [payoutCount] = (await platformDb.execute(
       sql`SELECT COUNT(*) as count FROM audit_log
       WHERE metadata->>'creatorId' = ${creatorId} AND action = 'payout.executed'
-      AND org_id = ${ctx.entityId}`,
+      AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ count: number }]
 
     return {

@@ -14,7 +14,7 @@ import {
   date,
   varchar,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
 
@@ -89,9 +89,9 @@ export const complianceTaskStatusEnum = pgEnum('compliance_task_status', [
 
 export const governanceActions = pgTable('governance_actions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   actionType: governanceActionTypeEnum('action_type').notNull(),
   payload: jsonb('payload').notNull().default({}),
   status: governanceActionStatusEnum('status').notNull().default('draft'),
@@ -107,9 +107,9 @@ export const governanceActions = pgTable('governance_actions', {
 
 export const documents = pgTable('documents', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   category: documentCategoryEnum('category').notNull(),
   title: text('title').notNull(),
   blobContainer: text('blob_container').notNull(),
@@ -132,9 +132,9 @@ export const documents = pgTable('documents', {
 
 export const filings = pgTable('filings', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   kind: filingKindEnum('kind').notNull(),
   dueDate: date('due_date').notNull(),
   status: filingStatusEnum('status').notNull().default('pending'),
@@ -148,9 +148,9 @@ export const filings = pgTable('filings', {
 
 export const complianceTasks = pgTable('compliance_tasks', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   kind: complianceTaskKindEnum('kind').notNull(),
   title: text('title').notNull(),
   dueDate: date('due_date').notNull(),
@@ -167,7 +167,7 @@ export const auditLog = pgTable('audit_log', {
   action: text('action').notNull(),
   actorId: text('actor_id').notNull(),
   entityType: text('entity_type').notNull(),
-  entityId: uuid('entity_id'),
+  orgId: uuid('org_id'),
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -176,9 +176,9 @@ export const auditLog = pgTable('audit_log', {
 
 export const auditEvents = pgTable('audit_events', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   actorClerkUserId: text('actor_clerk_user_id').notNull(),
   actorRole: text('actor_role'),
   action: text('action').notNull(),
@@ -239,9 +239,9 @@ export const evidencePackStatusEnum = pgEnum('evidence_pack_status', [
 export const evidencePacks = pgTable('evidence_packs', {
   id: uuid('id').primaryKey().defaultRandom(),
   packId: varchar('pack_id', { length: 120 }).notNull().unique(), // e.g. IR-2026-001
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   controlFamily: controlFamilyEnum('control_family').notNull(),
   eventType: evidenceEventTypeEnum('event_type').notNull(),
   eventId: text('event_id').notNull(), // incident ID, release tag, etc.

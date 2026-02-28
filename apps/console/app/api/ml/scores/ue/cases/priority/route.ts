@@ -8,11 +8,11 @@
  * duplicate/skipped rows when multiple records share the same occurredAt.
  *
  * RBAC:
- *   - View scores: union_admin, union_staff, entity_admin (any active entity member)
- *   - includeFeatures=true: entity_admin only (no features for viewers/auditors)
+ *   - View scores: union_admin, union_staff, org_admin (any active entity member)
+ *   - includeFeatures=true: org_admin only (no features for viewers/auditors)
  *
  * Query params:
- *   entityId        required
+ *   orgId        required
  *   startDate       required (YYYY-MM-DD)
  *   endDate         required (YYYY-MM-DD)
  *   priority        optional — filter by predictedPriority value
@@ -27,7 +27,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { mlScoresUECasesPriority, mlModels } from '@nzila/db/schema'
 import { eq, and, gte, lte, lt, desc, or } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('ml:scores:ue:cases:priority')
@@ -41,7 +41,7 @@ const MAX_LIMIT = 500
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityId = searchParams.get('entityId')
+    const orgId = searchParams.get('orgId')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
     const priorityFilter = searchParams.get('priority')
@@ -50,20 +50,20 @@ export async function GET(req: NextRequest) {
     const rawLimit = searchParams.get('limit')
     const limit = Math.min(Number(rawLimit ?? DEFAULT_LIMIT) || DEFAULT_LIMIT, MAX_LIMIT)
 
-    if (!entityId || !startDate || !endDate) {
+    if (!orgId || !startDate || !endDate) {
       return NextResponse.json(
-        { error: 'entityId, startDate, and endDate are required' },
+        { error: 'orgId, startDate, and endDate are required' },
         { status: 400 },
       )
     }
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
-    // featuresJson only for entity_admin
-    if (includeFeatures && access.context.membership?.role !== 'entity_admin') {
+    // featuresJson only for org_admin
+    if (includeFeatures && access.context.membership?.role !== 'org_admin') {
       return NextResponse.json(
-        { error: 'Forbidden: includeFeatures requires entity_admin role' },
+        { error: 'Forbidden: includeFeatures requires org_admin role' },
         { status: 403 },
       )
     }
@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
     }
 
     const whereClause = and(
-      eq(mlScoresUECasesPriority.entityId, entityId),
+      eq(mlScoresUECasesPriority.orgId, orgId),
       gte(mlScoresUECasesPriority.occurredAt, startTs),
       lte(mlScoresUECasesPriority.occurredAt, endTs),
       ...(priorityFilter ? [eq(mlScoresUECasesPriority.predictedPriority, priorityFilter)] : []),

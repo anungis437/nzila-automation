@@ -54,13 +54,13 @@ describe('createCustomer', () => {
     const result = await createCustomer({
       email: 'test@example.com',
       name: 'Test User',
-      entityId: 'entity_123',
+      orgId: 'entity_123',
     })
 
     expect(mockCustomersCreate).toHaveBeenCalledWith({
       email: 'test@example.com',
       name: 'Test User',
-      metadata: { entity_id: 'entity_123' },
+      metadata: { org_id: 'entity_123' },
     })
     expect(result.id).toBe('cus_test')
   })
@@ -71,14 +71,14 @@ describe('createCustomer', () => {
     await createCustomer({
       email: 'a@b.com',
       name: 'Name',
-      entityId: 'e1',
+      orgId: 'e1',
       ventureId: 'v1',
     })
 
     expect(mockCustomersCreate).toHaveBeenCalledWith({
       email: 'a@b.com',
       name: 'Name',
-      metadata: { entity_id: 'e1', venture_id: 'v1' },
+      metadata: { org_id: 'e1', venture_id: 'v1' },
     })
   })
 })
@@ -95,7 +95,7 @@ describe('createCheckoutSession', () => {
     })
 
     const result = await createCheckoutSession({
-      entityId: 'ent1',
+      orgId: 'ent1',
       lineItems: [{ name: 'Product', amountCents: 1000, quantity: 2 }],
       successUrl: 'https://example.com/success',
       cancelUrl: 'https://example.com/cancel',
@@ -106,7 +106,7 @@ describe('createCheckoutSession', () => {
         mode: 'payment',
         success_url: 'https://example.com/success',
         cancel_url: 'https://example.com/cancel',
-        metadata: { entity_id: 'ent1' },
+        metadata: { org_id: 'ent1' },
         line_items: [
           {
             price_data: {
@@ -126,7 +126,7 @@ describe('createCheckoutSession', () => {
     mockSessionsCreate.mockResolvedValue({ id: 'cs_x' })
 
     await createCheckoutSession({
-      entityId: 'ent1',
+      orgId: 'ent1',
       lineItems: [{ priceId: 'price_abc', amountCents: 0, quantity: 1 }],
       successUrl: 'https://x.com/ok',
       cancelUrl: 'https://x.com/no',

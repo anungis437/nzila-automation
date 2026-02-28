@@ -26,7 +26,7 @@ interface UsageRow {
   refusedCount: number
 }
 
-async function getUsageData(entityId: string) {
+async function getUsageData(orgId: string) {
   // Aggregate usage by appKey + profileKey + feature
   const rows = await platformDb
     .select({
@@ -40,7 +40,7 @@ async function getUsageData(entityId: string) {
       avgLatency: avg(aiRequests.latencyMs),
     })
     .from(aiRequests)
-    .where(eq(aiRequests.entityId, entityId))
+    .where(eq(aiRequests.orgId, orgId))
     .groupBy(aiRequests.appKey, aiRequests.profileKey, aiRequests.feature)
     .orderBy(desc(count()))
 
@@ -52,7 +52,7 @@ async function getUsageData(entityId: string) {
       count: count(),
     })
     .from(aiRequests)
-    .where(and(eq(aiRequests.entityId, entityId), eq(aiRequests.status, 'refused')))
+    .where(and(eq(aiRequests.orgId, orgId), eq(aiRequests.status, 'refused')))
     .groupBy(aiRequests.appKey, aiRequests.profileKey)
 
   const refusalMap = new Map<string, number>()
@@ -90,7 +90,7 @@ async function getUsageData(entityId: string) {
       occurredAt: aiRequests.occurredAt,
     })
     .from(aiRequests)
-    .where(eq(aiRequests.entityId, entityId))
+    .where(eq(aiRequests.orgId, orgId))
     .orderBy(desc(aiRequests.occurredAt))
     .limit(25)
 

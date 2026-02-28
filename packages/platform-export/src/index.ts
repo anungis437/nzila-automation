@@ -12,7 +12,7 @@ import {
   ueCases,
   zongaRevenueEvents,
   commerceQuotes,
-  entities,
+  orgs,
 } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
 
@@ -42,9 +42,9 @@ export interface ExportRow {
 export async function exportOrgData(orgId: string): Promise<OrgExportDataset> {
   const [orgRow, claims, revenue, quotes, audit] = await Promise.all([
     platformDb
-      .select({ legalName: entities.legalName })
-      .from(entities)
-      .where(eq(entities.id, orgId))
+      .select({ legalName: orgs.legalName })
+      .from(orgs)
+      .where(eq(orgs.id, orgId))
       .limit(1),
     platformDb
       .select({
@@ -59,7 +59,7 @@ export async function exportOrgData(orgId: string): Promise<OrgExportDataset> {
         createdAt: ueCases.createdAt,
       })
       .from(ueCases)
-      .where(eq(ueCases.entityId, orgId)),
+      .where(eq(ueCases.orgId, orgId)),
     platformDb
       .select({
         id: zongaRevenueEvents.id,
@@ -70,7 +70,7 @@ export async function exportOrgData(orgId: string): Promise<OrgExportDataset> {
         createdAt: zongaRevenueEvents.createdAt,
       })
       .from(zongaRevenueEvents)
-      .where(eq(zongaRevenueEvents.entityId, orgId)),
+      .where(eq(zongaRevenueEvents.orgId, orgId)),
     platformDb
       .select({
         id: commerceQuotes.id,
@@ -81,7 +81,7 @@ export async function exportOrgData(orgId: string): Promise<OrgExportDataset> {
         createdAt: commerceQuotes.createdAt,
       })
       .from(commerceQuotes)
-      .where(eq(commerceQuotes.entityId, orgId)),
+      .where(eq(commerceQuotes.orgId, orgId)),
     platformDb
       .select({
         id: auditEvents.id,
@@ -91,7 +91,7 @@ export async function exportOrgData(orgId: string): Promise<OrgExportDataset> {
         createdAt: auditEvents.createdAt,
       })
       .from(auditEvents)
-      .where(eq(auditEvents.entityId, orgId)),
+      .where(eq(auditEvents.orgId, orgId)),
   ])
 
   return {

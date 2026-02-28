@@ -39,7 +39,7 @@ class ExecutiveDashboard:
                 "beta": 3,
                 "development": 8,
                 "verticals": 10,
-                "entities": 12500
+                "orgs": 12500
             },
             "financial": {
                 "investment": 4000000,
@@ -217,7 +217,7 @@ class ExecutiveDashboard:
 ║ PORTFOLIO                                                ║
 ║   Platforms:        {kpis['portfolio']['total_platforms']:>3} (4 prod, 3 beta, 8 dev)      ║
 ║   Verticals:        {kpis['portfolio']['verticals']:>3}                              ║
-║   Entities:         {kpis['portfolio']['entities']:>6,}                            ║
+║   Entities:         {kpis['portfolio']['orgs']:>6,}                            ║
 ╠══════════════════════════════════════════════════════════╣
 ║ FINANCIAL                                                ║
 ║   Investment:      ${kpis['financial']['investment']:>10,}                       ║

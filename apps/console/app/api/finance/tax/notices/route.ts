@@ -4,13 +4,13 @@
  * GET  /api/finance/tax/notices?taxYearId=...   → list notices for a tax year
  * POST /api/finance/tax/notices                 → record a received notice
  *
- * PR5 — Entity-scoped auth + audit events
+ * PR5 — Org-scoped auth + audit events
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { taxNotices, taxYears } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { CreateTaxNoticeInput } from '@nzila/tax/types'
 import {
   recordFinanceAuditEvent,
@@ -19,27 +19,27 @@ import {
 
 export async function GET(req: NextRequest) {
   const taxYearId = req.nextUrl.searchParams.get('taxYearId')
-  const entityId = req.nextUrl.searchParams.get('entityId')
+  const orgId = req.nextUrl.searchParams.get('orgId')
 
-  if (!taxYearId && !entityId) {
-    return NextResponse.json({ error: 'taxYearId or entityId required' }, { status: 400 })
+  if (!taxYearId && !orgId) {
+    return NextResponse.json({ error: 'taxYearId or orgId required' }, { status: 400 })
   }
 
-  let resolvedEntityId = entityId
+  let resolvedEntityId = orgId
   if (!resolvedEntityId && taxYearId) {
     const [ty] = await platformDb.select().from(taxYears).where(eq(taxYears.id, taxYearId))
-    resolvedEntityId = ty?.entityId ?? null
+    resolvedEntityId = ty?.orgId ?? null
   }
   if (!resolvedEntityId) {
     return NextResponse.json({ error: 'Could not resolve entity' }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(resolvedEntityId)
+  const access = await requireOrgAccess(resolvedEntityId)
   if (!access.ok) return access.response
 
   const filter = taxYearId
     ? eq(taxNotices.taxYearId, taxYearId)
-    : eq(taxNotices.entityId, resolvedEntityId)
+    : eq(taxNotices.orgId, resolvedEntityId)
 
   const rows = await platformDb.select().from(taxNotices).where(filter)
   return NextResponse.json(rows)
@@ -52,15 +52,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(parsed.data.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(parsed.data.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
   const [row] = await platformDb.insert(taxNotices).values(parsed.data).returning()
 
   await recordFinanceAuditEvent({
-    entityId: parsed.data.entityId,
+    orgId: parsed.data.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: FINANCE_AUDIT_ACTIONS.TAX_NOTICE_UPLOAD,

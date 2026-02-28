@@ -1,12 +1,12 @@
 // Observability: @nzila/os-core/telemetry — structured logging and request tracing available via os-core.
 /**
  * API — Close Periods
- * GET   /api/finance/close?entityId=...  → list close periods
+ * GET   /api/finance/close?orgId=...  → list close periods
  * POST  /api/finance/close               → create close period
  * PATCH /api/finance/close               → update close period status
  *
  * PR5 — Governance enforcement:
- *  • Entity-scoped auth via requireEntityAccess
+ *  • Org-scoped auth via requireOrgAccess
  *  • Hash-chained audit events via recordFinanceAuditEvent
  *  • Close gate: all exceptions must be resolved before closing
  */
@@ -15,7 +15,7 @@ import { z } from 'zod'
 import { platformDb } from '@nzila/db/platform'
 import { closePeriods, closeExceptions } from '@nzila/db/schema'
 import { eq, and, ne } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import {
   recordFinanceAuditEvent,
   FINANCE_AUDIT_ACTIONS,
@@ -24,7 +24,7 @@ import {
 // ── Request schemas ──────────────────────────────────────────────────────────
 
 const ClosePeriodPostSchema = z.object({
-  entityId: z.string().min(1),
+  orgId: z.string().min(1),
   periodLabel: z.string().min(1),
   periodType: z.string().min(1),
   startDate: z.string().min(1),
@@ -34,22 +34,22 @@ const ClosePeriodPostSchema = z.object({
 const ClosePeriodPatchSchema = z.object({
   id: z.string().min(1),
   status: z.string().min(1),
-  entityId: z.string().optional(),
+  orgId: z.string().optional(),
 })
 
 export async function GET(req: NextRequest) {
-  const entityId = req.nextUrl.searchParams.get('entityId')
-  if (!entityId) {
-    return NextResponse.json({ error: 'entityId required' }, { status: 400 })
+  const orgId = req.nextUrl.searchParams.get('orgId')
+  if (!orgId) {
+    return NextResponse.json({ error: 'orgId required' }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(entityId)
+  const access = await requireOrgAccess(orgId)
   if (!access.ok) return access.response
 
   const periods = await platformDb
     .select()
     .from(closePeriods)
-    .where(eq(closePeriods.entityId, entityId))
+    .where(eq(closePeriods.orgId, orgId))
 
   return NextResponse.json(periods)
 }
@@ -59,15 +59,15 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
-  const { entityId, periodLabel, periodType, startDate, endDate } = parsed.data
+  const { orgId, periodLabel, periodType, startDate, endDate } = parsed.data
 
-  const access = await requireEntityAccess(entityId, { minRole: 'entity_secretary' })
+  const access = await requireOrgAccess(orgId, { minRole: 'org_secretary' })
   if (!access.ok) return access.response
 
   const [row] = await platformDb
     .insert(closePeriods)
     .values({
-      entityId,
+      orgId,
       periodLabel,
       periodType,
       startDate,
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
   // Audit: close period opened
   await recordFinanceAuditEvent({
-    entityId,
+    orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: FINANCE_AUDIT_ACTIONS.CLOSE_PERIOD_OPEN,
@@ -97,7 +97,7 @@ export async function PATCH(req: NextRequest) {
   }
   const { id, status } = parsed.data
 
-  // Fetch the period to know entityId and prior status
+  // Fetch the period to know orgId and prior status
   const [existing] = await platformDb
     .select()
     .from(closePeriods)
@@ -107,8 +107,8 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Close period not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(existing.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(existing.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -167,7 +167,7 @@ export async function PATCH(req: NextRequest) {
             : FINANCE_AUDIT_ACTIONS.CLOSE_PERIOD_OPEN
 
   await recordFinanceAuditEvent({
-    entityId: existing.entityId,
+    orgId: existing.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: auditAction,

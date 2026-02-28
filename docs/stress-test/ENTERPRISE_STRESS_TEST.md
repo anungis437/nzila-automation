@@ -58,31 +58,31 @@
 
 ## PHASE 1 — CRITICAL: ORG ISOLATION
 
-> **Boundary concept used throughout:** `Org` (implemented as `entityId` / `entity` in code). Every "org" is an `entity`; users belong to `entity_members`.
+> **Boundary concept used throughout:** `Org` (implemented as `orgId` / `entity` in code). Every "org" is an `entity`; users belong to `org_members`.
 
 ### 1.1 Org Context Derivation
 
 | Claim | Evidence | Verdict |
 |-------|---------|---------|
-| `entityId` source: Clerk session claims `nzila_role` / session context, NOT from request body | `packages/os-core/src/policy/authorize.ts` — `resolveRole(session)` reads `session.sessionClaims` | ✅ PASS |
-| `entityId` validated via `entity_members` DB table (console) or `partner_entities` DB table (partners) | `authorize.ts` → `authorizeEntityAccess()` queries `partnerEntities` with `eq(partnerId, ctx.partnerId)` and `eq(entityId, entityId)` | ✅ PASS |
+| `orgId` source: Clerk session claims `nzila_role` / session context, NOT from request body | `packages/os-core/src/policy/authorize.ts` — `resolveRole(session)` reads `session.sessionClaims` | ✅ PASS |
+| `orgId` validated via `org_members` DB table (console) or `partner_entities` DB table (partners) | `authorize.ts` → `authorizeOrgAccess()` queries `partnerEntities` with `eq(partnerId, ctx.partnerId)` and `eq(orgId, orgId)` | ✅ PASS |
 | Propagation: `AuthContext` carries `orgId` / `partnerId` from session to handler | `AuthContext` interface in `authorize.ts` L28-36 | ✅ PASS |
 | Centralized in `@nzila/os-core/policy` | `packages/os-core/src/policy/authorize.ts`, `roles.ts`, `scopes.ts`, `index.ts` | ✅ PASS |
-| `entity_members` table exists in DB schema | `packages/db/src/schema/entities.ts` — `entityMembers = pgTable('entity_members', ...)` | ✅ PASS |
+| `org_members` table exists in DB schema | `packages/db/src/schema/orgs.ts` — `orgMembers = pgTable('org_members', ...)` | ✅ PASS |
 
 ### 1.2 Cross-Org Breach Attempt Tests
 
 | Test | Type | Location | Status | Verdict |
 |------|------|---------|--------|---------|
 | A. Every route.ts calls an auth function | Static analysis | `tooling/contract-tests/org-isolation.test.ts` L51 | ✅ 9/9 PASS (local run) | ✅ PASS |
-| B. `entityId` NOT taken from raw request body | Static analysis | `org-isolation.test.ts` L88 | ✅ PASS | ✅ PASS |
+| B. `orgId` NOT taken from raw request body | Static analysis | `org-isolation.test.ts` L88 | ✅ PASS | ✅ PASS |
 | C. DB queries scoped to entity | Static analysis | `org-isolation.test.ts` L108 | ✅ PASS | ✅ PASS |
 | D. `os-core authorize()` checks entity membership | Static analysis | `org-isolation.test.ts` L143 | ✅ PASS | ✅ PASS |
-| E. `entity_members` table enforced at DB layer | Static analysis | `org-isolation.test.ts` L157 | ✅ PASS | ✅ PASS |
+| E. `org_members` table enforced at DB layer | Static analysis | `org-isolation.test.ts` L157 | ✅ PASS | ✅ PASS |
 | F. Cross-org HTTP READ blocked at runtime | **Missing** — no integration/supertest test that GETs OrgA data with OrgB credentials | ❌ ABSENT | 🟡 SOFT PASS |
 | G. Cross-org HTTP WRITE blocked at runtime | **Missing** — no supertest/Playwright test for mutation with wrong org session | ❌ ABSENT | 🟡 SOFT PASS |
 | H. Missing org context → 401/403 (HTTP level) | **Missing** — no runtime test for unauthenticated requests to protected routes | ❌ ABSENT | 🟡 SOFT PASS |
-| I. Forged `entityId` in body/query ignored | Static pattern matched but no runtime validation test | ❌ ABSENT | 🟡 SOFT PASS |
+| I. Forged `orgId` in body/query ignored | Static pattern matched but no runtime validation test | ❌ ABSENT | 🟡 SOFT PASS |
 | J. Error responses do not leak org existence | **Not tested** — no enumeration-safety assertion | ❌ ABSENT | 🟡 SOFT PASS |
 
 **Phase 1 Verdict: 🟡 SOFT PASS** — Architectural guarantees are solid (static analysis + centralized engine). Runtime HTTP-level isolation proofs are absent. This must be closed before declaring prod-ready for regulated customers.
@@ -133,7 +133,7 @@
 | `computeEntryHash()` exists using SHA-256 | `packages/os-core/src/hash.ts` L14 — `createHash('sha256')` | ✅ PASS |
 | `verifyChain()` exists | `packages/os-core/src/hash.ts` L27 | ✅ PASS |
 | `audit_events` table has `hash` + `previousHash` columns | `packages/db/src/schema/operations.ts` L164 — `hash: text('hash').notNull()`, `previousHash: text('previous_hash')` | ✅ PASS |
-| `audit_events` table has `entityId` FK (org-scoped) | `operations.ts` L164 — `.references(() => entities.id)` | ✅ PASS |
+| `audit_events` table has `orgId` FK (org-scoped) | `operations.ts` L164 — `.references(() => entities.id)` | ✅ PASS |
 | No migration drops or truncates `audit_events` | `audit-immutability.test.ts` L100 — 0 violations | ✅ PASS |
 | No cascade delete on audit table | `audit-immutability.test.ts` L85 — 0 violations | ✅ PASS |
 | `recordAuditEvent` calls `computeEntryHash` before insert | `apps/console/lib/audit-db.ts` imports `computeEntryHash` from `@nzila/os-core/hash` | ✅ PASS |

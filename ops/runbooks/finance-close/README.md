@@ -32,15 +32,15 @@ See `TEMPLATE_SCHEMA.md` for the full YAML template (`fc-001`). Summary:
 
 | Artifact | Format | Control | Storage Path | Retention |
 |---|---|---|---|---|
-| Period close report | PDF | IC-05 | `evidence/{entity_id}/integrity/{YYYY}/{MM}/period-close/CLOSE-{YYYY}-{MM}/` | PERMANENT |
-| Cap table snapshot | JSON | IC-02 | `evidence/{entity_id}/integrity/{YYYY}/{MM}/cap-table-snapshot/` | PERMANENT |
-| Reconciliation report | PDF | — | `evidence/{entity_id}/integrity/{YYYY}/{MM}/reconciliation/` | 7_YEARS |
-| Share ledger chain verification | JSON | IC-02 | `evidence/{entity_id}/integrity/{YYYY}/{MM}/share-ledger-chain-verify/` | PERMANENT |
+| Period close report | PDF | IC-05 | `evidence/{org_id}/integrity/{YYYY}/{MM}/period-close/CLOSE-{YYYY}-{MM}/` | PERMANENT |
+| Cap table snapshot | JSON | IC-02 | `evidence/{org_id}/integrity/{YYYY}/{MM}/cap-table-snapshot/` | PERMANENT |
+| Reconciliation report | PDF | — | `evidence/{org_id}/integrity/{YYYY}/{MM}/reconciliation/` | 7_YEARS |
+| Share ledger chain verification | JSON | IC-02 | `evidence/{org_id}/integrity/{YYYY}/{MM}/share-ledger-chain-verify/` | PERMANENT |
 | Evidence pack index | JSON | All | Same path as period close | PERMANENT |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id` (e.g., `CLOSE-2026-02`), `sha256`, `created_by`, `retention_class`
+- `org_id`, `artifact_id` (e.g., `CLOSE-2026-02`), `sha256`, `created_by`, `retention_class`
 
 ### Hashing Expectation
 

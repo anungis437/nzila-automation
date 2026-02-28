@@ -451,7 +451,7 @@ def analyze_memora_architecture():
     django_apps = {
         "users": {
             "purpose": "Authentication, profiles, preferences",
-            "entities": [
+            "orgs": [
                 "User",
                 "UserPreferences",
                 "AccessibilityProfile",
@@ -461,7 +461,7 @@ def analyze_memora_architecture():
         },
         "clinical": {
             "purpose": "Clinic & trial management",
-            "entities": [
+            "orgs": [
                 "Clinic",
                 "Trial",
                 "DeviceAssignment",
@@ -475,7 +475,7 @@ def analyze_memora_architecture():
         },
         "games": {
             "purpose": "Cognitive game engine",
-            "entities": [
+            "orgs": [
                 "GameSession",
                 "GamePreference",
                 "GameVariant",
@@ -489,7 +489,7 @@ def analyze_memora_architecture():
         },
         "companion": {
             "purpose": "AI Companion system",
-            "entities": [
+            "orgs": [
                 "CompanionToneProfile",
                 "ToneHistory",
                 "PromptLog",
@@ -502,7 +502,7 @@ def analyze_memora_architecture():
         },
         "consent": {
             "purpose": "Privacy & consent management",
-            "entities": [
+            "orgs": [
                 "ConsentRecord",
                 "ConsentScope",
                 "DataGovernanceRule",
@@ -515,15 +515,15 @@ def analyze_memora_architecture():
         },
         "community": {
             "purpose": "Social features",
-            "entities": ["CommunityPost", "CommunityComment", "SocialConnection"],
+            "orgs": ["CommunityPost", "CommunityComment", "SocialConnection"],
         },
         "supporters": {
             "purpose": "Caregiver tools",
-            "entities": ["SupporterAccess", "SupporterObservationLog", "SecureMessage"],
+            "orgs": ["SupporterAccess", "SupporterObservationLog", "SecureMessage"],
         },
         "memories": {
             "purpose": "Personal memory features",
-            "entities": [
+            "orgs": [
                 "MemoryGarden",
                 "PersonalGoal",
                 "LearningPathwayTemplate",
@@ -533,11 +533,11 @@ def analyze_memora_architecture():
         },
         "quests": {
             "purpose": "Quest/achievement system",
-            "entities": ["Quest", "UserQuest"],
+            "orgs": ["Quest", "UserQuest"],
         },
         "integrations": {
             "purpose": "External system connectivity",
-            "entities": [
+            "orgs": [
                 "HL7Integration",
                 "WearableIntegration",
                 "ExternalAppointment",
@@ -547,11 +547,11 @@ def analyze_memora_architecture():
         },
         "notifications": {
             "purpose": "Notification system",
-            "entities": ["NotificationSettings", "NotificationQueue"],
+            "orgs": ["NotificationSettings", "NotificationQueue"],
         },
         "insights": {
             "purpose": "Analytics & AI insights",
-            "entities": [
+            "orgs": [
                 "InsightEngine",
                 "PredictiveModel",
                 "ProfileInferenceModel",
@@ -562,7 +562,7 @@ def analyze_memora_architecture():
         },
         "platform": {
             "purpose": "Platform management",
-            "entities": [
+            "orgs": [
                 "PlatformConfiguration",
                 "PerformanceMetric",
                 "APIRateLimit",
@@ -575,11 +575,11 @@ def analyze_memora_architecture():
         },
         "offline": {
             "purpose": "Offline-first support",
-            "entities": ["OfflineSession", "SyncLog", "SessionRecovery"],
+            "orgs": ["OfflineSession", "SyncLog", "SessionRecovery"],
         },
         "reporting": {
             "purpose": "Custom reporting",
-            "entities": ["CustomReport", "DataImport"],
+            "orgs": ["CustomReport", "DataImport"],
         },
     }
 
@@ -587,8 +587,8 @@ def analyze_memora_architecture():
     for app_name, details in django_apps.items():
         print(f"\n   📁 {app_name}/")
         print(f"      Purpose: {details['purpose']}")
-        print(f"      Entities: {len(details['entities'])} models")
-        print(f"      Examples: {', '.join(details['entities'][:3])}")
+        print(f"      Entities: {len(details['orgs'])} models")
+        print(f"      Examples: {', '.join(details['orgs'][:3])}")
 
     print(f"\n\n   Total: {len(django_apps)} Django apps, ~100 models")
 

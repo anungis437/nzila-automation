@@ -74,7 +74,7 @@ export async function scoreDeal(dealId: string): Promise<DealScore | null> {
     // Fallback: AI heuristic from deal data
     const [dealRow] = (await platformDb.execute(
       sql`SELECT metadata FROM audit_log
-      WHERE entity_id = ${dealId}
+      WHERE org_id = ${dealId}
         AND (action = 'deal.registered' OR action = 'deal.submitted')
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [{ metadata: Record<string, unknown> } | undefined]
@@ -185,7 +185,7 @@ export async function recommendCertification(
   try {
     const [partnerData] = (await platformDb.execute(
       sql`SELECT metadata FROM audit_log
-      WHERE entity_id = ${partnerId}
+      WHERE org_id = ${partnerId}
         AND action = 'partner.registered'
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [{ metadata: Record<string, unknown> } | undefined]
@@ -247,7 +247,7 @@ export async function extractDealFromEmail(
     const pack = buildPartnerEvidencePack({
       actionId: crypto.randomUUID(),
       actionType: 'DEAL_EXTRACTION',
-      entityId: 'platform',
+      orgId: 'platform',
       executedBy: userId,
     })
     // Evidence pack is already processed by buildPartnerEvidencePack

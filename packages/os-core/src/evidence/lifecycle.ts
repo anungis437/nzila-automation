@@ -88,7 +88,7 @@ export interface EvidencePackDraftOptions {
   /** Unique pack identifier (e.g. IR-2026-001) */
   packId: string
   /** Entity UUID (Org scope) */
-  entityId: string
+  orgId: string
   /** Control family for this evidence */
   controlFamily: ControlFamily
   /** Type of triggering event */
@@ -113,7 +113,7 @@ export interface EvidencePackDraftOptions {
 export interface EvidencePackDraft {
   readonly status: 'draft'
   readonly packId: string
-  readonly entityId: string
+  readonly orgId: string
   readonly controlFamily: ControlFamily
   readonly eventType: EvidenceEventType
   readonly eventId: string
@@ -141,7 +141,7 @@ export interface EvidencePackDraft {
 export interface SealedEvidencePack {
   readonly status: 'sealed'
   readonly packId: string
-  readonly entityId: string
+  readonly orgId: string
   readonly controlFamily: ControlFamily
   readonly eventType: EvidenceEventType
   readonly eventId: string
@@ -160,7 +160,7 @@ export interface SealedEvidencePack {
  * Create a new in-memory evidence pack draft.
  *
  * Usage:
- *   const draft = createEvidencePackDraft({ packId, entityId, ... })
+ *   const draft = createEvidencePackDraft({ packId, orgId, ... })
  *   draft.addArtifact(artifact1)
  *   draft.addArtifact(artifact2)
  *   const sealed = draft.seal()
@@ -177,7 +177,7 @@ export function createEvidencePackDraft(
       return 'draft' as const
     },
     packId: opts.packId,
-    entityId: opts.entityId,
+    orgId: opts.orgId,
     controlFamily: opts.controlFamily,
     eventType: opts.eventType,
     eventId: opts.eventId,
@@ -224,7 +224,7 @@ export function createEvidencePackDraft(
 
       const sealableIndex = {
         packId: opts.packId,
-        entityId: opts.entityId,
+        orgId: opts.orgId,
         controlFamily: opts.controlFamily,
         eventType: opts.eventType,
         eventId: opts.eventId,
@@ -242,7 +242,7 @@ export function createEvidencePackDraft(
       return Object.freeze({
         status: 'sealed' as const,
         packId: opts.packId,
-        entityId: opts.entityId,
+        orgId: opts.orgId,
         controlFamily: opts.controlFamily,
         eventType: opts.eventType,
         eventId: opts.eventId,

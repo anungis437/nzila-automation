@@ -36,7 +36,7 @@ export async function listSubjects(opts?: {
 }): Promise<{ subjects: SubjectRow[] }> {
   const ctx = await resolveOrgContext()
 
-  let filter = sql`s.org_id = ${ctx.entityId}`
+  let filter = sql`s.org_id = ${ctx.orgId}`
   if (opts?.level) {
     filter = sql`${filter} AND s.level = ${opts.level}`
   }
@@ -71,13 +71,13 @@ export async function getSubjectStats(): Promise<SubjectStats> {
 
   const [totalRow] = await platformDb.execute(sql`
     SELECT COUNT(*)::int as total FROM subjects
-    WHERE org_id = ${ctx.entityId}
+    WHERE org_id = ${ctx.orgId}
   `)
 
   const levelRows = await platformDb.execute(sql`
     SELECT level, COUNT(*)::int as count
     FROM subjects
-    WHERE org_id = ${ctx.entityId}
+    WHERE org_id = ${ctx.orgId}
     GROUP BY level
     ORDER BY level
   `)
@@ -111,7 +111,7 @@ export async function createSubject(data: {
     INSERT INTO subjects (id, org_id, name, code, level, description, question_count, duration_minutes, created_by, created_at)
     VALUES (
       ${id},
-      ${ctx.entityId},
+      ${ctx.orgId},
       ${data.name},
       ${data.code},
       ${data.level},

@@ -30,7 +30,7 @@ export async function createCommission(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_commission',
@@ -63,7 +63,7 @@ export async function finalizeCommission(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_commission',
@@ -99,7 +99,7 @@ export async function listCommissions(opts?: {
 }): Promise<TradeServiceResult<{ commissions: TradeCommission[]; total: number }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
 
   return {
     ok: true,

@@ -23,7 +23,7 @@ import type { AttestationInput } from './attestation'
 const BASE_INPUT: AttestationInput = {
   action: {
     id: '00000000-0000-0000-0000-aaaaaaaaaaaa',
-    entityId: '00000000-0000-0000-0000-111111111111',
+    orgId: '00000000-0000-0000-0000-111111111111',
     appKey: 'console',
     profileKey: 'finance-default',
     actionType: 'finance.generate_stripe_monthly_reports',
@@ -71,7 +71,7 @@ describe('createActionAttestation', () => {
     const result = createActionAttestation(BASE_INPUT)
     expect(result.actionId).toBe(BASE_INPUT.action.id)
     expect(result.runId).toBe(BASE_INPUT.run.id)
-    expect(result.entityId).toBe(BASE_INPUT.action.entityId)
+    expect(result.orgId).toBe(BASE_INPUT.action.orgId)
     expect(result.actionType).toBe(BASE_INPUT.action.actionType)
     expect(result.riskTier).toBe('low')
     expect(result.status).toBe('executed')

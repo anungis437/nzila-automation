@@ -22,7 +22,7 @@ export async function listQuotes(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -43,7 +43,7 @@ export async function getQuoteById(
   ctx: CommerceReadContext,
   quoteId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceQuotes,
     eq(commerceQuotes.id, quoteId),
@@ -55,7 +55,7 @@ export async function getQuoteByRef(
   ctx: CommerceReadContext,
   ref: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceQuotes,
     eq(commerceQuotes.ref, ref),
@@ -67,7 +67,7 @@ export async function listQuoteLines(
   ctx: CommerceReadContext,
   quoteId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceQuoteLines,
     eq(commerceQuoteLines.quoteId, quoteId),
@@ -79,7 +79,7 @@ export async function listQuoteVersions(
   ctx: CommerceReadContext,
   quoteId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceQuoteVersions,
     eq(commerceQuoteVersions.quoteId, quoteId),
@@ -103,7 +103,7 @@ export async function createQuote(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -127,7 +127,7 @@ export async function updateQuote(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -154,7 +154,7 @@ export async function createQuoteLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -177,7 +177,7 @@ export async function updateQuoteLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -194,7 +194,7 @@ export async function deleteQuoteLine(
   lineId: string,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -212,7 +212,7 @@ export async function createQuoteVersion(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

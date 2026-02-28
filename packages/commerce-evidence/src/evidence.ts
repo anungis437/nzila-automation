@@ -8,7 +8,7 @@
  * Design rules:
  *  - Pure functions — no I/O, no DB, no blob writes
  *  - The caller supplies buffers; this module produces metadata descriptors
- *  - All packs are org-scoped via entityId
+ *  - All packs are org-scoped via orgId
  *  - Integrates with @nzila/os-core/evidence lifecycle: draft → sealed
  *
  * @module @nzila/commerce-evidence
@@ -54,7 +54,7 @@ export interface CommerceEvidencePackMeta {
   /** Pack identifier (e.g. "COM-Q-2026-001") */
   readonly packId: string
   /** Org scope */
-  readonly entityId: string
+  readonly orgId: string
   /** Commerce entity type (quote, order, invoice, etc.) */
   readonly commerceEntityType: string
   /** ID of the commerce entity */
@@ -88,7 +88,7 @@ export interface CommerceEvidencePackMeta {
  */
 export interface BuildCommercePackContext {
   /** Org scope */
-  readonly entityId: string
+  readonly orgId: string
   /** Commerce entity type */
   readonly commerceEntityType: string
   /** Commerce entity ID */
@@ -113,7 +113,7 @@ let packCounter = 0
  */
 export function generateCommercePackId(
   entityType: string,
-  entityId: string,
+  orgId: string,
   timestamp?: string,
 ): string {
   const ts = timestamp ?? new Date().toISOString()
@@ -223,7 +223,7 @@ export function buildCommerceEvidencePack(
 
   return {
     packId,
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     commerceEntityType: ctx.commerceEntityType,
     commerceEntityId: ctx.commerceEntityId,
     controlFamily: mapping?.controlFamily ?? 'integrity',
@@ -250,7 +250,7 @@ export function validateCommerceEvidencePack(pack: CommerceEvidencePackMeta): st
   const errors: string[] = []
 
   if (!pack.packId) errors.push('packId is required')
-  if (!pack.entityId) errors.push('entityId is required (org scope)')
+  if (!pack.orgId) errors.push('orgId is required (org scope)')
   if (!pack.commerceEntityType) errors.push('commerceEntityType is required')
   if (!pack.commerceEntityId) errors.push('commerceEntityId is required')
   if (!pack.createdBy) errors.push('createdBy is required')
@@ -266,9 +266,9 @@ export function validateCommerceEvidencePack(pack: CommerceEvidencePackMeta): st
 
   // Verify org scope consistency
   for (const entry of pack.auditTrailEntries) {
-    if (entry.entityId !== pack.entityId) {
+    if (entry.orgId !== pack.orgId) {
       errors.push(
-        `Audit entry "${entry.id}" org "${entry.entityId}" does not match pack org "${pack.entityId}"`,
+        `Audit entry "${entry.id}" org "${entry.orgId}" does not match pack org "${pack.orgId}"`,
       )
     }
   }
@@ -283,7 +283,7 @@ export function validateCommerceEvidencePack(pack: CommerceEvidencePackMeta): st
  */
 export function toSealableIndex(pack: CommerceEvidencePackMeta): {
   packId: string
-  entityId: string
+  orgId: string
   controlFamily: string
   eventType: string
   eventId: string
@@ -295,7 +295,7 @@ export function toSealableIndex(pack: CommerceEvidencePackMeta): {
 } {
   return {
     packId: pack.packId,
-    entityId: pack.entityId,
+    orgId: pack.orgId,
     controlFamily: pack.controlFamily,
     eventType: pack.eventType,
     eventId: pack.eventId,

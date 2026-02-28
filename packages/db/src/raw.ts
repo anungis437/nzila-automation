@@ -3,7 +3,7 @@
  *
  * ⚠️  INTERNAL ONLY. Do not import outside the OS layer (@nzila/os-core, @nzila/db).
  *
- * Application code MUST use `createScopedDb(entityId)` from `@nzila/db/scoped`.
+ * Application code MUST use `createScopedDb(orgId)` from `@nzila/db/scoped`.
  * Raw database access bypasses Org isolation and audit guarantees.
  *
  * Enforcement:

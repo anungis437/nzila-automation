@@ -5,7 +5,7 @@
  * stored in ai_embeddings for vector search.
  *
  * Usage:
- *   npx tsx tooling/ai-evals/ingest-rag.ts --entityId <uuid> --appKey <app> --sourceId <uuid>
+ *   npx tsx tooling/ai-evals/ingest-rag.ts --orgId <uuid> --appKey <app> --sourceId <uuid>
  */
 import { db } from '@nzila/db'
 import { aiKnowledgeSources, aiEmbeddings } from '@nzila/db/schema'
@@ -22,26 +22,26 @@ const CHUNK_OVERLAP = 200
 
 function parseArgs() {
   const args = process.argv.slice(2)
-  let entityId = ''
+  let orgId = ''
   let appKey = ''
   let sourceId = ''
   let baseUrl = 'http://localhost:3001'
   let token = ''
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--entityId' && args[i + 1]) entityId = args[++i]
+    if (args[i] === '--orgId' && args[i + 1]) orgId = args[++i]
     if (args[i] === '--appKey' && args[i + 1]) appKey = args[++i]
     if (args[i] === '--sourceId' && args[i + 1]) sourceId = args[++i]
     if (args[i] === '--baseUrl' && args[i + 1]) baseUrl = args[++i]
     if (args[i] === '--token' && args[i + 1]) token = args[++i]
   }
 
-  if (!entityId || !appKey || !sourceId || !token) {
-    console.error('Usage: npx tsx ingest-rag.ts --entityId <uuid> --appKey <app> --sourceId <uuid> --token <token> [--baseUrl <url>]')
+  if (!orgId || !appKey || !sourceId || !token) {
+    console.error('Usage: npx tsx ingest-rag.ts --orgId <uuid> --appKey <app> --sourceId <uuid> --token <token> [--baseUrl <url>]')
     process.exit(1)
   }
 
-  return { entityId, appKey, sourceId, baseUrl, token }
+  return { orgId, appKey, sourceId, baseUrl, token }
 }
 
 // ── Chunking ────────────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ function chunkText(text: string): { chunkId: string; chunkText: string }[] {
 
 async function embedTexts(
   texts: string[],
-  opts: { baseUrl: string; token: string; entityId: string; appKey: string },
+  opts: { baseUrl: string; token: string; orgId: string; appKey: string },
 ): Promise<number[][]> {
   const res = await fetch(`${opts.baseUrl}/api/ai/embed`, {
     method: 'POST',
@@ -79,7 +79,7 @@ async function embedTexts(
       Authorization: `Bearer ${opts.token}`,
     },
     body: JSON.stringify({
-      entityId: opts.entityId,
+      orgId: opts.orgId,
       appKey: opts.appKey,
       profileKey: 'default',
       input: texts,
@@ -98,7 +98,7 @@ async function embedTexts(
 // ── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
-  const { entityId, appKey, sourceId, baseUrl, token } = parseArgs()
+  const { orgId, appKey, sourceId, baseUrl, token } = parseArgs()
 
   // 1. Load source
   const [source] = await db
@@ -107,13 +107,13 @@ async function main() {
     .where(
       and(
         eq(aiKnowledgeSources.id, sourceId),
-        eq(aiKnowledgeSources.entityId, entityId),
+        eq(aiKnowledgeSources.orgId, orgId),
       ),
     )
     .limit(1)
 
   if (!source) {
-    console.error(`Source ${sourceId} not found for entity ${entityId}`)
+    console.error(`Source ${sourceId} not found for entity ${orgId}`)
     process.exit(1)
   }
 
@@ -156,17 +156,17 @@ async function main() {
     const batch = chunks.slice(i, i + BATCH_SIZE)
     const texts = batch.map((c) => c.chunkText)
 
-    const embeddings = await embedTexts(texts, { baseUrl, token, entityId, appKey })
+    const embeddings = await embedTexts(texts, { baseUrl, token, orgId, appKey })
 
     // 5. Insert into ai_embeddings
     for (let j = 0; j < batch.length; j++) {
       const vectorStr = `[${embeddings[j].join(',')}]`
 
       await db.execute(sql`
-        INSERT INTO ai_embeddings (id, entity_id, app_key, source_id, chunk_id, chunk_text, embedding, metadata, created_at)
+        INSERT INTO ai_embeddings (id, org_id, app_key, source_id, chunk_id, chunk_text, embedding, metadata, created_at)
         VALUES (
           gen_random_uuid(),
-          ${entityId},
+          ${orgId},
           ${appKey},
           ${sourceId},
           ${batch[j].chunkId},

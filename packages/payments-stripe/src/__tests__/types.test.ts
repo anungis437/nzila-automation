@@ -38,13 +38,13 @@ describe('SUPPORTED_EVENT_TYPES', () => {
 })
 
 describe('Type structure smoke tests', () => {
-  it('NzilaStripeMetadata requires entity_id', () => {
-    const meta: NzilaStripeMetadata = { entity_id: 'ent_1' }
-    expect(meta.entity_id).toBe('ent_1')
+  it('NzilaStripeMetadata requires org_id', () => {
+    const meta: NzilaStripeMetadata = { org_id: 'ent_1' }
+    expect(meta.org_id).toBe('ent_1')
   })
 
   it('NzilaStripeMetadata supports optional venture_id', () => {
-    const meta: NzilaStripeMetadata = { entity_id: 'e', venture_id: 'v' }
+    const meta: NzilaStripeMetadata = { org_id: 'e', venture_id: 'v' }
     expect(meta.venture_id).toBe('v')
   })
 
@@ -52,7 +52,7 @@ describe('Type structure smoke tests', () => {
     const result: NormalizeResult = {
       kind: 'payment',
       data: {
-        entityId: 'e1',
+        orgId: 'e1',
         stripeObjectId: 'pi_123',
         objectType: 'payment_intent',
         status: 'succeeded',

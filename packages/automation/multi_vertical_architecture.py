@@ -347,7 +347,7 @@ Step 1: Legacy Codebase Analysis
 ---------------------------------
 For EACH legacy platform (Memora, Agrotech, Legaltech, etc.):
 
-1. Extract entities/models
+1. Extract orgs/models
    - Parse source code (React components, API endpoints, database schemas)
    - Identify data models (ConsentRecord, FarmPlot, LegalCase, etc.)
    - Map relationships
@@ -372,7 +372,7 @@ Step 2: Cross-Platform Pattern Extraction
 -----------------------------------------
 Analyze patterns ACROSS all legacy platforms:
 
-1. Common entities
+1. Common orgs
    - User/Profile → users/
    - Organization → organizations/
    - Notification → notifications/
@@ -452,20 +452,20 @@ Phase 1: Backbone (Weeks 1-16)
    → NO product-specific features yet
 
 Phase 2: Healthtech Migration (Weeks 17-24)
-   → Migrate Memora entities → healthtech/ apps
-   → Migrate ClinicConnect entities → healthtech/clinical/
-   → Migrate CareAI entities → healthtech/caregiver/
+   → Migrate Memora orgs → healthtech/ apps
+   → Migrate ClinicConnect orgs → healthtech/clinical/
+   → Migrate CareAI orgs → healthtech/caregiver/
 
 Phase 3: Agrotech Migration (Weeks 25-32)
    → Analyze agrotech legacy codebase
    → Create agrotech/ Django apps
-   → Migrate farm management, supply chain entities
+   → Migrate farm management, supply chain orgs
    → Inherit from backbone (organizations, AI Core, analytics)
 
 Phase 4: Legaltech Migration (Weeks 33-40)
    → Analyze legaltech legacy codebase
    → Create legaltech/ Django apps
-   → Migrate case management, document entities
+   → Migrate case management, document orgs
    → Inherit from backbone
 
 Phase 5: Uniontech/Cybersecurity/Justice (Weeks 41+)
@@ -668,7 +668,7 @@ nzila-platform/
             "category": "Migration Manifest Generation",
             "automations": [
                 "Auto-generate manifest.json from legacy codebase",
-                "Map legacy entities → Nzila models",
+                "Map legacy orgs → Nzila models",
                 "Suggest Django app structure",
                 "Identify backbone vs domain-specific modules",
                 "Generate data migration scripts",
@@ -792,7 +792,7 @@ Immediate Actions:
 
 2. Run Analysis Scripts (similar to Memora analysis)
    → Create legacy_codebase_analyzer.py
-   → Extract entities, APIs, components for EACH vertical
+   → Extract orgs, APIs, components for EACH vertical
    → Generate migration_manifest.json for each platform
 
 3. Design Cross-Domain Django Apps

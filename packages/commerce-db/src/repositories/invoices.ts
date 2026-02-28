@@ -20,7 +20,7 @@ export async function listInvoices(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -41,7 +41,7 @@ export async function getInvoiceById(
   ctx: CommerceReadContext,
   invoiceId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceInvoices,
     eq(commerceInvoices.id, invoiceId),
@@ -53,7 +53,7 @@ export async function getInvoiceByRef(
   ctx: CommerceReadContext,
   ref: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceInvoices,
     eq(commerceInvoices.ref, ref),
@@ -65,7 +65,7 @@ export async function listInvoiceLines(
   ctx: CommerceReadContext,
   invoiceId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceInvoiceLines,
     eq(commerceInvoiceLines.invoiceId, invoiceId),
@@ -93,7 +93,7 @@ export async function createInvoice(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -116,7 +116,7 @@ export async function updateInvoice(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -142,7 +142,7 @@ export async function createInvoiceLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -163,7 +163,7 @@ export async function updateInvoiceLine(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -180,7 +180,7 @@ export async function deleteInvoiceLine(
   lineId: string,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

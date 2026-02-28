@@ -7,7 +7,7 @@
  * - Session-based authentication
  * - Multi-entity support
  * - Full and incremental sync
- * - Invoice, payment, customer, and GL account entities
+ * - Invoice, payment, customer, and GL account orgs
  * 
  * @see https://developer.intacct.com/web-services/
  */
@@ -62,7 +62,7 @@ export class SageIntacctAdapter extends BaseIntegration {
         userPassword: (this.config!.credentials.metadata?.password as string) || '',
         senderId: (this.config!.credentials.metadata?.senderId as string) || '',
         senderPassword: (this.config!.credentials.metadata?.senderPassword as string) || '',
-        entityId: (this.config!.settings?.entityId as string) || undefined,
+        orgId: (this.config!.settings?.orgId as string) || undefined,
         environment: (this.config!.settings?.environment as SageIntacctConfig['environment']) || 'production',
       };
 
@@ -127,9 +127,9 @@ export class SageIntacctAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, message: `Syncing ${entity}` });
 

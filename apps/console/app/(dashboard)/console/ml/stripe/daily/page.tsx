@@ -21,21 +21,21 @@ const ML_NAV = [
   { label: 'Stripe Transactions', href: '/console/ml/stripe/transactions' },
 ]
 
-async function getDailyScores(entityId: string) {
+async function getDailyScores(orgId: string) {
   const ninetyDaysAgo = new Date()
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
   const startDate = ninetyDaysAgo.toISOString().slice(0, 10)
   const endDate = new Date().toISOString().slice(0, 10)
 
-  return mlClient().getStripeDailyScores({ entityId, startDate, endDate })
+  return mlClient().getStripeDailyScores({ orgId, startDate, endDate })
 }
 
 export default async function MlStripeDailyPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = getEntityId()
-  const scores = await getDailyScores(entityId)
+  const orgId = getEntityId()
+  const scores = await getDailyScores(orgId)
 
   const anomalyCount = scores.filter((s) => s.isAnomaly).length
   const totalCount = scores.length

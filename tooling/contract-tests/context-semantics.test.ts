@@ -5,7 +5,7 @@
  *   1. All domain OrgContext types include `orgId` as canonical field.
  *   2. The canonical @nzila/org package exists and exports OrgContext + DbContext.
  *   3. All domain packages declare @nzila/org as a dependency.
- *   4. No domain type definitions use `entityId` without also having `orgId`.
+ *   4. No domain type definitions use `orgId` without also having `orgId`.
  *
  * @invariant CONTEXT_SEMANTICS_ENFORCED_001
  */
@@ -104,8 +104,8 @@ describe('Context Semantics — CONTEXT_SEMANTICS_ENFORCED_001', () => {
     })
   }
 
-  // ── Deprecated entityId fields are annotated ──────────────────────────
-  it('CONTEXT_ENTITYID_DEPRECATED_005: entityId fields in core types have @deprecated annotation', () => {
+  // ── Deprecated orgId fields are annotated ──────────────────────────
+  it('CONTEXT_ENTITYID_DEPRECATED_005: orgId fields in core types have @deprecated annotation', () => {
     const targets = [
       'packages/commerce-core/src/types/index.ts',
       'packages/zonga-core/src/types/index.ts',
@@ -115,10 +115,10 @@ describe('Context Semantics — CONTEXT_SEMANTICS_ENFORCED_001', () => {
 
     for (const path of targets) {
       const content = readContent(path)
-      if (content.includes('entityId')) {
+      if (content.includes('orgId')) {
         expect(
           content.includes('@deprecated'),
-          `${path}: entityId field must have @deprecated JSDoc annotation`,
+          `${path}: orgId field must have @deprecated JSDoc annotation`,
         ).toBe(true)
       }
     }

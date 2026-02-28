@@ -2,8 +2,8 @@
  * @nzila/commerce-core — Domain Types
  *
  * All commerce domain types. No DB, no framework — pure TypeScript.
- * These types represent the canonical shape of commerce entities.
- * Nzila convention: org scoping uses "entityId" (the Nzila entity_id column).
+ * These types represent the canonical shape of commerce orgs.
+ * Nzila convention: org scoping uses "orgId" (the Nzila org_id column).
  *
  * @module @nzila/commerce-core/types
  */
@@ -51,17 +51,12 @@ export interface RefNumberStrategy {
  * Org context carried through every request.
  *
  * `orgId` is the canonical field (aligns with @nzila/org).
- * `entityId` is retained as a deprecated alias during migration.
  *
  * @see {@link @nzila/org OrgContext} for the canonical base type.
  */
 export interface OrgContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
   /** Authenticated user performing the action. */
   readonly actorId: string
   /** User's role within this org. */
@@ -76,7 +71,7 @@ export interface OrgContext {
 
 export interface Customer {
   id: string
-  entityId: string
+  orgId: string
   name: string
   email: string | null
   phone: string | null
@@ -99,7 +94,7 @@ export interface CustomerAddress {
 
 export interface Opportunity {
   id: string
-  entityId: string
+  orgId: string
   customerId: string
   title: string
   status: OpportunityStatus
@@ -113,7 +108,7 @@ export interface Opportunity {
 
 export interface Quote {
   id: string
-  entityId: string
+  orgId: string
   ref: PublicRef
   customerId: string
   opportunityId: string | null
@@ -128,7 +123,7 @@ export interface Quote {
 
 export interface QuoteVersion {
   id: string
-  entityId: string
+  orgId: string
   quoteId: string
   versionNumber: number
   tier: PricingTier
@@ -145,7 +140,7 @@ export interface QuoteVersion {
 
 export interface QuoteLine {
   id: string
-  entityId: string
+  orgId: string
   quoteVersionId: string
   itemName: string
   itemSku: string | null
@@ -191,7 +186,7 @@ export interface PricingExplanation {
 
 export interface ApprovalRequest {
   id: string
-  entityId: string
+  orgId: string
   quoteVersionId: string
   requestedBy: string
   decision: ApprovalDecision
@@ -205,7 +200,7 @@ export interface ApprovalRequest {
 
 export interface Order {
   id: string
-  entityId: string
+  orgId: string
   ref: PublicRef
   customerId: string
   quoteId: string
@@ -224,7 +219,7 @@ export interface Order {
 
 export interface OrderLine {
   id: string
-  entityId: string
+  orgId: string
   orderId: string
   itemName: string
   itemSku: string | null
@@ -238,7 +233,7 @@ export interface OrderLine {
 
 export interface FulfillmentTask {
   id: string
-  entityId: string
+  orgId: string
   orderId: string
   orderLineId: string | null
   status: FulfillmentStatus
@@ -252,7 +247,7 @@ export interface FulfillmentTask {
 
 export interface Delivery {
   id: string
-  entityId: string
+  orgId: string
   orderId: string
   trackingNumber: string | null
   carrier: string | null
@@ -264,7 +259,7 @@ export interface Delivery {
 
 export interface Return {
   id: string
-  entityId: string
+  orgId: string
   orderId: string
   orderLineId: string | null
   reason: string
@@ -278,7 +273,7 @@ export interface Return {
 
 export interface Invoice {
   id: string
-  entityId: string
+  orgId: string
   ref: PublicRef
   orderId: string
   customerId: string
@@ -299,7 +294,7 @@ export interface Invoice {
 
 export interface InvoiceLine {
   id: string
-  entityId: string
+  orgId: string
   invoiceId: string
   description: string
   quantity: number
@@ -310,7 +305,7 @@ export interface InvoiceLine {
 
 export interface Payment {
   id: string
-  entityId: string
+  orgId: string
   invoiceId: string
   amount: number
   method: string
@@ -321,7 +316,7 @@ export interface Payment {
 
 export interface CreditNote {
   id: string
-  entityId: string
+  orgId: string
   invoiceId: string
   ref: PublicRef
   amount: number
@@ -332,7 +327,7 @@ export interface CreditNote {
 
 export interface Refund {
   id: string
-  entityId: string
+  orgId: string
   paymentId: string
   invoiceId: string
   amount: number
@@ -344,7 +339,7 @@ export interface Refund {
 
 export interface Dispute {
   id: string
-  entityId: string
+  orgId: string
   invoiceId: string
   reason: DisputeReason
   description: string
@@ -359,7 +354,7 @@ export interface Dispute {
 
 export interface AuditEvent {
   id: string
-  entityId: string
+  orgId: string
   actorId: string
   entityType: string
   targetEntityId: string
@@ -374,7 +369,7 @@ export interface AuditEvent {
 
 export interface EvidenceArtifact {
   id: string
-  entityId: string
+  orgId: string
   type: EvidenceType
   targetEntityType: string
   targetEntityId: string
@@ -387,7 +382,7 @@ export interface EvidenceArtifact {
 
 export interface SyncJob {
   id: string
-  entityId: string
+  orgId: string
   provider: string
   type: string
   status: 'pending' | 'running' | 'completed' | 'failed'
@@ -400,7 +395,7 @@ export interface SyncJob {
 
 export interface SyncReceipt {
   id: string
-  entityId: string
+  orgId: string
   syncJobId: string
   provider: string
   recordsSynced: number

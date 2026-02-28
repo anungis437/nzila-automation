@@ -6,7 +6,7 @@ import type { TradeDbContext, TradeReadContext } from '../types'
 
 export interface TradeListingRow {
   id: string
-  entityId: string
+  orgId: string
   partyId: string
   listingType: string
   title: string

@@ -93,7 +93,7 @@ No `apps/abr-insights/`, `verticals/`, or `cloned/` directories exist.
 |-------|--------|----------|----|
 | No raw DB imports | **PASS** | Django ORM exclusively. No raw SQL, no direct postgres client. | — |
 | Org context server-side | **PASS** | `_get_org_id()` now derives org exclusively from `user.organization_id` (Clerk JWT). Query-param fallback removed. PermissionDenied on missing org. | PR-ABR-01 |
-| Org-scoped registry | **PASS** | `packages/db/src/org-registry.ts` — 48 tables with `entity_id`. Contract test enforced. | — |
+| Org-scoped registry | **PASS** | `packages/db/src/org-registry.ts` — 48 tables with `org_id`. Contract test enforced. | — |
 
 ### Union Eyes — ALL PASS
 
@@ -302,7 +302,7 @@ UE archive migration (`0063_add_audit_log_archive_support.sql`) adds archive col
 | `docs/stress-test/ONE_WEEK_SPRINT.md:6` | |
 | `docs/stress-test/REMEDIATION_PLAN.md:7` | |
 
-### "entityId" — 81 refs, all non-blocker (UE internal code)
+### "orgId" — 81 refs, all non-blocker (UE internal code)
 
 ### "multi-tenant" — ~50 refs, BLOCKER (primarily governance/ and docs/)
 

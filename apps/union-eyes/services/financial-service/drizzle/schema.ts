@@ -254,7 +254,7 @@ export const cbaClauses = pgTable("cba_clauses", {
 	orderIndex: integer("order_index").default(0).notNull(),
 	embedding: text("embedding"),
 	confidenceScore: numeric("confidence_score", { precision: 5, scale:  4 }),
-	entities: jsonb("entities"),
+	orgs: jsonb("orgs"),
 	keyTerms: jsonb("key_terms"),
 	relatedClauseIds: jsonb("related_clause_ids"),
 	interpretationNotes: text("interpretation_notes"),

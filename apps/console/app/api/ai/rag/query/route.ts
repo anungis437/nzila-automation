@@ -2,7 +2,7 @@
  * API — AI RAG Query
  * POST /api/ai/rag/query
  *
- * Vector search in aiEmbeddings scoped to entityId+appKey,
+ * Vector search in aiEmbeddings scoped to orgId+appKey,
  * then optionally passes retrieved context to LLM for answer.
  */
 import { NextRequest, NextResponse } from 'next/server'
@@ -13,7 +13,7 @@ import {
   embed,
   AiRagQueryRequestSchema,
 } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { sql } from 'drizzle-orm'
 import { asAiError } from '@/lib/catch-utils'
 
@@ -27,14 +27,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     }
 
-    const { entityId, appKey, profileKey, query, topK, dataClass } = parsed.data
+    const { orgId, appKey, profileKey, query, topK, dataClass } = parsed.data
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     // 1. Generate embedding for query
     const queryEmbedding = await embed({
-      entityId,
+      orgId,
       appKey,
       profileKey,
       input: query,
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         e.metadata,
         1 - (e.embedding <=> ${vectorStr}::vector) as score
       FROM ai_embeddings e
-      WHERE e.entity_id = ${entityId}
+      WHERE e.org_id = ${orgId}
         AND e.app_key = ${appKey}
       ORDER BY e.embedding <=> ${vectorStr}::vector
       LIMIT ${topK}
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
       try {
         const ragResult = await generate({
-          entityId,
+          orgId,
           appKey,
           profileKey,
           input: ragPrompt,

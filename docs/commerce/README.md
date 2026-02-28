@@ -35,7 +35,7 @@ See [ADR/](ADR/) for the full list.
 
 ## Key Principles
 
-1. **Org is the root aggregate** — `entity_id` scopes every row, every query, every event.
+1. **Org is the root aggregate** — `org_id` scopes every row, every query, every event.
 2. **Declarative state machines** — transitions are data, not procedural if/else chains.
 3. **Event-driven sagas** — quote acceptance emits an event; a saga creates the order.
 4. **Evidence at every gate** — lifecycle milestones produce sealed evidence artefacts.

@@ -7,7 +7,7 @@
  * Features:
  * - OAuth2 authentication with automatic token refresh
  * - Full and incremental sync
- * - Invoice, payment, customer, and account entities
+ * - Invoice, payment, customer, and account orgs
  * - Webhook support for real-time updates
  * 
  * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/
@@ -132,9 +132,9 @@ export class QuickBooksAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, message: `Syncing ${entity}` });
 
@@ -509,12 +509,12 @@ export class QuickBooksAdapter extends BaseIntegration {
     this.logOperation('webhook', { eventType: event.type, message: `Processing ${event.type}` });
 
     // QuickBooks sends change data notifications
-    // Event types: Create, Update, Delete, Merge for various entities
-    const payload = event.data as { eventNotifications?: Array<{ dataChangeEvent?: { entities?: Array<{ name: string; operation: string; id: string }> } }> };
+    // Event types: Create, Update, Delete, Merge for various orgs
+    const payload = event.data as { eventNotifications?: Array<{ dataChangeEvent?: { orgs?: Array<{ name: string; operation: string; id: string }> } }> };
     
     if (payload.eventNotifications) {
       for (const notification of payload.eventNotifications) {
-        for (const dataChangeEvent of notification.dataChangeEvent?.entities || []) {
+        for (const dataChangeEvent of notification.dataChangeEvent?.orgs || []) {
           this.logOperation('webhook', {
             entity: dataChangeEvent.name,
             operation: dataChangeEvent.operation,

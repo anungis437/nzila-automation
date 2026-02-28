@@ -10,7 +10,7 @@ import { documents, auditEvents, mlDatasets } from '@nzila/db/schema'
 import { uploadBuffer } from '@nzila/blob'
 
 export interface DatasetWriteOptions {
-  entityId: string
+  orgId: string
   datasetKey: string
   periodStart: string          // YYYY-MM-DD
   periodEnd: string            // YYYY-MM-DD
@@ -30,7 +30,7 @@ export interface DatasetWriteResult {
 
 export async function writeBlobDataset(opts: DatasetWriteOptions): Promise<DatasetWriteResult> {
   const {
-    entityId,
+    orgId,
     datasetKey,
     periodStart,
     periodEnd,
@@ -46,7 +46,7 @@ export async function writeBlobDataset(opts: DatasetWriteOptions): Promise<Datas
   // Row count = lines - 1 (header)
   const rowCount = Math.max(0, csvContent.split('\n').filter(Boolean).length - 1)
 
-  const blobPath = `exports/${entityId}/ml/datasets/${datasetKey}/${periodStart}-${periodEnd}/dataset.csv`
+  const blobPath = `exports/${orgId}/ml/datasets/${datasetKey}/${periodStart}-${periodEnd}/dataset.csv`
 
   // Upload to Blob
   const uploadResult = await uploadBuffer({
@@ -60,7 +60,7 @@ export async function writeBlobDataset(opts: DatasetWriteOptions): Promise<Datas
   const [docRow] = await db
     .insert(documents)
     .values({
-      entityId,
+      orgId,
       category: 'other',
       title: `ML Dataset — ${datasetKey} (${periodStart} → ${periodEnd})`,
       blobContainer: 'exports',
@@ -78,7 +78,7 @@ export async function writeBlobDataset(opts: DatasetWriteOptions): Promise<Datas
   const [datasetRow] = await db
     .insert(mlDatasets)
     .values({
-      entityId,
+      orgId,
       datasetKey,
       periodStart,
       periodEnd,
@@ -92,7 +92,7 @@ export async function writeBlobDataset(opts: DatasetWriteOptions): Promise<Datas
 
   // Audit event
   await db.insert(auditEvents).values({
-    entityId,
+    orgId,
     actorClerkUserId: createdBy,
     action: 'ml.dataset_built',
     targetType: 'ml_dataset',

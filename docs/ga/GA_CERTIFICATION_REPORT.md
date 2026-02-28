@@ -89,7 +89,7 @@ Contract test run output:
 
 **Objective:** Prove that the `audit_events` table cannot be silently modified.
 
-**Method A — Application layer:** Call `verifyEntityAuditChain(entityId)` after seeding 5 events. Confirm chain is valid.  
+**Method A — Application layer:** Call `verifyEntityAuditChain(orgId)` after seeding 5 events. Confirm chain is valid.  
 **Method B — DB layer (REM-11 must be merged):** Attempt a direct `UPDATE audit_events SET severity = 'low' WHERE id = <id>` via raw DB query. Confirm PostgreSQL raises an error.
 
 **Result:**

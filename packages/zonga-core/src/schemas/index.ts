@@ -1,7 +1,7 @@
 /**
  * @nzila/zonga-core — Zod Validation Schemas
  *
- * API boundary validation for Zonga content platform entities.
+ * API boundary validation for Zonga content platform orgs.
  *
  * @module @nzila/zonga-core/schemas
  */
@@ -146,7 +146,7 @@ export type AudioUploadMetaInput = z.infer<typeof AudioUploadMetaSchema>
 // ── Org Context ─────────────────────────────────────────────────────────────
 
 export const ZongaOrgContextSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   actorId: z.string().uuid(),
   role: z.enum(enumValues(ZongaRole)),
   permissions: z.array(z.string()),

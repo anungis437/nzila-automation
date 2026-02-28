@@ -25,7 +25,7 @@ const verticals = [
     alt: 'Financial trading terminal with stock charts and candlestick patterns',
     platforms: ['DiasporaCore V2', 'STSA / Lexora', 'Insight CFO'],
     description: 'Banking, payments, stress testing, and virtual CFO services for individuals and enterprises.',
-    tam: '$100B+', entities: '617', status: '3 platforms',
+    tam: '$100B+', orgs: '617', status: '3 platforms',
   },
   {
     slug: 'agrotech',
@@ -34,7 +34,7 @@ const verticals = [
     alt: 'Aerial view of green agricultural farmland with organized crop rows',
     platforms: ['CORA (CA)', 'PonduOps (DRC/CA)'],
     description: 'Farm management, supply chain, IoT integration, and agricultural market intelligence. CORA is built on Canadian data; PonduOps serves the DRC and Central African market.',
-    tam: '$8.6B', entities: '300', status: '2 platforms',
+    tam: '$8.6B', orgs: '300', status: '2 platforms',
   },
   {
     slug: 'uniontech',
@@ -43,7 +43,7 @@ const verticals = [
     alt: 'Labor union workers raising hands together in solidarity',
     platforms: ['Union Eyes'],
     description: 'Union management, pension forecasting, grievance tracking, and labour organising.',
-    tam: '$50B', entities: '4,773', status: 'Flagship',
+    tam: '$50B', orgs: '4,773', status: 'Flagship',
   },
   {
     slug: 'legaltech',
@@ -52,7 +52,7 @@ const verticals = [
     alt: 'Scales of justice on a desk alongside legal reference books',
     platforms: ['Court Lens', 'ABR Insights'],
     description: 'Case management, legal AI, tribunal databases, and eDiscovery services.',
-    tam: '$13B+', entities: '814', status: '2 platforms',
+    tam: '$13B+', orgs: '814', status: '2 platforms',
   },
   {
     slug: 'edtech',
@@ -61,7 +61,7 @@ const verticals = [
     alt: 'Students engaged in collaborative learning with digital devices',
     platforms: ['ABR Insights', 'CyberLearn'],
     description: 'Learning management, certification, cybersecurity training, and gamified education.',
-    tam: '$13B+', entities: '162', status: '2 platforms',
+    tam: '$13B+', orgs: '162', status: '2 platforms',
   },
   {
     slug: 'commerce',
@@ -70,7 +70,7 @@ const verticals = [
     alt: 'Customer completing a digital payment at a modern retail checkout',
     platforms: ['Shop Quoter', 'Trade OS', 'eExports'],
     description: 'E-commerce, logistics, trade operations, and export documentation.',
-    tam: '$25B', entities: '508', status: '3 platforms',
+    tam: '$25B', orgs: '508', status: '3 platforms',
   },
   {
     slug: 'entertainment',
@@ -79,7 +79,7 @@ const verticals = [
     alt: 'DJ performing live with colorful stage lights and sound equipment',
     platforms: ['CongoWave'],
     description: 'Music streaming, royalty management, event ticketing, and content distribution.',
-    tam: '$50B', entities: '83', status: 'Production Ready',
+    tam: '$50B', orgs: '83', status: 'Production Ready',
   },
   {
     slug: 'healthtech',
@@ -88,7 +88,7 @@ const verticals = [
     alt: 'Healthcare professional using a digital tablet for patient diagnostics',
     platforms: ['Memora'],
     description: 'Cognitive wellness, dementia care, caregiver support, and health monitoring.',
-    tam: '$20B', entities: '150', status: 'Legacy',
+    tam: '$20B', orgs: '150', status: 'Legacy',
   },
   {
     slug: 'insurtech',
@@ -97,7 +97,7 @@ const verticals = [
     alt: 'Business professional signing insurance policy documents at a desk',
     platforms: ['SentryIQ360'],
     description: 'Insurance arbitrage, underwriting AI, policy lifecycle, and claims intelligence.',
-    tam: '$30B', entities: '79', status: 'In Development',
+    tam: '$30B', orgs: '79', status: 'In Development',
   },
   {
     slug: 'justice',
@@ -106,7 +106,7 @@ const verticals = [
     alt: 'Symbolic raised fist representing social justice and equity advocacy',
     platforms: ['ABR Insights'],
     description: 'Anti-racism training, DEI analytics, and equity impact measurement.',
-    tam: '$1.5B', entities: '132', status: 'Production Ready',
+    tam: '$1.5B', orgs: '132', status: 'Production Ready',
   },
 ];
 
@@ -203,7 +203,7 @@ export default function Verticals() {
                         <div className="text-xs text-gray-500">Platforms</div>
                       </div>
                       <div className="bg-gray-50 rounded-xl p-2">
-                        <div className="text-lg font-bold text-navy">{v.entities}</div>
+                        <div className="text-lg font-bold text-navy">{v.orgs}</div>
                         <div className="text-xs text-gray-500">Entities</div>
                       </div>
                       <div className="bg-gray-50 rounded-xl p-2">

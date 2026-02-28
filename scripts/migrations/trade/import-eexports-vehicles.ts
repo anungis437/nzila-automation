@@ -279,7 +279,7 @@ async function migrateVehicles(config: MigrationConfig): Promise<{
   // 1. Check if legacySourceId exists in destination (upsert key)
   // 2. Create parent trade_listing:
   //    - id: generateId()
-  //    - entityId: mapOrgId(vehicle.organisation_id) — requires org ID mapping table
+  //    - orgId: mapOrgId(vehicle.organisation_id) — requires org ID mapping table
   //    - partyId: (auto-create a seller party for the org if not exists)
   //    - listingType: 'vehicle'
   //    - title: vehicle.title
@@ -292,7 +292,7 @@ async function migrateVehicles(config: MigrationConfig): Promise<{
   //
   // 3. Create trade_vehicle_listing:
   //    - id: generateId()
-  //    - entityId: (same org)
+  //    - orgId: (same org)
   //    - listingId: (parent listing ID)
   //    - vin: vehicle.vin
   //    - year: vehicle.year
@@ -354,7 +354,7 @@ async function migrateDeals(
   //
   // 3. Create trade_deal:
   //    - id: generateId()
-  //    - entityId: mapOrgId(deal.organisation_id)
+  //    - orgId: mapOrgId(deal.organisation_id)
   //    - refNumber: `EEX-${deal.id.toString().padStart(6, '0')}`
   //    - sellerPartyId: (org's seller party)
   //    - buyerPartyId: (created/found buyer party)
@@ -402,7 +402,7 @@ async function migrateDocs(
   // 1. Check if legacySourceId exists
   // 2. Create trade_vehicle_docs:
   //    - id: generateId()
-  //    - entityId: mapOrgId(doc.organisation_id)
+  //    - orgId: mapOrgId(doc.organisation_id)
   //    - listingId: listingIdMap.get(doc.vehicle_id)
   //    - docType: mapDocType(doc.doc_type)
   //    - storageKey: doc.file_path (file must be migrated to blob storage separately)

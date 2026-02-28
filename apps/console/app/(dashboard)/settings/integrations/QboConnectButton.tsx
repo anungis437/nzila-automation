@@ -5,7 +5,7 @@ import { Button } from '@nzila/ui'
 import { validateRedirectUrl } from '@/lib/sanitize'
 
 interface QboConnectButtonProps {
-  entityId: string
+  orgId: string
   connected: boolean
   realmId?: string | null
   companyName?: string | null
@@ -13,7 +13,7 @@ interface QboConnectButtonProps {
 }
 
 export function QboConnectButton({
-  entityId,
+  orgId,
   connected,
   realmId,
   companyName,
@@ -27,7 +27,7 @@ export function QboConnectButton({
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/qbo/connect?entityId=${entityId}`)
+      const res = await fetch(`/api/qbo/connect?orgId=${orgId}`)
       const data = (await res.json()) as { authUrl?: string; error?: string }
       if (!res.ok || !data.authUrl) {
         throw new Error(data.error ?? 'Failed to build authorization URL')
@@ -46,7 +46,7 @@ export function QboConnectButton({
     setDisconnecting(true)
     setError(null)
     try {
-      const res = await fetch(`/api/qbo/status?entityId=${entityId}`, { method: 'DELETE' })
+      const res = await fetch(`/api/qbo/status?orgId=${orgId}`, { method: 'DELETE' })
       const data = (await res.json()) as { disconnected?: boolean; error?: string }
       if (!res.ok) throw new Error(data.error ?? 'Disconnect failed')
       window.location.reload()

@@ -14,7 +14,7 @@ import type { TradeTransitionSuccess } from './machines/engine'
 
 export interface BuildAuditOpts {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   readonly role: TradeOrgRole
   readonly entityType: string
@@ -27,7 +27,7 @@ export function buildTransitionAuditEntry(
 ): TradeAuditEntry {
   return {
     id: opts.id,
-    entityId: opts.entityId,
+    orgId: opts.orgId,
     actorId: opts.actorId,
     role: opts.role,
     entityType: opts.entityType,
@@ -52,7 +52,7 @@ export function buildActionAuditEntry(
 ): TradeAuditEntry {
   return {
     id: opts.id,
-    entityId: opts.entityId,
+    orgId: opts.orgId,
     actorId: opts.actorId,
     role: opts.role,
     entityType: opts.entityType,
@@ -78,7 +78,7 @@ export function hashAuditEntry(entry: TradeAuditEntry): string {
 export function validateAuditEntry(entry: TradeAuditEntry): boolean {
   return !!(
     entry.id &&
-    entry.entityId &&
+    entry.orgId &&
     entry.actorId &&
     entry.entityType &&
     entry.targetEntityId &&

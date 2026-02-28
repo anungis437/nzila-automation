@@ -28,7 +28,7 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 import { documents } from './operations'
 
 // ── Enums ────────────────────────────────────────────────────────────────────
@@ -42,9 +42,9 @@ export const mlDatasets = pgTable(
   'ml_datasets',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     /** e.g., stripe_daily_metrics_v1 | stripe_txn_features_v1 */
     datasetKey: text('dataset_key').notNull(),
     periodStart: date('period_start').notNull(),
@@ -61,8 +61,8 @@ export const mlDatasets = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('ml_datasets_entity_key_idx').on(table.entityId, table.datasetKey),
-    index('ml_datasets_entity_period_idx').on(table.entityId, table.periodStart, table.periodEnd),
+    index('ml_datasets_entity_key_idx').on(table.orgId, table.datasetKey),
+    index('ml_datasets_entity_period_idx').on(table.orgId, table.periodStart, table.periodEnd),
   ],
 )
 
@@ -72,9 +72,9 @@ export const mlModels = pgTable(
   'ml_models',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     /** e.g., stripe_anomaly_daily_iforest_v1 | stripe_anomaly_txn_iforest_v1 */
     modelKey: text('model_key').notNull(),
     algorithm: text('algorithm').notNull().default('isolation_forest'),
@@ -96,11 +96,11 @@ export const mlModels = pgTable(
   },
   (table) => [
     uniqueIndex('ml_models_entity_key_version_idx').on(
-      table.entityId,
+      table.orgId,
       table.modelKey,
       table.version,
     ),
-    index('ml_models_entity_status_idx').on(table.entityId, table.status),
+    index('ml_models_entity_status_idx').on(table.orgId, table.status),
   ],
 )
 
@@ -110,9 +110,9 @@ export const mlTrainingRuns = pgTable(
   'ml_training_runs',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     modelKey: text('model_key').notNull(),
     datasetId: uuid('dataset_id').references(() => mlDatasets.id),
     status: mlRunStatusEnum('status').notNull().default('started'),
@@ -128,7 +128,7 @@ export const mlTrainingRuns = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index('ml_training_runs_entity_key_idx').on(table.entityId, table.modelKey)],
+  (table) => [index('ml_training_runs_entity_key_idx').on(table.orgId, table.modelKey)],
 )
 
 // ── D) mlInferenceRuns ────────────────────────────────────────────────────────
@@ -137,9 +137,9 @@ export const mlInferenceRuns = pgTable(
   'ml_inference_runs',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     /** FK → mlModels.id */
     modelId: uuid('model_id')
       .notNull()
@@ -158,7 +158,7 @@ export const mlInferenceRuns = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('ml_inference_runs_entity_model_idx').on(table.entityId, table.modelId),
+    index('ml_inference_runs_entity_model_idx').on(table.orgId, table.modelId),
     index('ml_inference_runs_period_idx').on(table.inputPeriodStart, table.inputPeriodEnd),
   ],
 )
@@ -169,9 +169,9 @@ export const mlScoresStripeDaily = pgTable(
   'ml_scores_stripe_daily',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     date: date('date').notNull(),
     featuresJson: jsonb('features_json').notNull().default({}),
     score: numeric('score', { precision: 12, scale: 6 }).notNull(),
@@ -185,11 +185,11 @@ export const mlScoresStripeDaily = pgTable(
   },
   (table) => [
     uniqueIndex('ml_scores_stripe_daily_entity_date_model_idx').on(
-      table.entityId,
+      table.orgId,
       table.date,
       table.modelId,
     ),
-    index('ml_scores_stripe_daily_anomaly_idx').on(table.entityId, table.isAnomaly),
+    index('ml_scores_stripe_daily_anomaly_idx').on(table.orgId, table.isAnomaly),
   ],
 )
 
@@ -199,9 +199,9 @@ export const mlScoresStripeTxn = pgTable(
   'ml_scores_stripe_txn',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     /** Stripe webhook event_id if available */
     stripeEventId: text('stripe_event_id'),
     /** charge_id from Stripe */
@@ -227,9 +227,9 @@ export const mlScoresStripeTxn = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('ml_scores_stripe_txn_entity_time_idx').on(table.entityId, table.occurredAt),
-    index('ml_scores_stripe_txn_anomaly_idx').on(table.entityId, table.isAnomaly),
-    index('ml_scores_stripe_txn_pi_idx').on(table.entityId, table.stripePaymentIntentId),
+    index('ml_scores_stripe_txn_entity_time_idx').on(table.orgId, table.occurredAt),
+    index('ml_scores_stripe_txn_anomaly_idx').on(table.orgId, table.isAnomaly),
+    index('ml_scores_stripe_txn_pi_idx').on(table.orgId, table.stripePaymentIntentId),
   ],
 )
 // ── G) mlScoresUECasesPriority ────────────────────────────────────────────────
@@ -243,9 +243,9 @@ export const mlScoresUECasesPriority = pgTable(
   'ml_scores_ue_cases_priority',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     /** UUID of the UE case row (logical FK, no DDL constraint to keep schema decoupled) */
     caseId: uuid('case_id').notNull(),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
@@ -267,15 +267,15 @@ export const mlScoresUECasesPriority = pgTable(
   },
   (table) => [
     uniqueIndex('ml_scores_ue_cases_priority_entity_case_model_idx').on(
-      table.entityId,
+      table.orgId,
       table.caseId,
       table.modelId,
     ),
     index('ml_scores_ue_cases_priority_entity_pred_idx').on(
-      table.entityId,
+      table.orgId,
       table.predictedPriority,
     ),
-    index('ml_scores_ue_cases_priority_entity_time_idx').on(table.entityId, table.occurredAt),
+    index('ml_scores_ue_cases_priority_entity_time_idx').on(table.orgId, table.occurredAt),
   ],
 )
 
@@ -290,9 +290,9 @@ export const mlScoresUESlaRisk = pgTable(
   'ml_scores_ue_sla_risk',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     /** UUID of the UE case row (logical FK, no DDL constraint) */
     caseId: uuid('case_id').notNull(),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
@@ -314,11 +314,11 @@ export const mlScoresUESlaRisk = pgTable(
   },
   (table) => [
     uniqueIndex('ml_scores_ue_sla_risk_entity_case_model_idx').on(
-      table.entityId,
+      table.orgId,
       table.caseId,
       table.modelId,
     ),
-    index('ml_scores_ue_sla_risk_entity_breach_idx').on(table.entityId, table.predictedBreach),
-    index('ml_scores_ue_sla_risk_entity_time_idx').on(table.entityId, table.occurredAt),
+    index('ml_scores_ue_sla_risk_entity_breach_idx').on(table.orgId, table.predictedBreach),
+    index('ml_scores_ue_sla_risk_entity_time_idx').on(table.orgId, table.occurredAt),
   ],
 )

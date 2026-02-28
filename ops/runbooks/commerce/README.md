@@ -36,6 +36,6 @@ All runbook executions that modify commerce state must produce evidence:
 
 | Artifact | Format | Storage Path | Retention |
 |----------|--------|--------------|-----------|
-| Runbook execution log | JSON | `evidence/{entity_id}/commerce/runbook-execution/{YYYY}/{run_id}/` | 7_YEARS |
-| Override authorization | PDF | `evidence/{entity_id}/commerce/overrides/{YYYY}/{override_id}/` | PERMANENT |
-| Compensation report | JSON | `evidence/{entity_id}/commerce/compensations/{YYYY}/{saga_id}/` | 7_YEARS |
+| Runbook execution log | JSON | `evidence/{org_id}/commerce/runbook-execution/{YYYY}/{run_id}/` | 7_YEARS |
+| Override authorization | PDF | `evidence/{org_id}/commerce/overrides/{YYYY}/{override_id}/` | PERMANENT |
+| Compensation report | JSON | `evidence/{org_id}/commerce/compensations/{YYYY}/{saga_id}/` | 7_YEARS |

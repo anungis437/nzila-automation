@@ -32,7 +32,7 @@ import type { MachineDefinition, TransitionDef } from '@nzila/commerce-state'
 
 function makeCtx(overrides: Partial<TransitionContext> = {}): TransitionContext {
   return {
-    entityId: 'org-001',
+    orgId: 'org-001',
     actorId: 'actor-001',
     role: OrgRole.SALES,
     meta: {},
@@ -42,7 +42,7 @@ function makeCtx(overrides: Partial<TransitionContext> = {}): TransitionContext 
 
 function makeQuoteEntity(overrides: Partial<QuoteEntity> = {}): QuoteEntity {
   return {
-    entityId: 'org-001',
+    orgId: 'org-001',
     grandTotal: 5000,
     approvalFlags: [],
     marginPercent: 25,
@@ -56,7 +56,7 @@ function makeQuoteEntity(overrides: Partial<QuoteEntity> = {}): QuoteEntity {
 
 function makeOrderEntity(overrides: Partial<OrderEntity> = {}): OrderEntity {
   return {
-    entityId: 'org-001',
+    orgId: 'org-001',
     grandTotal: 5000,
     lineCount: 3,
     quoteSnapshotHash: 'abc123hash',
@@ -66,7 +66,7 @@ function makeOrderEntity(overrides: Partial<OrderEntity> = {}): OrderEntity {
 
 function makeInvoiceEntity(overrides: Partial<InvoiceEntity> = {}): InvoiceEntity {
   return {
-    entityId: 'org-001',
+    orgId: 'org-001',
     grandTotal: 5000,
     hasEvidencePack: true,
     lineCount: 2,

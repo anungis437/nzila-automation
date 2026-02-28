@@ -69,7 +69,7 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     )) as unknown as [{ total: number }]
 
     const [clientCount] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'entity.created' AND entity_type = 'client'`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'org.created' AND entity_type = 'client'`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -120,7 +120,7 @@ export async function suspendFirm(firmId: string): Promise<{ success: boolean }>
       WHERE id = ${firmId} AND action = 'firm.registered'`,
     )
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('firm.suspended', ${userId}, 'firm', ${firmId},
         ${JSON.stringify({ suspendedBy: userId })}::jsonb)`,
     )
@@ -143,7 +143,7 @@ export async function reactivateFirm(firmId: string): Promise<{ success: boolean
       WHERE id = ${firmId} AND action = 'firm.registered'`,
     )
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('firm.reactivated', ${userId}, 'firm', ${firmId},
         ${JSON.stringify({ reactivatedBy: userId })}::jsonb)`,
     )
@@ -169,7 +169,7 @@ export async function updateFirmSubscription(
       WHERE id = ${firmId} AND action = 'firm.registered'`,
     )
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('firm.subscription.updated', ${userId}, 'firm', ${firmId},
         ${JSON.stringify({ tier, updatedBy: userId })}::jsonb)`,
     )

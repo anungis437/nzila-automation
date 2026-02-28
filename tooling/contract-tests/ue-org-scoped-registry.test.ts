@@ -2,7 +2,7 @@
  * Contract Test — Union Eyes: Org-Scoped Table Registry Consistency
  *
  * Mirrors INV-20 (packages/db) for UE's local schema which uses `org_id`
- * instead of `entity_id`.
+ * instead of `org_id`.
  *
  * Validates:
  * 1. Every UE schema table with org_id → in UE_ORG_SCOPED_TABLES

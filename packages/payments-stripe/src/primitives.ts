@@ -14,7 +14,7 @@ import type Stripe from 'stripe'
 export interface CreateCustomerInput {
   email: string
   name: string
-  entityId: string
+  orgId: string
   ventureId?: string
   metadata?: Record<string, string>
 }
@@ -23,7 +23,7 @@ export async function createCustomer(input: CreateCustomerInput): Promise<Stripe
   const stripe = getStripeClient()
 
   const metadata: NzilaStripeMetadata = {
-    entity_id: input.entityId,
+    org_id: input.orgId,
     ...(input.ventureId && { venture_id: input.ventureId }),
     ...input.metadata,
   }
@@ -38,7 +38,7 @@ export async function createCustomer(input: CreateCustomerInput): Promise<Stripe
 // ── Checkout Session Creation ───────────────────────────────────────────────
 
 export interface CreateCheckoutSessionInput {
-  entityId: string
+  orgId: string
   ventureId?: string
   customerId?: string
   lineItems: Array<{
@@ -59,7 +59,7 @@ export async function createCheckoutSession(
   const env = getStripeEnv()
 
   const metadata: NzilaStripeMetadata = {
-    entity_id: input.entityId,
+    org_id: input.orgId,
     ...(input.ventureId && { venture_id: input.ventureId }),
     ...input.metadata,
   }
@@ -126,7 +126,7 @@ export function requiresApproval(amountCents: number): boolean {
 export interface CreateSubscriptionInput {
   customerId: string
   priceId: string
-  entityId: string
+  orgId: string
   ventureId?: string
   trialDays?: number
   metadata?: Record<string, string>
@@ -150,7 +150,7 @@ export async function createSubscription(
   const stripe = getStripeClient()
 
   const metadata = {
-    entity_id: input.entityId,
+    org_id: input.orgId,
     ...(input.ventureId && { venture_id: input.ventureId }),
     ...input.metadata,
   }
@@ -199,7 +199,7 @@ export async function createPortalSession(
 
 export interface CreateSubscriptionCheckoutSessionInput {
   priceId: string
-  entityId: string
+  orgId: string
   customerId?: string
   ventureId?: string
   successUrl: string
@@ -219,7 +219,7 @@ export async function createSubscriptionCheckoutSession(
   const stripe = getStripeClient()
 
   const metadata = {
-    entity_id: input.entityId,
+    org_id: input.orgId,
     ...(input.ventureId && { venture_id: input.ventureId }),
     ...input.metadata,
   }

@@ -25,7 +25,7 @@ export async function listInventory(
   ctx: CommerceReadContext,
   opts: PaginationOpts & { stockStatus?: StockStatus; productId?: string } = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -56,7 +56,7 @@ export async function getInventoryById(
   ctx: CommerceReadContext,
   inventoryId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceInventory,
     eq(commerceInventory.id, inventoryId),
@@ -68,13 +68,13 @@ export async function getInventoryByProductId(
   ctx: CommerceReadContext,
   productId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commerceInventory)
   return rows.find((r) => r.productId === productId) ?? null
 }
 
 export async function listLowStockProducts(ctx: CommerceReadContext) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const inventory = await db.select(commerceInventory)
   return inventory.filter(
     (i) =>
@@ -92,7 +92,7 @@ export async function getStockMovements(
     movementType?: MovementType
   } = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 100, 500)
   const offset = opts.offset ?? 0
 
@@ -124,7 +124,7 @@ export async function getStockMovements(
 }
 
 export async function getInventorySummary(ctx: CommerceReadContext) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const [inventory, products] = await Promise.all([
     db.select(commerceInventory),
     db.select(commerceProducts),
@@ -179,7 +179,7 @@ export async function createInventoryRecord(
   )
 
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -206,7 +206,7 @@ export async function updateInventory(
   }>,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -249,7 +249,7 @@ export async function recordStockMovement(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

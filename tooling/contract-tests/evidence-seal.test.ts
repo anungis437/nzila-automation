@@ -25,7 +25,7 @@ import {
 
 function makePackIndex(overrides?: Partial<SealablePackIndex>): SealablePackIndex {
   return {
-    entityId: '00000000-0000-0000-0000-000000000001',
+    orgId: '00000000-0000-0000-0000-000000000001',
     eventType: 'period-close',
     periodStart: '2026-01-01',
     periodEnd: '2026-01-31',
@@ -89,11 +89,11 @@ describe('Evidence Seal — generateSeal + verifySeal round-trip', () => {
 })
 
 describe('Evidence Seal — tamper detection (pack index mutation)', () => {
-  it('fails verification when entityId is changed', () => {
+  it('fails verification when orgId is changed', () => {
     const pack = makePackIndex()
     const seal = generateSeal(pack, { sealedAt: FIXED_TIMESTAMP })
 
-    const tampered = { ...pack, entityId: 'TAMPERED', seal }
+    const tampered = { ...pack, orgId: 'TAMPERED', seal }
     const result = verifySeal(tampered)
 
     expect(result.valid).toBe(false)

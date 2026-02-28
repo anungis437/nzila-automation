@@ -535,7 +535,7 @@ export default function CampaignDetailPage({ params }: { params: { id: string } 
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Campaign?</AlertDialogTitle>
             <AlertDialogDescription>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              {/* eslint-disable-next-line react/no-unescaped-orgs */}
               This will permanently delete "{campaign.name}". This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -565,7 +565,7 @@ export default function CampaignDetailPage({ params }: { params: { id: string } 
           <AlertDialogHeader>
             <AlertDialogTitle>Send Campaign?</AlertDialogTitle>
             <AlertDialogDescription>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              {/* eslint-disable-next-line react/no-unescaped-orgs */}
               This will send "{campaign.name}" to {campaign.audienceCount} recipient(s).
               {campaign.testMode && ' (Test Mode - will only send to admins)'}
             </AlertDialogDescription>

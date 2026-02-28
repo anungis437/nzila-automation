@@ -27,8 +27,8 @@ export interface GovernanceActionContext {
   actionId: string
   /** governance_actions.action_type */
   actionType: string
-  /** governance_actions.entity_id */
-  entityId: string
+  /** governance_actions.org_id */
+  orgId: string
   /** Clerk user who executed the action */
   executedBy: string
   /** The resolution document (PDF/Markdown) buffer, if available */
@@ -138,7 +138,7 @@ export function buildEvidencePackFromAction(
         {
           actionId: ctx.actionId,
           actionType: ctx.actionType,
-          entityId: ctx.entityId,
+          orgId: ctx.orgId,
           executedBy: ctx.executedBy,
           timestamp: new Date().toISOString(),
         },
@@ -164,7 +164,7 @@ export function buildEvidencePackFromAction(
 
   return {
     packId,
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     controlFamily,
     eventType,
     eventId: ctx.actionId,
@@ -179,17 +179,17 @@ export function buildEvidencePackFromAction(
 /**
  * Compute the blob base path for an evidence pack.
  *
- * Convention: {entityId}/{controlFamily}/{year}/{month}/{packId}
+ * Convention: {orgId}/{controlFamily}/{year}/{month}/{packId}
  */
 export function computeBasePath(
-  entityId: string,
+  orgId: string,
   controlFamily: ControlFamily,
   packId: string,
 ): string {
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
-  return `${entityId}/${controlFamily}/${year}/${month}/${packId}`
+  return `${orgId}/${controlFamily}/${year}/${month}/${packId}`
 }
 
 /**

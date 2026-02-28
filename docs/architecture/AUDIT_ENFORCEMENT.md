@@ -12,10 +12,10 @@ insert, update, and delete — with no manual call required.
 ┌─────────────────────────────────────────────────────────────┐
 │ API Route Handler                                           │
 │   const ctx = await authorize(req)                          │
-│   const scopedDb = createScopedDb(ctx.entityId)             │
+│   const scopedDb = createScopedDb(ctx.orgId)             │
 │   const auditedDb = withAudit(scopedDb, {                   │
 │     actorId: ctx.userId,                                    │
-│     entityId: ctx.entityId,                                 │
+│     orgId: ctx.orgId,                                 │
 │     actorRole: ctx.role                                     │
 │   })                                                        │
 │                                                             │
@@ -28,7 +28,7 @@ insert, update, and delete — with no manual call required.
                     ▼  (automatic)
 ┌─────────────────────────────────────────────────────────────┐
 │ Audit Event Emission                                        │
-│   • entityId, actorId, table, action, timestamp             │
+│   • orgId, actorId, table, action, timestamp             │
 │   • correlationId (auto-generated or provided)              │
 │   • Hash-chained via computeEntryHash()                     │
 │   • Written to append-only audit_events table               │
@@ -50,7 +50,7 @@ insert, update, and delete — with no manual call required.
 
 ```typescript
 interface AuditEvent {
-  entityId: string           // Scoped entity
+  orgId: string           // Scoped entity
   actorId: string            // Who performed the action
   actorRole?: string         // RBAC role at time of action
   table: string              // Target table name
@@ -72,7 +72,7 @@ Event N: hash = SHA256({ payload, previousHash: Event[N-1].hash })
 This ensures:
 - Tamper evidence: any modification breaks the chain
 - Append-only: deletions are detectable
-- Verifiable: `verifyEntityAuditChain(entityId)` validates the full chain
+- Verifiable: `verifyEntityAuditChain(orgId)` validates the full chain
 
 ## Database Enforcement
 
@@ -98,13 +98,13 @@ import { withAudit } from '@nzila/db/audit'
 import { authorize } from '@nzila/os-core/policy'
 
 export const POST = withAuth({ requiredScope: 'governance:write' }, async (req, ctx) => {
-  const entityId = extractEntityId(req)
-  await authorizeEntityAccess(ctx, entityId)
+  const orgId = extractEntityId(req)
+  await authorizeOrgAccess(ctx, orgId)
 
-  const scopedDb = createScopedDb(entityId)
+  const scopedDb = createScopedDb(orgId)
   const auditedDb = withAudit(scopedDb, {
     actorId: ctx.userId,
-    entityId,
+    orgId,
     actorRole: ctx.role,
     correlationId: req.headers.get('x-request-id') ?? undefined,
   })

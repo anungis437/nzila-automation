@@ -12,7 +12,7 @@ import {
   AiExtractRequestSchema,
   validateOutputSchema,
 } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { asAiError } from '@/lib/catch-utils'
 
 const logger = createLogger('ai:extract')
@@ -25,9 +25,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     }
 
-    const { entityId, appKey, profileKey, promptKey, input, variables, dataClass, trace } = parsed.data
+    const { orgId, appKey, profileKey, promptKey, input, variables, dataClass, trace } = parsed.data
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     // Resolve prompt to get outputSchema
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     // Call generate with JSON response format
     const result = await generate({
-      entityId,
+      orgId,
       appKey,
       profileKey,
       promptKey,
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     } catch {
       // Retry once with a repair prompt
       const repairResult = await generate({
-        entityId,
+        orgId,
         appKey,
         profileKey,
         input: `The following text should be valid JSON. Fix it and return only valid JSON:\n\n${result.content}`,

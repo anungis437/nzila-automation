@@ -19,7 +19,7 @@ key rotation, vulnerability scanning, and secret detection.
 
 ### Authorization (Entity-Scoped RBAC)
 
-- Users access only entities listed in `entity_members` (AC-02)
+- Users access only entities listed in `org_members` (AC-02)
 - Roles: `admin`, `editor`, `viewer` — least privilege enforced (AC-03)
 - Middleware checks entity membership on every API request
 
@@ -32,7 +32,7 @@ key rotation, vulnerability scanning, and secret detection.
 ### Off-Boarding
 
 - Access revoked within 24 hours of termination notice (AC-05)
-- Process: Deactivate Clerk user → delete `entity_members` rows → verify
+- Process: Deactivate Clerk user → delete `org_members` rows → verify
 
 ## Vulnerability Management
 
@@ -50,17 +50,17 @@ key rotation, vulnerability scanning, and secret detection.
 
 | Artifact | Format | Control | Storage Path | Retention |
 |---|---|---|---|---|
-| Clerk MFA config export | JSON | AC-01 | `evidence/{entity_id}/access/{YYYY}/{MM}/clerk-mfa-config/` | 3_YEARS |
-| RBAC membership export | JSON | AC-02 | `evidence/{entity_id}/access/{YYYY}/{MM}/rbac-membership-export/` | 3_YEARS |
-| Quarterly access review report | JSON/PDF | AC-03 | `evidence/{entity_id}/access/{YYYY}/Q{N}/access-review-report/` | 3_YEARS |
-| Key rotation log | JSON | AC-04 | `evidence/{entity_id}/access/{YYYY}/{MM}/key-rotation-log/` | 3_YEARS |
-| Off-boarding evidence | JSON | AC-05 | `evidence/{entity_id}/access/{YYYY}/{MM}/offboarding/{user_id}/` | 7_YEARS |
-| Dependency audit results | JSON | SDLC-03 | `evidence/{entity_id}/sdlc/{YYYY}/{MM}/dependency-audit/` | 1_YEAR |
-| Secret scan results | JSON | SDLC-04 | `evidence/{entity_id}/sdlc/{YYYY}/{MM}/secret-scan-results/` | 1_YEAR |
+| Clerk MFA config export | JSON | AC-01 | `evidence/{org_id}/access/{YYYY}/{MM}/clerk-mfa-config/` | 3_YEARS |
+| RBAC membership export | JSON | AC-02 | `evidence/{org_id}/access/{YYYY}/{MM}/rbac-membership-export/` | 3_YEARS |
+| Quarterly access review report | JSON/PDF | AC-03 | `evidence/{org_id}/access/{YYYY}/Q{N}/access-review-report/` | 3_YEARS |
+| Key rotation log | JSON | AC-04 | `evidence/{org_id}/access/{YYYY}/{MM}/key-rotation-log/` | 3_YEARS |
+| Off-boarding evidence | JSON | AC-05 | `evidence/{org_id}/access/{YYYY}/{MM}/offboarding/{user_id}/` | 7_YEARS |
+| Dependency audit results | JSON | SDLC-03 | `evidence/{org_id}/sdlc/{YYYY}/{MM}/dependency-audit/` | 1_YEAR |
+| Secret scan results | JSON | SDLC-04 | `evidence/{org_id}/sdlc/{YYYY}/{MM}/secret-scan-results/` | 1_YEAR |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id`, `sha256`, `created_by`, `retention_class` per table above
+- `org_id`, `artifact_id`, `sha256`, `created_by`, `retention_class` per table above
 
 ### Hashing Expectation
 

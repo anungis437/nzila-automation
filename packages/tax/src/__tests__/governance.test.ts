@@ -81,12 +81,12 @@ describe('evaluateFinanceGovernanceRequirements', () => {
     expect(borrowingBlockers).toHaveLength(0)
   })
 
-  it('adds QC warning for Quebec entities', () => {
+  it('adds QC warning for Quebec orgs', () => {
     const result = evaluateFinanceGovernanceRequirements(baseCtx({ province: 'QC' }))
     expect(result.warnings).toContainEqual(expect.stringContaining('CO-17'))
   })
 
-  it('does not add QC warning for non-QC entities', () => {
+  it('does not add QC warning for non-QC orgs', () => {
     const result = evaluateFinanceGovernanceRequirements(baseCtx({ province: 'ON' }))
     const qcWarnings = result.warnings.filter((w) => w.includes('CO-17'))
     expect(qcWarnings).toHaveLength(0)

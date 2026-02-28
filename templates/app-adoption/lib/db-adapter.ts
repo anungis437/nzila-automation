@@ -3,7 +3,7 @@
  *
  * Provides read/write database accessors scoped to the current Org.
  * All queries produced by these accessors automatically include an
- * `entity_id = <orgId>` WHERE clause via createScopedDb.
+ * `org_id = <orgId>` WHERE clause via createScopedDb.
  *
  * Usage:
  *   import { getReadDb, getWriteDb } from '@/lib/db-adapter'

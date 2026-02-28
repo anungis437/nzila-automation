@@ -7,7 +7,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { embed, AiEmbedRequestSchema } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { asAiError } from '@/lib/catch-utils'
 import { createLogger } from '@nzila/os-core'
 
@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     }
 
-    const { entityId } = parsed.data
+    const { orgId } = parsed.data
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     const result = await embed(parsed.data)

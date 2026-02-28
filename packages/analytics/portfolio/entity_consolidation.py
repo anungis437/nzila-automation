@@ -305,7 +305,7 @@ class EntityConsolidationAnalyzer:
         }
 
     def calculate_backbone_entity_mapping(self) -> Dict:
-        """Map platform entities to Backbone shared components"""
+        """Map platform orgs to Backbone shared components"""
         backbone_components = {
             "multi_org_system": {
                 "name": "Multi-Org System",
@@ -429,9 +429,9 @@ class EntityConsolidationAnalyzer:
                 "phase": "Phase 1: Backbone Foundation",
                 "timeline": "2026-Q1 to Q2",
                 "consolidation_targets": [
-                    "User/Auth entities (15 platforms)",
-                    "Organization entities (12 platforms)",
-                    "Role/Permission entities (15 platforms)",
+                    "User/Auth orgs (15 platforms)",
+                    "Organization orgs (12 platforms)",
+                    "Role/Permission orgs (15 platforms)",
                 ],
                 "expected_outcome": "60% reduction in auth-related tables",
                 "effort": "Included in Backbone build",
@@ -440,8 +440,8 @@ class EntityConsolidationAnalyzer:
                 "phase": "Phase 2: Notification & Analytics",
                 "timeline": "2026-Q2 to Q3",
                 "consolidation_targets": [
-                    "Notification entities (15 platforms)",
-                    "Analytics entities (15 platforms)",
+                    "Notification orgs (15 platforms)",
+                    "Analytics orgs (15 platforms)",
                 ],
                 "expected_outcome": "80% reduction in notification/analytics tables",
                 "effort": "Included in Backbone Phase 4",
@@ -450,8 +450,8 @@ class EntityConsolidationAnalyzer:
                 "phase": "Phase 3: Payments & Documents",
                 "timeline": "2026-Q3 to Q4",
                 "consolidation_targets": [
-                    "Payment entities (8 platforms)",
-                    "Document entities (7 platforms)",
+                    "Payment orgs (8 platforms)",
+                    "Document orgs (7 platforms)",
                 ],
                 "expected_outcome": "75% reduction in payment/document tables",
                 "effort": "Included in Backbone Phase 3",
@@ -507,7 +507,7 @@ class EntityConsolidationAnalyzer:
                 }
             )
 
-        # Sort by total entities descending
+        # Sort by total orgs descending
         complexity_breakdown.sort(key=lambda x: x["total_entities"], reverse=True)
 
         return {
@@ -527,7 +527,7 @@ class EntityConsolidationAnalyzer:
     ) -> int:
         """Estimate migration weeks based on entity volume and schema complexity"""
         # Base: 2 weeks
-        # +1 week per 1000 entities
+        # +1 week per 1000 orgs
         # +1 week per 5 entity types
         base = 2
         entity_factor = total_entities // 1000

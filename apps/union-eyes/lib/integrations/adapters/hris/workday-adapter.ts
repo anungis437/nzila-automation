@@ -6,7 +6,7 @@
  * Features:
  * - OAuth2 authentication
  * - Full and incremental sync
- * - Employee, position, and department entities
+ * - Employee, position, and department orgs
  * - Rate limiting and retries
  * 
  * @see https://community.workday.com/sites/default/files/file-hosting/restapi/index.html
@@ -124,9 +124,9 @@ export class WorkdayAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { message: `Syncing ${entity}` });
 

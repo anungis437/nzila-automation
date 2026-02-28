@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 
   // ── CSRF validation ───────────────────────────────────────────────────────
 
-  let parsedState: { csrfToken: string; entityId: string }
+  let parsedState: { csrfToken: string; orgId: string }
   try {
     parsedState = JSON.parse(Buffer.from(stateParam, 'base64url').toString('utf8'))
   } catch {
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const { entityId } = parsedState
+  const { orgId } = parsedState
 
   // ── Token exchange ────────────────────────────────────────────────────────
 
@@ -92,13 +92,13 @@ export async function GET(req: NextRequest) {
     await tx
       .update(qboConnections)
       .set({ isActive: false, disconnectedAt: now, updatedAt: now })
-      .where(and(eq(qboConnections.entityId, entityId), eq(qboConnections.realmId, realmId)))
+      .where(and(eq(qboConnections.orgId, orgId), eq(qboConnections.realmId, realmId)))
 
     // Create fresh connection
     const [connection] = await tx
       .insert(qboConnections)
       .values({
-        entityId,
+        orgId,
         realmId,
         isActive: true,
         connectedBy: userId,

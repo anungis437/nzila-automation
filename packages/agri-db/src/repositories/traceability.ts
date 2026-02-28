@@ -13,9 +13,9 @@ export async function listTraceabilityLinks(
 export async function getFullChain(
   ctx: AgriReadContext,
   entityType: string,
-  entityId: string,
+  orgId: string,
 ): Promise<TraceabilityChain[]> {
-  void ctx; void entityType; void entityId
+  void ctx; void entityType; void orgId
   // TODO: recursive query to build full chain
   return []
 }

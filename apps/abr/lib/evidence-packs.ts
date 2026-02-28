@@ -109,9 +109,9 @@ export async function buildAbrEvidencePack(
     domain: 'abr',
     action: ctx.action,
     entityType: ctx.entityType,
-    entityId: ctx.entityId,
-    actorId: ctx.actorId,
     orgId: ctx.orgId,
+    actorId: ctx.actorId,
+    entityId: ctx.entityId,
     correlationId: ctx.correlationId,
     metadata: {
       fromState: ctx.fromState,

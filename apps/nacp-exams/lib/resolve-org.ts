@@ -4,8 +4,8 @@
  * Resolves a fully typed `NacpOrgContext` from Clerk auth state.
  * Every `'use server'` action MUST call `resolveOrgContext()` at the top
  * and use the returned context for:
- *   - org-scoped DB queries (WHERE org_id = ctx.entityId)
- *   - org-scoped DB inserts (org_id = ctx.entityId)
+ *   - org-scoped DB queries (WHERE org_id = ctx.orgId)
+ *   - org-scoped DB inserts (org_id = ctx.orgId)
  *   - audit trail attribution
  *   - evidence generation
  *
@@ -23,7 +23,7 @@ import type { NacpOrgContext } from '@nzila/nacp-core/types'
  * Resolve org context from Clerk auth.
  *
  * Clerk's `auth()` returns `orgId` when the user has an active
- * organization selected. We map this to the NzilaOS `entityId`.
+ * organization selected. We map this to the NzilaOS `orgId`.
  *
  * @throws Redirects to /sign-in if unauthenticated
  * @throws Redirects to /select-org if no active org
@@ -43,7 +43,7 @@ export async function resolveOrgContext(): Promise<NacpOrgContext> {
   const role = mapClerkRoleToNacpRole(orgRole, sessionClaims)
 
   return {
-    entityId: orgId,
+    orgId: orgId,
     actorId: userId,
     role,
     permissions: derivePermissions(role),

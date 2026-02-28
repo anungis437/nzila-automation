@@ -19,7 +19,7 @@ const LineItemSchema = z.object({
 })
 
 const CreateCheckoutSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   ventureId: z.string().optional(),
   customerId: z.string().optional(),
   lineItems: z.array(LineItemSchema).min(1),
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   try {
     const session = await createCheckoutSession({
-      entityId: input.entityId,
+      orgId: input.orgId,
       ventureId: input.ventureId,
       customerId: input.customerId,
       lineItems: input.lineItems,
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
 
     await recordAuditEvent({
-      entityId: input.entityId,
+      orgId: input.orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.checkout_session_created',

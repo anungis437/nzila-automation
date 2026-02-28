@@ -13,7 +13,7 @@ const mockDbInsert = vi.fn().mockReturnValue({
     returning: vi.fn().mockResolvedValue([
       {
         id: '00000000-0000-0000-0000-aaaaaaaaaaaa',
-        entityId: '00000000-0000-0000-0000-111111111111',
+        orgId: '00000000-0000-0000-0000-111111111111',
         appKey: 'console',
         profileKey: 'finance-default',
         actionType: 'finance.generate_stripe_monthly_reports',
@@ -61,18 +61,18 @@ vi.mock('@nzila/db', () => ({
 }))
 
 vi.mock('@nzila/db/schema', () => ({
-  aiActions: { id: 'id', entityId: 'entityId', actionType: 'actionType' },
+  aiActions: { id: 'id', orgId: 'orgId', actionType: 'actionType' },
   aiActionRuns: { id: 'id', actionId: 'actionId' },
-  aiCapabilityProfiles: { entityId: 'entityId', appKey: 'appKey', environment: 'environment', profileKey: 'profileKey' },
-  aiUsageBudgets: { entityId: 'entityId', appKey: 'appKey', profileKey: 'profileKey', month: 'month' },
-  aiKnowledgeSources: { entityId: 'entityId', title: 'title', appKey: 'appKey', id: 'id' },
+  aiCapabilityProfiles: { orgId: 'orgId', appKey: 'appKey', environment: 'environment', profileKey: 'profileKey' },
+  aiUsageBudgets: { orgId: 'orgId', appKey: 'appKey', profileKey: 'profileKey', month: 'month' },
+  aiKnowledgeSources: { orgId: 'orgId', title: 'title', appKey: 'appKey', id: 'id' },
   aiKnowledgeIngestionRuns: { id: 'id' },
   aiEmbeddings: {},
-  documents: { id: 'id', entityId: 'entityId', linkedType: 'linkedType', linkedId: 'linkedId' },
-  auditEvents: { entityId: 'entityId', createdAt: 'createdAt', hash: 'hash' },
+  documents: { id: 'id', orgId: 'orgId', linkedType: 'linkedType', linkedId: 'linkedId' },
+  auditEvents: { orgId: 'orgId', createdAt: 'createdAt', hash: 'hash' },
   evidencePacks: {},
   evidencePackArtifacts: {},
-  stripeReports: { entityId: 'entityId', startDate: 'startDate', endDate: 'endDate' },
+  stripeReports: { orgId: 'orgId', startDate: 'startDate', endDate: 'endDate' },
 }))
 
 // ── Mock @nzila/blob ────────────────────────────────────────────────────────
@@ -150,7 +150,7 @@ describe('Stripe tool idempotency', () => {
     const { generateMonthlyReports } = await import('./stripeTool')
 
     const proposal = {
-      entityId: '00000000-0000-0000-0000-111111111111',
+      orgId: '00000000-0000-0000-0000-111111111111',
       appKey: 'console',
       profileKey: 'finance-default',
       period: {
@@ -193,7 +193,7 @@ describe('Sanitize pipeline idempotency', () => {
     const { hashSanitized } = await import('./sanitize')
 
     const proposal = {
-      entityId: '00000000-0000-0000-0000-111111111111',
+      orgId: '00000000-0000-0000-0000-111111111111',
       period: { periodLabel: '2026-01', startDate: '2026-01-01', endDate: '2026-01-31' },
       outputs: ['revenue_summary', 'payout_recon'],
     }

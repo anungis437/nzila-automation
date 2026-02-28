@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const quote = await quoteRepo.create({
-      entityId: body.entityId ?? 'default',
+      orgId: body.orgId ?? 'default',
       title: body.title,
       tier: body.tier ?? 'STANDARD',
       customerId: body.customerId ?? 'unknown',

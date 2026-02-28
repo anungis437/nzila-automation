@@ -96,7 +96,7 @@ export class LinkedInLearningAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     await this.ensureConnected();
 
-    const entities = options.entities || ['courses', 'enrollments', 'progress', 'completions', 'learners'];
+    const orgs = options.orgs || ['courses', 'enrollments', 'progress', 'completions', 'learners'];
     const results: SyncResult = {
       success: true,
       recordsProcessed: 0,
@@ -107,7 +107,7 @@ export class LinkedInLearningAdapter extends BaseIntegration {
     };
 
     try {
-      for (const entity of entities) {
+      for (const entity of orgs) {
         switch (entity) {
           case 'courses':
             await this.syncCourses(options, results);

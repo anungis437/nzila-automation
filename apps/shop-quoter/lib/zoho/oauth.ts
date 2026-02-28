@@ -16,10 +16,10 @@ const TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000 // 5 minutes before actual expiry
 
 export class ZohoOAuthClient {
   private config: ZohoOAuthConfig
-  private entityId: string
+  private orgId: string
 
-  constructor(entityId: string, config: ZohoOAuthConfig) {
-    this.entityId = entityId
+  constructor(orgId: string, config: ZohoOAuthConfig) {
+    this.orgId = orgId
     this.config = config
   }
 
@@ -67,7 +67,7 @@ export class ZohoOAuthClient {
   async getAccessToken(): Promise<string> {
     const credentials = await this.getStoredCredentials()
     if (!credentials) {
-      throw new Error(`No Zoho credentials found for entity ${this.entityId}`)
+      throw new Error(`No Zoho credentials found for entity ${this.orgId}`)
     }
 
     // Check if token needs refresh
@@ -75,7 +75,7 @@ export class ZohoOAuthClient {
     const expiryTime = credentials.tokenExpiry.getTime()
 
     if (now >= expiryTime - TOKEN_EXPIRY_BUFFER_MS) {
-      logger.info('Zoho access token expired, refreshing', { entityId: this.entityId })
+      logger.info('Zoho access token expired, refreshing', { orgId: this.orgId })
       const refreshed = await this.refreshAccessToken(credentials)
       return refreshed.accessToken
     }
@@ -102,7 +102,7 @@ export class ZohoOAuthClient {
 
     if (!response.ok) {
       const error = await response.text()
-      logger.error('Zoho token refresh failed', { error, entityId: this.entityId })
+      logger.error('Zoho token refresh failed', { error, orgId: this.orgId })
       throw new Error(`Zoho token refresh failed: ${error}`)
     }
 
@@ -117,7 +117,7 @@ export class ZohoOAuthClient {
     }
 
     await this.storeCredentials(newCredentials)
-    logger.info('Zoho access token refreshed', { entityId: this.entityId })
+    logger.info('Zoho access token refreshed', { orgId: this.orgId })
     return newCredentials
   }
 
@@ -151,11 +151,11 @@ export class ZohoOAuthClient {
         method: 'POST',
       })
     } catch (error) {
-      logger.warn('Zoho token revocation failed', { error, entityId: this.entityId })
+      logger.warn('Zoho token revocation failed', { error, orgId: this.orgId })
     }
 
-    await db.delete(commerceZohoCredentials).where(eq(commerceZohoCredentials.entityId, this.entityId))
-    logger.info('Zoho credentials revoked and deleted', { entityId: this.entityId })
+    await db.delete(commerceZohoCredentials).where(eq(commerceZohoCredentials.orgId, this.orgId))
+    logger.info('Zoho credentials revoked and deleted', { orgId: this.orgId })
   }
 
   /**
@@ -174,7 +174,7 @@ export class ZohoOAuthClient {
     const [row] = await db
       .select()
       .from(commerceZohoCredentials)
-      .where(eq(commerceZohoCredentials.entityId, this.entityId))
+      .where(eq(commerceZohoCredentials.orgId, this.orgId))
       .limit(1)
 
     if (!row) return null
@@ -202,10 +202,10 @@ export class ZohoOAuthClient {
           apiServer: credentials.apiServer,
           updatedAt: new Date(),
         })
-        .where(eq(commerceZohoCredentials.entityId, this.entityId))
+        .where(eq(commerceZohoCredentials.orgId, this.orgId))
     } else {
       await db.insert(commerceZohoCredentials).values({
-        entityId: this.entityId,
+        orgId: this.orgId,
         accessToken: credentials.accessToken,
         refreshToken: credentials.refreshToken,
         tokenExpiry: credentials.tokenExpiry,
@@ -220,7 +220,7 @@ export class ZohoOAuthClient {
 // Factory function for creating OAuth client with env config
 // ═══════════════════════════════════════════════════════════════════════════
 
-export function createZohoOAuthClient(entityId: string): ZohoOAuthClient {
+export function createZohoOAuthClient(orgId: string): ZohoOAuthClient {
   const config: ZohoOAuthConfig = {
     clientId: process.env.ZOHO_CLIENT_ID ?? '',
     clientSecret: process.env.ZOHO_CLIENT_SECRET ?? '',
@@ -237,5 +237,5 @@ export function createZohoOAuthClient(entityId: string): ZohoOAuthClient {
     throw new Error('Zoho OAuth credentials not configured (ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET)')
   }
 
-  return new ZohoOAuthClient(entityId, config)
+  return new ZohoOAuthClient(orgId, config)
 }

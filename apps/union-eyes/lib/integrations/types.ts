@@ -164,7 +164,7 @@ export interface IntegrationCapabilities {
  */
 export interface SyncOptions {
   type: SyncType;
-  entities?: string[];
+  orgs?: string[];
   filters?: Record<string, unknown>;
   since?: Date;
   cursor?: string;
@@ -193,7 +193,7 @@ export interface SyncResult {
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface SyncError {
   entity: string;
-  entityId?: string;
+  orgId?: string;
   error: string;
   details?: unknown;
 }

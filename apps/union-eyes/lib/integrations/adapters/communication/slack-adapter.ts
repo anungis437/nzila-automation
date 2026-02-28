@@ -95,7 +95,7 @@ export class SlackAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     await this.ensureConnected();
 
-    const entities = options.entities || ['channels', 'messages', 'users', 'files'];
+    const orgs = options.orgs || ['channels', 'messages', 'users', 'files'];
     const results: SyncResult = {
       success: true,
       recordsProcessed: 0,
@@ -106,7 +106,7 @@ export class SlackAdapter extends BaseIntegration {
     };
 
     try {
-      for (const entity of entities) {
+      for (const entity of orgs) {
         switch (entity) {
           case 'channels':
             await this.syncChannels(options, results);

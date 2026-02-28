@@ -3,7 +3,7 @@
  *
  * These tables sit *above* QuickBooks Online as a governance overlay:
  * close control engine, evidence pack generator, and QBO sync tracker.
- * All scoped by entity_id for multi-entity from day one.
+ * All scoped by org_id for multi-entity from day one.
  */
 import {
   pgTable,
@@ -17,7 +17,7 @@ import {
   boolean,
   integer,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
 
@@ -76,9 +76,9 @@ export const qboReportTypeEnum = pgEnum('qbo_report_type', [
 
 export const closePeriods = pgTable('close_periods', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   periodLabel: varchar('period_label', { length: 20 }).notNull(), // e.g. 2026-01, FY2026
   periodType: varchar('period_type', { length: 10 }).notNull(), // month | quarter | year
   startDate: date('start_date').notNull(),
@@ -93,9 +93,9 @@ export const closePeriods = pgTable('close_periods', {
 
 export const closeTasks = pgTable('close_tasks', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   periodId: uuid('period_id')
     .notNull()
     .references(() => closePeriods.id),
@@ -124,9 +124,9 @@ export const closeTaskEvidence = pgTable('close_task_evidence', {
 
 export const closeExceptions = pgTable('close_exceptions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   periodId: uuid('period_id')
     .notNull()
     .references(() => closePeriods.id),
@@ -144,14 +144,14 @@ export const closeExceptions = pgTable('close_exceptions', {
 
 export const closeApprovals = pgTable('close_approvals', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   periodId: uuid('period_id')
     .notNull()
     .references(() => closePeriods.id),
   approverClerkUserId: text('approver_clerk_user_id').notNull(),
-  approverRole: text('approver_role').notNull(), // finance_approver | entity_admin
+  approverRole: text('approver_role').notNull(), // finance_approver | org_admin
   status: closeApprovalStatusEnum('status').notNull().default('pending'),
   comments: text('comments'),
   decidedAt: timestamp('decided_at', { withTimezone: true }),
@@ -162,9 +162,9 @@ export const closeApprovals = pgTable('close_approvals', {
 
 export const qboConnections = pgTable('qbo_connections', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   realmId: text('realm_id').notNull(), // QBO company ID
   companyName: text('company_name'),
   isActive: boolean('is_active').notNull().default(true),
@@ -190,9 +190,9 @@ export const qboTokens = pgTable('qbo_tokens', {
 
 export const qboSyncRuns = pgTable('qbo_sync_runs', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   connectionId: uuid('connection_id')
     .notNull()
     .references(() => qboConnections.id),
@@ -208,9 +208,9 @@ export const qboSyncRuns = pgTable('qbo_sync_runs', {
 
 export const qboReports = pgTable('qbo_reports', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   syncRunId: uuid('sync_run_id')
     .notNull()
     .references(() => qboSyncRuns.id),
@@ -227,9 +227,9 @@ export const qboReports = pgTable('qbo_reports', {
 
 export const financeGovernanceLinks = pgTable('finance_governance_links', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   sourceType: varchar('source_type', { length: 40 }).notNull(), // close_period | tax_year | tax_filing
   sourceId: uuid('source_id').notNull(),
   governanceType: varchar('governance_type', { length: 40 }).notNull(), // resolution | governance_action | approval

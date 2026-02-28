@@ -35,7 +35,7 @@ export interface AgingBucket {
 export interface AgingReport {
   type: 'ar' | 'ap'
   asOfDate: string
-  entityId: string
+  orgId: string
   buckets: AgingBucket[]
   summary: {
     totalOutstanding: number
@@ -85,7 +85,7 @@ export function generateAgingReport(
   invoices: AgingInvoice[],
   options: {
     type: 'ar' | 'ap'
-    entityId: string
+    orgId: string
     asOfDate?: string
     buckets?: AgingBucketConfig[]
   },
@@ -138,7 +138,7 @@ export function generateAgingReport(
   return {
     type: options.type,
     asOfDate,
-    entityId: options.entityId,
+    orgId: options.orgId,
     buckets,
     summary: {
       totalOutstanding: Math.round(totalOutstanding * 100) / 100,

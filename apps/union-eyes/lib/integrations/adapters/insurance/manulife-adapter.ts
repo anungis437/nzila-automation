@@ -136,10 +136,10 @@ export class ManulifeAdapter extends BaseIntegration {
     const errors: SyncError[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
       const modifiedSince = options.cursor ? new Date(options.cursor) : undefined;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { message: `Syncing ${entity}` });
 

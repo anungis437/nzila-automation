@@ -42,7 +42,7 @@ export interface TradeDomainEvent<TPayload = Record<string, unknown>> {
   readonly type: TradeEventType
   readonly payload: TPayload
   readonly metadata: {
-    readonly entityId: string
+    readonly orgId: string
     readonly actorId: string
     readonly correlationId: string
     readonly causationId?: string

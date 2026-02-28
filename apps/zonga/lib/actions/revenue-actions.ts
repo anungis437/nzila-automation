@@ -40,7 +40,7 @@ export async function getRevenueOverview(): Promise<RevenueOverview> {
         COALESCE(SUM(CASE WHEN type = ${RevenueType.DOWNLOAD} THEN amount END), 0) as downloads,
         COALESCE(SUM(CASE WHEN type = ${RevenueType.SYNC_LICENSE} THEN amount END), 0) as sync,
         COUNT(*) as event_count
-      FROM zonga_revenue_events WHERE entity_id = ${ctx.entityId}`,
+      FROM zonga_revenue_events WHERE org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number; streams: number; downloads: number; sync: number; event_count: number }]
 
     const recentEvents = (await platformDb.execute(
@@ -51,7 +51,7 @@ export async function getRevenueOverview(): Promise<RevenueOverview> {
         creator_id as "creatorId",
         source,
         created_at as "createdAt"
-      FROM zonga_revenue_events WHERE entity_id = ${ctx.entityId}
+      FROM zonga_revenue_events WHERE org_id = ${ctx.orgId}
       ORDER BY created_at DESC LIMIT 25`,
     )) as unknown as { rows: RevenueEvent[] }
 
@@ -98,9 +98,9 @@ export async function recordRevenueEvent(data: {
     // ── Write to domain table (org-scoped, append-only) ──
     await platformDb.execute(
       sql`INSERT INTO zonga_revenue_events
-        (id, entity_id, type, amount, asset_id, asset_title, creator_id, source, created_by, created_at)
+        (id, org_id, type, amount, asset_id, asset_title, creator_id, source, created_by, created_at)
       VALUES (
-        ${eventId}, ${ctx.entityId}, ${data.type}, ${data.amount},
+        ${eventId}, ${ctx.orgId}, ${data.type}, ${data.amount},
         ${data.assetId}, ${data.assetTitle ?? null}, ${data.creatorId},
         ${data.source ?? null}, ${ctx.actorId}, NOW()
       )`,
@@ -108,24 +108,24 @@ export async function recordRevenueEvent(data: {
 
     // ── Audit trail (audit_log stays as audit-only) ──
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue_event', ${eventId},
-        ${JSON.stringify({ ...data, id: eventId, orgId: ctx.entityId })}::jsonb)`,
+        ${JSON.stringify({ ...data, id: eventId, orgId: ctx.orgId })}::jsonb)`,
     )
 
     const auditEvent = buildZongaAuditEvent({
       action: ZongaAuditAction.REVENUE_RECORD,
       entityType: ZongaEntityType.REVENUE_EVENT,
-      entityId: eventId,
+      orgId: eventId,
       actorId: ctx.actorId,
       targetId: eventId,
-      metadata: { type: data.type, amount: data.amount, orgId: ctx.entityId },
+      metadata: { type: data.type, amount: data.amount, orgId: ctx.orgId },
     })
     logger.info('Revenue event recorded', { ...auditEvent })
 
     const pack = buildEvidencePackFromAction({
       actionType: 'REVENUE_RECORDED',
-      entityId: eventId,
+      orgId: eventId,
       executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
@@ -152,8 +152,8 @@ export async function getRevenueByCreator(): Promise<
         COALESCE(SUM(re.amount), 0) as total,
         COUNT(*) as events
       FROM zonga_revenue_events re
-      LEFT JOIN zonga_creators c ON c.id = re.creator_id AND c.entity_id = ${ctx.entityId}
-      WHERE re.entity_id = ${ctx.entityId}
+      LEFT JOIN zonga_creators c ON c.id = re.creator_id AND c.org_id = ${ctx.orgId}
+      WHERE re.org_id = ${ctx.orgId}
       GROUP BY re.creator_id, COALESCE(c.display_name, re.creator_id)
       ORDER BY total DESC
       LIMIT 50`,

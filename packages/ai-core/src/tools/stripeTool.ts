@@ -19,7 +19,7 @@ import type { FinanceStripeMonthlyReportsProposal } from '../schemas'
 
 function buildIdempotencyKey(proposal: FinanceStripeMonthlyReportsProposal): string {
   return [
-    proposal.entityId,
+    proposal.orgId,
     proposal.period.periodLabel,
     proposal.outputs.sort().join(','),
     proposal.ventureId ?? 'all',
@@ -29,7 +29,7 @@ function buildIdempotencyKey(proposal: FinanceStripeMonthlyReportsProposal): str
 // ── Check for existing reports ──────────────────────────────────────────────
 
 async function findExistingReports(
-  entityId: string,
+  orgId: string,
   startDate: string,
   endDate: string,
 ): Promise<ReportArtifact[]> {
@@ -38,7 +38,7 @@ async function findExistingReports(
     .from(stripeReports)
     .where(
       and(
-        eq(stripeReports.entityId, entityId),
+        eq(stripeReports.orgId, orgId),
         eq(stripeReports.startDate, startDate),
         eq(stripeReports.endDate, endDate),
       ),
@@ -78,7 +78,7 @@ export async function generateMonthlyReports(
 
   const startedAt = new Date()
   const existing = await findExistingReports(
-    proposal.entityId,
+    proposal.orgId,
     proposal.period.startDate,
     proposal.period.endDate,
   )
@@ -101,7 +101,7 @@ export async function generateMonthlyReports(
   const genStartedAt = new Date()
   try {
     const artifacts = await generateStripeReports({
-      entityId: proposal.entityId,
+      orgId: proposal.orgId,
       startDate: proposal.period.startDate,
       endDate: proposal.period.endDate,
       periodId: proposal.period.periodId,
@@ -115,7 +115,7 @@ export async function generateMonthlyReports(
         startedAt: genStartedAt,
         finishedAt: genFinishedAt,
         inputs: {
-          entityId: proposal.entityId,
+          orgId: proposal.orgId,
           startDate: proposal.period.startDate,
           endDate: proposal.period.endDate,
           outputs: proposal.outputs,
@@ -137,7 +137,7 @@ export async function generateMonthlyReports(
         startedAt: genStartedAt,
         finishedAt: genFinishedAt,
         inputs: {
-          entityId: proposal.entityId,
+          orgId: proposal.orgId,
           startDate: proposal.period.startDate,
           endDate: proposal.period.endDate,
         },

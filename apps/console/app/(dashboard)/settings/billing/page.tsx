@@ -6,7 +6,7 @@
  */
 import { CreditCardIcon } from '@heroicons/react/24/outline'
 import { platformDb } from '@nzila/db/platform'
-import { stripeSubscriptions, entityMembers } from '@nzila/db/schema'
+import { stripeSubscriptions, orgMembers } from '@nzila/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
@@ -18,18 +18,18 @@ export default async function BillingPage() {
 
   // Resolve entity from user membership (same pattern as integrations page)
   const [membership] = await platformDb
-    .select({ entityId: entityMembers.entityId })
-    .from(entityMembers)
-    .where(eq(entityMembers.clerkUserId, userId))
+    .select({ orgId: orgMembers.orgId })
+    .from(orgMembers)
+    .where(eq(orgMembers.clerkUserId, userId))
     .limit(1)
 
-  const entityId = membership?.entityId ?? ''
+  const orgId = membership?.orgId ?? ''
 
-  const subs = entityId
+  const subs = orgId
     ? await platformDb
         .select()
         .from(stripeSubscriptions)
-        .where(eq(stripeSubscriptions.entityId, entityId))
+        .where(eq(stripeSubscriptions.orgId, orgId))
         .orderBy(desc(stripeSubscriptions.createdAt))
         .limit(5)
     : []
@@ -51,7 +51,7 @@ export default async function BillingPage() {
       </div>
 
       <SubscriptionManager
-        entityId={entityId}
+        orgId={orgId}
         activeSub={activeSub ? {
           subscriptionId: activeSub.stripeSubscriptionId,
           customerId: activeSub.stripeCustomerId,

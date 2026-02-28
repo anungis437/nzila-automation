@@ -2,7 +2,7 @@
 /**
  * POST /api/stripe/refunds/approve — Approve a pending refund
  *
- * Only finance_approver or entity_admin roles can approve.
+ * Only finance_approver or org_admin roles can approve.
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -18,7 +18,7 @@ const logger = createLogger('stripe:refunds:approve')
 
 const ApproveRefundSchema = z.object({
   refundId: z.string().uuid(),
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   action: z.enum(['approve', 'deny']),
 })
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 400 })
   }
 
-  const { refundId, entityId, action: approvalAction } = parsed.data
+  const { refundId, orgId, action: approvalAction } = parsed.data
 
   // Fetch the pending refund
   const [refund] = await platformDb
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       .where(eq(stripeRefunds.id, refundId))
 
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.refund_denied',
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       .where(eq(stripeRefunds.id, refundId))
 
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.refund_approved',
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
 
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.refund_executed',

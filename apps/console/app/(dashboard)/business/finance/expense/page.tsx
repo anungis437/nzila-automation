@@ -11,11 +11,11 @@ interface Entity {
 }
 
 export default function ExpenseTrackingPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -55,19 +55,19 @@ export default function ExpenseTrackingPage() {
         <h2 className="text-sm font-medium text-gray-700 mb-3">Your Entities</h2>
         {loading ? (
           <p className="text-gray-400 text-sm">Loading...</p>
-        ) : entities.length === 0 ? (
+        ) : orgs.length === 0 ? (
           <div className="text-center py-10 bg-white border border-gray-200 rounded-xl">
-            <p className="text-gray-500 text-sm">No entities yet.</p>
-            <Link href="/business/entities" className="text-blue-600 text-sm hover:underline">
+            <p className="text-gray-500 text-sm">No orgs yet.</p>
+            <Link href="/business/orgs" className="text-blue-600 text-sm hover:underline">
               Create your first entity →
             </Link>
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {entities.map((entity) => (
+            {orgs.map((entity) => (
               <Link
                 key={entity.id}
-                href={`/business/entities/${entity.id}`}
+                href={`/business/orgs/${entity.id}`}
                 className="p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition"
               >
                 <p className="text-sm font-medium text-gray-900">{entity.legalName}</p>

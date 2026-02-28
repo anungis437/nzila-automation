@@ -52,16 +52,16 @@ are reviewed, approved, tested, and documented with full evidence trails.
 
 | Artifact | Format | Control | Storage Path | Retention |
 |---|---|---|---|---|
-| PR metadata (author, reviewers, approval, merge SHA) | JSON | CM-01 | `evidence/{entity_id}/change-mgmt/{YYYY}/{MM}/pr-evidence/{pr_number}/` | 7_YEARS |
-| Database migration journal | JSON | CM-02 | `evidence/{entity_id}/change-mgmt/{YYYY}/{MM}/db-migrations/` | 7_YEARS |
-| Release checklist (completed) | PDF/JSON | CM-03 | `evidence/{entity_id}/change-mgmt/{YYYY}/{MM}/release-checklist/{release_tag}/` | 3_YEARS |
-| Rollback test log | JSON | CM-04 | `evidence/{entity_id}/change-mgmt/{YYYY}/{MM}/rollback-test/{release_tag}/` | 3_YEARS |
-| IaC plan + apply log | JSON | CM-05 | `evidence/{entity_id}/change-mgmt/{YYYY}/{MM}/iac-changes/{change_id}/` | 7_YEARS |
+| PR metadata (author, reviewers, approval, merge SHA) | JSON | CM-01 | `evidence/{org_id}/change-mgmt/{YYYY}/{MM}/pr-evidence/{pr_number}/` | 7_YEARS |
+| Database migration journal | JSON | CM-02 | `evidence/{org_id}/change-mgmt/{YYYY}/{MM}/db-migrations/` | 7_YEARS |
+| Release checklist (completed) | PDF/JSON | CM-03 | `evidence/{org_id}/change-mgmt/{YYYY}/{MM}/release-checklist/{release_tag}/` | 3_YEARS |
+| Rollback test log | JSON | CM-04 | `evidence/{org_id}/change-mgmt/{YYYY}/{MM}/rollback-test/{release_tag}/` | 3_YEARS |
+| IaC plan + apply log | JSON | CM-05 | `evidence/{org_id}/change-mgmt/{YYYY}/{MM}/iac-changes/{change_id}/` | 7_YEARS |
 | Evidence pack index | JSON | All CM | Same path as release checklist | 3_YEARS |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id` (e.g., `PR-1234`, `REL-v2.3.0`), `sha256`, `created_by`, `retention_class`
+- `org_id`, `artifact_id` (e.g., `PR-1234`, `REL-v2.3.0`), `sha256`, `created_by`, `retention_class`
 
 ### Hashing Expectation
 

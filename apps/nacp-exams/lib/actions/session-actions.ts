@@ -48,7 +48,7 @@ export async function listSessions(opts?: {
 }): Promise<{ sessions: ExamSessionRow[] }> {
   const ctx = await resolveOrgContext()
 
-  let filter = sql`es.entity_id = ${ctx.entityId}`
+  let filter = sql`es.org_id = ${ctx.orgId}`
   if (opts?.status) {
     filter = sql`${filter} AND es.status = ${opts.status}`
   }
@@ -92,7 +92,7 @@ export async function getSessionStats(): Promise<SessionStats> {
       COUNT(*) FILTER (WHERE status = ${ExamSessionStatus.CLOSED})::int as completed,
       COUNT(*) FILTER (WHERE status = 'cancelled')::int as cancelled
     FROM exam_sessions
-    WHERE entity_id = ${ctx.entityId}
+    WHERE org_id = ${ctx.orgId}
   `)
 
   const r = row as Record<string, number>
@@ -125,10 +125,10 @@ export async function createSession(data: {
   const id = crypto.randomUUID()
 
   await platformDb.execute(sql`
-    INSERT INTO exam_sessions (id, entity_id, exam_id, center_id, scheduled_date, duration_minutes, max_candidates, status, notes, created_by, created_at)
+    INSERT INTO exam_sessions (id, org_id, exam_id, center_id, scheduled_date, duration_minutes, max_candidates, status, notes, created_by, created_at)
     VALUES (
       ${id},
-      ${ctx.entityId},
+      ${ctx.orgId},
       ${data.examId},
       ${data.centerId},
       ${data.scheduledDate},
@@ -145,10 +145,10 @@ export async function createSession(data: {
   await buildExamEvidencePack({
     action: 'session.created',
     entityType: 'exam_session',
-    entityId: id,
+    orgId: id,
     actorId: ctx.actorId,
     payload: {
-      orgId: ctx.entityId,
+      orgId: ctx.orgId,
       examId: data.examId,
       centerId: data.centerId,
       scheduledDate: data.scheduledDate,
@@ -167,14 +167,14 @@ export async function updateSessionStatus(
   // ── Fetch current session for state machine context (org-scoped) ──
   const [row] = await platformDb.execute(sql`
     SELECT
-      id, entity_id as "entityId", entity_id as "orgId", exam_id as "examId",
+      id, org_id as "orgId", org_id as "orgId", exam_id as "examId",
       center_id as "centerId", status, scheduled_date as "scheduledAt",
       opened_at as "openedAt", sealed_at as "sealedAt",
       exported_at as "exportedAt", closed_at as "closedAt",
       integrity_hash as "integrityHash", supervisor_id as "supervisorId",
       COALESCE(candidate_count, 0)::int as "candidateCount",
       created_at as "createdAt", updated_at as "updatedAt"
-    FROM exam_sessions WHERE id = ${sessionId} AND entity_id = ${ctx.entityId}
+    FROM exam_sessions WHERE id = ${sessionId} AND org_id = ${ctx.orgId}
   `)
   if (!row) return { success: false, error: 'Session not found' }
 
@@ -185,8 +185,8 @@ export async function updateSessionStatus(
   const result = transitionSession(
     currentStatus,
     targetStatus,
-    { entityId: ctx.entityId, actorId: ctx.actorId, role: ctx.role, meta: {} },
-    ctx.entityId,
+    { orgId: ctx.orgId, actorId: ctx.actorId, role: ctx.role, meta: {} },
+    ctx.orgId,
     session,
   )
 
@@ -198,7 +198,7 @@ export async function updateSessionStatus(
   await platformDb.execute(sql`
     UPDATE exam_sessions
     SET status = ${targetStatus}, updated_at = NOW()
-    WHERE id = ${sessionId} AND entity_id = ${ctx.entityId}
+    WHERE id = ${sessionId} AND org_id = ${ctx.orgId}
   `)
 
   // ── Audit trail + telemetry ───────────────────────────────────────
@@ -206,10 +206,10 @@ export async function updateSessionStatus(
   const evidencePromise = buildExamEvidencePack({
     action: 'session.status_changed',
     entityType: 'exam_session',
-    entityId: sessionId,
+    orgId: sessionId,
     actorId: ctx.actorId,
     payload: {
-      orgId: ctx.entityId,
+      orgId: ctx.orgId,
       fromStatus: currentStatus,
       toStatus: targetStatus,
       transitionLabel: result.label,
@@ -226,7 +226,7 @@ export async function updateSessionStatus(
   }
 
   logTransition(
-    { orgId: ctx.entityId, actorId: ctx.actorId },
+    { orgId: ctx.orgId, actorId: ctx.actorId },
     'exam_session',
     currentStatus,
     targetStatus,

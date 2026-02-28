@@ -106,7 +106,7 @@ describe('INV-20 — Dual-control for financial actions', () => {
   const baseRequest: DualControlRequest = {
     actionId: 'act-001',
     actionType: 'payment-disbursement',
-    entityId: 'entity-abc',
+    orgId: 'entity-abc',
     requestedBy: 'user-A',
     requestedAt: '2025-06-15T12:00:00Z',
     amount: 50000,
@@ -185,7 +185,7 @@ describe('INV-21 — Key rotation & DR artifacts', () => {
   it('DR simulation artifact generates valid digest', () => {
     const result: DRSimulationResult = {
       simulationId: 'sim-1',
-      entityId: 'entity-abc',
+      orgId: 'entity-abc',
       scenario: 'key-compromise-rotation',
       startedAt: '2025-06-15T00:00:00Z',
       completedAt: '2025-06-15T00:05:00Z',
@@ -203,7 +203,7 @@ describe('INV-21 — Key rotation & DR artifacts', () => {
   it('DR simulation artifact changes when result differs', () => {
     const base: DRSimulationResult = {
       simulationId: 'sim-1',
-      entityId: 'entity-abc',
+      orgId: 'entity-abc',
       scenario: 'key-compromise-rotation',
       startedAt: '2025-06-15T00:00:00Z',
       completedAt: '2025-06-15T00:05:00Z',

@@ -32,7 +32,7 @@ vi.mock('@nzila/db/schema', () => ({
   },
   auditEvents: {
     createdAt: 'created_at',
-    entityId: 'entity_id',
+    orgId: 'org_id',
   },
 }))
 

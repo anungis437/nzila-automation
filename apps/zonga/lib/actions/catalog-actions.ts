@@ -55,7 +55,7 @@ export async function listCatalogAssets(opts?: {
         created_at as "createdAt"
       FROM audit_log
       WHERE (action = 'asset.created' OR action = 'asset.published')
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT ${pageSize} OFFSET ${offset}`,
     )) as unknown as { rows: ContentAsset[] }
@@ -63,7 +63,7 @@ export async function listCatalogAssets(opts?: {
     const [countResult] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
       WHERE (action = 'asset.created' OR action = 'asset.published')
-        AND org_id = ${ctx.entityId}`,
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const total = Number(countResult?.total ?? 0)
@@ -99,14 +99,14 @@ export async function createContentAsset(data: {
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('asset.created', ${ctx.actorId}, 'content_asset', ${assetId}, ${ctx.entityId},
+      VALUES ('asset.created', ${ctx.actorId}, 'content_asset', ${assetId}, ${ctx.orgId},
         ${JSON.stringify({ ...data, status: AssetStatus.DRAFT, id: assetId })}::jsonb)`,
     )
 
     const auditEvent = buildZongaAuditEvent({
       action: ZongaAuditAction.CONTENT_UPLOAD,
       entityType: ZongaEntityType.CONTENT_ASSET,
-      entityId: assetId,
+      orgId: assetId,
       actorId: ctx.actorId,
       targetId: assetId,
       metadata: { title: data.title, type: data.type },
@@ -115,7 +115,7 @@ export async function createContentAsset(data: {
 
     const pack = buildEvidencePackFromAction({
       actionType: 'CONTENT_ASSET_CREATED',
-      entityId: assetId,
+      orgId: assetId,
       executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
@@ -135,14 +135,14 @@ export async function publishAsset(assetId: string): Promise<{ success: boolean 
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('asset.published', ${ctx.actorId}, 'content_asset', ${assetId}, ${ctx.entityId},
+      VALUES ('asset.published', ${ctx.actorId}, 'content_asset', ${assetId}, ${ctx.orgId},
         ${JSON.stringify({ status: AssetStatus.PUBLISHED, publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
     const auditEvent = buildZongaAuditEvent({
       action: ZongaAuditAction.CONTENT_PUBLISH,
       entityType: ZongaEntityType.CONTENT_ASSET,
-      entityId: assetId,
+      orgId: assetId,
       actorId: ctx.actorId,
       targetId: assetId,
     })
@@ -170,7 +170,7 @@ export async function getAssetDetail(assetId: string): Promise<ContentAsset | nu
   try {
     const [row] = (await platformDb.execute(
       sql`SELECT
-        entity_id as id, metadata->>'title' as title,
+        org_id as id, metadata->>'title' as title,
         metadata->>'type' as type,
         metadata->>'status' as status,
         metadata->>'creatorId' as "creatorId",
@@ -180,8 +180,8 @@ export async function getAssetDetail(assetId: string): Promise<ContentAsset | nu
         metadata->>'isrc' as isrc,
         created_at as "createdAt"
       FROM audit_log
-      WHERE entity_id = ${assetId} AND entity_type = 'content_asset'
-        AND org_id = ${ctx.entityId}
+      WHERE org_id = ${assetId} AND entity_type = 'content_asset'
+        AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT 1`,
     )) as unknown as [ContentAsset | undefined]

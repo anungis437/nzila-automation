@@ -269,10 +269,10 @@ export const config = {
  * ${pascalName} — API route guards
  *
  * Entity membership + platform RBAC + scoped DB + automatic audit.
- * Every API route MUST call requireEntityAccess() or requirePlatformRole().
+ * Every API route MUST call requireOrgAccess() or requirePlatformRole().
  */
 import { NextResponse } from 'next/server'
-import { authorize, authorizeEntityAccess, type AuthContext } from '@nzila/os-core/policy'
+import { authorize, authorizeOrgAccess, type AuthContext } from '@nzila/os-core/policy'
 import { createScopedDb, type ScopedDb } from '@nzila/db/scoped'
 import { withAudit, type AuditedScopedDb } from '@nzila/db/audit'
 import type { NextRequest } from 'next/server'
@@ -293,18 +293,18 @@ export interface GuardError {
  *
  * Returns an audited, entity-scoped database client ready to use.
  */
-export async function requireEntityAccess(
+export async function requireOrgAccess(
   req: NextRequest,
-  entityId: string,
+  orgId: string,
 ): Promise<GuardResult | GuardError> {
   try {
     const ctx = await authorize(req)
-    await authorizeEntityAccess(ctx, entityId)
+    await authorizeOrgAccess(ctx, orgId)
 
-    const scopedDb = createScopedDb(entityId)
+    const scopedDb = createScopedDb(orgId)
     const auditedDb = withAudit(scopedDb, {
       actorId: ctx.userId,
-      entityId,
+      orgId,
       actorRole: ctx.role,
       correlationId: req.headers.get('x-request-id') ?? undefined,
     })
@@ -335,7 +335,7 @@ export async function requireEntityAccess(
 export {
   authorize,
   withAuth,
-  authorizeEntityAccess,
+  authorizeOrgAccess,
   AuthorizationError,
 } from '@nzila/os-core/policy'
 export type { NzilaRole } from '@nzila/os-core/policy'
@@ -363,19 +363,19 @@ export * from '@nzila/os-core/telemetry'
  * ${pascalName} — Entity Schema
  *
  * Define domain-specific tables here. All tables MUST include
- * an entity_id column for entity isolation enforcement.
+ * an org_id column for entity isolation enforcement.
  *
  * Example:
  *   export const ${name.replace(/-/g, '_')}_items = pgTable('${name.replace(/-/g, '_')}_items', {
  *     id: uuid('id').primaryKey().defaultRandom(),
- *     entityId: uuid('entity_id').notNull().references(() => entities.id),
+ *     orgId: uuid('org_id').notNull().references(() => orgs.id),
  *     name: text('name').notNull(),
  *     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
  *   })
  */
 // Import schema dependencies as needed:
 // import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core'
-// import { entities } from '@nzila/db/schema'
+// import { orgs } from '@nzila/db/schema'
 `,
     },
 
@@ -430,45 +430,45 @@ export async function GET() {
 `,
     },
 
-    // ── app/api/entities/[entityId]/example/route.ts ────────────────
+    // ── app/api/orgs/[orgId]/example/route.ts ────────────────
     {
-      path: 'app/api/entities/[entityId]/example/route.ts',
+      path: 'app/api/orgs/[orgId]/example/route.ts',
       content: `/**
  * ${pascalName} — Example entity-scoped route
  *
  * Demonstrates the correct pattern:
- *   1. authorize() via requireEntityAccess()
+ *   1. authorize() via requireOrgAccess()
  *   2. scopedDb for entity-isolated queries
  *   3. withAudit for automatic audit emission
  *
  * Replace this with your domain-specific routes.
  */
 import { NextRequest, NextResponse } from 'next/server'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ entityId: string }> },
+  { params }: { params: Promise<{ orgId: string }> },
 ) {
-  const { entityId } = await params
-  const guard = await requireEntityAccess(req, entityId)
+  const { orgId } = await params
+  const guard = await requireOrgAccess(req, orgId)
   if (!guard.ok) return guard.response
 
   // Use guard.scopedDb for all queries — entity isolation + audit guaranteed
   // Example: const items = await guard.scopedDb.select(myTable)
 
   return NextResponse.json({
-    entityId,
+    orgId,
     message: 'Entity access verified. ScopedDb + audit ready.',
   })
 }
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ entityId: string }> },
+  { params }: { params: Promise<{ orgId: string }> },
 ) {
-  const { entityId } = await params
-  const guard = await requireEntityAccess(req, entityId)
+  const { orgId } = await params
+  const guard = await requireOrgAccess(req, orgId)
   if (!guard.ok) return guard.response
 
   const body = await req.json()
@@ -477,7 +477,7 @@ export async function POST(
   // const [row] = await guard.scopedDb.insert(myTable, body).returning()
 
   return NextResponse.json(
-    { entityId, message: 'Created (with automatic audit)' },
+    { orgId, message: 'Created (with automatic audit)' },
     { status: 201 },
   )
 }
@@ -539,11 +539,11 @@ describe('${pascalName} — governance compliance', () => {
     expect(content).toContain('withAudit')
   })
 
-  it('example route uses requireEntityAccess', () => {
-    const route = join(APP_DIR, 'app', 'api', 'entities', '[entityId]', 'example', 'route.ts')
+  it('example route uses requireOrgAccess', () => {
+    const route = join(APP_DIR, 'app', 'api', 'orgs', '[orgId]', 'example', 'route.ts')
     expect(existsSync(route)).toBe(true)
     const content = readFileSync(route, 'utf-8')
-    expect(content).toContain('requireEntityAccess')
+    expect(content).toContain('requireOrgAccess')
   })
 
   it('eslint config includes no-shadow-db', () => {

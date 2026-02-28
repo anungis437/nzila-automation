@@ -1,17 +1,17 @@
 // Observability: @nzila/os-core/telemetry — structured logging and request tracing available via os-core.
 /**
  * API — Indirect Tax Periods
- * GET  /api/finance/indirect-tax/periods?entityId=...&accountId=...  → list periods
+ * GET  /api/finance/indirect-tax/periods?orgId=...&accountId=...  → list periods
  * POST /api/finance/indirect-tax/periods                             → create period
  * PATCH /api/finance/indirect-tax/periods                            → update period
  *
- * PR5 — Entity-scoped auth + audit events
+ * PR5 — Org-scoped auth + audit events
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { indirectTaxPeriods } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { CreateIndirectTaxPeriodInput } from '@nzila/tax/types'
 import {
   recordFinanceAuditEvent,
@@ -19,19 +19,19 @@ import {
 } from '@/lib/finance-audit'
 
 export async function GET(req: NextRequest) {
-  const entityId = req.nextUrl.searchParams.get('entityId')
+  const orgId = req.nextUrl.searchParams.get('orgId')
   const accountId = req.nextUrl.searchParams.get('accountId')
 
-  if (!entityId) {
-    return NextResponse.json({ error: 'entityId required' }, { status: 400 })
+  if (!orgId) {
+    return NextResponse.json({ error: 'orgId required' }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(entityId)
+  const access = await requireOrgAccess(orgId)
   if (!access.ok) return access.response
 
   const conditions = accountId
-    ? and(eq(indirectTaxPeriods.entityId, entityId), eq(indirectTaxPeriods.accountId, accountId))
-    : eq(indirectTaxPeriods.entityId, entityId)
+    ? and(eq(indirectTaxPeriods.orgId, orgId), eq(indirectTaxPeriods.accountId, accountId))
+    : eq(indirectTaxPeriods.orgId, orgId)
 
   const rows = await platformDb.select().from(indirectTaxPeriods).where(conditions)
   return NextResponse.json(rows)
@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(parsed.data.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(parsed.data.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     .returning()
 
   await recordFinanceAuditEvent({
-    entityId: parsed.data.entityId,
+    orgId: parsed.data.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: FINANCE_AUDIT_ACTIONS.INDIRECT_TAX_PERIOD_CREATE,
@@ -79,7 +79,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'id required' }, { status: 400 })
   }
 
-  // Fetch existing to get entityId + previous status
+  // Fetch existing to get orgId + previous status
   const [existing] = await platformDb
     .select()
     .from(indirectTaxPeriods)
@@ -89,8 +89,8 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Period not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(existing.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(existing.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -109,7 +109,7 @@ export async function PATCH(req: NextRequest) {
         : FINANCE_AUDIT_ACTIONS.INDIRECT_TAX_PERIOD_CREATE
 
   await recordFinanceAuditEvent({
-    entityId: existing.entityId,
+    orgId: existing.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: auditAction,

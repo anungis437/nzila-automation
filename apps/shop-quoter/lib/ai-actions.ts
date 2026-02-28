@@ -155,7 +155,7 @@ export async function extractFromRfp(
 
     const pack = buildEvidencePackFromAction({
       actionType: 'RFP_EXTRACTION',
-      entityId: 'platform',
+      orgId: 'platform',
       actorId: userId,
       metadata: { inputLength: rfpText.length },
     })
@@ -191,7 +191,7 @@ export async function predictConversion(quoteId: string): Promise<ConversionPred
       // Fallback to AI-based heuristic
       const [quoteRow] = (await platformDb.execute(
         sql`SELECT metadata FROM audit_log
-        WHERE entity_id = ${quoteId} AND action = 'quote.created'
+        WHERE org_id = ${quoteId} AND action = 'quote.created'
         LIMIT 1`,
       )) as unknown as [{ metadata: Record<string, unknown> } | undefined]
 

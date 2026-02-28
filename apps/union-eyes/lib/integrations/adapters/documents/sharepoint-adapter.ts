@@ -78,7 +78,7 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     await this.ensureConnected();
 
-    const entities = options.entities || ['sites', 'libraries', 'files', 'permissions'];
+    const orgs = options.orgs || ['sites', 'libraries', 'files', 'permissions'];
     const results: SyncResult = {
       success: true,
       recordsProcessed: 0,
@@ -90,15 +90,15 @@ export class SharePointAdapter extends BaseIntegration implements IIntegration {
 
     try {
       // Sites and libraries are required for files
-      if (entities.includes('sites') || entities.includes('libraries') || entities.includes('files')) {
+      if (orgs.includes('sites') || orgs.includes('libraries') || orgs.includes('files')) {
         await this.syncSitesAndLibraries(options, results);
       }
 
-      if (entities.includes('files')) {
+      if (orgs.includes('files')) {
         await this.syncFiles(options, results);
       }
 
-      if (entities.includes('permissions')) {
+      if (orgs.includes('permissions')) {
         await this.syncPermissions(options, results);
       }
 

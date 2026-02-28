@@ -3,7 +3,7 @@
 Platform Analyzer V2 — Enhanced with Deep Scanning & Calibrated Complexity
 
 IMPROVEMENTS OVER V1:
-- Deep recursive entity detection (finds 12,000+ entities vs 471)
+- Deep recursive entity detection (finds 12,000+ orgs vs 471)
 - Calibrated complexity scoring based on real-world data
 - Comprehensive logging and error recovery
 - Detects Drizzle, Supabase, Django, Prisma platforms (legacy Base44 detection preserved)
@@ -148,26 +148,26 @@ class PlatformAnalyzerV2:
         "Union_Eyes_app_v1-main": {
             "complexity": "EXTREME",
             "weeks": 12,
-            "entities": 4773,
+            "orgs": 4773,
         },
-        "c3uo-app-v1-main": {"complexity": "EXTREME", "weeks": 14, "entities": 485},
-        "SentryIQ-main": {"complexity": "HIGH", "weeks": 12, "entities": 79},
+        "c3uo-app-v1-main": {"complexity": "EXTREME", "weeks": 14, "orgs": 485},
+        "SentryIQ-main": {"complexity": "HIGH", "weeks": 12, "orgs": 79},
         "abr-insights-app-main": {
             "complexity": "EXTREME",
             "weeks": 14,
-            "entities": 132,
+            "orgs": 132,
         },
-        "shop_quoter_tool_v1-main": {"complexity": "HIGH", "weeks": 14, "entities": 93},
-        "court_lens_app_v1-main": {"complexity": "HIGH", "weeks": 9, "entities": 682},
+        "shop_quoter_tool_v1-main": {"complexity": "HIGH", "weeks": 14, "orgs": 93},
+        "court_lens_app_v1-main": {"complexity": "HIGH", "weeks": 9, "orgs": 682},
         "cora-platform-fix-tests-model-alignment": {
             "complexity": "HIGH",
             "weeks": 9,
-            "entities": 80,
+            "orgs": 80,
         },
-        "ponduops": {"complexity": "HIGH", "weeks": 10, "entities": 70},
-        "congowave_app_v1-main": {"complexity": "HIGH", "weeks": 9, "entities": 83},
-        "nzila_eexports-main": {"complexity": "MEDIUM", "weeks": 8, "entities": 78},
-        "nzila-trade-os-main": {"complexity": "MEDIUM", "weeks": 9, "entities": 337},
+        "ponduops": {"complexity": "HIGH", "weeks": 10, "orgs": 70},
+        "congowave_app_v1-main": {"complexity": "HIGH", "weeks": 9, "orgs": 83},
+        "nzila_eexports-main": {"complexity": "MEDIUM", "weeks": 8, "orgs": 78},
+        "nzila-trade-os-main": {"complexity": "MEDIUM", "weeks": 9, "orgs": 337},
     }
 
     def __init__(self, legacy_root: Path = None, platforms_dir: Path = None):
@@ -255,7 +255,7 @@ class PlatformAnalyzerV2:
             )
 
             logger.info(
-                f"Analyzed {platform_id}: {profile.entity_count} entities, "
+                f"Analyzed {platform_id}: {profile.entity_count} orgs, "
                 f"{profile.complexity} complexity, {profile.migration_estimate_weeks} weeks"
             )
 
@@ -1033,7 +1033,7 @@ class PlatformAnalyzerV2:
         # Otherwise, calculate based on calibrated scoring
         score = 0
 
-        # Entity count scoring (CALIBRATED: Union Eyes has 4773 entities!)
+        # Entity count scoring (CALIBRATED: Union Eyes has 4773 orgs!)
         if profile.entity_count > 3000:  # Union Eyes level
             score += 6
         elif profile.entity_count > 500:  # C3UO, Court Lens level
@@ -1153,7 +1153,7 @@ class PlatformAnalyzerV2:
                 profile = self.analyze_platform(platform_dir)
                 profiles.append(profile)
                 print(
-                    f"✓ {profile.name} ({profile.complexity}) - {profile.entity_count} entities, {profile.migration_estimate_weeks} weeks"
+                    f"✓ {profile.name} ({profile.complexity}) - {profile.entity_count} orgs, {profile.migration_estimate_weeks} weeks"
                 )
             except Exception as e:
                 logger.error(
@@ -1200,7 +1200,7 @@ class PlatformAnalyzerV2:
             name = profile.get("name", "Unknown")
             platform_id = profile.get("platform_id", "unknown")
             complexity = profile.get("complexity", "UNKNOWN")
-            entities = profile.get("entity_count", 0)
+            orgs = profile.get("entity_count", 0)
             weeks = profile.get("migration_estimate_weeks", 0)
 
             report_lines.extend(
@@ -1208,7 +1208,7 @@ class PlatformAnalyzerV2:
                     f"### {name}",
                     f"- ID: `{platform_id}`",
                     f"- Complexity: **{complexity}**",
-                    f"- Entities: {entities}",
+                    f"- Entities: {orgs}",
                     f"- Estimated Migration: {weeks} weeks",
                     "",
                 ]
@@ -1267,7 +1267,7 @@ def main():
         ]
         for i, p in enumerate(sorted_profiles, 1):
             print(
-                f"  {i}. {p.name}: {p.entity_count:,} entities, {p.complexity}, {p.migration_estimate_weeks} weeks"
+                f"  {i}. {p.name}: {p.entity_count:,} orgs, {p.complexity}, {p.migration_estimate_weeks} weeks"
             )
 
 

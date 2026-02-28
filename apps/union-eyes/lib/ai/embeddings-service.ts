@@ -152,7 +152,7 @@ export class EmbeddingsService {
   private async generateEmbedding(text: string): Promise<number[]> {
     const ai = getAiClient();
     const response = await ai.embed({
-      entityId: 'system',
+      orgId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.EMBEDDINGS,
       input: text,
@@ -167,7 +167,7 @@ export class EmbeddingsService {
   private async generateBatchEmbeddings(texts: string[]): Promise<number[][]> {
     const ai = getAiClient();
     const response = await ai.embed({
-      entityId: 'system',
+      orgId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.EMBEDDINGS,
       input: texts,

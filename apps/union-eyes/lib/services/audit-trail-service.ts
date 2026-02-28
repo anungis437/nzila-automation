@@ -13,7 +13,7 @@ export interface AuditLogEntry {
   id: string;
   organizationId: string;
   entityType: string;
-  entityId: string;
+  orgId: string;
   action: 'create' | 'update' | 'delete' | 'sync' | 'approve' | 'reject' | 'void' | 'reverse';
   userId: string;
   userName: string;
@@ -34,7 +34,7 @@ export interface AuditLogEntry {
 export interface AuditQueryOptions {
   organizationId: string;
   entityType?: string;
-  entityId?: string;
+  orgId?: string;
   userId?: string;
   action?: string;
   startDate?: Date;
@@ -50,7 +50,7 @@ export class AuditTrailService {
   static async logAction(params: {
     organizationId: string;
     entityType: string;
-    entityId: string;
+    orgId: string;
     action: AuditLogEntry['action'];
     userId: string;
     userName: string;
@@ -63,7 +63,7 @@ export class AuditTrailService {
     const [entry] = await db.insert(financialAuditLog).values({
       organizationId: params.organizationId,
       entityType: params.entityType,
-      entityId: params.entityId,
+      orgId: params.orgId,
       action: params.action,
       userId: params.userId,
       userName: params.userName,
@@ -96,7 +96,7 @@ export class AuditTrailService {
     await this.logAction({
       organizationId: params.organizationId,
       entityType: 'journal_entry',
-      entityId: params.entryId,
+      orgId: params.entryId,
       action: 'create',
       userId: params.userId,
       userName: params.userName,
@@ -125,7 +125,7 @@ export class AuditTrailService {
     await this.logAction({
       organizationId: params.organizationId,
       entityType: 'journal_entry',
-      entityId: params.entryId,
+      orgId: params.entryId,
       action: 'approve',
       userId: params.userId,
       userName: params.userName,
@@ -152,7 +152,7 @@ export class AuditTrailService {
     await this.logAction({
       organizationId: params.organizationId,
       entityType: 'journal_entry',
-      entityId: params.originalEntryId,
+      orgId: params.originalEntryId,
       action: 'reverse',
       userId: params.userId,
       userName: params.userName,
@@ -179,7 +179,7 @@ export class AuditTrailService {
     await this.logAction({
       organizationId: params.organizationId,
       entityType: 'invoice',
-      entityId: params.invoiceId,
+      orgId: params.invoiceId,
       action: 'update',
       userId: params.userId,
       userName: params.userName,
@@ -202,7 +202,7 @@ export class AuditTrailService {
     await this.logAction({
       organizationId: params.organizationId,
       entityType: 'bank_reconciliation',
-      entityId: params.reconciliationId,
+      orgId: params.reconciliationId,
       action: 'create',
       userId: params.userId,
       userName: params.userName,
@@ -228,7 +228,7 @@ export class AuditTrailService {
     await this.logAction({
       organizationId: params.organizationId,
       entityType: 'erp_sync',
-      entityId: params.syncJobId,
+      orgId: params.syncJobId,
       action: 'sync',
       userId: 'system',
       userName: 'System',
@@ -252,8 +252,8 @@ export class AuditTrailService {
       conditions.push(eq(financialAuditLog.entityType, options.entityType));
     }
 
-    if (options.entityId) {
-      conditions.push(eq(financialAuditLog.entityId, options.entityId));
+    if (options.orgId) {
+      conditions.push(eq(financialAuditLog.orgId, options.orgId));
     }
 
     if (options.userId) {
@@ -297,12 +297,12 @@ export class AuditTrailService {
   static async getEntityHistory(
     organizationId: string,
     entityType: string,
-    entityId: string
+    orgId: string
   ): Promise<AuditLogEntry[]> {
     return this.queryAuditLog({
       organizationId,
       entityType,
-      entityId,
+      orgId,
     });
   }
 
@@ -461,7 +461,7 @@ export class AuditTrailService {
         type: 'large_modification',
         userId: log.userId,
         userName: log.userName,
-        entityId: log.entityId,
+        orgId: log.orgId,
         entityType: log.entityType,
         description: `Large financial modification detected`,
         severity: 'high',
@@ -507,7 +507,7 @@ export class AuditTrailService {
     const rows = logs.map(log => [
       log.timestamp.toISOString(),
       log.entityType,
-      log.entityId,
+      log.orgId,
       log.action,
       log.userId,
       log.userName,
@@ -536,7 +536,7 @@ export class AuditTrailService {
     organizationId: string;
     actionType: string;
     entityType: string;
-    entityId: string;
+    orgId: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: Record<string, any>;
     visibilityScope: 'member' | 'staff' | 'admin' | 'system';
@@ -555,7 +555,7 @@ export class AuditTrailService {
       userId: params.actorId,
       action: params.actionType,
       resourceType: params.entityType,
-      resourceId: params.entityId,
+      resourceId: params.orgId,
       metadata: {
         ...sanitizedMetadata,
         actorRole: params.actorRole,
@@ -649,7 +649,7 @@ export interface SuspiciousActivity {
   userId: string;
   userName: string;
   count?: number;
-  entityId?: string;
+  orgId?: string;
   entityType?: string;
   description: string;
   severity: 'low' | 'medium' | 'high';

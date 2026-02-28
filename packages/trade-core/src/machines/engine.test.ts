@@ -13,11 +13,11 @@ import { tradeDealMachine } from '../machines/deal'
 const ORG_ID = 'org-001'
 
 function ctx(role: TradeOrgRole = TradeOrgRole.ADMIN) {
-  return { entityId: ORG_ID, actorId: 'actor-001', role }
+  return { orgId: ORG_ID, actorId: 'actor-001', role }
 }
 
 function deal(stage: TradeDealStage) {
-  return { entityId: ORG_ID, stage }
+  return { orgId: ORG_ID, stage }
 }
 
 describe('tradeDealMachine — structural validity', () => {
@@ -99,7 +99,7 @@ describe('attemptDealTransition — blocked transitions', () => {
   })
 
   it('blocks cross-org access', () => {
-    const crossCtx = { entityId: 'other-org', actorId: 'actor-001', role: TradeOrgRole.ADMIN }
+    const crossCtx = { orgId: 'other-org', actorId: 'actor-001', role: TradeOrgRole.ADMIN }
     const result = attemptDealTransition(
       tradeDealMachine,
       crossCtx,
@@ -189,7 +189,7 @@ describe('getAvailableDealTransitions', () => {
   })
 
   it('returns empty for cross-org', () => {
-    const crossCtx = { entityId: 'other-org', actorId: 'actor-001', role: TradeOrgRole.ADMIN }
+    const crossCtx = { orgId: 'other-org', actorId: 'actor-001', role: TradeOrgRole.ADMIN }
     const transitions = getAvailableDealTransitions(
       tradeDealMachine,
       crossCtx,

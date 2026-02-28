@@ -2,7 +2,7 @@
  * Nzila OS — Platform infrastructure schema
  *
  * Tables for platform-level observability that are NOT org-scoped
- * in the traditional sense but reference entityId for filtering.
+ * in the traditional sense but reference orgId for filtering.
  */
 import {
   pgTable,
@@ -15,14 +15,14 @@ import {
   jsonb,
   boolean,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── Platform Request Metrics ────────────────────────────────────────────────
 
 export const platformRequestMetrics = pgTable('platform_request_metrics', {
   id: uuid('id').primaryKey().defaultRandom(),
   route: varchar('route', { length: 512 }).notNull(),
-  entityId: uuid('entity_id').notNull().references(() => entities.id),
+  orgId: uuid('org_id').notNull().references(() => orgs.id),
   latencyMs: integer('latency_ms').notNull(),
   statusCode: integer('status_code').notNull(),
   recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),

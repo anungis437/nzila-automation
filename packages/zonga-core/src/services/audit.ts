@@ -8,7 +8,7 @@
  */
 
 export interface ZongaAuditEvent {
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   readonly action: ZongaAuditAction
   readonly entityType: ZongaEntityType
@@ -48,7 +48,7 @@ export type ZongaEntityType = (typeof ZongaEntityType)[keyof typeof ZongaEntityT
  * Build a Zonga audit event. Pure — caller persists.
  */
 export function buildZongaAuditEvent(params: {
-  entityId: string
+  orgId: string
   actorId: string
   action: ZongaAuditAction
   entityType: ZongaEntityType
@@ -56,7 +56,7 @@ export function buildZongaAuditEvent(params: {
   metadata?: Record<string, unknown>
 }): ZongaAuditEvent {
   return {
-    entityId: params.entityId,
+    orgId: params.orgId,
     actorId: params.actorId,
     action: params.action,
     entityType: params.entityType,

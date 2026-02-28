@@ -120,10 +120,10 @@ export class IndustrialAllianceAdapter extends BaseIntegration {
     const errors: SyncError[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
       const modifiedSince = options.cursor ? new Date(options.cursor) : undefined;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           switch (entity) {
             case 'policies':

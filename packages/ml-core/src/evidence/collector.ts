@@ -83,7 +83,7 @@ export interface MlAnomalySummary {
 
 export interface MlEvidenceAppendix {
   schemaVersion: '1.0'
-  entityId: string
+  orgId: string
   periodLabel: string
   collectedAt: string
   datasets: MlDatasetRef[]
@@ -99,11 +99,11 @@ export interface MlEvidenceAppendix {
 /**
  * Collect ML evidence for an entity in a given period.
  *
- * @param entityId  - Entity UUID
+ * @param orgId  - Entity UUID
  * @param periodLabel - e.g., "2026-02"
  */
 export async function collectMlEvidence(
-  entityId: string,
+  orgId: string,
   periodLabel: string,
 ): Promise<MlEvidenceAppendix> {
   const periodStart = `${periodLabel}-01`
@@ -122,7 +122,7 @@ export async function collectMlEvidence(
       .from(mlDatasets)
       .where(
         and(
-          eq(mlDatasets.entityId, entityId),
+          eq(mlDatasets.orgId, orgId),
           gte(mlDatasets.periodStart, periodStart),
           lte(mlDatasets.periodEnd, periodEnd),
         ),
@@ -132,7 +132,7 @@ export async function collectMlEvidence(
     db
       .select()
       .from(mlModels)
-      .where(and(eq(mlModels.entityId, entityId), eq(mlModels.status, 'active'))),
+      .where(and(eq(mlModels.orgId, orgId), eq(mlModels.status, 'active'))),
 
     // Inference runs that overlap the period
     db
@@ -140,7 +140,7 @@ export async function collectMlEvidence(
       .from(mlInferenceRuns)
       .where(
         and(
-          eq(mlInferenceRuns.entityId, entityId),
+          eq(mlInferenceRuns.orgId, orgId),
           gte(mlInferenceRuns.inputPeriodStart, periodStart),
           lte(mlInferenceRuns.inputPeriodEnd, periodEnd),
         ),
@@ -158,7 +158,7 @@ export async function collectMlEvidence(
       .from(mlScoresUECasesPriority)
       .where(
         and(
-          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.orgId, orgId),
           eq(mlScoresUECasesPriority.predictedPriority, 'low'),
           gte(mlScoresUECasesPriority.occurredAt, ueStart),
           lte(mlScoresUECasesPriority.occurredAt, ueEnd),
@@ -171,7 +171,7 @@ export async function collectMlEvidence(
       .from(mlScoresUECasesPriority)
       .where(
         and(
-          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.orgId, orgId),
           eq(mlScoresUECasesPriority.predictedPriority, 'medium'),
           gte(mlScoresUECasesPriority.occurredAt, ueStart),
           lte(mlScoresUECasesPriority.occurredAt, ueEnd),
@@ -184,7 +184,7 @@ export async function collectMlEvidence(
       .from(mlScoresUECasesPriority)
       .where(
         and(
-          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.orgId, orgId),
           eq(mlScoresUECasesPriority.predictedPriority, 'high'),
           gte(mlScoresUECasesPriority.occurredAt, ueStart),
           lte(mlScoresUECasesPriority.occurredAt, ueEnd),
@@ -197,7 +197,7 @@ export async function collectMlEvidence(
       .from(mlScoresUECasesPriority)
       .where(
         and(
-          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.orgId, orgId),
           eq(mlScoresUECasesPriority.predictedPriority, 'critical'),
           gte(mlScoresUECasesPriority.occurredAt, ueStart),
           lte(mlScoresUECasesPriority.occurredAt, ueEnd),
@@ -210,7 +210,7 @@ export async function collectMlEvidence(
       .from(mlScoresUECasesPriority)
       .where(
         and(
-          eq(mlScoresUECasesPriority.entityId, entityId),
+          eq(mlScoresUECasesPriority.orgId, orgId),
           gte(mlScoresUECasesPriority.occurredAt, ueStart),
           lte(mlScoresUECasesPriority.occurredAt, ueEnd),
         ),
@@ -222,7 +222,7 @@ export async function collectMlEvidence(
       .from(mlScoresUESlaRisk)
       .where(
         and(
-          eq(mlScoresUESlaRisk.entityId, entityId),
+          eq(mlScoresUESlaRisk.orgId, orgId),
           eq(mlScoresUESlaRisk.predictedBreach, true),
           gte(mlScoresUESlaRisk.occurredAt, ueStart),
           lte(mlScoresUESlaRisk.occurredAt, ueEnd),
@@ -235,7 +235,7 @@ export async function collectMlEvidence(
       .from(mlScoresUESlaRisk)
       .where(
         and(
-          eq(mlScoresUESlaRisk.entityId, entityId),
+          eq(mlScoresUESlaRisk.orgId, orgId),
           gte(mlScoresUESlaRisk.occurredAt, ueStart),
           lte(mlScoresUESlaRisk.occurredAt, ueEnd),
         ),
@@ -266,7 +266,7 @@ export async function collectMlEvidence(
       .from(mlScoresStripeDaily)
       .where(
         and(
-          eq(mlScoresStripeDaily.entityId, entityId),
+          eq(mlScoresStripeDaily.orgId, orgId),
           eq(mlScoresStripeDaily.isAnomaly, true),
           gte(mlScoresStripeDaily.date, periodStart),
           lte(mlScoresStripeDaily.date, periodEnd),
@@ -279,7 +279,7 @@ export async function collectMlEvidence(
       .from(mlScoresStripeTxn)
       .where(
         and(
-          eq(mlScoresStripeTxn.entityId, entityId),
+          eq(mlScoresStripeTxn.orgId, orgId),
           eq(mlScoresStripeTxn.isAnomaly, true),
           gte(mlScoresStripeTxn.occurredAt, new Date(periodStart)),
           lte(mlScoresStripeTxn.occurredAt, new Date(periodEnd + 'T23:59:59Z')),
@@ -301,7 +301,7 @@ export async function collectMlEvidence(
     .from(mlScoresStripeTxn)
     .where(
       and(
-        eq(mlScoresStripeTxn.entityId, entityId),
+        eq(mlScoresStripeTxn.orgId, orgId),
         eq(mlScoresStripeTxn.isAnomaly, true),
         gte(mlScoresStripeTxn.occurredAt, new Date(periodStart)),
         lte(mlScoresStripeTxn.occurredAt, new Date(periodEnd + 'T23:59:59Z')),
@@ -312,7 +312,7 @@ export async function collectMlEvidence(
 
   return {
     schemaVersion: '1.0',
-    entityId,
+    orgId,
     periodLabel,
     collectedAt: new Date().toISOString(),
     datasets: datasets.map((d) => ({

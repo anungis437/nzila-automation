@@ -15,7 +15,7 @@ cars-vertical depth that is encapsulated behind a vertical boundary.
 
 ## Core Domain (Generic — Commodity-Neutral)
 
-All core domain entities are **org-scoped** (`entity_id` FK to `entities`), use
+All core domain entities are **org-scoped** (`org_id` FK to `entities`), use
 **audited mutations** (hash-chained), and produce **evidence packs** at terminal
 states.
 
@@ -26,7 +26,7 @@ Represents an actor in a trade relationship.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities (org scope) |
+| `org_id` | UUID | FK → entities (org scope) |
 | `role` | enum | `seller`, `buyer`, `broker`, `agent` |
 | `name` | text | Display name |
 | `contact_email` | text | Primary contact |
@@ -45,7 +45,7 @@ A commodity-neutral item offered for trade.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `party_id` | UUID | FK → trade_parties (seller) |
 | `listing_type` | enum | `generic`, `vehicle` (extensible) |
 | `title` | text | Human-readable title |
@@ -63,7 +63,7 @@ A commodity-neutral item offered for trade.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `listing_id` | UUID | FK → trade_listings |
 | `media_type` | enum | `image`, `video`, `document` |
 | `storage_key` | text | Blob storage path |
@@ -77,7 +77,7 @@ The central transaction entity — a pipeline-tracked negotiation between partie
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `ref_number` | varchar | `TRD-{ORG}-{SEQ}` |
 | `seller_party_id` | UUID | FK → trade_parties |
 | `buyer_party_id` | UUID | FK → trade_parties |
@@ -97,7 +97,7 @@ Terms offered within a deal, subject to acceptance workflow.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `deal_id` | UUID | FK → trade_deals |
 | `terms` | jsonb | Structured terms object |
 | `unit_price` | numeric(18,2) | |
@@ -117,7 +117,7 @@ Financing or payment schedule attached to a deal.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `deal_id` | UUID | FK → trade_deals |
 | `terms` | jsonb | Payment schedule, interest, etc. |
 | `provider` | text | Financing entity name |
@@ -132,7 +132,7 @@ Physical movement tracking with milestone-based progression.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `deal_id` | UUID | FK → trade_deals |
 | `origin_country` | varchar(3) | |
 | `destination_country` | varchar(3) | |
@@ -155,7 +155,7 @@ Auditable document attached to a deal or shipment.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `deal_id` | UUID | FK → trade_deals |
 | `doc_type` | enum | `bill_of_sale`, `invoice`, `packing_list`, `certificate_of_origin`, `customs_declaration`, `inspection_report`, `export_certificate`, `insurance`, `other` |
 | `title` | text | |
@@ -171,7 +171,7 @@ Broker/referral fee policy and settlement.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `deal_id` | UUID | FK → trade_deals |
 | `party_id` | UUID | FK → trade_parties (broker) |
 | `policy` | jsonb | Rate, tiers, conditions |

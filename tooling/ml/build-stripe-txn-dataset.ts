@@ -52,12 +52,12 @@ function fatal(msg: string): never {
 }
 
 async function main(): Promise<void> {
-  const entityId = values['entity-id'] ?? fatal('--entity-id is required')
+  const orgId = values['entity-id'] ?? fatal('--entity-id is required')
   const periodStart = values.start ?? fatal('--start is required')
   const periodEnd = values.end ?? fatal('--end is required')
   const createdBy = values['created-by'] as string
 
-  console.error(`Building stripe_txn_features_v1 for ${entityId} (${periodStart} → ${periodEnd})`)
+  console.error(`Building stripe_txn_features_v1 for ${orgId} (${periodStart} → ${periodEnd})`)
 
   const startTs = new Date(periodStart + 'T00:00:00Z')
   const endTs = new Date(periodEnd + 'T23:59:59Z')
@@ -74,7 +74,7 @@ async function main(): Promise<void> {
     .from(stripePayments)
     .where(
       and(
-        eq(stripePayments.entityId, entityId),
+        eq(stripePayments.orgId, orgId),
         gte(stripePayments.occurredAt, startTs),
         lte(stripePayments.occurredAt, endTs),
       ),
@@ -90,7 +90,7 @@ async function main(): Promise<void> {
     .from(stripeRefunds)
     .where(
       and(
-        eq(stripeRefunds.entityId, entityId),
+        eq(stripeRefunds.orgId, orgId),
         gte(stripeRefunds.occurredAt, startTs),
         lte(stripeRefunds.occurredAt, endTs),
       ),
@@ -125,14 +125,14 @@ async function main(): Promise<void> {
   ]
 
   if (rawTxns.length === 0) {
-    fatal(`No transactions found for entity ${entityId} in ${periodStart} → ${periodEnd}.`)
+    fatal(`No transactions found for entity ${orgId} in ${periodStart} → ${periodEnd}.`)
   }
 
   const featureRows = buildTxnFeatures(rawTxns)
   const csv = toCsv(featureRows)
 
   const result = await writeBlobDataset({
-    entityId,
+    orgId,
     datasetKey: 'stripe_txn_features_v1',
     periodStart,
     periodEnd,
@@ -159,7 +159,7 @@ async function main(): Promise<void> {
       script: 'build-stripe-txn-dataset.ts',
       periodStart,
       periodEnd,
-      entityId,
+      orgId,
       rawTxnCount: rawTxns.length,
       builtAt: new Date().toISOString(),
     },

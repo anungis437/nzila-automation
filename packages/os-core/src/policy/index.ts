@@ -11,7 +11,7 @@
 export { ConsoleRole, PartnerRole, UERole, SystemRole, roleIncludes } from './roles'
 export type { NzilaRole } from './roles'
 export { Scope, ROLE_DEFAULT_SCOPES } from './scopes'
-export { authorize, withAuth, authorizeEntityAccess, AuthorizationError } from './authorize'
+export { authorize, withAuth, authorizeOrgAccess, AuthorizationError } from './authorize'
 export type { AuthContext, AuthorizeOptions } from './authorize'
 
 // Re-export legacy evaluateGovernanceRequirements from the old policy.ts

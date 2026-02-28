@@ -1,13 +1,13 @@
 /**
  * Nzila OS — Org-Scoped Table Registry
  *
- * The single source of truth for which tables require entity_id (Org) scoping.
- * Every table listed here MUST have an `entity_id` column, and every table
- * in the schema that HAS an `entity_id` column MUST be listed here.
+ * The single source of truth for which tables require org_id (Org) scoping.
+ * Every table listed here MUST have an `org_id` column, and every table
+ * in the schema that HAS an `org_id` column MUST be listed here.
  *
  * Contract test `org-scoped-registry.test.ts` enforces bidirectional consistency:
- *   - If a table has entity_id but isn't in the registry → CI fails.
- *   - If a table is in the registry but lacks entity_id → CI fails.
+ *   - If a table has org_id but isn't in the registry → CI fails.
+ *   - If a table is in the registry but lacks org_id → CI fails.
  *
  * This registry is consumed by:
  *   - createScopedDb() — validates Org filter presence
@@ -22,21 +22,21 @@
 // ── The Registry ────────────────────────────────────────────────────────────
 
 /**
- * Exhaustive list of Drizzle table export names that require Org (entity_id) scoping.
+ * Exhaustive list of Drizzle table export names that require Org (org_id) scoping.
  *
  * Table names here are the **TS export names** from `@nzila/db/schema`,
  * matching the camelCase identifiers used in app code. The underlying
- * DB column is always `entity_id`.
+ * DB column is always `org_id`.
  *
  * Tables NOT in this list are either:
  *   - Global (e.g., `people`, `aiApps`, `aiModels`)
  *   - Scoped via FK to an Org-scoped parent (e.g., `evidencePackArtifacts` → `evidencePacks`)
- *   - Partner-scoped (e.g., `partners`, `deals` — use `partner_id`, not `entity_id`)
+ *   - Partner-scoped (e.g., `partners`, `deals` — use `partner_id`, not `org_id`)
  */
 export const ORG_SCOPED_TABLES = [
-  // ── entities.ts ─────────────────────────────────────────
-  'entityRoles',
-  'entityMembers',
+  // ── orgs.ts ─────────────────────────────────────────
+  'orgRoles',
+  'orgMembers',
 
   // ── governance.ts ───────────────────────────────────────
   'meetings',
@@ -195,21 +195,21 @@ export type OrgScopedTableName = (typeof ORG_SCOPED_TABLES)[number]
 // ── Tables explicitly NOT Org-scoped ────────────────────────────────────────
 
 /**
- * Tables that intentionally do NOT have entity_id.
+ * Tables that intentionally do NOT have org_id.
  * Each exclusion must have a documented reason.
  */
 export const NON_ORG_SCOPED_TABLES = [
   // Root entity table — id IS the Org
-  { table: 'entities', reason: '`id` IS the Org identifier — root table' },
+  { table: 'orgs', reason: '`id` IS the Org identifier — root table' },
   // Global person registry — shared across Orgs
-  { table: 'people', reason: 'Global person registry, linked to Orgs via entityRoles/entityMembers' },
+  { table: 'people', reason: 'Global person registry, linked to Orgs via orgRoles/orgMembers' },
   // FK-scoped via parent Org-scoped table
   { table: 'evidencePackArtifacts', reason: 'Scoped via pack_id FK → evidencePacks (Org-scoped)' },
   { table: 'closeTaskEvidence', reason: 'Scoped via task_id FK → closeTasks (Org-scoped)' },
   { table: 'qboTokens', reason: 'Scoped via connection_id FK → qboConnections (Org-scoped)' },
   { table: 'indirectTaxSummary', reason: 'Scoped via period_id FK → indirectTaxPeriods (Org-scoped)' },
   { table: 'aiRequestPayloads', reason: 'Scoped via request FK — large payloads stored separately' },
-  // Global registries — not entity-specific
+  // Global registries — not Org-specific
   { table: 'aiApps', reason: 'Global AI app registry' },
   { table: 'aiModels', reason: 'Global AI model registry' },
   { table: 'aiDeployments', reason: 'Global deployment configurations per environment' },
@@ -218,10 +218,10 @@ export const NON_ORG_SCOPED_TABLES = [
   // Automation — system-level, not Org-scoped
   { table: 'automationCommands', reason: 'System-level automation dispatch (no Org context)' },
   { table: 'automationEvents', reason: 'System-level automation events (no Org context)' },
-  // Partner-scoped tables — use partner_id, not entity_id
-  { table: 'partners', reason: 'Partner portal — scoped by clerk_org_id, not entity_id' },
+  // Partner-scoped tables — use partner_id, not org_id
+  { table: 'partners', reason: 'Partner portal — scoped by clerk_org_id, not org_id' },
   { table: 'partnerUsers', reason: 'Partner portal — scoped by partner_id FK' },
-  { table: 'partnerEntities', reason: 'Bridge table — has entity_id as varchar, not UUID FK' },
+  { table: 'partnerEntities', reason: 'Bridge table — has org_id as varchar, not UUID FK' },
   { table: 'deals', reason: 'Partner portal — scoped by partner_id FK' },
   { table: 'commissions', reason: 'Partner portal — scoped by partner_id FK' },
   { table: 'certifications', reason: 'Partner portal — scoped by partner_id FK' },

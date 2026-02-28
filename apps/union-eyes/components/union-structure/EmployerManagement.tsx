@@ -1,7 +1,7 @@
 /**
  * Employer Management Component
  * 
- * CRUD interface for managing employer entities (companies that employ union members).
+ * CRUD interface for managing employer orgs (companies that employ union members).
  * Features:
  * - List all employers in a table
  * - Create new employers

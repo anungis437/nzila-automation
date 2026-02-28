@@ -177,7 +177,7 @@ export const ProgramAccountSchema = z
 
 /**
  * Validate a Quebec Enterprise Number (NEQ) — 10 digits.
- * Used alongside BN for Quebec entities registered with Revenu Québec.
+ * Used alongside BN for Quebec orgs registered with Revenu Québec.
  */
 export function validateNeq(input: string): { valid: boolean; neq?: string; errors: string[] } {
   const cleaned = input.replace(/[\s\-]/g, '')

@@ -1,7 +1,7 @@
 /**
  * @nzila/nacp-core — Zod Validation Schemas
  *
- * API boundary validation for NACP exam management entities.
+ * API boundary validation for NACP exam management orgs.
  *
  * @module @nzila/nacp-core/schemas
  */
@@ -106,7 +106,7 @@ export type ModerateSubmissionInput = z.infer<typeof ModerateSubmissionSchema>
 // ── Org Context ─────────────────────────────────────────────────────────────
 
 export const NacpOrgContextSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   actorId: z.string().uuid(),
   role: z.enum(enumValues(NacpRole)),
   permissions: z.array(z.string()),

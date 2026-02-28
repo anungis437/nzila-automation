@@ -108,7 +108,7 @@ ${clauseContent}`
 
     const ai = getAiClient();
     const response = await ai.extract({
-      entityId: context?.jurisdiction || 'system',
+      orgId: context?.jurisdiction || 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CLAUSE_CLASSIFICATION,
       promptKey: UE_PROFILES.CLAUSE_CLASSIFICATION,
@@ -158,7 +158,7 @@ Return JSON with:
   try {
     const ai = getAiClient();
     const response = await ai.extract({
-      entityId: 'system',
+      orgId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.TAG_GENERATION,
       promptKey: UE_PROFILES.TAG_GENERATION,
@@ -201,7 +201,7 @@ Return JSON with:
   try {
     const ai = getAiClient();
     const response = await ai.extract({
-      entityId: 'system',
+      orgId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.CROSS_REFERENCE,
       promptKey: UE_PROFILES.CROSS_REFERENCE,
@@ -269,7 +269,7 @@ Return JSON with:
   try {
     const ai = getAiClient();
     const response = await ai.extract({
-      entityId: 'system',
+      orgId: 'system',
       appKey: UE_APP_KEY,
       profileKey: UE_PROFILES.PRECEDENT_CLASSIFICATION,
       promptKey: UE_PROFILES.PRECEDENT_CLASSIFICATION,

@@ -56,38 +56,38 @@ def log(msg: str) -> None:
     print(f"[{datetime.now(timezone.utc).isoformat()}] {msg}", file=sys.stderr)
 
 
-def resolve_model_id(entity_id: str, model_key: str) -> str:
+def resolve_model_id(org_id: str, model_key: str) -> str:
     conn = psycopg2.connect(os.environ["DATABASE_URL"])
     with conn.cursor() as cur:
         cur.execute(
             """
             SELECT id FROM ml_models
-            WHERE entity_id = %s AND model_key = %s AND status = 'active'
+            WHERE org_id = %s AND model_key = %s AND status = 'active'
             ORDER BY version DESC
             LIMIT 1
             """,
-            (entity_id, model_key),
+            (org_id, model_key),
         )
         row = cur.fetchone()
     conn.close()
     if not row:
         raise ValueError(
-            f"No active model found for key '{model_key}' on entity {entity_id}. "
+            f"No active model found for key '{model_key}' on entity {org_id}. "
             "Train and activate a model first."
         )
     return str(row[0])
 
 
-def load_model_artifact(entity_id: str, model_id: str, tmp_path: Path) -> dict:
+def load_model_artifact(org_id: str, model_id: str, tmp_path: Path) -> dict:
     conn = psycopg2.connect(os.environ["DATABASE_URL"])
     with conn.cursor() as cur:
         cur.execute(
             """
             SELECT d.blob_path FROM ml_models m
             JOIN documents d ON d.id = m.artifact_document_id
-            WHERE m.id = %s AND m.entity_id = %s
+            WHERE m.id = %s AND m.org_id = %s
             """,
-            (model_id, entity_id),
+            (model_id, org_id),
         )
         row = cur.fetchone()
     conn.close()
@@ -97,7 +97,7 @@ def load_model_artifact(entity_id: str, model_id: str, tmp_path: Path) -> dict:
     return joblib.load(tmp_path)
 
 
-def fetch_ue_cases(entity_id: str, period_start: str, period_end: str) -> pd.DataFrame:
+def fetch_ue_cases(org_id: str, period_start: str, period_end: str) -> pd.DataFrame:
     conn = psycopg2.connect(os.environ["DATABASE_URL"])
     with conn.cursor() as cur:
         cur.execute(
@@ -115,12 +115,12 @@ def fetch_ue_cases(entity_id: str, period_start: str, period_end: str) -> pd.Dat
               COALESCE(message_count, 0)      AS message_count,
               COALESCE(attachment_count, 0)   AS attachment_count
             FROM ue_cases
-            WHERE entity_id = %s
+            WHERE org_id = %s
               AND created_at >= %s::timestamptz
               AND created_at <= %s::timestamptz
             ORDER BY created_at ASC
             """,
-            (entity_id, period_start + "T00:00:00Z", period_end + "T23:59:59Z"),
+            (org_id, period_start + "T00:00:00Z", period_end + "T23:59:59Z"),
         )
         cols = [desc[0] for desc in cur.description]
         rows = cur.fetchall()
@@ -168,28 +168,28 @@ def main() -> None:
     parser.add_argument("--created-by", default="system")
     args = parser.parse_args()
 
-    entity_id = args.entity_id
+    org_id = args.org_id
     period_start = args.period_start
     period_end = args.period_end
     created_by = args.created_by
 
-    model_id = args.model_id or resolve_model_id(entity_id, MODEL_KEY)
+    model_id = args.model_id or resolve_model_id(org_id, MODEL_KEY)
     log(f"Using model_id: {model_id}")
 
-    run_id = db_write.start_inference_run(entity_id, model_id, period_start, period_end)
+    run_id = db_write.start_inference_run(org_id, model_id, period_start, period_end)
     db_write.insert_audit_event(
-        entity_id=entity_id, actor=created_by,
+        org_id=org_id, actor=created_by,
         action="ml.inference_started",
         target_type="ml_inference_run", target_id=run_id,
         after_json={"modelKey": MODEL_KEY, "modelId": model_id, "period": f"{period_start}/{period_end}"},
     )
 
     try:
-        log(f"Inference: {MODEL_KEY} for {entity_id} ({period_start} → {period_end})")
+        log(f"Inference: {MODEL_KEY} for {org_id} ({period_start} → {period_end})")
 
         # ── Load model ───────────────────────────────────────────────────────
         tmp_model = Path(f"/tmp/ue_sla_model_{run_id}.joblib")
-        model_obj = load_model_artifact(entity_id, model_id, tmp_model)
+        model_obj = load_model_artifact(org_id, model_id, tmp_model)
         clf = model_obj["clf"]
         stored_threshold = float(model_obj["threshold"])
         threshold = args.threshold_override if args.threshold_override is not None else stored_threshold
@@ -200,7 +200,7 @@ def main() -> None:
             log(f"Using stored threshold: {threshold:.4f}")
 
         # ── Load cases ───────────────────────────────────────────────────────
-        df = fetch_ue_cases(entity_id, period_start, period_end)
+        df = fetch_ue_cases(org_id, period_start, period_end)
         log(f"Fetched {len(df)} UE case rows")
 
         if len(df) == 0:
@@ -226,10 +226,10 @@ def main() -> None:
         scored_csv_bytes = df[available].to_csv(index=False).encode()
 
         # ── Upload scored CSV ────────────────────────────────────────────────
-        run_prefix = f"exports/{entity_id}/ml/inference/{MODEL_KEY}/{run_id}"
+        run_prefix = f"exports/{org_id}/ml/inference/{MODEL_KEY}/{run_id}"
         scored_sha, scored_size = upload_bytes(CONTAINER, f"{run_prefix}/scored.csv", scored_csv_bytes, "text/csv")
         output_doc_id = db_write.insert_document(
-            entity_id=entity_id, category="other",
+            org_id=org_id, category="other",
             title=f"{MODEL_KEY} — scored.csv ({period_start} → {period_end})",
             blob_container=CONTAINER, blob_path=f"{run_prefix}/scored.csv",
             content_type="text/csv", size_bytes=scored_size, sha256=scored_sha,
@@ -252,7 +252,7 @@ def main() -> None:
                 actual_breach_val = bool(row["actual_breach"])
 
             db_write.upsert_ue_sla_risk_score(
-                entity_id=entity_id,
+                org_id=org_id,
                 case_id=str(row["case_id"]),
                 occurred_at=now_ts,
                 probability=float(row["probability"]),
@@ -281,7 +281,7 @@ def main() -> None:
                                        output_document_id=output_doc_id,
                                        summary=summary)
         db_write.insert_audit_event(
-            entity_id=entity_id, actor=created_by,
+            org_id=org_id, actor=created_by,
             action="ml.inference_completed",
             target_type="ml_inference_run", target_id=run_id,
             after_json={"modelKey": MODEL_KEY, "modelId": model_id, **summary},
@@ -294,7 +294,7 @@ def main() -> None:
         log(f"ERROR: {exc}\n{traceback.format_exc()}")
         db_write.finish_inference_run(run_id, status="failed", error=str(exc))
         db_write.insert_audit_event(
-            entity_id=entity_id, actor=created_by,
+            org_id=org_id, actor=created_by,
             action="ml.inference_failed",
             target_type="ml_inference_run", target_id=run_id,
             after_json={"modelKey": MODEL_KEY, "error": str(exc)},

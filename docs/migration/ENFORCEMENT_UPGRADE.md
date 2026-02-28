@@ -56,16 +56,16 @@ structurally enforced, developer-proof, multi-layer guarantees.
 + import { withAudit } from '@nzila/db/audit'
 
   export async function POST(req, { params }) {
-    const { entityId } = await params
-    const guard = await requireEntityAccess(entityId)
-+   const scopedDb = createScopedDb(entityId)
+    const { orgId } = await params
+    const guard = await requireOrgAccess(orgId)
++   const scopedDb = createScopedDb(orgId)
 +   const auditedDb = withAudit(scopedDb, {
 +     actorId: guard.context.userId,
-+     entityId,
++     orgId,
 +   })
 
--   const [row] = await db.insert(meetings).values({ entityId, ... }).returning()
--   await recordAuditEvent({ entityId, action: 'meeting.create', ... })
+-   const [row] = await db.insert(meetings).values({ orgId, ... }).returning()
+-   await recordAuditEvent({ orgId, action: 'meeting.create', ... })
 +   const [row] = await auditedDb.insert(meetings, { ... }).returning()
 +   // ↑ audit emitted automatically
   }
@@ -112,7 +112,7 @@ No database migration or data rollback required.
 ## Performance Impact
 
 The Scoped DAL adds a thin JavaScript wrapper over Drizzle queries.
-Expected overhead: < 1ms per query (column validation + entityId injection).
+Expected overhead: < 1ms per query (column validation + orgId injection).
 No additional database round trips compared to manual entity filtering.
 
 `withAudit` adds one async audit write per mutation. This is the same

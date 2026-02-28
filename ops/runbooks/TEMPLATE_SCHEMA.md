@@ -50,7 +50,7 @@ RunbookStep:
 # Runbook Instance (derived from template)
 runbook_instance:
   template_id: uuid
-  entity_id: uuid
+  org_id: uuid
   
   # Customizations from template
   divergence_log:
@@ -235,7 +235,7 @@ The template system integrates with the Required Evidence Map:
 evidence_requirements:
   - control_family: Change Management
     artifact_type: runbook_clone
-    blob_path_template: /compliance/runbooks/{entity_id}/{template_id}-clone.yaml
+    blob_path_template: /compliance/runbooks/{org_id}/{template_id}-clone.yaml
     sha256_required: true
     retention_class: PERMANENT
     

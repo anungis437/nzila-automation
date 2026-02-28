@@ -231,7 +231,7 @@ export interface RateProvider {
 }
 
 /**
- * Bank of Canada rate provider — the default for Canadian entities.
+ * Bank of Canada rate provider — the default for Canadian orgs.
  */
 export function createBocRateProvider(cache?: RateCache): RateProvider {
   const rateCache = cache ?? globalRateCache

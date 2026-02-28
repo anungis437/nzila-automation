@@ -26,7 +26,7 @@ export interface SupplierAddress {
 }
 
 export interface CreateSupplierInput {
-  entityId: string
+  orgId: string
   name: string
   contactName?: string
   email?: string
@@ -63,7 +63,7 @@ export interface SupplierWithStats {
 }
 
 export interface SupplierListFilter {
-  entityId: string
+  orgId: string
   status?: SupplierStatus | SupplierStatus[]
   search?: string
   tags?: string[]
@@ -76,12 +76,12 @@ export interface SupplierListFilter {
 export async function createSupplier(
   input: CreateSupplierInput,
 ): Promise<typeof commerceSuppliers.$inferSelect> {
-  logger.info('Creating supplier', { entityId: input.entityId, name: input.name })
+  logger.info('Creating supplier', { orgId: input.orgId, name: input.name })
 
   const [supplier] = await db
     .insert(commerceSuppliers)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       name: input.name,
       contactName: input.contactName ?? null,
       email: input.email ?? null,
@@ -147,7 +147,7 @@ export async function getSupplier(supplierId: string): Promise<SupplierWithStats
 }
 
 export async function listSuppliers(filter: SupplierListFilter): Promise<SupplierWithStats[]> {
-  const conditions = [eq(commerceSuppliers.entityId, filter.entityId)]
+  const conditions = [eq(commerceSuppliers.orgId, filter.orgId)]
 
   if (filter.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]
@@ -295,7 +295,7 @@ export async function syncSupplierToZoho(
 }
 
 export async function syncSupplierFromZoho(
-  entityId: string,
+  orgId: string,
   zohoVendor: ZohoVendor,
 ): Promise<typeof commerceSuppliers.$inferSelect> {
   // Check if supplier already exists with this Zoho ID
@@ -329,7 +329,7 @@ export async function syncSupplierFromZoho(
     const [created] = await db
       .insert(commerceSuppliers)
       .values({
-        entityId,
+        orgId,
         name: zohoVendor.contact_name || zohoVendor.company_name || 'Unknown',
         email: zohoVendor.email ?? null,
         phone: zohoVendor.phone ?? null,

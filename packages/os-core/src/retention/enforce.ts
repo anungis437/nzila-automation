@@ -33,7 +33,7 @@ export interface RetentionEnforceOptions {
   runId?: string
   /** Actor ID for audit events */
   actorId: string
-  entityId?: string
+  orgId?: string
 }
 
 /**
@@ -79,7 +79,7 @@ export async function enforceRetention(
       createdAt: documents.createdAt,
       blobPath: documents.blobPath,
       blobContainer: documents.blobContainer,
-      entityId: documents.entityId,
+      orgId: documents.orgId,
     })
     .from(documents)
     .limit(limit)
@@ -125,7 +125,7 @@ export async function enforceRetention(
 }
 
 async function applyRetentionAction(
-  doc: { id: string; blobPath: string; blobContainer: string; entityId: string; category: string },
+  doc: { id: string; blobPath: string; blobContainer: string; orgId: string; category: string },
   policy: RetentionPolicy,
   actorId: string,
   computeEntryHash: Function,
@@ -147,7 +147,7 @@ async function applyRetentionAction(
   const hash = computeEntryHash(payload, null)
 
   await db.insert(auditEvents).values({
-    entityId: doc.entityId,
+    orgId: doc.orgId,
     actorClerkUserId: actorId,
     action: `retention.${policy.expiryAction}`,
     targetType: 'document',

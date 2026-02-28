@@ -25,7 +25,7 @@ import {
   index,
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 import { aiEnvironmentEnum } from './ai'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
@@ -103,9 +103,9 @@ export const aiDeploymentRoutes = pgTable(
   'ai_deployment_routes',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     profileKey: varchar('profile_key', { length: 120 }).notNull(),
     feature: aiDeploymentFeatureEnum('feature').notNull(), // "chat"|"generate"|"embed"|"rag"|"extract"
@@ -117,12 +117,12 @@ export const aiDeploymentRoutes = pgTable(
   },
   (table) => [
     uniqueIndex('uq_ai_route').on(
-      table.entityId,
+      table.orgId,
       table.appKey,
       table.profileKey,
       table.feature,
     ),
-    index('idx_ai_routes_entity_app').on(table.entityId, table.appKey),
+    index('idx_ai_routes_entity_app').on(table.orgId, table.appKey),
     index('idx_ai_routes_deployment').on(table.deploymentId),
   ],
 )

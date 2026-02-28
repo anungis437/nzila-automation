@@ -11,7 +11,7 @@ import type { TradeDealStage, TradeOrgRole } from '../enums'
 // ── Types ───────────────────────────────────────────────────────────────────
 
 export interface TradeTransitionContext {
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   readonly role: TradeOrgRole
   readonly meta?: Record<string, unknown>
@@ -88,7 +88,7 @@ export type TradeTransitionResult = TradeTransitionSuccess | TradeTransitionFail
 export function attemptDealTransition(
   machine: TradeDealMachine,
   ctx: TradeTransitionContext,
-  entity: { entityId: string; stage: TradeDealStage },
+  entity: { orgId: string; stage: TradeDealStage },
   toStage: TradeDealStage,
 ): TradeTransitionResult {
   const from = entity.stage
@@ -106,7 +106,7 @@ export function attemptDealTransition(
   }
 
   // 3. Org match
-  if (ctx.entityId !== entity.entityId) {
+  if (ctx.orgId !== entity.orgId) {
     return { ok: false, reason: 'ORG_MISMATCH', from, to }
   }
 
@@ -143,10 +143,10 @@ export function attemptDealTransition(
 export function getAvailableDealTransitions(
   machine: TradeDealMachine,
   ctx: TradeTransitionContext,
-  entity: { entityId: string; stage: TradeDealStage },
+  entity: { orgId: string; stage: TradeDealStage },
 ): readonly TradeDealTransitionDef[] {
   if (machine.terminalStates.includes(entity.stage)) return []
-  if (ctx.entityId !== entity.entityId) return []
+  if (ctx.orgId !== entity.orgId) return []
 
   return machine.transitions.filter(
     (t) => t.from === entity.stage && t.allowedRoles.includes(ctx.role),

@@ -20,10 +20,10 @@
 │  assertBootInvariants() — exit(1) if modules missing   │
 ├────────────────────────────────────────────────────────┤
 │  Layer 2 — Runtime DAL (Scoped DB + Audit)             │
-│  createScopedDb(entityId) • withAudit(scopedDb, ctx)   │
+│  createScopedDb(orgId) • withAudit(scopedDb, ctx)   │
 ├────────────────────────────────────────────────────────┤
 │  Layer 1 — Schema / Type System                        │
-│  entity_id NOT NULL on every Org-scoped table          │
+│  org_id NOT NULL on every Org-scoped table          │
 │  ScopedDb type prevents raw access                     │
 └────────────────────────────────────────────────────────┘
 ```
@@ -32,7 +32,7 @@
 
 | Package / Module | Purpose | Export |
 |---|---|---|
-| `@nzila/db/scoped` | Entity-scoped DAL — makes cross-entity queries structurally impossible | `createScopedDb(entityId)` |
+| `@nzila/db/scoped` | Entity-scoped DAL — makes cross-entity queries structurally impossible | `createScopedDb(orgId)` |
 | `@nzila/db/audit` | Automatic audit emission on every mutation | `withAudit(scopedDb, context)` |
 | `@nzila/db/raw` | Explicit raw DB export — blocked in apps by ESLint | `rawDb` |
 | `@nzila/db/eslint-no-shadow-db` | ESLint flat config blocking raw DB imports in app code | Default export |
@@ -68,7 +68,7 @@ All 21 pre-existing contract test files remain intact and passing. The 4 new con
 
 | Threat | Before | After |
 |---|---|---|
-| Cross-Org data leakage | Convention (review-enforced) | **Structural** — `createScopedDb` WHERE-injects `entity_id` at DAL level |
+| Cross-Org data leakage | Convention (review-enforced) | **Structural** — `createScopedDb` WHERE-injects `org_id` at DAL level |
 | Silent data mutation | Convention (manual `recordAuditEvent`) | **Structural** — `withAudit` auto-emits on every insert/update/delete |
 | Raw DB bypass in app code | No enforcement | **Lint-blocked** — ESLint `no-shadow-db` fails build on raw imports |
 | New app missing auth/audit/RBAC | Convention (code review) | **Structural** — CLI generates full governance posture; INV-11 catches gaps |
@@ -97,16 +97,16 @@ Generates a complete app skeleton with:
 ```typescript
 // ❌ Before — convention-enforced
 import { db } from '@nzila/db'
-const rows = await db.select().from(transactions).where(eq(transactions.entity_id, entityId))
+const rows = await db.select().from(transactions).where(eq(transactions.org_id, orgId))
 
 // ✅ After — structurally enforced
 import { createScopedDb } from '@nzila/db/scoped'
 import { withAudit } from '@nzila/db/audit'
 
-const scopedDb = createScopedDb(entityId)
+const scopedDb = createScopedDb(orgId)
 const auditedDb = withAudit(scopedDb, { actorId, action: 'list_transactions' })
 const rows = await auditedDb.select(transactions)
-// entity_id filter injected automatically, audit event emitted automatically
+// org_id filter injected automatically, audit event emitted automatically
 ```
 
 ## 7. Files Created / Modified

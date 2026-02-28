@@ -1,7 +1,7 @@
 /**
  * Worksite Management Component
  * 
- * CRUD interface for managing worksite entities (physical work locations).
+ * CRUD interface for managing worksite orgs (physical work locations).
  */
 "use client";
 

@@ -41,15 +41,15 @@ See `Control-Test-Plan.md` → CT-01 for the full quarterly restore test procedu
 
 | Artifact | Format | Control | Storage Path | Retention |
 |---|---|---|---|---|
-| DR restore test report | JSON/PDF | DR-01, DR-02 | `evidence/{entity_id}/dr-bcp/{YYYY}/Q{N}/restore-test-report/DR-Q{N}-{YYYY}/` | 7_YEARS |
+| DR restore test report | JSON/PDF | DR-01, DR-02 | `evidence/{org_id}/dr-bcp/{YYYY}/Q{N}/restore-test-report/DR-Q{N}-{YYYY}/` | 7_YEARS |
 | Hash chain verification (share ledger) | JSON | DR-01 | Same path | 7_YEARS |
 | Hash chain verification (audit events) | JSON | DR-01 | Same path | 7_YEARS |
-| Blob geo-redundancy config export | JSON | DR-04 | `evidence/{entity_id}/dr-bcp/{YYYY}/blob-redundancy-config/` | 3_YEARS |
+| Blob geo-redundancy config export | JSON | DR-04 | `evidence/{org_id}/dr-bcp/{YYYY}/blob-redundancy-config/` | 3_YEARS |
 | Evidence pack index | JSON | All DR | Same path as test report | 7_YEARS |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id` (e.g., `DR-Q1-2026`), `sha256`, `created_by`, `retention_class = '7_YEARS'`
+- `org_id`, `artifact_id` (e.g., `DR-Q1-2026`), `sha256`, `created_by`, `retention_class = '7_YEARS'`
 
 ### Hashing Expectation
 

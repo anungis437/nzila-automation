@@ -11,7 +11,7 @@
  *     ↓  (mapper.ts — pure transforms)
  *   @nzila/commerce-core canonical types
  *     ↓  (commerce-services — orchestrated lifecycle)
- *   NzilaOS commerce entities (quotes, customers, audit trail)
+ *   NzilaOS commerce orgs (quotes, customers, audit trail)
  *
  * Design rules:
  *  - Adapter owns the legacy ↔ canonical boundary; nothing else touches legacy shapes
@@ -24,7 +24,7 @@
  *  - Evidence trail: every adaptation produces AuditEntry records
  *  - Data lineage: legacy IDs preserved in externalIds/metadata
  *  - Validation: Zod schemas enforce legacy data integrity before entry
- *  - Org isolation: all operations scoped via OrgContext.entityId
+ *  - Org isolation: all operations scoped via OrgContext.orgId
  *
  * @module @nzila/shop-quoter/adapter
  */
@@ -163,7 +163,7 @@ export function createShopQuoterAdapter(
       if (existing) {
         customerId = existing.id
       } else {
-        const mapped = mapLegacyClient(legacyClient, ctx.entityId)
+        const mapped = mapLegacyClient(legacyClient, ctx.orgId)
         if (!mapped.ok) {
           return { ok: false, error: mapped.error, legacyId: legacyRequest.id }
         }
@@ -198,7 +198,7 @@ export function createShopQuoterAdapter(
     // 5. Build migration audit entry
     const migrationAudit = buildActionAuditEntry({
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,

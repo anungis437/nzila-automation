@@ -29,7 +29,7 @@ export async function uploadDocument(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_document',
@@ -55,7 +55,7 @@ export async function listDocumentsForDeal(
 ): Promise<TradeServiceResult<{ documents: TradeDocument[] }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
 
   return {
     ok: true,

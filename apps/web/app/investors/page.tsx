@@ -26,10 +26,10 @@ const keyMetrics = [
 ];
 
 const flagships = [
-  { name: 'Union Eyes', vertical: 'Uniontech', tam: '$50B', entities: '4,773', stage: 'Revenue-Ready', description: 'The most comprehensive union management platform — pension forecasting, grievance tracking, analytics for 4,773 entities.' },
-  { name: '3CUO / DiasporaCore', vertical: 'Fintech', tam: '$100B', entities: '485', stage: 'Revenue-Ready', description: 'Diaspora banking infrastructure — KYC/AML, international transfers, community lending across 485 financial entities.' },
-  { name: 'ABR Insights', vertical: 'EdTech', tam: '$1.5B', entities: '132', stage: 'Production', description: 'Anti-racism LMS, tribunal case database, and AI coaching — transforming DEI education with proprietary content.' },
-  { name: 'CORA', vertical: 'Agrotech', tam: '$8.6B', entities: '80+', stage: 'Beta', description: 'Farm management, supply-chain tracking, and AI-driven market intelligence for African agriculture.' },
+  { name: 'Union Eyes', vertical: 'Uniontech', tam: '$50B', orgs: '4,773', stage: 'Revenue-Ready', description: 'The most comprehensive union management platform — pension forecasting, grievance tracking, analytics for 4,773 orgs.' },
+  { name: '3CUO / DiasporaCore', vertical: 'Fintech', tam: '$100B', orgs: '485', stage: 'Revenue-Ready', description: 'Diaspora banking infrastructure — KYC/AML, international transfers, community lending across 485 financial orgs.' },
+  { name: 'ABR Insights', vertical: 'EdTech', tam: '$1.5B', orgs: '132', stage: 'Production', description: 'Anti-racism LMS, tribunal case database, and AI coaching — transforming DEI education with proprietary content.' },
+  { name: 'CORA', vertical: 'Agrotech', tam: '$8.6B', orgs: '80+', stage: 'Beta', description: 'Farm management, supply-chain tracking, and AI-driven market intelligence for African agriculture.' },
 ];
 
 const useOfFunds = [
@@ -41,14 +41,14 @@ const useOfFunds = [
 ];
 
 const timeline = [
-  { year: '2019–2022', title: 'Foundation', description: 'Built core IP, 12,000+ data entities, 200+ AI prompts, pioneered union and diaspora banking tech.' },
+  { year: '2019–2022', title: 'Foundation', description: 'Built core IP, 12,000+ data orgs, 200+ AI prompts, pioneered union and diaspora banking tech.' },
   { year: '2023', title: 'Platform Expansion', description: 'Expanded to 15 platforms across 10 verticals. Unified Backbone architecture. Django + Next.js stack.' },
   { year: '2024', title: 'Migration & Scale', description: 'Legacy-to-cloud migration underway. Union Eyes 83% migrated. Production deployments on Azure.' },
   { year: '2025', title: 'Series A Ready', description: 'Revenue activation across flagships. $6M ARR target. Strategic partnerships pipeline.' },
 ];
 
 const moats = [
-  { title: 'Proprietary Data', description: '12,000+ meticulously curated entities across labor, finance, agriculture, and legal domains — impossible to replicate.' },
+  { title: 'Proprietary Data', description: '12,000+ meticulously curated orgs across labor, finance, agriculture, and legal domains — impossible to replicate.' },
   { title: 'AI Trade Secrets', description: '200+ engineered prompts and 512 predictive models purpose-built for social-impact verticals.' },
   { title: 'Multi-Vertical Network', description: 'Cross-pollination between 10+ verticals creates compounding defensibility and data flywheel effects.' },
   { title: 'First-Mover Advantage', description: 'Only AI platform company operating simultaneously across uniontech, diaspora banking, and agrotech.' },
@@ -219,7 +219,7 @@ export default function InvestorsPage() {
                         <div className="text-xs text-gray-500 uppercase tracking-wider">TAM</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-electric">{platform.entities}</div>
+                        <div className="text-2xl font-bold text-electric">{platform.orgs}</div>
                         <div className="text-xs text-gray-500 uppercase tracking-wider">Entities</div>
                       </div>
                     </div>

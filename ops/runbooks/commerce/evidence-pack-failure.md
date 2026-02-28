@@ -57,7 +57,7 @@ Verify the blob storage container is accessible:
 ```bash
 az storage blob list \
   --container-name evidence \
-  --prefix "{entity_id}/commerce/" \
+  --prefix "{org_id}/commerce/" \
   --account-name $STORAGE_ACCOUNT
 ```
 

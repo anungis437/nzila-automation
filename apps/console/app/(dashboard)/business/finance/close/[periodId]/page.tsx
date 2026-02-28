@@ -44,7 +44,7 @@ interface CloseApproval {
 interface ClosePeriodDetail {
   period: {
     id: string
-    entityId: string
+    orgId: string
     periodLabel: string
     periodType: string
     startDate: string

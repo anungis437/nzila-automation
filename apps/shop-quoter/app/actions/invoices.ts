@@ -20,7 +20,7 @@ async function getDbContext(): Promise<CommerceDbContext> {
     throw new Error('Unauthorized')
   }
   return {
-    entityId: orgId,
+    orgId: orgId,
     actorId: userId,
     actorRole: 'user',
   }
@@ -31,7 +31,7 @@ async function getReadContext(): Promise<CommerceReadContext> {
   if (!userId || !orgId) {
     throw new Error('Unauthorized')
   }
-  return { entityId: orgId }
+  return { orgId: orgId }
 }
 
 // ── Read Actions ──────────────────────────────────────────────────────────

@@ -16,7 +16,7 @@ const verticalData: Record<string, {
   hero: string;
   heroAlt: string;
   tam: string;
-  entities: string;
+  orgs: string;
   platforms: string[];
   status: string;
   color: string;
@@ -33,7 +33,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920',
     heroAlt: 'Financial trading screens displaying market data and candlestick charts',
     tam: '$100B+',
-    entities: '617',
+    orgs: '617',
     platforms: ['DiasporaCore V2', 'STSA / Lexora', 'Insight CFO'],
     status: '3 Platforms',
     color: 'from-electric to-violet',
@@ -62,7 +62,7 @@ const verticalData: Record<string, {
         title: 'Credit Stress Testing',
         icon: '📊',
         description:
-          'Scenario-based stress testing models that help financial entities assess portfolio resilience under economic shocks.',
+          'Scenario-based stress testing models that help financial orgs assess portfolio resilience under economic shocks.',
       },
       {
         title: 'Virtual CFO Services',
@@ -91,7 +91,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920',
     heroAlt: 'Aerial view of organised agricultural farmland rows stretching to the horizon',
     tam: '$8.6B',
-    entities: '300',
+    orgs: '300',
     platforms: ['CORA', 'PonduOps'],
     status: '2 Platforms',
     color: 'from-emerald to-cyan-400',
@@ -150,12 +150,12 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1529070538774-1795d8de2dff?w=1920',
     heroAlt: 'Labour union workers raising hands together in solidarity',
     tam: '$50B',
-    entities: '4,773',
+    orgs: '4,773',
     platforms: ['Union Eyes'],
     status: 'Flagship',
     color: 'from-gold to-gold-light',
     overview:
-      'Union Eyes is Nzila\'s flagship platform — the most comprehensive union management system available. Covering 4,773 entities, it digitises every dimension of union operations from grievance tracking to pension forecasting, delivering decisive intelligence to labour leaders.',
+      'Union Eyes is Nzila\'s flagship platform — the most comprehensive union management system available. Covering 4,773 orgs, it digitises every dimension of union operations from grievance tracking to pension forecasting, delivering decisive intelligence to labour leaders.',
     capabilities: [
       {
         title: 'Pension Forecasting Engine',
@@ -194,7 +194,7 @@ const verticalData: Record<string, {
       { scenario: 'A union executive preparing for contract negotiations', outcome: 'AI-powered clause comparison and historical benchmarking' },
     ],
     differentiators: [
-      '4,773 entities already in the data ecosystem',
+      '4,773 orgs already in the data ecosystem',
       'Only platform combining pension, grievance, and organising in one product',
       'AI clause analysis built specifically for collective agreements',
       'Supports labour rights — a core B Corp social impact pillar',
@@ -208,7 +208,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920',
     heroAlt: 'Scales of justice on a desk alongside legal reference books and documents',
     tam: '$13B+',
-    entities: '814',
+    orgs: '814',
     platforms: ['Court Lens', 'ABR Insights'],
     status: '2 Platforms',
     color: 'from-violet to-coral',
@@ -260,7 +260,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920',
     heroAlt: 'Students engaged in collaborative learning with laptops and digital devices',
     tam: '$13B+',
-    entities: '162',
+    orgs: '162',
     platforms: ['ABR Insights', 'CyberLearn'],
     status: '2 Platforms',
     color: 'from-electric to-emerald',
@@ -318,7 +318,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920',
     heroAlt: 'Customer completing a digital payment at a modern retail checkout counter',
     tam: '$25B',
-    entities: '508',
+    orgs: '508',
     platforms: ['Shop Quoter', 'Trade OS', 'eExports'],
     status: '3 Platforms',
     color: 'from-gold to-coral',
@@ -370,7 +370,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920',
     heroAlt: 'DJ performing live with vibrant stage lights illuminating a crowd',
     tam: '$50B',
-    entities: '83',
+    orgs: '83',
     platforms: ['CongoWave'],
     status: 'Production Ready',
     color: 'from-coral to-gold',
@@ -422,7 +422,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920',
     heroAlt: 'Healthcare professional using a digital tablet for patient diagnostics',
     tam: '$20B',
-    entities: '150',
+    orgs: '150',
     platforms: ['Memora'],
     status: 'Legacy',
     color: 'from-emerald to-cyan-400',
@@ -474,7 +474,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920',
     heroAlt: 'Business professional reviewing insurance policy documents at a desk',
     tam: '$30B',
-    entities: '79',
+    orgs: '79',
     platforms: ['SentryIQ360'],
     status: 'In Development',
     color: 'from-electric to-violet',
@@ -526,7 +526,7 @@ const verticalData: Record<string, {
     hero: 'https://images.unsplash.com/photo-1589578527966-fdac0f44566c?w=1920',
     heroAlt: 'Symbolic raised fist representing social justice, equity, and advocacy movements',
     tam: '$1.5B',
-    entities: '132',
+    orgs: '132',
     platforms: ['ABR Insights'],
     status: 'Production Ready',
     color: 'from-coral to-violet',
@@ -688,7 +688,7 @@ export default async function VerticalPage({
             <div className="space-y-4">
               {[
                 { label: 'Total Addressable Market', value: v.tam },
-                { label: 'Data Entities', value: v.entities },
+                { label: 'Data Entities', value: v.orgs },
                 { label: 'Platforms', value: String(v.platforms.length) },
                 { label: 'Status', value: v.status },
               ].map((stat) => (

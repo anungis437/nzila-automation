@@ -8,8 +8,8 @@
  *   - createScopedDb()          for Org-scoped reads
  *   - createAuditedScopedDb()   for Org-scoped writes
  *
- * Use `platformDb` ONLY for tables that genuinely lack entity_id:
- *   - `entities`       — root Org table (id IS the Org)
+ * Use `platformDb` ONLY for tables that genuinely lack org_id:
+ *   - `orgs`       — root Org table (id IS the Org)
  *   - `people`         — global person registry
  *   - `partners`       — partner portal, scoped by clerk_org_id
  *   - `aiPrompts`      — global prompt library

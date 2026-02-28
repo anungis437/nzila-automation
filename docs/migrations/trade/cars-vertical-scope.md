@@ -35,7 +35,7 @@ Stored in `trade_vehicle_listings`, linked 1:1 to a `trade_listings` row where
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities (org scope) |
+| `org_id` | UUID | FK → entities (org scope) |
 | `listing_id` | UUID | FK → trade_listings |
 | `vin` | varchar(17) | Vehicle Identification Number |
 | `year` | integer | Model year |
@@ -61,7 +61,7 @@ Vehicle-specific documents (supplements generic `trade_documents`).
 | Field | Type | Notes |
 |---|---|---|
 | `id` | UUID | PK |
-| `entity_id` | UUID | FK → entities |
+| `org_id` | UUID | FK → entities |
 | `listing_id` | UUID | FK → trade_listings |
 | `doc_type` | enum | `bill_of_sale`, `export_certificate`, `inspection_report`, `title`, `carfax`, `emissions_test`, `safety_inspection`, `customs_form` |
 | `storage_key` | text | Blob storage path |

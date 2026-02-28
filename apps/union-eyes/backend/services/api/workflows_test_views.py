@@ -55,7 +55,7 @@ class WorkflowsTestViewSet(viewsets.ViewSet):
                     action="workflow_definition_created",
                     actor_id=str(request.user.id),
                     entity_type="workflow_definition",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 WorkflowDefinitionsSerializer(instance).data,
@@ -110,7 +110,7 @@ class WorkflowsTestViewSet(viewsets.ViewSet):
                     action="workflow_execution_triggered",
                     actor_id=str(request.user.id),
                     entity_type="workflow_execution",
-                    entity_id=str(execution.id),
+                    org_id=str(execution.id),
                 )
 
             return Response(

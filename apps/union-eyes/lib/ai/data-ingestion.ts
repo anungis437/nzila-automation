@@ -66,7 +66,7 @@ export interface ParsedData {
   content: string;
   structured?: Record<string, unknown>;
   tables?: TableData[];
-  entities?: ExtractedEntity[];
+  orgs?: ExtractedEntity[];
   metadata?: Record<string, unknown>;
 }
 

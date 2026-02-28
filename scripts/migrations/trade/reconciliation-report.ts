@@ -66,20 +66,20 @@ const CHECKS: Omit<ReconciliationCheck, 'status' | 'actual' | 'detail'>[] = [
   // ── org-scoping ───────────────────────────────────────────────────────
   {
     name: 'RECON_010_NO_NULL_ENTITY_PARTIES',
-    description: 'All party rows have a non-null entity_id',
-    query: 'SELECT COUNT(*) AS cnt FROM trade_parties WHERE entity_id IS NULL',
+    description: 'All party rows have a non-null org_id',
+    query: 'SELECT COUNT(*) AS cnt FROM trade_parties WHERE org_id IS NULL',
     expectedCondition: 'cnt == 0',
   },
   {
     name: 'RECON_011_NO_NULL_ENTITY_DEALS',
-    description: 'All deal rows have a non-null entity_id',
-    query: 'SELECT COUNT(*) AS cnt FROM trade_deals WHERE entity_id IS NULL',
+    description: 'All deal rows have a non-null org_id',
+    query: 'SELECT COUNT(*) AS cnt FROM trade_deals WHERE org_id IS NULL',
     expectedCondition: 'cnt == 0',
   },
   {
     name: 'RECON_012_NO_NULL_ENTITY_LISTINGS',
-    description: 'All listing rows have a non-null entity_id',
-    query: 'SELECT COUNT(*) AS cnt FROM trade_listings WHERE entity_id IS NULL',
+    description: 'All listing rows have a non-null org_id',
+    query: 'SELECT COUNT(*) AS cnt FROM trade_listings WHERE org_id IS NULL',
     expectedCondition: 'cnt == 0',
   },
 
@@ -164,9 +164,9 @@ const CHECKS: Omit<ReconciliationCheck, 'status' | 'actual' | 'detail'>[] = [
     description: 'No duplicate VINs within the same org',
     query: `
       SELECT COUNT(*) AS cnt FROM (
-        SELECT entity_id, vin, COUNT(*) AS c
+        SELECT org_id, vin, COUNT(*) AS c
         FROM trade_vehicle_listings
-        GROUP BY entity_id, vin
+        GROUP BY org_id, vin
         HAVING COUNT(*) > 1
       ) dupes
     `,

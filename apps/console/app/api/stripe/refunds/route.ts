@@ -22,7 +22,7 @@ import { createLogger } from '@nzila/os-core'
 const logger = createLogger('stripe:refunds')
 
 const RequestRefundSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   paymentId: z.string().uuid(),
   amountCents: z.number().int().min(1),
   reason: z.enum(['duplicate', 'fraudulent', 'requested_by_customer']).optional(),
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 400 })
   }
 
-  const { entityId, paymentId, amountCents, reason } = parsed.data
+  const { orgId, paymentId, amountCents, reason } = parsed.data
 
   // Look up the payment to get the Stripe object ID
   const [payment] = await platformDb
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   // Audit: refund requested
   await recordAuditEvent({
-    entityId,
+    orgId,
     actorClerkUserId: auth.userId,
     actorRole: auth.platformRole,
     action: 'stripe.refund_requested',
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const [refundRow] = await platformDb
       .insert(stripeRefunds)
       .values({
-        entityId,
+        orgId,
         paymentId,
         amountCents: BigInt(amountCents),
         status: 'pending_approval',
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const [refundRow] = await platformDb
       .insert(stripeRefunds)
       .values({
-        entityId,
+        orgId,
         refundId: stripeRefund.id,
         paymentId,
         amountCents: BigInt(amountCents),
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       .returning({ id: stripeRefunds.id })
 
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.refund_executed',

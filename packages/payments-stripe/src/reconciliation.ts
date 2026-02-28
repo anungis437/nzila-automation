@@ -36,7 +36,7 @@ export type ExceptionStatus = 'open' | 'investigating' | 'resolved' | 'waived'
 
 export interface ReconciliationException {
   id: string
-  entityId: string
+  orgId: string
   type: ReconciliationType
   severity: ExceptionSeverity
   status: ExceptionStatus
@@ -163,7 +163,7 @@ export function matchPayoutsToDeposits(
  * Generate reconciliation exceptions from a match result.
  */
 export function generateExceptions(
-  entityId: string,
+  orgId: string,
   periodLabel: string,
   matchResult: MatchResult,
   config: ReconciliationConfig = DEFAULT_RECON_CONFIG,
@@ -179,7 +179,7 @@ export function generateExceptions(
     if (!match.withinTolerance) {
       exceptions.push({
         id: nextId(),
-        entityId,
+        orgId,
         type: 'payout-deposit-mismatch',
         severity: match.deltaCents > config.toleranceCents * 10 ? 'critical' : 'warning',
         status: 'open',
@@ -199,7 +199,7 @@ export function generateExceptions(
   for (const payout of matchResult.unmatchedStripe) {
     exceptions.push({
       id: nextId(),
-      entityId,
+      orgId,
       type: 'missing-qbo-deposit',
       severity: 'critical',
       status: 'open',
@@ -217,7 +217,7 @@ export function generateExceptions(
   for (const deposit of matchResult.unmatchedQbo) {
     exceptions.push({
       id: nextId(),
-      entityId,
+      orgId,
       type: 'missing-stripe-payout',
       severity: 'warning',
       status: 'open',
@@ -237,7 +237,7 @@ export function generateExceptions(
 // ── Close Readiness Score ─────────────────────────────────────────────────
 
 export interface CloseReadinessReport {
-  entityId: string
+  orgId: string
   periodLabel: string
   score: number
   maxScore: number
@@ -265,7 +265,7 @@ export interface CloseReadinessReport {
  *   - No stale unreconciled items (15 pts)
  */
 export function computeCloseReadiness(
-  entityId: string,
+  orgId: string,
   periodLabel: string,
   matchResult: MatchResult,
   exceptions: ReconciliationException[],
@@ -343,7 +343,7 @@ export function computeCloseReadiness(
   const percentage = Math.round((totalScore / maxScore) * 100)
 
   return {
-    entityId,
+    orgId,
     periodLabel,
     score: totalScore,
     maxScore,

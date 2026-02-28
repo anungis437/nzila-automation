@@ -135,7 +135,7 @@ export async function predictCaseOutcome(
   // Try ML model first
   const prediction = await runPrediction({
     model: 'abr-case-outcome',
-    entityId: caseId,
+    orgId: caseId,
   })
 
   if (prediction) {
@@ -153,7 +153,7 @@ export async function predictCaseOutcome(
 Return JSON: { predictedOutcome, probability, estimatedDurationDays }
 
 Case: ${caseDescription}`,
-    { dataClass: 'regulated', entityId: caseId },
+    { dataClass: 'regulated', orgId: caseId },
   )
 
   try {
@@ -169,12 +169,12 @@ Case: ${caseDescription}`,
  * Uses ML model for scoring with AI-generated factor analysis.
  */
 export async function assessRiskScore(
-  entityId: string,
+  orgId: string,
   context?: string,
 ): Promise<RiskAssessment | null> {
   const prediction = await runPrediction({
     model: 'abr-risk-score',
-    entityId,
+    orgId,
   })
 
   if (prediction) {
@@ -194,7 +194,7 @@ export async function assessRiskScore(
 Return JSON: { riskScore, factors: string[], recommendation }
 
 Context: ${context}`,
-    { dataClass: 'regulated', entityId },
+    { dataClass: 'regulated', orgId },
   )
 
   try {

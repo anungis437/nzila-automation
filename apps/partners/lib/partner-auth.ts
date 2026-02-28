@@ -70,16 +70,16 @@ export async function hasAnyRole(roles: PartnerRole[]): Promise<boolean> {
 
 /**
  * Look up the partner record for the current Clerk org, then verify the
- * partner has an entitlement row granting access to `entityId + view`.
+ * partner has an entitlement row granting access to `orgId + view`.
  *
- * Returns the partner row + entityId on success.
+ * Returns the partner row + orgId on success.
  * Returns `{ ok: false, error }` when the check fails.
  */
 export async function requirePartnerEntityAccess(
-  entityId: string,
+  orgId: string,
   requiredView: string,
 ): Promise<
-  | { ok: true; partner: { id: string; tier: string }; entityId: string }
+  | { ok: true; partner: { id: string; tier: string }; orgId: string }
   | { ok: false; error: string; status: number }
 > {
   const session = await auth()
@@ -105,7 +105,7 @@ export async function requirePartnerEntityAccess(
     .where(
       and(
         eq(partnerEntities.partnerId, partner.id),
-        eq(partnerEntities.entityId, entityId),
+        eq(partnerEntities.orgId, orgId),
       ),
     )
     .limit(1)
@@ -120,14 +120,14 @@ export async function requirePartnerEntityAccess(
     return { ok: false, error: `View "${requiredView}" not entitled`, status: 403 }
   }
 
-  return { ok: true, partner, entityId }
+  return { ok: true, partner, orgId }
 }
 
 /**
- * Resolve the first entityId the current Clerk org is entitled to access
+ * Resolve the first orgId the current Clerk org is entitled to access
  * for the given view permission. Returns null if not entitled.
  *
- * Used by API routes that self-resolve entityId so that pages do not need
+ * Used by API routes that self-resolve orgId so that pages do not need
  * direct DB access just to discover which entity to fetch.
  */
 export async function resolvePartnerEntityIdForView(
@@ -145,7 +145,7 @@ export async function resolvePartnerEntityIdForView(
   if (!partner) return null
 
   const [entitlement] = await platformDb
-    .select({ entityId: partnerEntities.entityId, allowedViews: partnerEntities.allowedViews })
+    .select({ orgId: partnerEntities.orgId, allowedViews: partnerEntities.allowedViews })
     .from(partnerEntities)
     .where(eq(partnerEntities.partnerId, partner.id))
     .limit(1)
@@ -155,7 +155,7 @@ export async function resolvePartnerEntityIdForView(
   const views = entitlement.allowedViews ?? []
   if (!views.includes(requiredView)) return null
 
-  return entitlement.entityId
+  return entitlement.orgId
 }
 
 // ──────────────────────────────────────────────────────────────────────────────

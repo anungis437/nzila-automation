@@ -428,7 +428,7 @@ export const financialAuditLog = pgTable('financial_audit_log', {
     .references(() => organizations.id, { onDelete: 'cascade' }),
   
   entityType: varchar('entity_type', { length: 100 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
+  orgId: uuid('org_id').notNull(),
   action: auditActionEnum('action').notNull(),
   
   userId: varchar('user_id', { length: 255 }).notNull(), // User ID - matches users.userId VARCHAR(255)
@@ -449,7 +449,7 @@ export const financialAuditLog = pgTable('financial_audit_log', {
   timestamp: timestamp('timestamp', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({
   organizationIdx: index('audit_organization_idx').on(table.organizationId),
-  entityIdx: index('audit_entity_idx').on(table.entityType, table.entityId),
+  entityIdx: index('audit_entity_idx').on(table.entityType, table.orgId),
   userIdx: index('audit_user_idx').on(table.userId),
   timestampIdx: index('audit_timestamp_idx').on(table.timestamp),
 }));

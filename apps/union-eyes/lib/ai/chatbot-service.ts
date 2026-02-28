@@ -35,7 +35,7 @@ async function aiGenerate(
   const ai = getAiClient();
   const input = messages.map(m => ({ role: m.role as 'system' | 'user' | 'assistant', content: m.content }));
   const response = await ai.generate({
-    entityId: 'system',
+    orgId: 'system',
     appKey: UE_APP_KEY,
     profileKey: UE_PROFILES.CHATBOT,
     input,
@@ -58,7 +58,7 @@ async function aiEmbed(text: string): Promise<number[]> {
 
   const ai = getAiClient();
   const response = await ai.embed({
-    entityId: 'system',
+    orgId: 'system',
     appKey: UE_APP_KEY,
     profileKey: UE_PROFILES.EMBEDDINGS,
     input: text,

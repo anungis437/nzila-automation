@@ -119,13 +119,13 @@ export class CanadaLifeAdapter extends BaseIntegration {
     let recordsCreated = 0;
     let recordsUpdated = 0;
     let recordsFailed = 0;
-    const errors: Array<{ entity: string; entityId?: string; error: string; details?: unknown }> = [];
+    const errors: Array<{ entity: string; orgId?: string; error: string; details?: unknown }> = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
       const modifiedSince = options.cursor ? new Date(options.cursor) : undefined;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           switch (entity) {
             case 'policies':

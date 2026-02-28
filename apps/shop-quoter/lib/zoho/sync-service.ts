@@ -125,11 +125,11 @@ function _mapZohoDealToQuote(deal: ZohoDeal): Partial<typeof commerceQuotes.$inf
 
 export class ZohoSyncService {
   private crmClient: ZohoCrmClient
-  private entityId: string
+  private orgId: string
 
-  constructor(crmClient: ZohoCrmClient, entityId: string) {
+  constructor(crmClient: ZohoCrmClient, orgId: string) {
     this.crmClient = crmClient
-    this.entityId = entityId
+    this.orgId = orgId
   }
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ export class ZohoSyncService {
       .from(commerceZohoSyncConfigs)
       .where(
         and(
-          eq(commerceZohoSyncConfigs.entityId, this.entityId),
+          eq(commerceZohoSyncConfigs.orgId, this.orgId),
           eq(commerceZohoSyncConfigs.zohoModule, zohoModule),
         ),
       )
@@ -165,7 +165,7 @@ export class ZohoSyncService {
     await db
       .insert(commerceZohoSyncConfigs)
       .values({
-        entityId: this.entityId,
+        orgId: this.orgId,
         name: `${module} sync`,
         zohoModule,
         nzilaTable,
@@ -174,7 +174,7 @@ export class ZohoSyncService {
         fieldMappings: options.fieldMappings ?? [],
       })
       .onConflictDoUpdate({
-        target: [commerceZohoSyncConfigs.entityId, commerceZohoSyncConfigs.zohoModule],
+        target: [commerceZohoSyncConfigs.orgId, commerceZohoSyncConfigs.zohoModule],
         set: {
           syncDirection: options.direction,
           isActive: options.isActive,
@@ -205,7 +205,7 @@ export class ZohoSyncService {
     }
 
     if (!config?.isActive) {
-      logger.info('Contact sync disabled, skipping', { entityId: this.entityId })
+      logger.info('Contact sync disabled, skipping', { orgId: this.orgId })
       result.status = 'completed'
       return result
     }
@@ -271,7 +271,7 @@ export class ZohoSyncService {
     }
 
     // Get customers modified since last sync
-    const whereConditions = [eq(commerceCustomers.entityId, this.entityId)]
+    const whereConditions = [eq(commerceCustomers.orgId, this.orgId)]
     if (lastSync) {
       whereConditions.push(gte(commerceCustomers.updatedAt, lastSync))
     }
@@ -283,7 +283,7 @@ export class ZohoSyncService {
 
     logger.info('Pushing customers to Zoho', {
       count: customers.length,
-      entityId: this.entityId,
+      orgId: this.orgId,
     })
 
     for (const customer of customers) {
@@ -418,7 +418,7 @@ export class ZohoSyncService {
             const [newCustomer] = await db
               .insert(commerceCustomers)
               .values({
-                entityId: this.entityId,
+                orgId: this.orgId,
                 name: customerData.name ?? 'Unknown',
                 email: customerData.email,
                 phone: customerData.phone,
@@ -474,7 +474,7 @@ export class ZohoSyncService {
     const customers = await db
       .select({ id: commerceCustomers.id, metadata: commerceCustomers.metadata })
       .from(commerceCustomers)
-      .where(eq(commerceCustomers.entityId, this.entityId))
+      .where(eq(commerceCustomers.orgId, this.orgId))
 
     for (const c of customers) {
       const metadata = c.metadata as { zohoContactId?: string } | null
@@ -526,7 +526,7 @@ export class ZohoSyncService {
     }
 
     logger.info('Sync run completed', {
-      entityId: this.entityId,
+      orgId: this.orgId,
       module,
       status,
       recordsCreated: result.recordsCreated,
@@ -542,7 +542,7 @@ export class ZohoSyncService {
     // Get or create a sync record first
     const config = await this.getSyncConfig('contacts')
     if (!config) {
-      logger.warn('No sync config found for conflict recording', { entityId: this.entityId })
+      logger.warn('No sync config found for conflict recording', { orgId: this.orgId })
       return
     }
 
@@ -550,7 +550,7 @@ export class ZohoSyncService {
     const [syncRecord] = await db
       .insert(commerceZohoSyncRecords)
       .values({
-        entityId: this.entityId,
+        orgId: this.orgId,
         configId: config.id,
         nzilaRecordId: conflict.nzilaRecordId,
         zohoRecordId: conflict.zohoRecordId ?? null,
@@ -561,7 +561,7 @@ export class ZohoSyncService {
 
     // Record the conflict
     await db.insert(commerceZohoConflicts).values({
-      entityId: this.entityId,
+      orgId: this.orgId,
       syncRecordId: syncRecord.id,
       nzilaData: conflict.nzilaData,
       zohoData: conflict.zohoData,
@@ -586,7 +586,7 @@ export class ZohoSyncService {
       )
       .where(
         and(
-          eq(commerceZohoConflicts.entityId, this.entityId),
+          eq(commerceZohoConflicts.orgId, this.orgId),
           isNull(commerceZohoConflicts.resolvedAt),
         ),
       )

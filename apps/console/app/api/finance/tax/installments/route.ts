@@ -5,13 +5,13 @@
  * POST  /api/finance/tax/installments                → create installment record
  * PATCH /api/finance/tax/installments                → update installment (pay, mark late)
  *
- * PR5 — Entity-scoped auth + audit events
+ * PR5 — Org-scoped auth + audit events
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { taxInstallments, taxYears } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { CreateTaxInstallmentInput } from '@nzila/tax/types'
 import {
   recordFinanceAuditEvent,
@@ -20,27 +20,27 @@ import {
 
 export async function GET(req: NextRequest) {
   const taxYearId = req.nextUrl.searchParams.get('taxYearId')
-  const entityId = req.nextUrl.searchParams.get('entityId')
+  const orgId = req.nextUrl.searchParams.get('orgId')
 
-  if (!taxYearId && !entityId) {
-    return NextResponse.json({ error: 'taxYearId or entityId required' }, { status: 400 })
+  if (!taxYearId && !orgId) {
+    return NextResponse.json({ error: 'taxYearId or orgId required' }, { status: 400 })
   }
 
-  let resolvedEntityId = entityId
+  let resolvedEntityId = orgId
   if (!resolvedEntityId && taxYearId) {
     const [ty] = await platformDb.select().from(taxYears).where(eq(taxYears.id, taxYearId))
-    resolvedEntityId = ty?.entityId ?? null
+    resolvedEntityId = ty?.orgId ?? null
   }
   if (!resolvedEntityId) {
     return NextResponse.json({ error: 'Could not resolve entity' }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(resolvedEntityId)
+  const access = await requireOrgAccess(resolvedEntityId)
   if (!access.ok) return access.response
 
   const filter = taxYearId
     ? eq(taxInstallments.taxYearId, taxYearId)
-    : eq(taxInstallments.entityId, resolvedEntityId)
+    : eq(taxInstallments.orgId, resolvedEntityId)
 
   const rows = await platformDb.select().from(taxInstallments).where(filter)
   return NextResponse.json(rows)
@@ -53,15 +53,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(parsed.data.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(parsed.data.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
   const [row] = await platformDb.insert(taxInstallments).values(parsed.data).returning()
 
   await recordFinanceAuditEvent({
-    entityId: parsed.data.entityId,
+    orgId: parsed.data.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: FINANCE_AUDIT_ACTIONS.TAX_INSTALLMENT_RECORD,
@@ -84,7 +84,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'id required' }, { status: 400 })
   }
 
-  // Fetch existing to get entityId
+  // Fetch existing to get orgId
   const [existing] = await platformDb
     .select()
     .from(taxInstallments)
@@ -94,8 +94,8 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Installment not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(existing.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(existing.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -106,7 +106,7 @@ export async function PATCH(req: NextRequest) {
     .returning()
 
   await recordFinanceAuditEvent({
-    entityId: existing.entityId,
+    orgId: existing.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: FINANCE_AUDIT_ACTIONS.TAX_INSTALLMENT_RECORD,

@@ -98,7 +98,7 @@ class LegacyPortfolioAnalyzer:
             "size_mb": platform["size_mb"],
             "tech_stack": self._detect_tech_stack(path),
             "package_files": self._find_package_files(path),
-            "entities": self._extract_entities(path),
+            "orgs": self._extract_entities(path),
             "api_endpoints": self._extract_api_endpoints(path),
             "components": self._extract_components(path),
             "dependencies": self._extract_dependencies(path),
@@ -131,7 +131,7 @@ class LegacyPortfolioAnalyzer:
         print(f"  Framework: {analysis['framework'] or 'Unknown'}")
         print(f"  Backend: {analysis['backend_tech'] or 'Unknown'}")
         print(f"  Vertical: {analysis['vertical']}")
-        print(f"  Entities found: {len(analysis['entities'])}")
+        print(f"  Entities found: {len(analysis['orgs'])}")
         print(f"  API endpoints: {len(analysis['api_endpoints'])}")
         print(f"  Components: {len(analysis['components'])}")
 
@@ -233,23 +233,23 @@ class LegacyPortfolioAnalyzer:
         return package_files
 
     def _extract_entities(self, path: Path) -> List[Dict[str, Any]]:
-        """Extract entities/models from codebase"""
-        entities = []
+        """Extract orgs/models from codebase"""
+        orgs = []
 
         # Python models (Django/SQLAlchemy)
         for py_file in path.glob("**/models.py"):
-            entities.extend(self._parse_python_models(py_file))
+            orgs.extend(self._parse_python_models(py_file))
 
-        # JavaScript/TypeScript entities
+        # JavaScript/TypeScript orgs
         for js_file in list(path.glob("**/*.js")) + list(path.glob("**/*.ts")):
             if "node_modules" not in str(js_file):
-                entities.extend(self._parse_js_entities(js_file))
+                orgs.extend(self._parse_js_entities(js_file))
 
-        return entities
+        return orgs
 
     def _parse_python_models(self, file_path: Path) -> List[Dict[str, Any]]:
         """Parse Django/SQLAlchemy models"""
-        entities = []
+        orgs = []
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
 
@@ -258,7 +258,7 @@ class LegacyPortfolioAnalyzer:
             matches = re.finditer(class_pattern, content)
 
             for match in matches:
-                entities.append(
+                orgs.append(
                     {
                         "name": match.group(1),
                         "type": "django_model",
@@ -268,11 +268,11 @@ class LegacyPortfolioAnalyzer:
         except:
             pass
 
-        return entities
+        return orgs
 
     def _parse_js_entities(self, file_path: Path) -> List[Dict[str, Any]]:
-        """Parse JavaScript/TypeScript entities"""
-        entities = []
+        """Parse JavaScript/TypeScript orgs"""
+        orgs = []
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
 
@@ -281,7 +281,7 @@ class LegacyPortfolioAnalyzer:
             matches = re.finditer(interface_pattern, content)
 
             for match in matches:
-                entities.append(
+                orgs.append(
                     {
                         "name": match.group(1),
                         "type": "typescript_interface",
@@ -291,7 +291,7 @@ class LegacyPortfolioAnalyzer:
         except:
             pass
 
-        return entities[:50]  # Limit to prevent overwhelming output
+        return orgs[:50]  # Limit to prevent overwhelming output
 
     def _extract_api_endpoints(self, path: Path) -> List[Dict[str, Any]]:
         """Extract API endpoints from codebase"""
@@ -516,13 +516,13 @@ class LegacyPortfolioAnalyzer:
         vertical_distribution = Counter()
 
         for platform_name, analysis in self.portfolio_analysis["platforms"].items():
-            all_entities.extend([e["name"] for e in analysis["entities"]])
+            all_entities.extend([e["name"] for e in analysis["orgs"]])
             all_dependencies.extend(analysis["dependencies"].get("npm", []))
             all_dependencies.extend(analysis["dependencies"].get("python", []))
             all_frameworks.append(analysis["framework"])
             vertical_distribution[analysis["vertical"]] += 1
 
-        # Find common entities (appearing in 3+ platforms)
+        # Find common orgs (appearing in 3+ platforms)
         entity_counts = Counter(all_entities)
         common_entities = [
             entity for entity, count in entity_counts.items() if count >= 3
@@ -579,7 +579,7 @@ class LegacyPortfolioAnalyzer:
                 "backend": platform_analysis["backend_tech"],
                 "ui_library": platform_analysis["ui_library"],
             },
-            "entities": [e["name"] for e in platform_analysis["entities"][:30]],
+            "orgs": [e["name"] for e in platform_analysis["orgs"][:30]],
             "api_endpoints": [
                 ep.get("path", "") for ep in platform_analysis["api_endpoints"][:20]
             ],
@@ -612,8 +612,8 @@ class LegacyPortfolioAnalyzer:
         # Healthtech = high priority
         if analysis["vertical"] == "Healthtech":
             return "HIGH"
-        # Larger codebases with more entities = medium
-        elif len(analysis["entities"]) > 20 or analysis["size_mb"] > 10:
+        # Larger codebases with more orgs = medium
+        elif len(analysis["orgs"]) > 20 or analysis["size_mb"] > 10:
             return "MEDIUM"
         else:
             return "LOW"
@@ -623,7 +623,7 @@ class LegacyPortfolioAnalyzer:
         base_weeks = 4
 
         # Add weeks based on complexity
-        if len(analysis["entities"]) > 30:
+        if len(analysis["orgs"]) > 30:
             base_weeks += 2
         if len(analysis["components"]) > 50:
             base_weeks += 1
@@ -755,7 +755,7 @@ class LegacyPortfolioAnalyzer:
     def _calculate_portfolio_metrics(self) -> Dict[str, Any]:
         """Calculate overall portfolio metrics"""
         total_entities = sum(
-            len(p["entities"]) for p in self.portfolio_analysis["platforms"].values()
+            len(p["orgs"]) for p in self.portfolio_analysis["platforms"].values()
         )
         total_components = sum(
             len(p["components"]) for p in self.portfolio_analysis["platforms"].values()
@@ -770,14 +770,14 @@ class LegacyPortfolioAnalyzer:
 
         # Calculate by vertical
         vertical_metrics = defaultdict(
-            lambda: {"platforms": 0, "entities": 0, "weeks": 0}
+            lambda: {"platforms": 0, "orgs": 0, "weeks": 0}
         )
         for platform_name, analysis in self.portfolio_analysis["platforms"].items():
             vertical = analysis["vertical"]
             manifest = self.portfolio_analysis["migration_manifests"][platform_name]
 
             vertical_metrics[vertical]["platforms"] += 1
-            vertical_metrics[vertical]["entities"] += len(analysis["entities"])
+            vertical_metrics[vertical]["orgs"] += len(analysis["orgs"])
             vertical_metrics[vertical]["weeks"] += manifest["migration_strategy"][
                 "estimated_weeks"
             ]
@@ -855,7 +855,7 @@ class LegacyPortfolioAnalyzer:
         for vertical, stats in metrics["vertical_metrics"].items():
             print(f"  {vertical}:")
             print(f"    - Platforms: {stats['platforms']}")
-            print(f"    - Entities: {stats['entities']}")
+            print(f"    - Entities: {stats['orgs']}")
             print(f"    - Migration Time: {stats['weeks']} weeks")
 
         print(f"\n🏗️ FRAMEWORK DISTRIBUTION:")

@@ -290,7 +290,7 @@ Full AI Action Control Plane built across `packages/`, `apps/console/`, and new 
 | Table/Enum | Change |
 |------------|--------|
 | `aiActionRuns` | New table: run lifecycle per action (`pending` → `running` → `succeeded`/`failed`), stores `inputsHash`, `outputHash`, `metricsJson`, `attestationHash` |
-| `aiKnowledgeSources` | New table: knowledge source registry (`entityId`, `appKey`, `sourceType`, `title`, `chunkCount`, `embeddingModel`) |
+| `aiKnowledgeSources` | New table: knowledge source registry (`orgId`, `appKey`, `sourceType`, `title`, `chunkCount`, `embeddingModel`) |
 | `aiKnowledgeIngestionRuns` | New table: per-source ingestion run log with status + metricsJson |
 | `riskTier` enum | New: `low`, `medium`, `high`, `critical` |
 | `aiKnowledgeSourceType` | New enum: `manual_text`, `document`, `url`, `file_upload` |

@@ -139,7 +139,7 @@ export function collectKeyRotationArtifact(
 export interface DualControlRequest {
   actionId: string
   actionType: FinancialActionType
-  entityId: string
+  orgId: string
   requestedBy: string
   requestedAt: string
   amount?: number
@@ -257,7 +257,7 @@ export function createFinancialApproval(
 
 export interface DRSimulationResult {
   simulationId: string
-  entityId: string
+  orgId: string
   scenario: DRScenario
   startedAt: string
   completedAt: string

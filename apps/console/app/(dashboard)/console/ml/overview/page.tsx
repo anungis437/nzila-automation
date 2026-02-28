@@ -13,7 +13,7 @@ import { mlClient, getEntityId } from '@/lib/ml-server'
 
 export const dynamic = 'force-dynamic'
 
-async function getMlOverview(entityId: string) {
+async function getMlOverview(orgId: string) {
   const ml = mlClient()
 
   const ninetyDaysAgo = new Date()
@@ -23,11 +23,11 @@ async function getMlOverview(entityId: string) {
 
   const [activeModels, recentTraining, recentInference, dailyScores, txnResult] =
     await Promise.all([
-      ml.getActiveModels(entityId),
-      ml.getTrainingRuns(entityId, 5),
-      ml.getInferenceRuns(entityId, 5),
-      ml.getStripeDailyScores({ entityId, startDate, endDate }),
-      ml.getStripeTxnScores({ entityId, startDate, endDate, isAnomaly: true, limit: 500 }),
+      ml.getActiveModels(orgId),
+      ml.getTrainingRuns(orgId, 5),
+      ml.getInferenceRuns(orgId, 5),
+      ml.getStripeDailyScores({ orgId, startDate, endDate }),
+      ml.getStripeTxnScores({ orgId, startDate, endDate, isAnomaly: true, limit: 500 }),
     ])
 
   const dailyAnomalyCount = dailyScores.filter((s) => s.isAnomaly).length
@@ -40,9 +40,9 @@ export default async function MlOverviewPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = getEntityId()
+  const orgId = getEntityId()
   const { activeModels, recentTraining, recentInference, dailyAnomalyCount, txnAnomalyCount } =
-    await getMlOverview(entityId)
+    await getMlOverview(orgId)
 
   const mlNavLinks = [
     { label: 'Overview', href: '/console/ml/overview' },

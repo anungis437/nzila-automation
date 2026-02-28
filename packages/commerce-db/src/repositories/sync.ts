@@ -20,7 +20,7 @@ export async function listSyncJobs(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -41,7 +41,7 @@ export async function getSyncJobById(
   ctx: CommerceReadContext,
   jobId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceSyncJobs,
     eq(commerceSyncJobs.id, jobId),
@@ -61,7 +61,7 @@ export async function createSyncJob(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -80,7 +80,7 @@ export async function updateSyncJob(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -98,7 +98,7 @@ export async function listSyncReceipts(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -119,7 +119,7 @@ export async function getSyncReceiptById(
   ctx: CommerceReadContext,
   receiptId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceSyncReceipts,
     eq(commerceSyncReceipts.id, receiptId),
@@ -131,7 +131,7 @@ export async function listSyncReceiptsByJob(
   ctx: CommerceReadContext,
   syncJobId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   return db.select(
     commerceSyncReceipts,
     eq(commerceSyncReceipts.syncJobId, syncJobId),
@@ -151,7 +151,7 @@ export async function createSyncReceipt(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

@@ -16,7 +16,7 @@ import {
 interface TaxYearDetail {
   taxYear: {
     id: string
-    entityId: string
+    orgId: string
     fiscalYearLabel: string
     startDate: string
     endDate: string

@@ -94,7 +94,7 @@ describe('INV-18 — Litigation hold blocks destructive actions', () => {
   const hold: LitigationHold = {
     holdId: 'LH-001',
     caseId: 'CASE-500',
-    entityId: 'entity-abc',
+    orgId: 'entity-abc',
     scope: {
       documentCategories: ['financial', 'correspondence'],
       dateFrom: '2024-01-01',

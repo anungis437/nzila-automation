@@ -27,7 +27,7 @@ export async function listProducts(
     search?: string
   } = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -74,7 +74,7 @@ export async function getProductById(
   ctx: CommerceReadContext,
   productId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceProducts,
     eq(commerceProducts.id, productId),
@@ -86,7 +86,7 @@ export async function getProductBySku(
   ctx: CommerceReadContext,
   sku: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commerceProducts)
   return rows.find((r) => r.sku === sku) ?? null
 }
@@ -95,13 +95,13 @@ export async function getProductByZohoId(
   ctx: CommerceReadContext,
   zohoItemId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commerceProducts)
   return rows.find((r) => r.zohoItemId === zohoItemId) ?? null
 }
 
 export async function getProductCategories(ctx: CommerceReadContext) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(commerceProducts)
   const categories = new Set(rows.map((r) => r.category))
   return Array.from(categories).sort()
@@ -134,7 +134,7 @@ export async function createProduct(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -168,7 +168,7 @@ export async function updateProduct(
   }>,
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -182,7 +182,7 @@ export async function updateProduct(
 
 export async function deleteProduct(ctx: CommerceDbContext, productId: string) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

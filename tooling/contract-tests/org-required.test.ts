@@ -9,7 +9,7 @@
  *   Excludes: test files, schema definitions, index barrels, types
  *
  * Rules:
- *   - FAIL if a public repository method signature lacks orgId / ctx.orgId / entityId
+ *   - FAIL if a public repository method signature lacks orgId / ctx.orgId / orgId
  *   - FAIL if any exception in governance/exceptions/org-required.json is expired
  *   - PASS otherwise
  *
@@ -85,7 +85,7 @@ function hasOrgParam(params: string): boolean {
 // ── Test ─────────────────────────────────────────────────────────────────────
 
 describe('ORG_REQUIRED_001 — Repository APIs must require orgId', () => {
-  it('exported repository functions include orgId/entityId/ctx parameter', () => {
+  it('exported repository functions include orgId/orgId/ctx parameter', () => {
     const violations: Violation[] = []
     const exceptionFile = loadExceptions(
       'governance/exceptions/org-required.json',
@@ -114,7 +114,7 @@ describe('ORG_REQUIRED_001 — Repository APIs must require orgId', () => {
               ruleId: 'ORG_REQUIRED_001',
               filePath: rel,
               offendingValue: `function ${fnName}(${params.trim()})`,
-              remediation: 'Add orgId, entityId, or ctx parameter to function signature',
+              remediation: 'Add orgId, orgId, or ctx parameter to function signature',
             })
           }
         }
@@ -133,7 +133,7 @@ describe('ORG_REQUIRED_001 — Repository APIs must require orgId', () => {
                 ruleId: 'ORG_REQUIRED_001',
                 filePath: rel,
                 offendingValue: `method ${methodName}(${params.trim()})`,
-                remediation: 'Add orgId, entityId, or ctx parameter to method signature',
+                remediation: 'Add orgId, orgId, or ctx parameter to method signature',
               })
             }
           }

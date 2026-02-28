@@ -2,7 +2,7 @@
  * @nzila/zonga-core — Domain Types
  *
  * All Zonga content platform domain types. No DB, no framework — pure TypeScript.
- * Nzila convention: org scoping uses "entityId" (the Nzila entity_id column).
+ * Nzila convention: org scoping uses "orgId" (the Nzila org_id column).
  *
  * @module @nzila/zonga-core/types
  */
@@ -36,17 +36,12 @@ export type AssetRef = string & { readonly __brand: 'AssetRef' }
  * Zonga org context carried through every request.
  *
  * `orgId` is the canonical field (aligns with @nzila/org).
- * `entityId` is retained as a deprecated alias during migration.
  *
  * @see {@link @nzila/org OrgContext} for the canonical base type.
  */
 export interface ZongaOrgContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
   /** Authenticated user performing the action. */
   readonly actorId: string
   /** User's role within this org. */
@@ -61,7 +56,7 @@ export interface ZongaOrgContext {
 
 export interface Creator {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly userId: string
   readonly displayName: string
   readonly bio: string | null
@@ -91,7 +86,7 @@ export type CreatorRegion = 'west' | 'east' | 'central' | 'southern' | 'north' |
 
 export interface ContentAsset {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly creatorId: string
   readonly title: string
   readonly type: AssetType
@@ -121,7 +116,7 @@ export interface ContentAsset {
 
 export interface Release {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly creatorId: string
   readonly title: string
   readonly status: ReleaseStatus
@@ -135,7 +130,7 @@ export interface Release {
 
 export interface RevenueEvent {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly creatorId: string
   readonly assetId: string | null
   readonly type: RevenueType
@@ -152,7 +147,7 @@ export interface RevenueEvent {
 
 export interface WalletLedgerEntry {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly creatorId: string
   readonly entryType: LedgerEntryType
   readonly amount: number
@@ -168,7 +163,7 @@ export interface WalletLedgerEntry {
 
 export interface Payout {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly creatorId: string
   readonly amount: number
   readonly currency: string
@@ -216,7 +211,7 @@ export interface AudioUploadResult {
 
 export interface PayoutPreview {
   readonly creatorId: string
-  readonly entityId: string
+  readonly orgId: string
   readonly periodStart: string
   readonly periodEnd: string
   readonly totalRevenue: number

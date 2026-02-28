@@ -167,7 +167,7 @@ describe('Audit Taxonomy — REM-04 contract', () => {
 // ── REM-09: Member management call-site audit coverage ────────────────────────
 
 describe('Audit Call-site — REM-09 member management', () => {
-  const PEOPLE_ROUTE = 'apps/console/app/api/entities/[entityId]/people/route.ts'
+  const PEOPLE_ROUTE = 'apps/console/app/api/orgs/[orgId]/people/route.ts'
 
   it('people route exists (member management endpoint)', () => {
     expect(existsSync(resolve(ROOT, PEOPLE_ROUTE))).toBe(true)

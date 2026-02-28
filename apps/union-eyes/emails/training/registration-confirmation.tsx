@@ -42,7 +42,7 @@ export default function RegistrationConfirmationEmail({
   return (
     <Html>
       <Head />
-      {/* eslint-disable-next-line react/no-unescaped-entities */}
+      {/* eslint-disable-next-line react/no-unescaped-orgs */}
       <Preview>You're registered for {courseName}</Preview>
       <Body style={main}>
         <Container style={container}>

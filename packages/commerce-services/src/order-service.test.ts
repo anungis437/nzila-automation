@@ -19,7 +19,7 @@ const TEST_ACTOR = 'actor-test-001'
 
 function makeCtx(overrides?: Partial<OrgContext>): OrgContext {
   return {
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     actorId: TEST_ACTOR,
     role: OrgRole.SALES,
     permissions: [],
@@ -31,7 +31,7 @@ function makeCtx(overrides?: Partial<OrgContext>): OrgContext {
 function makeOrderEntity(overrides?: Partial<OrderEntity>): OrderEntity {
   return {
     id: 'order-001',
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     ref: 'ORD-NZI-000001',
     customerId: 'cust-001',
     quoteId: 'quote-001',
@@ -120,10 +120,10 @@ describe('OrderService', () => {
       expect(result.ok).toBe(true)
       if (!result.ok) return
       expect(result.data.status).toBe(OrderStatus.CREATED)
-      expect(result.data.entityId).toBe(TEST_ORG)
+      expect(result.data.orgId).toBe(TEST_ORG)
     })
 
-    it('calls repo with org entityId', async () => {
+    it('calls repo with org orgId', async () => {
       await service.createOrder(ctx, sampleInput)
       expect(repo.nextRef).toHaveBeenCalledWith(ctx)
       expect(repo.createOrder).toHaveBeenCalledTimes(1)
@@ -287,11 +287,11 @@ describe('OrderService', () => {
       expect(confirmResult.ok && confirmResult.auditEntries.length).toBeGreaterThanOrEqual(1)
     })
 
-    it('audit entries carry correct entityId', async () => {
+    it('audit entries carry correct orgId', async () => {
       const result = await service.createOrder(ctx, sampleInput)
       expect(result.ok).toBe(true)
       if (!result.ok) return
-      expect(result.auditEntries[0]!.entityId).toBe(TEST_ORG)
+      expect(result.auditEntries[0]!.orgId).toBe(TEST_ORG)
       expect(result.auditEntries[0]!.actorId).toBe(TEST_ACTOR)
     })
   })

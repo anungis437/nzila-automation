@@ -18,7 +18,7 @@ interface ShareClass {
 
 export default function IssueSharesPage() {
   const router = useRouter()
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [shareClasses, setShareClasses] = useState<ShareClass[]>([])
   const [selectedEntity, setSelectedEntity] = useState('')
   const [loading, setLoading] = useState(true)
@@ -34,7 +34,7 @@ export default function IssueSharesPage() {
   })
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -44,7 +44,7 @@ export default function IssueSharesPage() {
   // Load share classes when entity changes
   useEffect(() => {
     if (!selectedEntity) return
-    fetch(`/api/entities/${selectedEntity}/equity/share-classes`)
+    fetch(`/api/orgs/${selectedEntity}/equity/share-classes`)
       .then((r) => r.json())
       .then(setShareClasses)
       .catch(() => {})
@@ -60,7 +60,7 @@ export default function IssueSharesPage() {
     setError('')
 
     try {
-      const res = await fetch(`/api/entities/${selectedEntity}/equity/ledger`, {
+      const res = await fetch(`/api/orgs/${selectedEntity}/equity/ledger`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -76,7 +76,7 @@ export default function IssueSharesPage() {
         const data = await res.json()
         throw new Error(data.error || 'Failed to issue shares')
       }
-      router.push(`/business/entities/${selectedEntity}/equity`)
+      router.push(`/business/orgs/${selectedEntity}/equity`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to issue shares')
     } finally {
@@ -119,7 +119,7 @@ export default function IssueSharesPage() {
               required
             >
               <option value="">Select entity</option>
-              {entities.map((e) => (
+              {orgs.map((e) => (
                 <option key={e.id} value={e.id}>{e.legalName}</option>
               ))}
             </select>

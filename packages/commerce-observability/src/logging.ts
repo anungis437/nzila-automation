@@ -5,7 +5,7 @@
  *
  * All log entries follow the Nzila structured logging convention:
  *   - JSON lines format
- *   - Always include orgId (entityId) — never PII
+ *   - Always include orgId (orgId) — never PII
  *   - Include correlationId for trace correlation
  *   - Level: debug | info | warn | error
  *   - Machine-parseable by log aggregators (Azure Monitor, ELK, Loki)
@@ -175,16 +175,16 @@ export function logAuditTrail(
   ctx: CommerceLogContext,
   entityType: string,
   action: string,
-  entityId: string,
+  orgId: string,
 ): CommerceLogEntry {
   return {
     timestamp: new Date().toISOString(),
     level: 'info',
     module: 'commerce-audit',
-    message: `Audit: ${entityType}/${action} for ${entityId}`,
+    message: `Audit: ${entityType}/${action} for ${orgId}`,
     orgId: ctx.orgId,
     correlationId: ctx.correlationId,
     actorId: ctx.actorId,
-    data: { entityType, action, entityId },
+    data: { entityType, action, orgId },
   }
 }

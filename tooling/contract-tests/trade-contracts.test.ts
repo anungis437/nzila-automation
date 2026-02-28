@@ -323,17 +323,17 @@ describe('TRADE_STRUCTURAL_CONTRACTS', () => {
     expect(content).toContain("from './trade'")
   })
 
-  it('all core trade tables have entity_id column', () => {
+  it('all core trade tables have org_id column', () => {
     const schemaPath = join(REPO_ROOT, 'packages', 'db', 'src', 'schema', 'trade.ts')
     const content = readFileSync(schemaPath, 'utf-8')
 
-    // All pgTable definitions should include entity_id
+    // All pgTable definitions should include org_id
     const tableMatches = content.match(/pgTable\('trade_[^']+'/g)
     expect(tableMatches).not.toBeNull()
     expect(tableMatches!.length).toBeGreaterThanOrEqual(9)
 
-    // Check that entity_id appears consistently
-    expect(content.match(/entity_id/g)?.length ?? 0).toBeGreaterThanOrEqual(9)
+    // Check that org_id appears consistently
+    expect(content.match(/org_id/g)?.length ?? 0).toBeGreaterThanOrEqual(9)
   })
 
   it('cars vertical tables (trade_vehicle_*) are separate from core tables', () => {
