@@ -26,14 +26,14 @@ vi.mock('@nzila/db/schema', () => ({
 
 vi.mock('@nzila/db/org-registry', () => ({
   ORG_SCOPED_TABLES: [
-    'entityRoles',
-    'entityMembers',
+    'orgRoles',
+    'orgMembers',
     'meetings',
     'auditEvents',
     'ueCases',
   ],
   NON_ORG_SCOPED_TABLES: [
-    { table: 'entities', reason: 'Root entity table' },
+    { table: 'orgs', reason: 'Root entity table' },
     { table: 'people', reason: 'Global person registry' },
   ],
 }))

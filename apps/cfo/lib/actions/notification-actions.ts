@@ -42,7 +42,7 @@ export async function listNotifications(opts?: {
   try {
     // Get read notification IDs
     const readRows = (await platformDb.execute(
-      sql`SELECT entity_id as "notificationId"
+      sql`SELECT org_id as "notificationId"
       FROM audit_log WHERE action = 'notification.read' AND actor_id = ${userId}`,
     )) as unknown as { rows: { notificationId: string }[] }
 
@@ -55,7 +55,7 @@ export async function listNotifications(opts?: {
     const readAllAt = readAllRows.rows?.[0]?.readAllAt
 
     const unreadFilter = opts?.unreadOnly ? sql`AND id NOT IN (
-      SELECT entity_id FROM audit_log WHERE action = 'notification.read' AND actor_id = ${userId}
+      SELECT org_id FROM audit_log WHERE action = 'notification.read' AND actor_id = ${userId}
     )` : sql``
 
     const rows = (await platformDb.execute(
@@ -104,7 +104,7 @@ export async function markNotificationRead(notificationId: string): Promise<{ su
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('notification.read', ${userId}, 'notification', ${notificationId},
         ${JSON.stringify({ readBy: userId })}::jsonb)`,
     )
@@ -123,7 +123,7 @@ export async function markAllNotificationsRead(): Promise<{ success: boolean }> 
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('notification.read_all', ${userId}, 'notification', 'all',
         ${JSON.stringify({ readBy: userId })}::jsonb)`,
     )
@@ -149,7 +149,7 @@ export async function createNotification(data: {
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('notification.created', ${userId}, 'notification', 'platform',
         ${JSON.stringify({ ...data, priority: data.priority ?? 'normal' })}::jsonb)`,
     )
@@ -168,7 +168,7 @@ export async function deleteNotification(notificationId: string): Promise<{ succ
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('notification.deleted', ${userId}, 'notification', ${notificationId},
         ${JSON.stringify({ deletedBy: userId })}::jsonb)`,
     )

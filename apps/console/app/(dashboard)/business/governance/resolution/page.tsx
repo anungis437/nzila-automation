@@ -12,7 +12,7 @@ interface Entity {
 
 export default function CreateResolutionPage() {
   const router = useRouter()
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [selectedEntity, setSelectedEntity] = useState('')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -26,7 +26,7 @@ export default function CreateResolutionPage() {
   })
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -43,7 +43,7 @@ export default function CreateResolutionPage() {
     setError('')
 
     try {
-      const res = await fetch(`/api/entities/${selectedEntity}/resolutions`, {
+      const res = await fetch(`/api/orgs/${selectedEntity}/resolutions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -58,7 +58,7 @@ export default function CreateResolutionPage() {
         const data = await res.json()
         throw new Error(data.error || 'Failed to create resolution')
       }
-      router.push(`/business/entities/${selectedEntity}/governance`)
+      router.push(`/business/orgs/${selectedEntity}/governance`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create resolution')
     } finally {
@@ -107,7 +107,7 @@ export default function CreateResolutionPage() {
               required
             >
               <option value="">Select entity</option>
-              {entities.map((e) => (
+              {orgs.map((e) => (
                 <option key={e.id} value={e.id}>{e.legalName}</option>
               ))}
             </select>

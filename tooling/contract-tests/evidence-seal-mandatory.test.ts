@@ -64,7 +64,7 @@ describe('INV-13 — verifySeal CI verification', () => {
 
   function makePack(): SealablePackIndex {
     return {
-      entityId: '00000000-0000-0000-0000-000000000001',
+      orgId: '00000000-0000-0000-0000-000000000001',
       eventType: 'control-test',
       generatedAt: '2026-02-01T00:00:00Z',
       artifacts: [
@@ -87,7 +87,7 @@ describe('INV-13 — verifySeal CI verification', () => {
   it('verifySeal rejects a tampered pack digest', () => {
     const pack = makePack()
     const seal = generateSeal(pack, { sealedAt: FIXED_TIMESTAMP })
-    const tampered = { ...pack, entityId: 'tampered', seal }
+    const tampered = { ...pack, orgId: 'tampered', seal }
     const result = verifySeal(tampered)
     expect(result.valid).toBe(false)
     expect(result.digestMatch).toBe(false)

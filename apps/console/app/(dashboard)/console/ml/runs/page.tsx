@@ -20,11 +20,11 @@ const ML_NAV = [
   { label: 'Stripe Transactions', href: '/console/ml/stripe/transactions' },
 ]
 
-async function getRuns(entityId: string) {
+async function getRuns(orgId: string) {
   const ml = mlClient()
   const [training, inference] = await Promise.all([
-    ml.getTrainingRuns(entityId, 50),
-    ml.getInferenceRuns(entityId, 50),
+    ml.getTrainingRuns(orgId, 50),
+    ml.getInferenceRuns(orgId, 50),
   ])
   return { training, inference }
 }
@@ -33,8 +33,8 @@ export default async function MlRunsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = getEntityId()
-  const { training, inference } = await getRuns(entityId)
+  const orgId = getEntityId()
+  const { training, inference } = await getRuns(orgId)
 
   return (
     <div className="p-6 space-y-6">

@@ -172,7 +172,7 @@ async function main() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            entityId: process.env.EVAL_ENTITY_ID ?? '00000000-0000-0000-0000-000000000000',
+            orgId: process.env.EVAL_ENTITY_ID ?? '00000000-0000-0000-0000-000000000000',
             appKey: app,
             profileKey: 'default',
             promptKey: test.promptKey,

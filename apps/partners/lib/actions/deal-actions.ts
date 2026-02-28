@@ -63,7 +63,7 @@ export async function listDeals(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'accountName' as "accountName",
         metadata->>'contactName' as "contactName",
         metadata->>'contactEmail' as "contactEmail",
@@ -149,7 +149,7 @@ export async function createDeal(data: {
     const dealId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('deal.registered', ${userId}, 'deal', ${dealId},
         ${JSON.stringify({
           ...data,
@@ -162,7 +162,7 @@ export async function createDeal(data: {
     await buildPartnerEvidencePack({
       actionId: crypto.randomUUID(),
       actionType: 'DEAL_REGISTERED',
-      entityId: dealId,
+      orgId: dealId,
       executedBy: userId,
     })
 
@@ -184,7 +184,7 @@ export async function updateDealStage(
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('deal.updated', ${userId}, 'deal', ${dealId},
         ${JSON.stringify({ stage, updatedAt: new Date().toISOString() })}::jsonb)`,
     )
@@ -192,7 +192,7 @@ export async function updateDealStage(
     await buildPartnerEvidencePack({
       actionId: crypto.randomUUID(),
       actionType: 'DEAL_STAGE_UPDATED',
-      entityId: dealId,
+      orgId: dealId,
       executedBy: userId,
     })
 

@@ -87,7 +87,7 @@ export function AuditLogViewer() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-foreground truncate max-w-[160px]">{entry.actorId}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{entry.entityType}/{entry.entityId}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{entry.entityType}/{entry.orgId}</td>
                   <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
                     {entry.createdAt ? new Date(entry.createdAt).toLocaleString('en-CA') : '—'}
                   </td>

@@ -26,7 +26,7 @@ function makeAuditEntry(id: string, from: QuoteStatus, to: QuoteStatus) {
     quoteMachine,
     from,
     to,
-    { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
+    { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
     ORG_ID,
     {},
   )
@@ -34,7 +34,7 @@ function makeAuditEntry(id: string, from: QuoteStatus, to: QuoteStatus) {
 
   const ctx: TransitionAuditContext = {
     id,
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     actorId: ACTOR_ID,
     role: OrgRole.SALES,
     entityType: CommerceEntityType.QUOTE,
@@ -119,7 +119,7 @@ describe('buildCommerceEvidencePack', () => {
   it('should build evidence pack for quote acceptance', () => {
     const entry = makeAuditEntry('a1', QuoteStatus.DRAFT, QuoteStatus.PRICING)
     const req: CommerceEvidenceRequest = {
-      entityId: ORG_ID,
+      orgId: ORG_ID,
       entityType: CommerceEntityType.QUOTE,
       targetEntityId: 'quote-001',
       triggerEvent: 'quote.accepted',
@@ -129,7 +129,7 @@ describe('buildCommerceEvidencePack', () => {
 
     const result = buildCommerceEvidencePack(req)
 
-    expect(result.entityId).toBe(ORG_ID)
+    expect(result.orgId).toBe(ORG_ID)
     expect(result.controlFamily).toBe('integrity')
     expect(result.controlsCovered).toContain('INT-10')
     expect(result.controlsCovered).toContain('INT-11')
@@ -143,7 +143,7 @@ describe('buildCommerceEvidencePack', () => {
   it('should count additional artifacts', () => {
     const entry = makeAuditEntry('a1', QuoteStatus.DRAFT, QuoteStatus.PRICING)
     const req: CommerceEvidenceRequest = {
-      entityId: ORG_ID,
+      orgId: ORG_ID,
       entityType: CommerceEntityType.QUOTE,
       targetEntityId: 'quote-001',
       triggerEvent: 'quote.accepted',
@@ -166,7 +166,7 @@ describe('buildCommerceEvidencePack', () => {
   it('should use fallback for unmapped entity types', () => {
     const entry = makeAuditEntry('a1', QuoteStatus.DRAFT, QuoteStatus.PRICING)
     const req: CommerceEvidenceRequest = {
-      entityId: ORG_ID,
+      orgId: ORG_ID,
       entityType: CommerceEntityType.DISPUTE,
       targetEntityId: 'dispute-001',
       triggerEvent: 'dispute.resolved',
@@ -182,7 +182,7 @@ describe('buildCommerceEvidencePack', () => {
   it('should use fulfillment mapping with 3-year retention', () => {
     const entry = makeAuditEntry('a1', QuoteStatus.DRAFT, QuoteStatus.PRICING)
     const req: CommerceEvidenceRequest = {
-      entityId: ORG_ID,
+      orgId: ORG_ID,
       entityType: CommerceEntityType.FULFILLMENT,
       targetEntityId: 'ful-001',
       triggerEvent: 'fulfillment.delivered',

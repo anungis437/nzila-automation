@@ -150,7 +150,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="document_signed",
                     actor_id=str(request.user.id),
                     entity_type="signature_document",
-                    entity_id=str(document_id),
+                    org_id=str(document_id),
                 )
 
             return Response(
@@ -192,7 +192,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="document_signed_with_key",
                     actor_id=str(request.user.id),
                     entity_type="signature_document",
-                    entity_id=str(document_id),
+                    org_id=str(document_id),
                 )
 
             return Response(
@@ -264,7 +264,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="signature_rejected",
                     actor_id=str(request.user.id),
                     entity_type="signature_document",
-                    entity_id=str(document_id),
+                    org_id=str(document_id),
                 )
 
             return Response(
@@ -314,7 +314,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="signature_request_created",
                     actor_id=str(request.user.id),
                     entity_type="signature_workflow",
-                    entity_id=str(workflow.id),
+                    org_id=str(workflow.id),
                 )
 
             return Response(
@@ -373,7 +373,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="signature_step_completed",
                     actor_id=str(request.user.id),
                     entity_type="signature_workflow",
-                    entity_id=str(workflow_id),
+                    org_id=str(workflow_id),
                 )
 
             return Response(
@@ -412,7 +412,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="signature_request_cancelled",
                     actor_id=str(request.user.id),
                     entity_type="signature_workflow",
-                    entity_id=str(workflow_id),
+                    org_id=str(workflow_id),
                 )
 
             return Response(
@@ -458,7 +458,7 @@ class SignatureServiceViewSet(viewsets.ViewSet):
                     action="overdue_signature_requests_expired",
                     actor_id=str(request.user.id),
                     entity_type="signature_workflow",
-                    entity_id="batch",
+                    org_id="batch",
                 )
 
             return Response(

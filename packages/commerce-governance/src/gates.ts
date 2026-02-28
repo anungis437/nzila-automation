@@ -80,7 +80,7 @@ export interface GateResult {
 
 /** Minimal entity shape a quote guard needs to inspect */
 export interface QuoteEntity {
-  readonly entityId: string
+  readonly orgId: string
   readonly grandTotal: number
   readonly approvalFlags: readonly { readonly reason: string; readonly threshold: number; readonly actualValue: number }[]
   readonly marginPercent: number
@@ -92,7 +92,7 @@ export interface QuoteEntity {
 
 /** Minimal entity shape an order guard needs to inspect */
 export interface OrderEntity {
-  readonly entityId: string
+  readonly orgId: string
   readonly grandTotal: number
   readonly lineCount: number
   readonly quoteSnapshotHash: string | null
@@ -100,7 +100,7 @@ export interface OrderEntity {
 
 /** Minimal entity shape an invoice guard needs to inspect */
 export interface InvoiceEntity {
-  readonly entityId: string
+  readonly orgId: string
   readonly grandTotal: number
   readonly hasEvidencePack: boolean
   readonly lineCount: number

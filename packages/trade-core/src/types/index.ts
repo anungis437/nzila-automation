@@ -2,7 +2,7 @@
  * @nzila/trade-core — Domain Types
  *
  * Pure TypeScript interfaces. No DB, no framework dependencies.
- * All trade entities are org-scoped (entityId).
+ * All trade orgs are org-scoped (orgId).
  */
 
 import type {
@@ -40,17 +40,12 @@ export type TradeCommissionId = Brand<string, 'TradeCommissionId'>
  * Trade org context carried through every request.
  *
  * `orgId` is the canonical field (aligns with @nzila/org).
- * `entityId` is retained as a deprecated alias during migration.
  *
  * @see {@link @nzila/org OrgContext} for the canonical base type.
  */
 export interface TradeOrgContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
   readonly actorId: string
   readonly role: TradeOrgRole
   readonly permissions: readonly string[]
@@ -61,7 +56,7 @@ export interface TradeOrgContext {
 
 export interface TradeParty {
   readonly id: TradePartyId
-  readonly entityId: string
+  readonly orgId: string
   readonly role: TradePartyRole
   readonly name: string
   readonly contactEmail: string
@@ -78,7 +73,7 @@ export interface TradeParty {
 
 export interface TradeListing {
   readonly id: TradeListingId
-  readonly entityId: string
+  readonly orgId: string
   readonly partyId: TradePartyId
   readonly listingType: TradeListingType
   readonly title: string
@@ -96,7 +91,7 @@ export interface TradeListing {
 
 export interface TradeListingMedia {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly listingId: TradeListingId
   readonly mediaType: TradeMediaType
   readonly storageKey: string
@@ -108,7 +103,7 @@ export interface TradeListingMedia {
 
 export interface TradeDeal {
   readonly id: TradeDealId
-  readonly entityId: string
+  readonly orgId: string
   readonly refNumber: string
   readonly sellerPartyId: TradePartyId
   readonly buyerPartyId: TradePartyId
@@ -126,7 +121,7 @@ export interface TradeDeal {
 
 export interface TradeQuote {
   readonly id: TradeQuoteId
-  readonly entityId: string
+  readonly orgId: string
   readonly dealId: TradeDealId
   readonly terms: Record<string, unknown>
   readonly unitPrice: string
@@ -144,7 +139,7 @@ export interface TradeQuote {
 
 export interface TradeFinancingTerms {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly dealId: TradeDealId
   readonly terms: Record<string, unknown>
   readonly provider: string | null
@@ -163,7 +158,7 @@ export interface TradeShipmentMilestone {
 
 export interface TradeShipment {
   readonly id: TradeShipmentId
-  readonly entityId: string
+  readonly orgId: string
   readonly dealId: TradeDealId
   readonly originCountry: string
   readonly destinationCountry: string
@@ -184,7 +179,7 @@ export interface TradeShipment {
 
 export interface TradeDocument {
   readonly id: TradeDocumentId
-  readonly entityId: string
+  readonly orgId: string
   readonly dealId: TradeDealId
   readonly docType: TradeDocType
   readonly title: string
@@ -198,7 +193,7 @@ export interface TradeDocument {
 
 export interface TradeCommission {
   readonly id: TradeCommissionId
-  readonly entityId: string
+  readonly orgId: string
   readonly dealId: TradeDealId
   readonly partyId: TradePartyId
   readonly policy: Record<string, unknown>
@@ -214,7 +209,7 @@ export interface TradeCommission {
 
 export interface TradeAuditEntry {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   readonly role: TradeOrgRole
   readonly entityType: string
@@ -233,7 +228,7 @@ export interface TradeAuditEntry {
 
 export interface TradeEvidenceArtifact {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly dealId: TradeDealId
   readonly evidenceType: TradeEvidenceType
   readonly packDigest: string

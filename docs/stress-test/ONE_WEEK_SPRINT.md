@@ -96,9 +96,9 @@ Promote the repo from **CONDITIONAL YES** to **UNCONDITIONAL YES** by closing:
 
 | # | Task | Files | DoD |
 |---|------|-------|-----|
-| Th1 | Create `fixtures/orgs.ts` with OrgA + OrgB seeded fixtures and mock Clerk session headers | `tooling/contract-tests/fixtures/orgs.ts` | OrgA and OrgB fixtures with distinct `entityId` values |
+| Th1 | Create `fixtures/orgs.ts` with OrgA + OrgB seeded fixtures and mock Clerk session headers | `tooling/contract-tests/fixtures/orgs.ts` | OrgA and OrgB fixtures with distinct `orgId` values |
 | Th2 | Create `org-isolation-runtime.test.ts` | `tooling/contract-tests/org-isolation-runtime.test.ts` | Test A (cross-org READ), Test B (cross-org WRITE), Test C (missing context → 401) |
-| Th3 | Add Test D (forged entityId in body ignored) + Test E (no org ID in error message) | Same file | All 5 tests present |
+| Th3 | Add Test D (forged orgId in body ignored) + Test E (no org ID in error message) | Same file | All 5 tests present |
 | Th4 | Configure test runner to handle Next.js route handlers (use `next/test-utils` or mock `auth()`) | `tooling/contract-tests/vitest.config.ts` | Tests run without requiring a live server |
 | Th5 | PR, CI green, merge | — | `org-isolation-runtime.test.ts` (5 tests) pass |
 

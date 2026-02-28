@@ -65,14 +65,14 @@ export type IndirectTaxPeriodStatus = z.infer<typeof IndirectTaxPeriodStatus>
 export const FinanceRole = z.enum([
   'finance_preparer',
   'finance_approver',
-  'entity_admin',
+  'org_admin',
 ])
 export type FinanceRole = z.infer<typeof FinanceRole>
 
 // ── Input schemas ───────────────────────────────────────────────────────────
 
 export const CreateTaxProfileInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   federalBn: z.string().max(15).optional(),
   provinceOfRegistration: Province.optional(),
   fiscalYearEnd: z.string().regex(/^\d{2}-\d{2}$/).optional(), // MM-DD
@@ -84,7 +84,7 @@ export const CreateTaxProfileInput = z.object({
 export type CreateTaxProfileInput = z.infer<typeof CreateTaxProfileInput>
 
 export const CreateTaxYearInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   fiscalYearLabel: z.string().min(1).max(10),
   startDate: z.string(), // ISO date
   endDate: z.string(),
@@ -96,7 +96,7 @@ export const CreateTaxYearInput = z.object({
 export type CreateTaxYearInput = z.infer<typeof CreateTaxYearInput>
 
 export const CreateTaxFilingInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   taxYearId: z.string().uuid(),
   filingType: TaxFilingType,
   filedDate: z.string().optional(),
@@ -108,7 +108,7 @@ export const CreateTaxFilingInput = z.object({
 export type CreateTaxFilingInput = z.infer<typeof CreateTaxFilingInput>
 
 export const CreateTaxInstallmentInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   taxYearId: z.string().uuid(),
   dueDate: z.string(),
   requiredAmount: z.string(), // numeric string
@@ -118,7 +118,7 @@ export const CreateTaxInstallmentInput = z.object({
 export type CreateTaxInstallmentInput = z.infer<typeof CreateTaxInstallmentInput>
 
 export const CreateTaxNoticeInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   taxYearId: z.string().uuid(),
   authority: NoticeAuthority,
   noticeType: NoticeType,
@@ -129,7 +129,7 @@ export const CreateTaxNoticeInput = z.object({
 export type CreateTaxNoticeInput = z.infer<typeof CreateTaxNoticeInput>
 
 export const CreateIndirectTaxAccountInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   taxType: IndirectTaxType,
   filingFrequency: IndirectTaxFilingFrequency,
   programAccountNumber: z.string().max(20).optional(),
@@ -137,7 +137,7 @@ export const CreateIndirectTaxAccountInput = z.object({
 export type CreateIndirectTaxAccountInput = z.infer<typeof CreateIndirectTaxAccountInput>
 
 export const CreateIndirectTaxPeriodInput = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   accountId: z.string().uuid(),
   taxType: IndirectTaxType,
   startDate: z.string(),
@@ -166,7 +166,7 @@ export interface DeadlineInfo {
   dueDate: string
   daysRemaining: number
   urgency: DeadlineUrgency
-  entityId: string
+  orgId: string
   taxYearId?: string
   type: 'federal_filing' | 'federal_payment' | 'provincial_filing' | 'provincial_payment' | 'installment' | 'indirect_filing' | 'indirect_payment'
 }
@@ -189,7 +189,7 @@ export interface TaxYearCloseGate {
 // ── Year-end evidence pack manifest ─────────────────────────────────────────
 
 export interface YearEndPackManifest {
-  entityId: string
+  orgId: string
   fiscalYear: string
   generatedAt: string
   financial: {

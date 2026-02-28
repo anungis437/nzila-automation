@@ -97,7 +97,7 @@ export function mapLegacyStatus(legacyStatus: string): QuoteStatus {
  */
 export function mapLegacyClient(
   client: LegacyClient,
-  entityId: string,
+  orgId: string,
 ): AdapterResult<Omit<Customer, 'id' | 'updatedAt'>> {
   const warnings: string[] = []
 
@@ -128,7 +128,7 @@ export function mapLegacyClient(
   return {
     ok: true,
     data: {
-      entityId,
+      orgId,
       name: client.company_name || client.contact_name,
       email: client.email,
       phone: client.phone,
@@ -150,12 +150,12 @@ export function mapLegacyClient(
  */
 export function mapZohoLead(
   lead: LegacyZohoLead,
-  entityId: string,
+  orgId: string,
 ): AdapterResult<Omit<Customer, 'id' | 'updatedAt'>> {
   return {
     ok: true,
     data: {
-      entityId,
+      orgId,
       name: lead.company || lead.contact_name,
       email: lead.email,
       phone: lead.phone,
@@ -267,7 +267,7 @@ export function buildMigrationContext(
   requestId: string,
 ): OrgContext {
   return {
-    entityId: config.defaultEntityId,
+    orgId: config.defaultEntityId,
     actorId: config.migrationActorId,
     role: OrgRole.ADMIN,
     permissions: ['commerce:quote:create', 'commerce:quote:price', 'commerce:quote:transition'],

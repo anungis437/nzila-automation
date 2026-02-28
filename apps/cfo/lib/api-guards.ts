@@ -15,7 +15,7 @@ import {
   type AuditedScopedDb,
 } from '@nzila/db'
 import { platformDb } from '@nzila/db/platform'
-import { entityMembers } from '@nzila/db/schema'
+import { orgMembers } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { getUserRole, type NzilaRole } from '@/lib/rbac'
@@ -30,9 +30,9 @@ export interface AuthContext {
   platformRole: NzilaRole
   membership: {
     id: string
-    entityId: string
+    orgId: string
     clerkUserId: string
-    role: 'entity_admin' | 'entity_secretary' | 'entity_viewer'
+    role: 'org_admin' | 'org_secretary' | 'org_viewer'
     status: 'active' | 'suspended' | 'removed'
   } | null
 }
@@ -58,15 +58,15 @@ export async function authenticateUser(): Promise<
 /**
  * Verify that the user is an active member of the entity.
  */
-export async function getEntityMembership(entityId: string, userId: string) {
+export async function getOrgMembership(orgId: string, userId: string) {
   const [m] = await platformDb
     .select()
-    .from(entityMembers)
+    .from(orgMembers)
     .where(
       and(
-        eq(entityMembers.entityId, entityId),
-        eq(entityMembers.clerkUserId, userId),
-        eq(entityMembers.status, 'active'),
+        eq(orgMembers.orgId, orgId),
+        eq(orgMembers.clerkUserId, userId),
+        eq(orgMembers.status, 'active'),
       ),
     )
     .limit(1)
@@ -77,10 +77,10 @@ export async function getEntityMembership(entityId: string, userId: string) {
  * Full entity-scoped guard: authenticates user, checks membership,
  * optionally requires a minimum entity role (admin > secretary > viewer).
  */
-export async function requireEntityAccess(
-  entityId: string,
+export async function requireOrgAccess(
+  orgId: string,
   options?: {
-    minRole?: 'entity_admin' | 'entity_secretary'
+    minRole?: 'org_admin' | 'org_secretary'
     platformBypass?: NzilaRole[]
   },
 ): Promise<
@@ -100,7 +100,7 @@ export async function requireEntityAccess(
     }
   }
 
-  const membership = await getEntityMembership(entityId, userId)
+  const membership = await getOrgMembership(orgId, userId)
   if (!membership) {
     return {
       ok: false,
@@ -111,9 +111,9 @@ export async function requireEntityAccess(
   // Check minimum role
   if (options?.minRole) {
     const roleHierarchy: Record<string, number> = {
-      entity_admin: 3,
-      entity_secretary: 2,
-      entity_viewer: 1,
+      org_admin: 3,
+      org_secretary: 2,
+      org_viewer: 1,
     }
     const userLevel = roleHierarchy[membership.role] ?? 0
     const requiredLevel = roleHierarchy[options.minRole] ?? 0

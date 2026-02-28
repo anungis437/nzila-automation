@@ -129,7 +129,7 @@ await withAudit(scopedDb, {
   orgId,
   userId,
   action: 'member.invite',
-  entityId: newMemberId,
+  orgId: newMemberId,
 }, async (db) => {
   await db.insert(orgMembers).values({ orgId, userId: newMemberId });
 });

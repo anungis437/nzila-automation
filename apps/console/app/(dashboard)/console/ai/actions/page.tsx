@@ -15,18 +15,18 @@ export const dynamic = 'force-dynamic'
 // TODO: get from session/auth context
 const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
-async function getActionsData(entityId: string) {
+async function getActionsData(orgId: string) {
   const actions = await platformDb
     .select()
     .from(aiActions)
-    .where(eq(aiActions.entityId, entityId))
+    .where(eq(aiActions.orgId, orgId))
     .orderBy(desc(aiActions.createdAt))
     .limit(50)
 
   const runs = await platformDb
     .select()
     .from(aiActionRuns)
-    .where(eq(aiActionRuns.entityId, entityId))
+    .where(eq(aiActionRuns.orgId, orgId))
     .orderBy(desc(aiActionRuns.startedAt))
     .limit(100)
 
@@ -123,7 +123,7 @@ export default async function AiActionsPage() {
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       {action.status === 'approved' && (
-                        <ExecuteButton actionId={action.id} entityId={action.entityId} />
+                        <ExecuteButton actionId={action.id} orgId={action.orgId} />
                       )}
                       {latestRun?.attestationDocumentId && (
                         <span className="text-xs text-blue-600">attestation</span>
@@ -147,11 +147,11 @@ export default async function AiActionsPage() {
   )
 }
 
-function ExecuteButton({ actionId, entityId }: { actionId: string; entityId: string }) {
+function ExecuteButton({ actionId, orgId }: { actionId: string; orgId: string }) {
   return (
     <form action={`/api/ai/actions/execute`} method="POST">
       <input type="hidden" name="actionId" value={actionId} />
-      <input type="hidden" name="entityId" value={entityId} />
+      <input type="hidden" name="orgId" value={orgId} />
       <button
         type="submit"
         className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700"

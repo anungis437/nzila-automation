@@ -96,13 +96,13 @@ No code changes — docs only. Revert the commit.
 | PR | Scope | Status |
 | -- | ----- | ------ |
 | 4.1 | Introduce single canonical context contract (`packages/org`) | ✅ Done |
-| 4.2 | Repo-wide refactor: replace `entityId` masquerading as `orgId` | ✅ Done |
+| 4.2 | Repo-wide refactor: replace `orgId` masquerading as `orgId` | ✅ Done |
 | 4.3 | Contract tests: forbid ambiguous context field usage | ✅ Done |
 
 ### Rollback
 
 - 4.1: Remove `packages/org`. Verticals revert to local context types.
-- 4.2: Revert `orgId` → `entityId` renames. Must coordinate with 4.1 and 4.3.
+- 4.2: Revert `orgId` → `orgId` renames. Must coordinate with 4.1 and 4.3.
 - 4.3: Remove contract test. Regression prevention stops.
 
 ---

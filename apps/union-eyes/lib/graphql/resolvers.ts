@@ -590,7 +590,7 @@ export const resolvers = {
         // Perform sync
         const syncResult = await adapter.sync({
           type: SyncType.FULL,
-          entities: ['claims', 'policies'],
+          orgs: ['claims', 'policies'],
         });
 
         return {

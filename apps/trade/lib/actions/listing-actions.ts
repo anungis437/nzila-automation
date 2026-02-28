@@ -31,7 +31,7 @@ export async function createListing(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_listing',
@@ -43,7 +43,7 @@ export async function createListing(
 
   // TODO: persist listing + audit entry via trade-db repository
   // const repo = createTradeListingRepository(scopedDb)
-  // await repo.create({ ...parsed.data, id, entityId: ctx.entityId })
+  // await repo.create({ ...parsed.data, id, orgId: ctx.orgId })
 
   revalidatePath('/trade/listings')
 
@@ -62,7 +62,7 @@ export async function updateListing(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_listing',
@@ -95,7 +95,7 @@ export async function addListingMedia(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_listing_media',
@@ -119,7 +119,7 @@ export async function listListings(opts?: {
 }): Promise<TradeServiceResult<{ listings: TradeListing[]; total: number }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
 
   return {
     ok: true,

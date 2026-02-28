@@ -12,7 +12,7 @@ import { createLogger } from '@nzila/os-core'
 const logger = createLogger('stripe:customers')
 
 const CreateCustomerSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   ventureId: z.string().optional(),
   email: z.string().email(),
   name: z.string().min(1),
@@ -29,11 +29,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 400 })
   }
 
-  const { entityId, ventureId, email, name, metadata } = parsed.data
+  const { orgId, ventureId, email, name, metadata } = parsed.data
 
   try {
     const customer = await createCustomer({
-      entityId,
+      orgId,
       ventureId,
       email,
       name,
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
 
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.customer_created',

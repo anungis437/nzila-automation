@@ -4,13 +4,13 @@
  * GET  /api/finance/indirect-tax/summary?periodId=...  → get summary for a period
  * POST /api/finance/indirect-tax/summary               → create/update summary
  *
- * PR5 — Entity-scoped auth + audit events
+ * PR5 — Org-scoped auth + audit events
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { indirectTaxSummary, indirectTaxPeriods } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireEntityAccess, authenticateUser } from '@/lib/api-guards'
+import { requireOrgAccess, authenticateUser } from '@/lib/api-guards'
 import { UpdateIndirectTaxSummaryInput } from '@nzila/tax/types'
 import {
   recordFinanceAuditEvent,
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  // Resolve entityId from the period
+  // Resolve orgId from the period
   const [period] = await platformDb
     .select()
     .from(indirectTaxPeriods)
@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Period not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(period.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(period.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
   }
 
   await recordFinanceAuditEvent({
-    entityId: period.entityId,
+    orgId: period.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: FINANCE_AUDIT_ACTIONS.INDIRECT_TAX_SUMMARY_UPDATE,

@@ -63,7 +63,7 @@ Accept: application/json
       "id": "evt_01J9XV...",
       "orgId": "org_01J9XX...",
       "action": "member.invite",
-      "entityId": "usr_01J9XY...",
+      "orgId": "usr_01J9XY...",
       "createdAt": "2026-01-15T10:23:00Z",
       "hash": "sha256:abc123..."
     }

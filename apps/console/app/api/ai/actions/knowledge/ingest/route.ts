@@ -17,7 +17,7 @@ import {
   executeAction,
   appendAiAuditEvent,
 } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { asAiError } from '@/lib/catch-utils'
 
 const logger = createLogger('ai:actions:knowledge:ingest')
@@ -33,8 +33,8 @@ export async function POST(req: NextRequest) {
     }
 
     const proposal = parsed.data
-    const access = await requireEntityAccess(proposal.entityId, {
-      minRole: 'entity_secretary',
+    const access = await requireOrgAccess(proposal.orgId, {
+      minRole: 'org_secretary',
     })
     if (!access.ok) return access.response
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const [action] = await platformDb
       .insert(aiActions)
       .values({
-        entityId: proposal.entityId,
+        orgId: proposal.orgId,
         appKey: proposal.appKey,
         profileKey: proposal.profileKey,
         actionType: ACTION_TYPES.AI_INGEST_KNOWLEDGE_SOURCE,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       .returning()
 
     await appendAiAuditEvent({
-      entityId: proposal.entityId,
+      orgId: proposal.orgId,
       actorClerkUserId: access.context.userId,
       action: 'ai.action_proposed',
       targetType: 'ai_action',
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     // 2. Policy check
     const policyDecision = await checkActionPolicy({
       actionType: ACTION_TYPES.AI_INGEST_KNOWLEDGE_SOURCE,
-      entityId: proposal.entityId,
+      orgId: proposal.orgId,
       appKey: proposal.appKey,
       profileKey: proposal.profileKey,
       proposalJson: proposal as unknown as Record<string, unknown>,

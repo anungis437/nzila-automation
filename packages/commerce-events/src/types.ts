@@ -28,7 +28,7 @@ export interface DomainEvent<TPayload = Record<string, unknown>> {
 
 export interface DomainEventMetadata {
   /** Org that owns this event */
-  readonly entityId: string
+  readonly orgId: string
   /** Actor who triggered the event */
   readonly actorId: string
   /** Correlation ID for tracing across saga steps */
@@ -143,7 +143,7 @@ export interface SagaContext<TData extends Record<string, unknown> = Record<stri
   /** Correlation ID for event tracing */
   readonly correlationId: string
   /** Org context */
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   /** Mutable shared data — steps write results here for downstream steps */
   data: TData
@@ -168,7 +168,7 @@ export interface SagaExecution {
   readonly sagaId: string
   readonly sagaName: string
   readonly correlationId: string
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   readonly status: SagaStatus
   readonly stepsCompleted: readonly string[]

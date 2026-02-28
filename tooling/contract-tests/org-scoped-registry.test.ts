@@ -4,8 +4,8 @@
  * Ensures the Org-scoped table registry in @nzila/db/org-registry
  * is bidirectionally consistent with the actual schema:
  *
- *   1. Every table with an `entity_id` column MUST be in the registry.
- *   2. Every table in the registry MUST actually have an `entity_id` column.
+ *   1. Every table with an `org_id` column MUST be in the registry.
+ *   2. Every table in the registry MUST actually have an `org_id` column.
  *   3. Every table MUST be accounted for (either in ORG_SCOPED or NON_ORG_SCOPED).
  *
  * @invariant INV-20: Org-scoped table registry consistency
@@ -64,7 +64,7 @@ interface TableInfo {
 }
 
 /**
- * Scan all schema files and extract table export names + whether they have entity_id.
+ * Scan all schema files and extract table export names + whether they have org_id.
  */
 function introspectSchemaFiles(): TableInfo[] {
   const tables: TableInfo[] = []
@@ -104,11 +104,11 @@ function introspectSchemaFiles(): TableInfo[] {
 
       const tableBody = content.slice(startIdx, endIdx + 1)
 
-      // Check if entity_id column exists in this table definition
-      // Look for: entityId: uuid('entity_id') pattern
+      // Check if org_id column exists in this table definition
+      // Look for: orgId: uuid('org_id') pattern
       const hasEntityId =
-        /entityId:\s*uuid\s*\(\s*['"]entity_id['"]\s*\)/.test(tableBody) ||
-        /['"]entity_id['"]\s*\)/.test(tableBody)
+        /orgId:\s*uuid\s*\(\s*['"]org_id['"]\s*\)/.test(tableBody) ||
+        /['"]org_id['"]\s*\)/.test(tableBody)
 
       tables.push({ exportName, hasEntityId, sourceFile: file })
     }
@@ -135,7 +135,7 @@ describe('INV-20 — Org-Scoped Table Registry Consistency', () => {
     expect(nonOrgScopedNames.length).toBeGreaterThan(0)
   })
 
-  it('every table with entity_id is in the ORG_SCOPED registry', () => {
+  it('every table with org_id is in the ORG_SCOPED registry', () => {
     const registrySet = new Set(orgScopedNames)
     const nonOrgSet = new Set(nonOrgScopedNames)
     const missing: string[] = []
@@ -148,11 +148,11 @@ describe('INV-20 — Org-Scoped Table Registry Consistency', () => {
 
     expect(
       missing,
-      `Tables with entity_id column not in ORG_SCOPED_TABLES registry:\n${missing.join('\n')}`,
+      `Tables with org_id column not in ORG_SCOPED_TABLES registry:\n${missing.join('\n')}`,
     ).toEqual([])
   })
 
-  it('every table in ORG_SCOPED registry actually has entity_id', () => {
+  it('every table in ORG_SCOPED registry actually has org_id', () => {
     const schemaMap = new Map(schemaTables.map((t) => [t.exportName, t]))
     const invalid: string[] = []
 
@@ -161,13 +161,13 @@ describe('INV-20 — Org-Scoped Table Registry Consistency', () => {
       if (!table) {
         invalid.push(`${name} — not found in any schema file`)
       } else if (!table.hasEntityId) {
-        invalid.push(`${name} (in ${table.sourceFile}) — missing entity_id column`)
+        invalid.push(`${name} (in ${table.sourceFile}) — missing org_id column`)
       }
     }
 
     expect(
       invalid,
-      `Tables in ORG_SCOPED_TABLES but lacking entity_id:\n${invalid.join('\n')}`,
+      `Tables in ORG_SCOPED_TABLES but lacking org_id:\n${invalid.join('\n')}`,
     ).toEqual([])
   })
 

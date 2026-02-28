@@ -256,7 +256,7 @@ export async function updateAdminSettings(
   try {
     const { userId } = await auth()
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('admin.settings.updated', ${userId ?? 'system'}, 'settings', 'platform',
         ${JSON.stringify(settings)}::jsonb)`,
     )

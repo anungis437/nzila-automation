@@ -76,7 +76,7 @@ export function createSagaOrchestrator(bus: EventBus): SagaOrchestrator {
       const ctx: SagaContext<TContext> = {
         sagaId: crypto.randomUUID(),
         correlationId: event.metadata.correlationId,
-        entityId: event.metadata.entityId,
+        orgId: event.metadata.orgId,
         actorId: event.metadata.actorId,
         data: { ...event.payload } as TContext,
       }
@@ -98,7 +98,7 @@ export function createSagaOrchestrator(bus: EventBus): SagaOrchestrator {
       sagaId: ctx.sagaId,
       sagaName: saga.name,
       correlationId: ctx.correlationId,
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       status: 'running',
       stepsCompleted: [],

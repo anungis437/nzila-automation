@@ -55,7 +55,7 @@ export async function executeAction(
     .insert(aiActionRuns)
     .values({
       actionId: action.id,
-      entityId: action.entityId,
+      orgId: action.orgId,
       status: 'started',
     })
     .returning()
@@ -67,7 +67,7 @@ export async function executeAction(
     .where(eq(aiActions.id, actionId))
 
   await appendAiAuditEvent({
-    entityId: action.entityId,
+    orgId: action.orgId,
     actorClerkUserId,
     action: 'ai.action_executing',
     targetType: 'ai_action',
@@ -115,7 +115,7 @@ export async function executeAction(
 
           const { uploadWithLogging, buildEvidencePath } = await import('@nzila/tools-runtime')
           const manifestPath = buildEvidencePath({
-            entityId: action.entityId,
+            orgId: action.orgId,
             periodLabel: proposal.period.periodLabel,
             subPath: `payments/stripe/manifest.json`,
           })
@@ -183,7 +183,7 @@ export async function executeAction(
 
     // 8. Audit events
     await appendAiAuditEvent({
-      entityId: action.entityId,
+      orgId: action.orgId,
       actorClerkUserId,
       action: 'ai.action_executed',
       targetType: 'ai_action',
@@ -196,7 +196,7 @@ export async function executeAction(
     })
 
     await appendAiAuditEvent({
-      entityId: action.entityId,
+      orgId: action.orgId,
       actorClerkUserId,
       action: 'ai.attestation_stored',
       targetType: 'document',
@@ -234,7 +234,7 @@ export async function executeAction(
       .where(eq(aiActions.id, actionId))
 
     await appendAiAuditEvent({
-      entityId: action.entityId,
+      orgId: action.orgId,
       actorClerkUserId,
       action: 'ai.action_failed',
       targetType: 'ai_action',

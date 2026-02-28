@@ -4,7 +4,7 @@
  * Webhook event store, normalized payments, refunds, disputes, payouts,
  * Stripe connections, and report artifacts.
  *
- * All tables are entity-scoped via entityId for multi-entity support.
+ * All tables are entity-scoped via orgId for multi-entity support.
  */
 import {
   pgTable,
@@ -19,7 +19,7 @@ import {
   date,
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 import { documents } from './operations'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
@@ -90,9 +90,9 @@ export const stripeSubscriptionStatusEnum = pgEnum('stripe_subscription_status',
 
 export const stripeConnections = pgTable('stripe_connections', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   accountId: text('account_id').notNull(),
   livemode: boolean('livemode').notNull().default(false),
   status: stripeConnectionStatusEnum('status').notNull().default('connected'),
@@ -109,9 +109,9 @@ export const stripeWebhookEvents = pgTable(
   'stripe_webhook_events',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     stripeEventId: text('stripe_event_id').notNull(),
     type: text('type').notNull(),
     apiVersion: text('api_version'),
@@ -133,9 +133,9 @@ export const stripeWebhookEvents = pgTable(
 
 export const stripePayments = pgTable('stripe_payments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   stripeObjectId: text('stripe_object_id').notNull(),
   objectType: stripePaymentObjectTypeEnum('object_type').notNull(),
   status: text('status').notNull(),
@@ -154,9 +154,9 @@ export const stripePayments = pgTable('stripe_payments', {
 
 export const stripeRefunds = pgTable('stripe_refunds', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   refundId: text('refund_id'),
   paymentId: uuid('payment_id').references(() => stripePayments.id),
   amountCents: bigint('amount_cents', { mode: 'bigint' }).notNull(),
@@ -173,9 +173,9 @@ export const stripeRefunds = pgTable('stripe_refunds', {
 
 export const stripeDisputes = pgTable('stripe_disputes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   disputeId: text('dispute_id').notNull(),
   paymentId: uuid('payment_id').references(() => stripePayments.id),
   amountCents: bigint('amount_cents', { mode: 'bigint' }).notNull(),
@@ -191,9 +191,9 @@ export const stripeDisputes = pgTable('stripe_disputes', {
 
 export const stripePayouts = pgTable('stripe_payouts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   payoutId: text('payout_id').notNull(),
   amountCents: bigint('amount_cents', { mode: 'bigint' }).notNull(),
   currency: varchar('currency', { length: 3 }).notNull().default('CAD'),
@@ -208,9 +208,9 @@ export const stripePayouts = pgTable('stripe_payouts', {
 
 export const stripeReports = pgTable('stripe_reports', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   periodId: text('period_id'),
   reportType: stripeReportTypeEnum('report_type').notNull(),
   startDate: date('start_date').notNull(),
@@ -226,9 +226,9 @@ export const stripeReports = pgTable('stripe_reports', {
 
 export const stripeSubscriptions = pgTable('stripe_subscriptions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   // Stripe object IDs
   stripeCustomerId: text('stripe_customer_id').notNull(),
   stripeSubscriptionId: text('stripe_subscription_id').notNull(),

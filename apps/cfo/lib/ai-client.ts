@@ -28,11 +28,11 @@ export function getAiClient(): AiClient {
  */
 export async function runAICompletion(
   prompt: string,
-  opts?: { entityId?: string; profile?: string; dataClass?: DataClass },
+  opts?: { orgId?: string; profile?: string; dataClass?: DataClass },
 ): Promise<string> {
   const client = getAiClient()
   const result = await client.generate({
-    entityId: opts?.entityId ?? 'platform',
+    orgId: opts?.orgId ?? 'platform',
     appKey: APP_KEY,
     profileKey: opts?.profile ?? `${APP_KEY}-default`,
     input: prompt,
@@ -46,11 +46,11 @@ export async function runAICompletion(
  */
 export async function runAIEmbed(
   input: string | string[],
-  opts?: { entityId?: string; profile?: string },
+  opts?: { orgId?: string; profile?: string },
 ): Promise<number[][]> {
   const client = getAiClient()
   const result = await client.embed({
-    entityId: opts?.entityId ?? 'platform',
+    orgId: opts?.orgId ?? 'platform',
     appKey: APP_KEY,
     profileKey: opts?.profile ?? `${APP_KEY}-embed`,
     input,
@@ -65,11 +65,11 @@ export async function runAIEmbed(
 export async function runAIExtraction(
   input: string,
   promptKey: string,
-  opts?: { entityId?: string; profile?: string; variables?: Record<string, string> },
+  opts?: { orgId?: string; profile?: string; variables?: Record<string, string> },
 ): Promise<Record<string, unknown>> {
   const client = getAiClient()
   const result = await client.extract({
-    entityId: opts?.entityId ?? 'platform',
+    orgId: opts?.orgId ?? 'platform',
     appKey: APP_KEY,
     profileKey: opts?.profile ?? `${APP_KEY}-extract`,
     promptKey,

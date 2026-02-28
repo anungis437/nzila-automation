@@ -10,7 +10,7 @@
 ### org
 The root organisational aggregate in NzilaOS. Every business entity, user, and
 data record belongs to exactly one org. In the database, the scoping column is
-`entity_id` (the Nzila convention for org identity). Never use "tenant."
+`org_id` (the Nzila convention for org identity). Never use "tenant."
 
 ### membership
 A user's relationship to an org. Defines role (`owner`, `admin`, `manager`,

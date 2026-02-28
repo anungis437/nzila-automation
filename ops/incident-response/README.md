@@ -32,17 +32,17 @@ Every P1/P2 incident **must** produce the following evidence artifacts:
 
 | Artifact | Format | Controls Covered | Storage Path |
 |---|---|---|---|
-| Postmortem document | PDF | IR-01 | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/postmortem.pdf` |
-| Audit events export (incident window) | JSON | IR-02 | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/audit-trail/{incident_id}/audit-trail-export.json` |
-| Containment log | JSON | IR-03 | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/containment-log/{incident_id}/containment-log.json` |
-| Remediation tracker | JSON | IR-04 | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/remediation/{incident_id}/remediation-tracker.json` |
-| Evidence pack index | JSON | All IR | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/evidence-pack-index.json` |
+| Postmortem document | PDF | IR-01 | `evidence/{org_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/postmortem.pdf` |
+| Audit events export (incident window) | JSON | IR-02 | `evidence/{org_id}/incident-response/{YYYY}/{MM}/audit-trail/{incident_id}/audit-trail-export.json` |
+| Containment log | JSON | IR-03 | `evidence/{org_id}/incident-response/{YYYY}/{MM}/containment-log/{incident_id}/containment-log.json` |
+| Remediation tracker | JSON | IR-04 | `evidence/{org_id}/incident-response/{YYYY}/{MM}/remediation/{incident_id}/remediation-tracker.json` |
+| Evidence pack index | JSON | All IR | `evidence/{org_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/evidence-pack-index.json` |
 
 ### Metadata Requirements
 
 All artifacts must be uploaded via `@nzila/blob` `uploadBuffer()` which automatically computes SHA-256.
 Each upload must:
-- Create a `documents` table row with `blob_container`, `blob_path`, `sha256`, `entity_id`
+- Create a `documents` table row with `blob_container`, `blob_path`, `sha256`, `org_id`
 - Create an `audit_events` entry with `action = 'document_uploaded'` and hash chain continuation
 - Set retention class to `7_YEARS`
 

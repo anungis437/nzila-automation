@@ -7,10 +7,6 @@
 export interface TradeDbContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
   /** Actor performing the operation */
   readonly actorId: string
 }
@@ -18,8 +14,4 @@ export interface TradeDbContext {
 export interface TradeReadContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
 }

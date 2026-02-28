@@ -78,7 +78,7 @@ export async function listReports(opts?: {
 export async function generateReport(input: {
   type: Report['type']
   period: string
-  entityId?: string
+  orgId?: string
   includeNarrative?: boolean
 }): Promise<{ success: boolean; reportId?: string; narrative?: string }> {
   const { userId } = await auth()
@@ -99,7 +99,7 @@ export async function generateReport(input: {
 
     // Record in audit log as report generation
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES (
         'report.generated',
         ${userId},
@@ -111,7 +111,7 @@ export async function generateReport(input: {
           status: narrative ? 'generated' : 'draft',
           period: input.period,
           narrative: narrative ?? null,
-          entityId: input.entityId ?? null,
+          orgId: input.orgId ?? null,
         })}::jsonb
       )`,
     )
@@ -119,7 +119,7 @@ export async function generateReport(input: {
     const pack = buildEvidencePackFromAction({
       actionId: `report-${Date.now()}`,
       actionType: 'REPORT_GENERATED',
-      entityId: input.entityId ?? 'platform',
+      orgId: input.orgId ?? 'platform',
       executedBy: userId,
     })
     await processEvidencePack(pack)

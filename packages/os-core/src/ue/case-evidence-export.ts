@@ -57,7 +57,7 @@ export function verifyDocumentVersionChain(
 export interface LitigationHold {
   holdId: string
   caseId: string
-  entityId: string
+  orgId: string
   scope: LitigationHoldScope
   issuedBy: string
   issuedAt: string
@@ -201,7 +201,7 @@ export function validateRoleGraphAcyclic(
 
 export interface CaseEvidenceExportRequest {
   caseId: string
-  entityId: string
+  orgId: string
   requestedBy: string
   includeDocuments: boolean
   includeAuditTrail: boolean
@@ -213,7 +213,7 @@ export interface CaseEvidenceExportRequest {
 export interface CaseEvidenceExportResult {
   exportId: string
   caseId: string
-  entityId: string
+  orgId: string
   artifactCount: number
   totalSizeBytes: number
   sealed: boolean

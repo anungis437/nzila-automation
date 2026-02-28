@@ -202,7 +202,7 @@ The adapter follows hexagonal architecture:
 
 ### 4.3 Org Isolation
 
-All operations are scoped via `OrgContext.entityId`:
+All operations are scoped via `OrgContext.orgId`:
 
 - Migration context uses `config.defaultEntityId`
 - Actor is `system:migration` with admin permissions

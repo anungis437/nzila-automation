@@ -76,12 +76,12 @@ Verify that no cross-org transitions actually succeeded (they should never):
 
 ```sql
 -- Verify audit trail integrity
-SELECT ae.entity_id AS audit_org,
+SELECT ae.org_id AS audit_org,
        ae.metadata->>'resourceOrgId' AS resource_org,
        ae.action, ae.created_at
 FROM commerce.audit_entries ae
 WHERE ae.created_at > NOW() - INTERVAL '24 hours'
-  AND ae.entity_id != ae.metadata->>'resourceOrgId';
+  AND ae.org_id != ae.metadata->>'resourceOrgId';
 ```
 
 **If this query returns rows, escalate immediately to CRITICAL.**

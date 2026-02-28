@@ -52,8 +52,8 @@ export interface AuditedScopedDbOptions {
 export interface AuditContext {
   /** Clerk user ID or system actor performing the operation */
   actorId: string
-  /** Entity being operated on (must match scopedDb.entityId) */
-  entityId: string
+  /** Entity being operated on (must match scopedDb.orgId) */
+  orgId: string
   /** Optional correlation ID for tracing across operations */
   correlationId?: string
   /** Optional actor role for audit record enrichment */
@@ -61,7 +61,7 @@ export interface AuditContext {
 }
 
 export interface AuditEvent {
-  entityId: string
+  orgId: string
   actorId: string
   actorRole?: string
   table: string
@@ -98,14 +98,14 @@ const defaultAuditEmitter: AuditEmitter = async (event) => {
     const [latest] = await (db as any)
       .select({ hash: auditEvents.hash })
       .from(auditEvents)
-      .where(eq(auditEvents.entityId, event.entityId))
+      .where(eq(auditEvents.orgId, event.orgId))
       .orderBy(desc(auditEvents.createdAt))
       .limit(1)
 
     const previousHash = latest?.hash ?? null
 
     const payload = {
-      entityId: event.entityId,
+      orgId: event.orgId,
       actorClerkUserId: event.actorId,
       action: `${event.table}.${event.action}`,
       targetType: event.table,
@@ -119,7 +119,7 @@ const defaultAuditEmitter: AuditEmitter = async (event) => {
     await (db as any)
       .insert(auditEvents)
       .values({
-        entityId: event.entityId,
+        orgId: event.orgId,
         actorClerkUserId: event.actorId,
         actorRole: event.actorRole ?? null,
         action: `${event.table}.${event.action}`,
@@ -133,7 +133,7 @@ const defaultAuditEmitter: AuditEmitter = async (event) => {
     console.log(
       '[AUDIT:AUTO]',
       JSON.stringify({
-        entityId: event.entityId,
+        orgId: event.orgId,
         action: `${event.table}.${event.action}`,
         actor: event.actorId,
         correlationId: event.correlationId,
@@ -171,7 +171,7 @@ function resolveTableName(table: PgTable<TableConfig>): string {
  *
  * Every insert, update, and delete operation will:
  *   1. Execute the database operation via the underlying ScopedDb
- *   2. Emit an audit event with actorId, entityId, table, action, timestamp, correlationId
+ *   2. Emit an audit event with actorId, orgId, table, action, timestamp, correlationId
  *
  * The audit emission is non-blocking for read operations (select passes through).
  *
@@ -185,10 +185,10 @@ export function withAudit(
   emitter: AuditEmitter = defaultAuditEmitter,
 ): AuditedScopedDb {
   // Validate context matches scopedDb
-  if (context.entityId !== scopedDb.entityId) {
+  if (context.orgId !== scopedDb.orgId) {
     throw new Error(
-      `Audit context entityId (${context.entityId}) does not match ` +
-      `scopedDb entityId (${scopedDb.entityId}). This is a structural error.`,
+      `Audit context orgId (${context.orgId}) does not match ` +
+      `scopedDb orgId (${scopedDb.orgId}). This is a structural error.`,
     )
   }
 
@@ -200,7 +200,7 @@ export function withAudit(
     values?: Record<string, unknown>,
   ): AuditEvent {
     return {
-      entityId: context.entityId,
+      orgId: context.orgId,
       actorId: context.actorId,
       actorRole: context.actorRole,
       table: resolveTableName(table),
@@ -212,7 +212,6 @@ export function withAudit(
   }
 
   const auditedDb: AuditedScopedDb = {
-    entityId: scopedDb.entityId,
     orgId: scopedDb.orgId,
     correlationId,
     auditContext: context,
@@ -335,7 +334,7 @@ export function createAuditedScopedDb(opts: AuditedScopedDbOptions): AuditedScop
   // Wrap with audit middleware
   const context: AuditContext = {
     actorId,
-    entityId: orgId,
+    orgId: orgId,
     correlationId,
     actorRole,
   }

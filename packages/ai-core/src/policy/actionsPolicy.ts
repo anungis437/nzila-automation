@@ -16,7 +16,7 @@ import type { ActionType } from '../schemas'
 
 export interface PolicyCheckInput {
   actionType: string
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   proposalJson: Record<string, unknown>
@@ -58,7 +58,7 @@ export async function checkActionPolicy(
     .from(aiCapabilityProfiles)
     .where(
       and(
-        eq(aiCapabilityProfiles.entityId, input.entityId),
+        eq(aiCapabilityProfiles.orgId, input.orgId),
         eq(aiCapabilityProfiles.appKey, input.appKey),
         eq(aiCapabilityProfiles.environment, environment),
         eq(aiCapabilityProfiles.profileKey, input.profileKey),
@@ -123,7 +123,7 @@ export async function checkActionPolicy(
     .from(aiUsageBudgets)
     .where(
       and(
-        eq(aiUsageBudgets.entityId, input.entityId),
+        eq(aiUsageBudgets.orgId, input.orgId),
         eq(aiUsageBudgets.appKey, input.appKey),
         eq(aiUsageBudgets.profileKey, input.profileKey),
         eq(aiUsageBudgets.month, currentMonth),
@@ -151,14 +151,14 @@ export async function checkActionPolicy(
       autoApproved = true
       reasons.push('Low risk action — auto-approved by policy')
     } else if (riskTier === 'low' && !autoApproveLowRisk) {
-      approvalsRequired = ['entity_admin']
-      reasons.push('Low risk action — requires entity_admin approval (auto-approve disabled)')
+      approvalsRequired = ['org_admin']
+      reasons.push('Low risk action — requires org_admin approval (auto-approve disabled)')
     } else if (riskTier === 'medium') {
-      approvalsRequired = ['entity_admin']
-      reasons.push('Medium risk action — requires entity_admin approval')
+      approvalsRequired = ['org_admin']
+      reasons.push('Medium risk action — requires org_admin approval')
     } else {
-      approvalsRequired = ['entity_admin', 'platform_admin']
-      reasons.push('High risk action — requires entity_admin + platform_admin approval')
+      approvalsRequired = ['org_admin', 'platform_admin']
+      reasons.push('High risk action — requires org_admin + platform_admin approval')
     }
   }
 
@@ -176,7 +176,7 @@ export async function checkActionPolicy(
 
   // Write audit event
   await appendAiAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.actor,
     action: 'ai.action_policy_checked',
     targetType: 'ai_action',

@@ -45,7 +45,7 @@ const manualProvider = createManualRateProvider([
 ])
 
 const cadConfig: EntityCurrencyConfig = {
-  entityId: '00000000-0000-0000-0000-000000000001',
+  orgId: '00000000-0000-0000-0000-000000000001',
   functionalCurrency: 'CAD',
   transactionCurrencies: ['CAD', 'USD', 'EUR'],
   rateSource: 'manual',

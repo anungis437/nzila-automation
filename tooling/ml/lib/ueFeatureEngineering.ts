@@ -14,7 +14,7 @@
 /** Raw case row pulled from DB — only structured metadata, no PII */
 export interface RawUECase {
   caseId: string
-  entityId: string
+  orgId: string
   createdAt: Date
   updatedAt: Date | null
   /** e.g., "billing" | "hr" | "general" | "grievance" */

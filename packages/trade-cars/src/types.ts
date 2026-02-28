@@ -19,7 +19,7 @@ import type { TradeListingId } from '@nzila/trade-core/types'
 
 export interface VehicleListing {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly listingId: TradeListingId
   readonly vin: string
   readonly make: string
@@ -43,7 +43,7 @@ export interface VehicleListing {
 
 export interface VehicleDoc {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly listingId: TradeListingId
   readonly docType: VehicleDocType
   readonly title: string

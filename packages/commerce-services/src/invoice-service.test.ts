@@ -20,7 +20,7 @@ const TEST_ACTOR = 'actor-test-001'
 
 function makeCtx(overrides?: Partial<OrgContext>): OrgContext {
   return {
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     actorId: TEST_ACTOR,
     role: OrgRole.FINANCE,
     permissions: [],
@@ -32,7 +32,7 @@ function makeCtx(overrides?: Partial<OrgContext>): OrgContext {
 function makeInvoiceEntity(overrides?: Partial<InvoiceEntity>): InvoiceEntity {
   return {
     id: 'inv-001',
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     ref: 'INV-NZI-000001',
     orderId: 'order-001',
     customerId: 'cust-001',
@@ -131,7 +131,7 @@ describe('InvoiceService', () => {
       expect(result.ok).toBe(true)
       if (!result.ok) return
       expect(result.data.status).toBe(InvoiceStatus.DRAFT)
-      expect(result.data.entityId).toBe(TEST_ORG)
+      expect(result.data.orgId).toBe(TEST_ORG)
     })
 
     it('calls repo with correct data', async () => {
@@ -433,11 +433,11 @@ describe('InvoiceService', () => {
       expect(issueResult.ok && issueResult.auditEntries.length).toBeGreaterThanOrEqual(1)
     })
 
-    it('audit entries carry correct entityId', async () => {
+    it('audit entries carry correct orgId', async () => {
       const result = await service.createInvoice(ctx, sampleInput)
       expect(result.ok).toBe(true)
       if (!result.ok) return
-      expect(result.auditEntries[0]!.entityId).toBe(TEST_ORG)
+      expect(result.auditEntries[0]!.orgId).toBe(TEST_ORG)
       expect(result.auditEntries[0]!.actorId).toBe(TEST_ACTOR)
     })
   })

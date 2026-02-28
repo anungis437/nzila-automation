@@ -3,13 +3,13 @@
  *
  * Structural invariant: Application code (apps/*) must never
  * directly access the raw database client. All queries must flow
- * through createScopedDb(entityId) for Org isolation.
+ * through createScopedDb(orgId) for Org isolation.
  *
  * Enforcement layers validated:
  *   1. No rawDb imports in apps/*
  *   2. No direct drizzle() instantiation in apps/*
  *   3. No direct import of @nzila/db/raw in apps/*
- *   4. entityId filtering present in query patterns (scoped DAL)
+ *   4. orgId filtering present in query patterns (scoped DAL)
  *   5. ESLint no-shadow-db rule wired into every app
  *
  * @invariant INV-06: No raw DB access in application layer
@@ -54,16 +54,16 @@ const EXEMPT_PATHS = [
   // Migration planned — see docs/migration/ENFORCEMENT_UPGRADE.md
   'apps/orchestrator-api/',
   // Console app has legacy unscoped db imports across ~30 routes.
-  // Migration to createScopedDb(entityId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
+  // Migration to createScopedDb(orgId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
   'apps/console/',
   // Partners app has legacy unscoped db import in partner-auth.
-  // Migration to createScopedDb(entityId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
+  // Migration to createScopedDb(orgId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
   'apps/partners/',
   // Union-Eyes — Django-migrated app with direct DB access patterns.
-  // Migration to createScopedDb(entityId) tracked alongside console/partners.
+  // Migration to createScopedDb(orgId) tracked alongside console/partners.
   'apps/union-eyes/',
   // Shop-quoter — commerce DAL uses direct DB for QuoteRepository implementation.
-  // Migration to createScopedDb(entityId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
+  // Migration to createScopedDb(orgId) tracked in docs/migration/ENFORCEMENT_UPGRADE.md
   'apps/shop-quoter/',
 ]
 
@@ -106,7 +106,7 @@ describe('INV-06 — No raw DB access in application layer', () => {
     }
     expect(
       violations,
-      `rawDb import forbidden in app code. Use createScopedDb(entityId).\nViolations:\n${violations.join('\n')}`,
+      `rawDb import forbidden in app code. Use createScopedDb(orgId).\nViolations:\n${violations.join('\n')}`,
     ).toEqual([])
   })
 
@@ -156,7 +156,7 @@ describe('INV-06 — No raw DB access in application layer', () => {
     expect(
       violations,
       `Unscoped db import from @nzila/db barrel is forbidden in app code. ` +
-        `Use createScopedDb(entityId) from @nzila/db/scoped.\nViolations:\n${violations.join('\n')}`,
+        `Use createScopedDb(orgId) from @nzila/db/scoped.\nViolations:\n${violations.join('\n')}`,
     ).toEqual([])
   })
 
@@ -199,11 +199,11 @@ describe('INV-07 — Org isolation enforced via Scoped DAL', () => {
     expect(content).toContain('requires a non-empty orgId')
   })
 
-  it('createScopedDb validates entity_id column on tables', () => {
+  it('createScopedDb validates org_id column on tables', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
-    expect(content).toContain('getEntityIdColumn')
-    expect(content).toContain('does not have an entity_id column')
+    expect(content).toContain('getOrgIdColumn')
+    expect(content).toContain('does not have an org_id column')
   })
 
   it('rawDb is exported from @nzila/db/raw with internal-only JSDoc', () => {
@@ -220,7 +220,7 @@ describe('INV-07 — Org isolation enforced via Scoped DAL', () => {
     const scopedPath = join(ROOT, 'packages', 'db', 'src', 'scoped.ts')
     const content = readFileSync(scopedPath, 'utf-8')
     // The insert method must spread orgId into inserted values
-    expect(content).toMatch(/entityId:\s*orgId/)
+    expect(content).toMatch(/orgId:\s*orgId/)
   })
 
   it('createAuditedScopedDb exists for write-enabled audited access', () => {

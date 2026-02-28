@@ -44,7 +44,7 @@ export async function authenticateUser(): Promise<
  * Combines Clerk auth with createAuditedScopedDb so routes get a
  * write-enabled, auto-auditing DB in one call.
  */
-export async function getAuditedDb(entityId: string): Promise<
+export async function getAuditedDb(orgId: string): Promise<
   | { ok: true; db: AuditedScopedDb; userId: string }
   | { ok: false; response: NextResponse }
 > {
@@ -52,7 +52,7 @@ export async function getAuditedDb(entityId: string): Promise<
   if (!authResult.ok) return authResult
 
   const db = createAuditedScopedDb({
-    orgId: entityId,
+    orgId: orgId,
     actorId: authResult.userId,
   })
 
@@ -62,8 +62,8 @@ export async function getAuditedDb(entityId: string): Promise<
 /**
  * Create a read-only, Org-scoped database for the given entity.
  */
-export function getReadOnlyDb(entityId: string) {
-  return createScopedDb({ orgId: entityId })
+export function getReadOnlyDb(orgId: string) {
+  return createScopedDb({ orgId: orgId })
 }
 
 // ── Observability Helpers ────────────────────────────────────────────────────

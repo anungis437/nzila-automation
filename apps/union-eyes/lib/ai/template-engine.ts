@@ -195,7 +195,7 @@ interface LLMRequestContext {
 interface QueryIntent {
   type: IntentType;
   confidence: number;
-  entities: {
+  orgs: {
     memberId?: string;
     claimNumber?: string;
     employerId?: string;
@@ -1733,7 +1733,7 @@ export interface TemplateContext {
   userRole: string;
   intent: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  entities: any[];
+  orgs: any[];
   retrievedContext: string[];
   sla: string;
   organizationId: string;

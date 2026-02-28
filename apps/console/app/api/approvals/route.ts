@@ -1,11 +1,11 @@
 // Observability: @nzila/os-core/telemetry — structured logging and request tracing available via os-core.
 /**
  * API — Cross-entity approvals aggregation
- * GET  /api/approvals   → all pending approvals across user's entities
+ * GET  /api/approvals   → all pending approvals across user's orgs
  */
 import { NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
-import { approvals, entities, entityMembers } from '@nzila/db/schema'
+import { approvals, orgs, orgMembers } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
 import { authenticateUser } from '@/lib/api-guards'
 
@@ -14,12 +14,12 @@ export async function GET() {
   if (!authResult.ok) return authResult.response
   const { userId } = authResult
 
-  // Get all approvals from entities the user has access to
+  // Get all approvals from orgs the user has access to
   const rows = await platformDb
     .select({
       id: approvals.id,
-      entityId: approvals.entityId,
-      entityName: entities.legalName,
+      orgId: approvals.orgId,
+      entityName: orgs.legalName,
       subjectType: approvals.subjectType,
       subjectId: approvals.subjectId,
       approvalType: approvals.approvalType,
@@ -30,13 +30,13 @@ export async function GET() {
       createdAt: approvals.createdAt,
     })
     .from(approvals)
-    .innerJoin(entities, eq(entities.id, approvals.entityId))
+    .innerJoin(orgs, eq(orgs.id, approvals.orgId))
     .innerJoin(
-      entityMembers,
+      orgMembers,
       and(
-        eq(entityMembers.entityId, approvals.entityId),
-        eq(entityMembers.clerkUserId, userId),
-        eq(entityMembers.status, 'active'),
+        eq(orgMembers.orgId, approvals.orgId),
+        eq(orgMembers.clerkUserId, userId),
+        eq(orgMembers.status, 'active'),
       ),
     )
     .orderBy(desc(approvals.createdAt))

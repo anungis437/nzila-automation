@@ -30,7 +30,7 @@ export interface ChatMessage {
 }
 
 export interface AiGenerateRequest {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   promptKey?: string
@@ -70,7 +70,7 @@ export interface AiStreamChunk {
 }
 
 export interface AiEmbedRequest {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   input: string | string[]
@@ -98,7 +98,7 @@ export interface AiExtractResponse {
 }
 
 export interface AiRagQueryRequest {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   query: string
@@ -124,7 +124,7 @@ export interface AiRagQueryResponse {
 }
 
 export interface AiActionProposeRequest {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   actionType: string
@@ -142,7 +142,7 @@ export interface AiActionProposeResponse {
 
 export interface ResolvedCapabilityProfile {
   id: string
-  entityId: string
+  orgId: string
   appKey: string
   environment: string
   profileKey: string

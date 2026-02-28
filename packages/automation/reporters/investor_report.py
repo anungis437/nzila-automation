@@ -187,7 +187,7 @@ We're excited to continue this journey together.
 
 ## Traction
 - 4 platforms in production
-- 12,500+ entities generated
+- 12,500+ orgs generated
 - 80% code reuse via backbone architecture
 
 ## Ask

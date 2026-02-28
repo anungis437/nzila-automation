@@ -7,9 +7,9 @@
  *   import { createCustomer, listQuotes, getOrderById } from '@nzila/commerce-db'
  *
  * Every exported function requires a context parameter (ctx) that
- * carries entityId (org scope) and actorId (audit attribution).
+ * carries orgId (org scope) and actorId (audit attribution).
  *
- * Reads  → use ReadOnlyScopedDb (auto-filtered by entity_id)
+ * Reads  → use ReadOnlyScopedDb (auto-filtered by org_id)
  * Writes → use AuditedScopedDb  (auto-filtered + hash-chained audit)
  *
  * @module @nzila/commerce-db

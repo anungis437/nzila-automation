@@ -10,7 +10,7 @@ import { auth } from '@clerk/nextjs/server'
 import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { platformDb } from '@nzila/db/platform'
-import { entities, entityMembers } from '@nzila/db/schema'
+import { orgs, orgMembers } from '@nzila/db/schema'
 import { eq, and, ilike, desc, sql, count, type SQL } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 
@@ -45,10 +45,10 @@ export async function listClients(opts?: {
   try {
     const conditions: SQL[] = []
     if (opts?.search) {
-      conditions.push(ilike(entities.legalName, `%${opts.search}%`))
+      conditions.push(ilike(orgs.legalName, `%${opts.search}%`))
     }
     if (opts?.status) {
-      conditions.push(eq(entities.status, opts.status as typeof entities.status._.data))
+      conditions.push(eq(orgs.status, opts.status as typeof orgs.status._.data))
     }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined
@@ -56,19 +56,19 @@ export async function listClients(opts?: {
     const [clientRows, totalResult] = await Promise.all([
       platformDb
         .select({
-          id: entities.id,
-          name: entities.legalName,
-          status: entities.status,
-          createdAt: entities.createdAt,
+          id: orgs.id,
+          name: orgs.legalName,
+          status: orgs.status,
+          createdAt: orgs.createdAt,
         })
-        .from(entities)
+        .from(orgs)
         .where(whereClause)
-        .orderBy(desc(entities.createdAt))
+        .orderBy(desc(orgs.createdAt))
         .limit(pageSize)
         .offset(offset),
       platformDb
         .select({ count: count() })
-        .from(entities)
+        .from(orgs)
         .where(whereClause),
     ])
 
@@ -77,11 +77,11 @@ export async function listClients(opts?: {
       clientRows.map(async (client) => {
         const [memberResult] = await platformDb
           .select({ count: count() })
-          .from(entityMembers)
+          .from(orgMembers)
           .where(
             and(
-              eq(entityMembers.entityId, client.id),
-              eq(entityMembers.status, 'active'),
+              eq(orgMembers.orgId, client.id),
+              eq(orgMembers.status, 'active'),
             ),
           )
         return {
@@ -121,7 +121,7 @@ export async function createClient(data: {
 
   try {
     const [entity] = await platformDb
-      .insert(entities)
+      .insert(orgs)
       .values({
         legalName: data.name,
         jurisdiction: data.jurisdiction || 'CA-ON',
@@ -137,7 +137,7 @@ export async function createClient(data: {
           notes: data.notes || null,
         },
       })
-      .returning({ id: entities.id })
+      .returning({ id: orgs.id })
 
     logger.info('Client created', { clientId: entity.id, actorId: userId })
     revalidatePath('/dashboard/clients')
@@ -156,30 +156,30 @@ export async function getClientDetail(clientId: string) {
   try {
     const [client] = await platformDb
       .select()
-      .from(entities)
-      .where(eq(entities.id, clientId))
+      .from(orgs)
+      .where(eq(orgs.id, clientId))
       .limit(1)
 
     if (!client) return null
 
     const members = await platformDb
       .select()
-      .from(entityMembers)
-      .where(eq(entityMembers.entityId, clientId))
-      .orderBy(desc(entityMembers.createdAt))
+      .from(orgMembers)
+      .where(eq(orgMembers.orgId, clientId))
+      .orderBy(desc(orgMembers.createdAt))
 
     // Financial summary from audit log
     const [financials] = await platformDb.execute(
       sql`SELECT
-        COALESCE(SUM(CAST(metadata->>'amount' AS NUMERIC)) FILTER (WHERE action LIKE 'revenue.%' AND entity_id = ${clientId}), 0) as total_revenue,
-        COUNT(*) FILTER (WHERE action LIKE 'document.%' AND entity_id = ${clientId}) as document_count,
-        COUNT(*) FILTER (WHERE entity_id = ${clientId}) as audit_event_count
+        COALESCE(SUM(CAST(metadata->>'amount' AS NUMERIC)) FILTER (WHERE action LIKE 'revenue.%' AND org_id = ${clientId}), 0) as total_revenue,
+        COUNT(*) FILTER (WHERE action LIKE 'document.%' AND org_id = ${clientId}) as document_count,
+        COUNT(*) FILTER (WHERE org_id = ${clientId}) as audit_event_count
       FROM audit_log`,
     ) as unknown as [{ total_revenue: number; document_count: number; audit_event_count: number }]
 
     const recentActivityRows = (await platformDb.execute(
       sql`SELECT id, action, created_at as "createdAt"
-      FROM audit_log WHERE entity_id = ${clientId}
+      FROM audit_log WHERE org_id = ${clientId}
       ORDER BY created_at DESC LIMIT 10`,
     )) as unknown as { rows: Array<{ id: string; action: string; createdAt: Date }> }
 

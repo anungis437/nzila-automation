@@ -8,7 +8,7 @@
  *   Tax: T2, CO-17, Schedule 50, installments, NOA, GST/HST, QST
  *
  * Produces: index JSON, cover PDF metadata, manifest hash.
- * Stores in Blob: evidence/{entity_id}/year/{FY}/finance/pack-index/
+ * Stores in Blob: evidence/{org_id}/year/{FY}/finance/pack-index/
  */
 import { createHash } from 'node:crypto'
 import type { YearEndPackManifest } from './types'
@@ -49,28 +49,28 @@ export type YearEndArtifactType = FinancialArtifactType | GovernanceArtifactType
 /**
  * Compute the blob base path for a year-end evidence pack.
  *
- * Format: evidence/{entity_id}/year/{FY}/finance/pack-index/
+ * Format: evidence/{org_id}/year/{FY}/finance/pack-index/
  */
-export function yearEndPackBasePath(entityId: string, fiscalYear: string): string {
-  return `evidence/${entityId}/year/${fiscalYear}/finance/pack-index`
+export function yearEndPackBasePath(orgId: string, fiscalYear: string): string {
+  return `evidence/${orgId}/year/${fiscalYear}/finance/pack-index`
 }
 
 /**
  * Compute artifact blob path within the year-end pack.
  */
 export function yearEndArtifactPath(
-  entityId: string,
+  orgId: string,
   fiscalYear: string,
   artifactType: string,
   filename: string,
 ): string {
-  return `evidence/${entityId}/year/${fiscalYear}/finance/${artifactType}/${filename}`
+  return `evidence/${orgId}/year/${fiscalYear}/finance/${artifactType}/${filename}`
 }
 
 // ── Manifest builder ────────────────────────────────────────────────────────
 
 export interface YearEndPackInput {
-  entityId: string
+  orgId: string
   fiscalYear: string
   financial: {
     trialBalance?: string
@@ -103,7 +103,7 @@ export interface YearEndPackInput {
  */
 export function buildYearEndManifest(input: YearEndPackInput): YearEndPackManifest {
   const manifestContent = {
-    entityId: input.entityId,
+    orgId: input.orgId,
     fiscalYear: input.fiscalYear,
     generatedAt: new Date().toISOString(),
     financial: input.financial,

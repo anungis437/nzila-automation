@@ -12,10 +12,10 @@ import { auditEvents, shareLedgerEntries } from '@nzila/db/schema'
 import { eq, asc } from 'drizzle-orm'
 import { verifyChain } from '@nzila/os-core/hash'
 import { z } from 'zod'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 
 const VerifyChainSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   chainType: z.enum(['audit', 'ledger']),
 })
 
@@ -25,10 +25,10 @@ export async function POST(req: NextRequest) {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { entityId, chainType } = parsed.data
+  const { orgId, chainType } = parsed.data
 
   // Check authentication + entity membership (platform_admin bypasses)
-  const guard = await requireEntityAccess(entityId, {
+  const guard = await requireOrgAccess(orgId, {
     platformBypass: ['platform_admin'],
   })
   if (!guard.ok) return guard.response
@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
     const entries = await platformDb
       .select()
       .from(auditEvents)
-      .where(eq(auditEvents.entityId, entityId))
+      .where(eq(auditEvents.orgId, orgId))
       .orderBy(asc(auditEvents.createdAt))
 
     if (entries.length === 0) {
       return NextResponse.json({
         chainType: 'audit',
-        entityId,
+        orgId,
         entryCount: 0,
         valid: true,
         message: 'No audit entries to verify.',
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = verifyChain(entries, (e) => ({
-      entityId: e.entityId,
+      orgId: e.orgId,
       actorClerkUserId: e.actorClerkUserId,
       actorRole: e.actorRole,
       action: e.action,
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       chainType: 'audit',
-      entityId,
+      orgId,
       entryCount: entries.length,
       ...result,
     })
@@ -73,13 +73,13 @@ export async function POST(req: NextRequest) {
     const entries = await platformDb
       .select()
       .from(shareLedgerEntries)
-      .where(eq(shareLedgerEntries.entityId, entityId))
+      .where(eq(shareLedgerEntries.orgId, orgId))
       .orderBy(asc(shareLedgerEntries.createdAt))
 
     if (entries.length === 0) {
       return NextResponse.json({
         chainType: 'ledger',
-        entityId,
+        orgId,
         entryCount: 0,
         valid: true,
         message: 'No ledger entries to verify.',
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = verifyChain(entries, (e) => ({
-      entityId: e.entityId,
+      orgId: e.orgId,
       entryType: e.entryType,
       classId: e.classId,
       fromShareholderId: e.fromShareholderId,
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       chainType: 'ledger',
-      entityId,
+      orgId,
       entryCount: entries.length,
       ...result,
     })

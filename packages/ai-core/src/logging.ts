@@ -40,7 +40,7 @@ function encryptPayload(plaintext: string): { ciphertext: string; iv: string } {
 // ── Log request ─────────────────────────────────────────────────────────────
 
 export interface LogAiRequestInput {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   feature: AiFeature
@@ -80,7 +80,7 @@ export async function logAiRequest(
   const [row] = await db
     .insert(aiRequests)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       appKey: input.appKey,
       profileKey: input.profileKey,
       feature: input.feature,
@@ -128,7 +128,7 @@ export async function logAiRequest(
 
   // 3. Append hash-chained audit event
   await appendAiAuditEvent({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.createdBy ?? 'system',
     action: 'ai.request_executed',
     targetType: 'ai_request',
@@ -155,7 +155,7 @@ export async function logAiRequest(
 // ── Audit event helper ──────────────────────────────────────────────────────
 
 async function appendAiAuditEvent(input: {
-  entityId: string
+  orgId: string
   actorClerkUserId: string
   action: string
   targetType: string
@@ -166,14 +166,14 @@ async function appendAiAuditEvent(input: {
   const [latest] = await db
     .select({ hash: auditEvents.hash })
     .from(auditEvents)
-    .where(eq(auditEvents.entityId, input.entityId))
+    .where(eq(auditEvents.orgId, input.orgId))
     .orderBy(desc(auditEvents.createdAt))
     .limit(1)
 
   const previousHash = latest?.hash ?? null
 
   const payload = {
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.actorClerkUserId,
     action: input.action,
     targetType: input.targetType,
@@ -185,7 +185,7 @@ async function appendAiAuditEvent(input: {
   const hash = computeEntryHash(payload, previousHash)
 
   await db.insert(auditEvents).values({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.actorClerkUserId,
     action: input.action,
     targetType: input.targetType,

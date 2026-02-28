@@ -3,14 +3,14 @@
  * API — AI Actions: Execute
  * POST /api/ai/actions/execute
  *
- * Executes an approved action. RBAC: finance_preparer or ai_admin or entity_admin.
+ * Executes an approved action. RBAC: finance_preparer or ai_admin or org_admin.
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { aiActions } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
 import { executeAction } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { asAiError } from '@/lib/catch-utils'
 import { z } from 'zod'
 import { createLogger } from '@nzila/os-core'
@@ -18,7 +18,7 @@ import { createLogger } from '@nzila/os-core'
 const logger = createLogger('ai:actions:execute')
 
 const ExecuteBodySchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   actionId: z.string().uuid(),
 })
 
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     }
 
-    const { entityId, actionId } = parsed.data
+    const { orgId, actionId } = parsed.data
 
     // Load action to check type
     const [action] = await platformDb
@@ -43,13 +43,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Action not found' }, { status: 404 })
     }
 
-    if (action.entityId !== entityId) {
+    if (action.orgId !== orgId) {
       return NextResponse.json({ error: 'Entity mismatch' }, { status: 403 })
     }
 
-    // RBAC: entity_admin for any, or entity_secretary for low-risk
-    const access = await requireEntityAccess(entityId, {
-      minRole: action.riskTier === 'low' ? 'entity_secretary' : 'entity_admin',
+    // RBAC: org_admin for any, or org_secretary for low-risk
+    const access = await requireOrgAccess(orgId, {
+      minRole: action.riskTier === 'low' ? 'org_secretary' : 'org_admin',
     })
     if (!access.ok) return access.response
 

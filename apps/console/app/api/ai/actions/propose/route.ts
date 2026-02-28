@@ -17,14 +17,14 @@ import {
   appendAiAuditEvent,
   checkActionPolicy,
 } from '@nzila/ai-core'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { asAiError } from '@/lib/catch-utils'
 import { z } from 'zod'
 
 const logger = createLogger('ai:actions:propose')
 
 const ProposeBodySchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   actionType: z.string().min(1).max(120),
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     const {
-      entityId,
+      orgId,
       appKey,
       profileKey,
       actionType,
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       evidencePackEligible,
     } = parsed.data
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     // 1. Validate proposal against action type schema
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     const [action] = await platformDb
       .insert(aiActions)
       .values({
-        entityId,
+        orgId,
         appKey,
         profileKey,
         actionType,
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Audit event — proposed
     await appendAiAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: access.context.userId,
       action: 'ai.action_proposed',
       targetType: 'ai_action',
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     // 4. Run deterministic policy check
     const policyDecision = await checkActionPolicy({
       actionType,
-      entityId,
+      orgId,
       appKey,
       profileKey,
       proposalJson: validation.data as Record<string, unknown>,

@@ -2,7 +2,7 @@
  * @nzila/tax — Deadline calculator
  *
  * Computes urgency indicators for all upcoming tax deadlines
- * across all entities. Green/Yellow/Red status per the spec.
+ * across all orgs. Green/Yellow/Red status per the spec.
  */
 import type { DeadlineInfo, DeadlineUrgency } from './types'
 
@@ -42,7 +42,7 @@ export function daysUntil(dueDate: string, asOf?: Date): number {
 export function buildTaxYearDeadlines(
   taxYear: {
     id: string
-    entityId: string
+    orgId: string
     fiscalYearLabel: string
     federalFilingDeadline: string
     federalPaymentDeadline: string
@@ -58,7 +58,7 @@ export function buildTaxYearDeadlines(
     dueDate: taxYear.federalFilingDeadline,
     daysRemaining: daysUntil(taxYear.federalFilingDeadline, asOf),
     urgency: computeUrgency(taxYear.federalFilingDeadline, asOf),
-    entityId: taxYear.entityId,
+    orgId: taxYear.orgId,
     taxYearId: taxYear.id,
     type: 'federal_filing',
   })
@@ -68,7 +68,7 @@ export function buildTaxYearDeadlines(
     dueDate: taxYear.federalPaymentDeadline,
     daysRemaining: daysUntil(taxYear.federalPaymentDeadline, asOf),
     urgency: computeUrgency(taxYear.federalPaymentDeadline, asOf),
-    entityId: taxYear.entityId,
+    orgId: taxYear.orgId,
     taxYearId: taxYear.id,
     type: 'federal_payment',
   })
@@ -79,7 +79,7 @@ export function buildTaxYearDeadlines(
       dueDate: taxYear.provincialFilingDeadline,
       daysRemaining: daysUntil(taxYear.provincialFilingDeadline, asOf),
       urgency: computeUrgency(taxYear.provincialFilingDeadline, asOf),
-      entityId: taxYear.entityId,
+      orgId: taxYear.orgId,
       taxYearId: taxYear.id,
       type: 'provincial_filing',
     })
@@ -91,7 +91,7 @@ export function buildTaxYearDeadlines(
       dueDate: taxYear.provincialPaymentDeadline,
       daysRemaining: daysUntil(taxYear.provincialPaymentDeadline, asOf),
       urgency: computeUrgency(taxYear.provincialPaymentDeadline, asOf),
-      entityId: taxYear.entityId,
+      orgId: taxYear.orgId,
       taxYearId: taxYear.id,
       type: 'provincial_payment',
     })
@@ -105,7 +105,7 @@ export function buildTaxYearDeadlines(
  */
 export function buildInstallmentDeadline(
   installment: {
-    entityId: string
+    orgId: string
     taxYearId: string
     dueDate: string
     status: string
@@ -118,7 +118,7 @@ export function buildInstallmentDeadline(
     dueDate: installment.dueDate,
     daysRemaining: daysUntil(installment.dueDate, asOf),
     urgency: installment.status === 'paid' ? 'green' : computeUrgency(installment.dueDate, asOf),
-    entityId: installment.entityId,
+    orgId: installment.orgId,
     taxYearId: installment.taxYearId,
     type: 'installment',
   }
@@ -129,7 +129,7 @@ export function buildInstallmentDeadline(
  */
 export function buildIndirectTaxDeadlines(
   period: {
-    entityId: string
+    orgId: string
     taxType: string
     filingDue: string
     paymentDue: string
@@ -146,7 +146,7 @@ export function buildIndirectTaxDeadlines(
     dueDate: period.filingDue,
     daysRemaining: daysUntil(period.filingDue, asOf),
     urgency: isFiled ? 'green' : computeUrgency(period.filingDue, asOf),
-    entityId: period.entityId,
+    orgId: period.orgId,
     type: 'indirect_filing',
   })
 
@@ -155,7 +155,7 @@ export function buildIndirectTaxDeadlines(
     dueDate: period.paymentDue,
     daysRemaining: daysUntil(period.paymentDue, asOf),
     urgency: isPaid ? 'green' : computeUrgency(period.paymentDue, asOf),
-    entityId: period.entityId,
+    orgId: period.orgId,
     type: 'indirect_payment',
   })
 

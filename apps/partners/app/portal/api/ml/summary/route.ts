@@ -12,7 +12,7 @@
  *   - ml:summary feature gate (tier ≥ registered)
  *
  * Query params:
- *   entityId    optional — when omitted the route self-resolves the first
+ *   orgId    optional — when omitted the route self-resolves the first
  *               entity the partner org is entitled to view (allows pages to
  *               call without direct DB access)
  */
@@ -29,19 +29,19 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityIdParam = searchParams.get('entityId')
+    const entityIdParam = searchParams.get('orgId')
 
     // ── Entitlement check ────────────────────────────────────────────────────
-    // If entityId is provided, verify the caller is entitled to that specific
+    // If orgId is provided, verify the caller is entitled to that specific
     // entity.  If omitted, self-resolve the first entitled entity for this
     // partner org — so pages can call without needing direct DB access.
-    let entityId: string
+    let orgId: string
     if (entityIdParam) {
       const access = await requirePartnerEntityAccess(entityIdParam, 'ml:summary')
       if (!access.ok) {
         return NextResponse.json({ error: access.error }, { status: access.status })
       }
-      entityId = entityIdParam
+      orgId = entityIdParam
     } else {
       const resolved = await resolvePartnerEntityIdForView('ml:summary')
       if (!resolved) {
@@ -50,12 +50,12 @@ export async function GET(req: NextRequest) {
           { status: 403 },
         )
       }
-      entityId = resolved
+      orgId = resolved
     }
 
     // ── Fetch aggregate ML data via ml-sdk server layer ──────────────────────
     // ML tables are accessed via @nzila/ml-sdk/server (INV-02: no direct table reads)
-    const summary = await getPartnerMlSummary(entityId)
+    const summary = await getPartnerMlSummary(orgId)
 
     return NextResponse.json(summary)
   } catch (err) {

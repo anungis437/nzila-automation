@@ -11,13 +11,13 @@ Cross-Org data access is **structurally impossible** when using the platform cor
 ```
 ┌──────────────────────────────────────────────────┐
 │ Layer 4: Database FK Constraints                 │
-│   entity_id NOT NULL + FK to entities.id         │
+│   org_id NOT NULL + FK to entities.id         │
 │   DB-level guarantee: no orphan entity data      │
 ├──────────────────────────────────────────────────┤
 │ Layer 3: Scoped DAL (createScopedDb)             │
 │   Runtime guarantee: every query WHERE-filtered  │
-│   Insert auto-injects entityId                   │
-│   Tables without entity_id → runtime throw       │
+│   Insert auto-injects orgId                   │
+│   Tables without org_id → runtime throw       │
 ├──────────────────────────────────────────────────┤
 │ Layer 2: Contract Tests (db-boundary.test.ts)    │
 │   CI guarantee: no rawDb in apps/*               │
@@ -40,23 +40,23 @@ import { createScopedDb } from '@nzila/db/scoped'
 import { meetings } from '@nzila/db/schema'
 
 // In your API route, after authorization:
-const scopedDb = createScopedDb(ctx.entityId)
+const scopedDb = createScopedDb(ctx.orgId)
 
 // SELECT — auto-filtered to entity
 const rows = await scopedDb.select(meetings)
-// → SELECT * FROM meetings WHERE entity_id = $entityId
+// → SELECT * FROM meetings WHERE org_id = $orgId
 
-// INSERT — entityId auto-injected
+// INSERT — orgId auto-injected
 await scopedDb.insert(meetings, { kind: 'board', meetingDate: new Date() })
-// → INSERT INTO meetings (entity_id, kind, meeting_date) VALUES ($entityId, ...)
+// → INSERT INTO meetings (org_id, kind, meeting_date) VALUES ($orgId, ...)
 
 // UPDATE — scoped
 await scopedDb.update(meetings, { status: 'held' }, eq(meetings.id, meetingId))
-// → UPDATE meetings SET status = 'held' WHERE entity_id = $entityId AND id = $meetingId
+// → UPDATE meetings SET status = 'held' WHERE org_id = $orgId AND id = $meetingId
 
 // DELETE — scoped
 await scopedDb.delete(meetings, eq(meetings.id, meetingId))
-// → DELETE FROM meetings WHERE entity_id = $entityId AND id = $meetingId
+// → DELETE FROM meetings WHERE org_id = $orgId AND id = $meetingId
 ```
 
 ### Raw DB (`rawDb`)
@@ -107,12 +107,12 @@ If your code currently uses `db` from `@nzila/db` directly:
 + import { meetings } from '@nzila/db/schema'
 
   export async function GET(req, { params }) {
-    const { entityId } = await params
-    const guard = await requireEntityAccess(entityId)
-+   const scopedDb = createScopedDb(entityId)
+    const { orgId } = await params
+    const guard = await requireOrgAccess(orgId)
++   const scopedDb = createScopedDb(orgId)
 
 -   const rows = await db.select().from(meetings)
--     .where(eq(meetings.entityId, entityId))
+-     .where(eq(meetings.orgId, orgId))
 +   const rows = await scopedDb.select(meetings)
   }
 ```

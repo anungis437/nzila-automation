@@ -97,15 +97,15 @@ def main() -> None:
     parser.add_argument("--created-by", default="system")
     args = parser.parse_args()
 
-    entity_id = args.entity_id
+    org_id = args.org_id
     dataset_id = args.dataset_id
     blob_path = args.dataset_blob_path
     version = args.version
     created_by = args.created_by
 
-    run_id = db_write.start_training_run(entity_id, MODEL_KEY, dataset_id)
+    run_id = db_write.start_training_run(org_id, MODEL_KEY, dataset_id)
     db_write.insert_audit_event(
-        entity_id=entity_id,
+        org_id=org_id,
         actor=created_by,
         action="ml.training_started",
         target_type="ml_training_run",
@@ -114,7 +114,7 @@ def main() -> None:
     )
 
     try:
-        log(f"Training {MODEL_KEY} v{version} for entity {entity_id}")
+        log(f"Training {MODEL_KEY} v{version} for entity {org_id}")
         log(f"Dataset blob: {blob_path}")
 
         # ── 1. Download dataset ───────────────────────────────────────────────
@@ -295,14 +295,14 @@ def main() -> None:
         log_bytes = "\n".join(log_lines).encode()
 
         # ── 10. Upload to Blob ────────────────────────────────────────────────
-        run_blob_prefix = f"exports/{entity_id}/ml/models/{MODEL_KEY}/{run_id}"
+        run_blob_prefix = f"exports/{org_id}/ml/models/{MODEL_KEY}/{run_id}"
         model_sha, model_size = upload_bytes(CONTAINER, f"{run_blob_prefix}/model.joblib", model_bytes)
         metrics_sha, metrics_size = upload_bytes(CONTAINER, f"{run_blob_prefix}/metrics.json", metrics_json_bytes, "application/json")
         log_sha, log_size = upload_bytes(CONTAINER, f"{run_blob_prefix}/train.log", log_bytes, "text/plain")
 
         # ── 11. Register documents ────────────────────────────────────────────
         artifact_doc_id = db_write.insert_document(
-            entity_id=entity_id,
+            org_id=org_id,
             category="other",
             title=f"UE Priority Model v{version} — model.joblib ({MODEL_KEY})",
             blob_container=CONTAINER,
@@ -314,7 +314,7 @@ def main() -> None:
             linked_type="ml_model_artifact",
         )
         metrics_doc_id = db_write.insert_document(
-            entity_id=entity_id,
+            org_id=org_id,
             category="other",
             title=f"UE Priority Model v{version} — metrics.json ({MODEL_KEY})",
             blob_container=CONTAINER,
@@ -326,7 +326,7 @@ def main() -> None:
             linked_type="ml_metrics",
         )
         logs_doc_id = db_write.insert_document(
-            entity_id=entity_id,
+            org_id=org_id,
             category="other",
             title=f"UE Priority Model v{version} — train.log ({MODEL_KEY})",
             blob_container=CONTAINER,
@@ -340,7 +340,7 @@ def main() -> None:
 
         # ── 12. Register model (draft) ────────────────────────────────────────
         model_id = db_write.register_model(
-            entity_id=entity_id,
+            org_id=org_id,
             model_key=MODEL_KEY,
             algorithm="gradient_boosting_classifier",
             version=version,
@@ -361,7 +361,7 @@ def main() -> None:
         )
 
         db_write.insert_audit_event(
-            entity_id=entity_id,
+            org_id=org_id,
             actor=created_by,
             action="ml.training_completed",
             target_type="ml_training_run",
@@ -375,7 +375,7 @@ def main() -> None:
             },
         )
         db_write.insert_audit_event(
-            entity_id=entity_id,
+            org_id=org_id,
             actor=created_by,
             action="ml.model_registered",
             target_type="ml_model",
@@ -398,7 +398,7 @@ def main() -> None:
         log(f"ERROR: {exc}\n{tb}")
         db_write.finish_training_run(run_id, status="failed", error=str(exc))
         db_write.insert_audit_event(
-            entity_id=entity_id,
+            org_id=org_id,
             actor=created_by,
             action="ml.training_failed",
             target_type="ml_training_run",

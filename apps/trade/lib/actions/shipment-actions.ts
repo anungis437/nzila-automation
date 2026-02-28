@@ -30,7 +30,7 @@ export async function createShipment(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_shipment',
@@ -64,7 +64,7 @@ export async function updateShipmentMilestone(
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_shipment',
@@ -98,7 +98,7 @@ export async function listShipments(opts?: {
 }): Promise<TradeServiceResult<{ shipments: TradeShipment[]; total: number }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.entityId
+  // TODO: read via trade-db repository scoped to ctx.orgId
 
   return {
     ok: true,

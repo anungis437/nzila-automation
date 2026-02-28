@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Sync Engine
  * Orchestrates data synchronization between external systems and UnionEyes
  */
@@ -26,7 +26,7 @@ export interface SyncJobConfig {
   organizationId: string;
   provider: IntegrationProvider;
   type: SyncType;
-  entities?: string[];
+  orgs?: string[];
   schedule?: string; // Cron expression
   enabled: boolean;
   lastSyncAt?: Date;
@@ -84,7 +84,7 @@ export class SyncEngine {
         organizationId,
         provider,
         syncType: options.type,
-        entities: options.entities,
+        orgs: options.orgs,
       });
 
       // Create sync log entry
@@ -146,11 +146,11 @@ export class SyncEngine {
   async executeFullSync(
     organizationId: string,
     provider: IntegrationProvider,
-    entities?: string[]
+    orgs?: string[]
   ): Promise<SyncResult> {
     return this.executeSync(organizationId, provider, {
       type: SyncType.FULL,
-      entities,
+      orgs,
     });
   }
 
@@ -160,14 +160,14 @@ export class SyncEngine {
   async executeIncrementalSync(
     organizationId: string,
     provider: IntegrationProvider,
-    entities?: string[]
+    orgs?: string[]
   ): Promise<SyncResult> {
     // Get last sync timestamp and cursor
     const lastSync = await this.getLastSync(organizationId, provider);
 
     return this.executeSync(organizationId, provider, {
       type: SyncType.INCREMENTAL,
-      entities,
+      orgs,
       since: lastSync?.completedAt,
       cursor: lastSync?.cursor,
     });
@@ -188,7 +188,7 @@ export class SyncEngine {
     await db.insert(syncJobs).values({
       organizationId: config.organizationId,
       connectorId: '', // Would need to resolve connector ID from provider
-      entityType: config.entities?.join(',') || 'all',
+      entityType: config.orgs?.join(',') || 'all',
       direction: 'pull',
       status: 'pending',
       startedAt: new Date(),
@@ -229,7 +229,7 @@ export class SyncEngine {
       try {
         await this.executeSync(config.organizationId, config.provider, {
           type: config.type,
-          entities: config.entities,
+          orgs: config.orgs,
         });
       } catch (error) {
         logger.error('Scheduled sync job failed', error instanceof Error ? error : new Error(String(error)), {
@@ -327,7 +327,7 @@ export class SyncEngine {
         organizationId,
         provider,
         syncType: options.type,
-        entities: options.entities || [],
+        orgs: options.orgs || [],
         status: SyncStatus.RUNNING,
         startedAt: new Date(),
       })
@@ -378,19 +378,19 @@ export class SyncEngine {
 export async function executeFullSync(
   organizationId: string,
   provider: IntegrationProvider,
-  entities?: string[]
+  orgs?: string[]
 ): Promise<SyncResult> {
   const engine = SyncEngine.getInstance();
-  return engine.executeFullSync(organizationId, provider, entities);
+  return engine.executeFullSync(organizationId, provider, orgs);
 }
 
 export async function executeIncrementalSync(
   organizationId: string,
   provider: IntegrationProvider,
-  entities?: string[]
+  orgs?: string[]
 ): Promise<SyncResult> {
   const engine = SyncEngine.getInstance();
-  return engine.executeIncrementalSync(organizationId, provider, entities);
+  return engine.executeIncrementalSync(organizationId, provider, orgs);
 }
 
 export async function getSyncHistory(

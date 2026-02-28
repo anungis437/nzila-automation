@@ -1,7 +1,7 @@
 /**
  * Nzila OS — DB Schema barrel export
  */
-export * from './entities'
+export * from './orgs'
 export * from './governance'
 export * from './equity'
 export * from './finance'

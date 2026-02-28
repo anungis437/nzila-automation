@@ -56,7 +56,7 @@ Use this template for all P1/P2 post-incident reviews.
 **Severity:** P{N}
 **Reported by:** {name}
 **Assigned to:** {on-call engineer}
-**Entity affected:** {entity_id}
+**Entity affected:** {org_id}
 **Systems affected:** {list}
 **Current status:** Investigating | Contained | Resolved
 ```
@@ -68,7 +68,7 @@ When using these templates:
 1. **Export the completed postmortem** as PDF
 2. **Upload to Azure Blob** via `@nzila/blob`:
    - Container: `evidence`
-   - Path: `{entity_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/postmortem.pdf`
+   - Path: `{org_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/postmortem.pdf`
 3. **Record in `documents` table** with `sha256`, `retention_class = '7_YEARS'`
 4. **Create `audit_event`** with `action = 'postmortem_uploaded'`
 5. **Generate evidence pack index** using `tooling/scripts/generate-evidence-index.ts`

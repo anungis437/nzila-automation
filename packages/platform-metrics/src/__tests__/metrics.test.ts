@@ -18,24 +18,24 @@ vi.mock('@nzila/db/platform', () => ({
 }))
 
 vi.mock('@nzila/db/schema', () => ({
-  entities: {},
-  auditEvents: { entityId: 'entity_id', createdAt: 'created_at' },
+  orgs: {},
+  auditEvents: { orgId: 'org_id', createdAt: 'created_at' },
   ueCases: {
-    entityId: 'entity_id',
+    orgId: 'org_id',
     status: 'status',
     slaBreached: 'sla_breached',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   },
   zongaRevenueEvents: {
-    entityId: 'entity_id',
+    orgId: 'org_id',
     amount: 'amount',
     createdAt: 'created_at',
   },
-  commerceCustomers: { entityId: 'entity_id', createdAt: 'created_at' },
-  commerceQuotes: { entityId: 'entity_id' },
-  automationCommands: { status: 'status', entityId: 'entity_id' },
-  nacpExamSessions: { entityId: 'entity_id', status: 'status' },
+  commerceCustomers: { orgId: 'org_id', createdAt: 'created_at' },
+  commerceQuotes: { orgId: 'org_id' },
+  automationCommands: { status: 'status', orgId: 'org_id' },
+  nacpExamSessions: { orgId: 'org_id', status: 'status' },
 }))
 
 describe('OrgPerformanceMetrics type contract', () => {

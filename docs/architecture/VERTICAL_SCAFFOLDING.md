@@ -35,7 +35,7 @@ apps/my-vertical/
 │   └── api/
 │       ├── health/route.ts   # Public health check
 │       └── entities/
-│           └── [entityId]/
+│           └── [orgId]/
 │               └── example/route.ts  # Example scoped route
 ├── lib/
 │   ├── api-guards.ts         # authorize() + scopedDb + withAudit
@@ -57,7 +57,7 @@ Every scaffolded vertical includes:
 |-----------|-----------|
 | Authentication | Clerk middleware (`middleware.ts`) |
 | Authorization | `authorize()` from `@nzila/os-core/policy` |
-| Org isolation | `createScopedDb(entityId)` from `@nzila/db/scoped` |
+| Org isolation | `createScopedDb(orgId)` from `@nzila/db/scoped` |
 | Automatic audit | `withAudit()` from `@nzila/db/audit` |
 | No shadow AI | ESLint `no-shadow-ai` rule |
 | No shadow ML | ESLint `no-shadow-ml` rule |
@@ -75,8 +75,8 @@ Every scaffolded vertical includes:
 
 ## Extending a Vertical
 
-1. **Add domain schema** — Edit `lib/entity.ts` with your tables (must include `entity_id`)
-2. **Add API routes** — Under `app/api/entities/[entityId]/`, always use `requireEntityAccess()`
+1. **Add domain schema** — Edit `lib/entity.ts` with your tables (must include `org_id`)
+2. **Add API routes** — Under `app/api/entities/[orgId]/`, always use `requireOrgAccess()`
 3. **Add contract tests** — Extend `__tests__/contract.test.ts`
 4. **Run validation** — `pnpm contract-tests` must pass
 

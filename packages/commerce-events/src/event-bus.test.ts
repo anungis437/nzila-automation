@@ -12,7 +12,7 @@ const TEST_ACTOR = 'actor-test-001'
 
 function makeEvent(type: string, payload: Record<string, unknown> = {}): DomainEvent {
   return createDomainEvent(type, payload, {
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     actorId: TEST_ACTOR,
     correlationId: 'corr-001',
   })
@@ -23,7 +23,7 @@ function makeEvent(type: string, payload: Record<string, unknown> = {}): DomainE
 describe('createDomainEvent', () => {
   it('generates unique id and ISO timestamp', () => {
     const event = createDomainEvent('test.created', { foo: 'bar' }, {
-      entityId: TEST_ORG,
+      orgId: TEST_ORG,
       actorId: TEST_ACTOR,
       correlationId: 'corr-001',
     })
@@ -31,7 +31,7 @@ describe('createDomainEvent', () => {
     expect(event.id).toBeTruthy()
     expect(event.type).toBe('test.created')
     expect(event.payload).toEqual({ foo: 'bar' })
-    expect(event.metadata.entityId).toBe(TEST_ORG)
+    expect(event.metadata.orgId).toBe(TEST_ORG)
     expect(event.metadata.actorId).toBe(TEST_ACTOR)
     expect(event.metadata.correlationId).toBe('corr-001')
     expect(event.metadata.causationId).toBeNull()
@@ -41,7 +41,7 @@ describe('createDomainEvent', () => {
 
   it('allows custom causationId and source', () => {
     const event = createDomainEvent('test.event', {}, {
-      entityId: TEST_ORG,
+      orgId: TEST_ORG,
       actorId: TEST_ACTOR,
       correlationId: 'corr-002',
       causationId: 'evt-parent',
@@ -53,7 +53,7 @@ describe('createDomainEvent', () => {
   })
 
   it('each call generates a different id', () => {
-    const meta = { entityId: TEST_ORG, actorId: TEST_ACTOR, correlationId: 'c' }
+    const meta = { orgId: TEST_ORG, actorId: TEST_ACTOR, correlationId: 'c' }
     const a = createDomainEvent('x', {}, meta)
     const b = createDomainEvent('x', {}, meta)
     expect(a.id).not.toBe(b.id)
@@ -68,7 +68,7 @@ describe('domainEventsFromTransition', () => {
     ]
 
     const result = domainEventsFromTransition(eventsToEmit, {
-      entityId: TEST_ORG,
+      orgId: TEST_ORG,
       actorId: TEST_ACTOR,
       correlationId: 'corr-003',
     })
@@ -76,13 +76,13 @@ describe('domainEventsFromTransition', () => {
     expect(result).toHaveLength(2)
     expect(result[0]!.type).toBe('order.confirmed')
     expect(result[1]!.type).toBe('invoice.create_from_order')
-    expect(result[0]!.metadata.entityId).toBe(TEST_ORG)
+    expect(result[0]!.metadata.orgId).toBe(TEST_ORG)
     expect(result[0]!.metadata.correlationId).toBe('corr-003')
   })
 
   it('returns empty array for empty events', () => {
     expect(domainEventsFromTransition([], {
-      entityId: TEST_ORG,
+      orgId: TEST_ORG,
       actorId: TEST_ACTOR,
       correlationId: 'c',
     })).toEqual([])

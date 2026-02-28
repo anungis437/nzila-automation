@@ -41,7 +41,7 @@ export async function listReleases(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id, metadata->>'title' as title,
+        org_id as id, metadata->>'title' as title,
         metadata->>'status' as status,
         metadata->>'type' as type,
         metadata->>'trackCount' as "trackCount",
@@ -50,13 +50,13 @@ export async function listReleases(opts?: {
         metadata->>'upc' as upc,
         created_at as "createdAt"
       FROM audit_log WHERE (action = 'release.created' OR action = 'release.published')
-      AND org_id = ${ctx.entityId}
+      AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: Release[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'release.%' AND org_id = ${ctx.entityId}`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'release.%' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -89,14 +89,14 @@ export async function createRelease(data: {
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('release.created', ${ctx.actorId}, 'release', ${releaseId}, ${ctx.entityId},
+      VALUES ('release.created', ${ctx.actorId}, 'release', ${releaseId}, ${ctx.orgId},
         ${JSON.stringify({ ...data, status: ReleaseStatus.DRAFT, id: releaseId })}::jsonb)`,
     )
 
     const auditEvent = buildZongaAuditEvent({
       action: ZongaAuditAction.RELEASE_PUBLISH,
       entityType: ZongaEntityType.RELEASE,
-      entityId: releaseId,
+      orgId: releaseId,
       actorId: ctx.actorId,
       targetId: releaseId,
       metadata: { title: data.title, type: data.type },
@@ -119,14 +119,14 @@ export async function publishRelease(
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('release.published', ${ctx.actorId}, 'release', ${releaseId}, ${ctx.entityId},
+      VALUES ('release.published', ${ctx.actorId}, 'release', ${releaseId}, ${ctx.orgId},
         ${JSON.stringify({ status: ReleaseStatus.RELEASED, publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
     const auditEvent = buildZongaAuditEvent({
       action: ZongaAuditAction.RELEASE_PUBLISH,
       entityType: ZongaEntityType.RELEASE,
-      entityId: releaseId,
+      orgId: releaseId,
       actorId: ctx.actorId,
       targetId: releaseId,
     })
@@ -142,7 +142,7 @@ export async function publishRelease(
 
     const pack = buildEvidencePackFromAction({
       actionType: 'RELEASE_PUBLISHED',
-      entityId: releaseId,
+      orgId: releaseId,
       executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
@@ -172,12 +172,12 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
   try {
     const [streams] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream' AND org_id = ${ctx.entityId}`,
+      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [downloads] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'download' AND org_id = ${ctx.entityId}`,
+      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'download' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const topAssets = (await platformDb.execute(
@@ -186,7 +186,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
         COALESCE(metadata->>'assetTitle', metadata->>'assetId') as title,
         COUNT(*) as streams
       FROM audit_log
-      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream' AND org_id = ${ctx.entityId}
+      WHERE action = 'revenue.recorded' AND metadata->>'type' = 'stream' AND org_id = ${ctx.orgId}
       GROUP BY metadata->>'assetId', COALESCE(metadata->>'assetTitle', metadata->>'assetId')
       ORDER BY streams DESC LIMIT 10`,
     )) as unknown as { rows: Array<{ assetId: string; title: string; streams: number }> }
@@ -195,7 +195,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
       sql`SELECT
         TO_CHAR(created_at, 'YYYY-MM') as month,
         COALESCE(SUM(CAST(metadata->>'amount' AS NUMERIC)), 0) as amount
-      FROM audit_log WHERE action = 'revenue.recorded' AND org_id = ${ctx.entityId}
+      FROM audit_log WHERE action = 'revenue.recorded' AND org_id = ${ctx.orgId}
       GROUP BY TO_CHAR(created_at, 'YYYY-MM')
       ORDER BY month DESC LIMIT 12`,
     )) as unknown as { rows: Array<{ month: string; amount: number }> }

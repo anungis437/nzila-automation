@@ -17,7 +17,7 @@ import type { StripeReportType } from './types'
 
 // Re-export compatible input type
 export interface StripeEvidencePackInput {
-  entityId: string
+  orgId: string
   startDate: string // YYYY-MM-DD
   endDate: string // YYYY-MM-DD
   periodLabel: string // e.g. "2025-03"
@@ -44,10 +44,10 @@ export interface StripeEvidenceArtifact {
  * import { collectStripeEvidenceArtifacts } from '@nzila/payments-stripe/evidence'
  * import { processEvidencePack } from '@nzila/os-core/evidence/generate-evidence-index'
  *
- * const artifacts = await collectStripeEvidenceArtifacts({ entityId, startDate, endDate, periodLabel, createdBy })
+ * const artifacts = await collectStripeEvidenceArtifacts({ orgId, startDate, endDate, periodLabel, createdBy })
  * await processEvidencePack({
  *   packId: `STRIPE-${periodLabel}`,
- *   entityId,
+ *   orgId,
  *   controlFamily: 'integrity',
  *   eventType: 'period-close',
  *   eventId: `stripe-${periodLabel}`,
@@ -62,7 +62,7 @@ export interface StripeEvidenceArtifact {
 export async function collectStripeEvidenceArtifacts(
   input: StripeEvidencePackInput,
 ): Promise<StripeEvidenceArtifact[]> {
-  const { entityId, startDate, endDate, periodLabel, createdBy } = input
+  const { orgId, startDate, endDate, periodLabel, createdBy } = input
 
   // Fetch stripe reports for the date range
   const reports = await db
@@ -77,7 +77,7 @@ export async function collectStripeEvidenceArtifacts(
     .from(stripeReports)
     .where(
       and(
-        eq(stripeReports.entityId, entityId),
+        eq(stripeReports.orgId, orgId),
         gte(stripeReports.startDate, startDate),
         lte(stripeReports.endDate, endDate),
       ),
@@ -135,7 +135,7 @@ export async function buildStripeEvidencePackRequest(
   input: StripeEvidencePackInput,
 ): Promise<{
   packId: string
-  entityId: string
+  orgId: string
   controlFamily: 'integrity'
   eventType: 'period-close'
   eventId: string
@@ -153,7 +153,7 @@ export async function buildStripeEvidencePackRequest(
 
   return {
     packId: `STRIPE-${input.periodLabel}`,
-    entityId: input.entityId,
+    orgId: input.orgId,
     controlFamily: 'integrity',
     eventType: 'period-close',
     eventId: `stripe-period-close-${input.periodLabel}`,

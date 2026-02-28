@@ -20,7 +20,7 @@ export async function listEvidenceArtifacts(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -41,7 +41,7 @@ export async function getEvidenceArtifactById(
   ctx: CommerceReadContext,
   artifactId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceEvidenceArtifacts,
     eq(commerceEvidenceArtifacts.id, artifactId),
@@ -54,7 +54,7 @@ export async function listEvidenceByTarget(
   targetEntityType: string,
   targetEntityId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   return db.select(
     commerceEvidenceArtifacts,
     and(
@@ -78,7 +78,7 @@ export async function createEvidenceArtifact(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

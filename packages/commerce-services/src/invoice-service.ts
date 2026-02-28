@@ -55,7 +55,7 @@ export interface InvoiceLineInput {
 
 export interface InvoiceEntity {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly ref: string
   readonly orderId: string
   readonly customerId: string
@@ -109,7 +109,7 @@ export interface InvoiceRepository {
 export function createInvoiceService(repo: InvoiceRepository) {
   function buildTransitionCtx(ctx: OrgContext): TransitionContext {
     return {
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       meta: {},
@@ -126,7 +126,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
       invoice.status,
       targetStatus,
       buildTransitionCtx(ctx),
-      invoice.entityId,
+      invoice.orgId,
       invoice,
     )
   }
@@ -144,7 +144,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
       : null
 
     const invoice = await repo.createInvoice(ctx, {
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       ref,
       orderId: input.orderId,
       customerId: input.customerId,
@@ -172,7 +172,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildActionAuditEntry({
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -198,7 +198,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -222,7 +222,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -247,7 +247,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -272,7 +272,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -296,7 +296,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -321,7 +321,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -346,7 +346,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -372,7 +372,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -398,7 +398,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -423,7 +423,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.INVOICE,
@@ -441,7 +441,7 @@ export function createInvoiceService(repo: InvoiceRepository) {
     invoice: InvoiceEntity,
   ): readonly string[] {
     const tctx = buildTransitionCtx(ctx)
-    return getAvailableTransitions(invoiceMachine, invoice.status, tctx, invoice.entityId, invoice)
+    return getAvailableTransitions(invoiceMachine, invoice.status, tctx, invoice.orgId, invoice)
       .map((t) => t.to)
   }
 

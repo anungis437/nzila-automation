@@ -249,7 +249,7 @@ describe('Data Compatibility Contract (INV-06d)', () => {
     const content = readFileSync(schemaIndex, 'utf-8')
 
     // Key schema modules that must be exported (must match actual barrel structure)
-    const requiredModules = ['entities', 'payments', 'finance']
+    const requiredModules = ['orgs', 'payments', 'finance']
     for (const mod of requiredModules) {
       expect(
         content.toLowerCase(),

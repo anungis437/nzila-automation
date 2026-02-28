@@ -53,7 +53,7 @@ export async function listCommissions(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'dealId' as "dealId",
         metadata->>'accountName' as "accountName",
         metadata->>'partnerId' as "partnerId",
@@ -135,7 +135,7 @@ export async function createCommission(data: {
     const commissionId = crypto.randomUUID()
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('commission.created', ${userId}, 'commission', ${commissionId},
         ${JSON.stringify({
           dealId: data.dealId,
@@ -154,7 +154,7 @@ export async function createCommission(data: {
     await buildPartnerEvidencePack({
       actionId: crypto.randomUUID(),
       actionType: 'COMMISSION_CREATED',
-      entityId: commissionId,
+      orgId: commissionId,
       executedBy: userId,
     })
 
@@ -176,7 +176,7 @@ export async function approveCommissionPayout(
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('commission.updated', ${userId}, 'commission', ${commissionId},
         ${JSON.stringify({ status: 'paid', paidAt: new Date().toISOString() })}::jsonb)`,
     )

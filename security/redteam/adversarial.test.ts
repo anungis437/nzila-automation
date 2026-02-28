@@ -295,7 +295,7 @@ describe('RED-TEAM-007 — Evidence pack tampering detection', () => {
     } = require(join(ROOT, 'packages', 'os-core', 'src', 'evidence', 'seal.ts'))
 
     const pack = {
-      entityId: 'test-entity',
+      orgId: 'test-entity',
       artifacts: [
         { sha256: 'a'.repeat(64), name: 'legit.json' },
       ],
@@ -317,7 +317,7 @@ describe('RED-TEAM-007 — Evidence pack tampering detection', () => {
     const { verifySeal } = require(
       join(ROOT, 'packages', 'os-core', 'src', 'evidence', 'seal.ts'),
     )
-    const result = verifySeal({ entityId: 'test', artifacts: [] })
+    const result = verifySeal({ orgId: 'test', artifacts: [] })
     expect(result.valid).toBe(false)
     expect(result.errors.length).toBeGreaterThan(0)
   })

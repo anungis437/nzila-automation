@@ -390,8 +390,8 @@ describe('STACK_POLYGLOT_003 — Elasticsearch indices must use shared index wit
       if (!/\.search\s*\(/.test(content)) continue
       if (!/elasticsearch|@elastic|@nzila\/search/i.test(content)) continue
 
-      // If file calls .search() but never references orgId/entityId, flag it
-      if (!/orgId|entityId|org_id|entity_id/i.test(content)) {
+      // If file calls .search() but never references orgId/orgId, flag it
+      if (!/orgId|orgId|org_id|org_id/i.test(content)) {
         violations.push({
           ruleId: 'STACK_POLYGLOT_003',
           filePath: rel,
@@ -417,7 +417,7 @@ describe('STACK_POLYGLOT_004 — Embedding writes must go through ai_embeddings 
     const content = readContent(schemaFile)
     expect(content).toContain('ai_embeddings')
     expect(content).toContain('embedding')
-    expect(content).toContain('entity_id')
+    expect(content).toContain('org_id')
     expect(content).toContain('chunk_text')
   })
 

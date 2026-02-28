@@ -9,9 +9,9 @@
  *   import { recordAuditEvent, verifyEntityAuditChain } from '@/lib/audit-db'
  *
  *   await recordAuditEvent({
- *     entityId: '...',
+ *     orgId: '...',
  *     actorClerkUserId: userId,
- *     actorRole: 'entity_admin',
+ *     actorRole: 'org_admin',
  *     action: 'governance_action.execute',
  *     targetType: 'governance_action',
  *     targetId: actionId,
@@ -31,7 +31,7 @@ const logger = createLogger('audit-db')
 // ── Types ───────────────────────────────────────────────────────────────────
 
 export interface RecordAuditEventInput {
-  entityId: string
+  orgId: string
   actorClerkUserId: string
   actorRole?: string
   action: string
@@ -43,7 +43,7 @@ export interface RecordAuditEventInput {
 
 export interface AuditEventRow {
   id: string
-  entityId: string
+  orgId: string
   actorClerkUserId: string
   actorRole: string | null
   action: string
@@ -86,8 +86,8 @@ export const AUDIT_ACTIONS = {
   DOCUMENT_ACCESS: 'document.access',
 
   // Entity admin
-  ENTITY_CREATE: 'entity.create',
-  ENTITY_UPDATE: 'entity.update',
+  ORG_CREATE: 'org.create',
+  ORG_UPDATE: 'org.update',
   MEMBER_ADD: 'member.add',
   MEMBER_REMOVE: 'member.remove',
   MEMBER_ROLE_CHANGE: 'member.role_change',
@@ -126,7 +126,7 @@ export async function recordAuditEvent(
   const [latest] = await platformDb
     .select({ hash: auditEvents.hash })
     .from(auditEvents)
-    .where(eq(auditEvents.entityId, input.entityId))
+    .where(eq(auditEvents.orgId, input.orgId))
     .orderBy(desc(auditEvents.createdAt))
     .limit(1)
 
@@ -134,7 +134,7 @@ export async function recordAuditEvent(
 
   // 2. Build the hashable payload (deterministic subset)
   const payload = {
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.actorClerkUserId,
     action: input.action,
     targetType: input.targetType,
@@ -149,7 +149,7 @@ export async function recordAuditEvent(
   const [row] = await platformDb
     .insert(auditEvents)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       actorClerkUserId: input.actorClerkUserId,
       actorRole: input.actorRole ?? null,
       action: input.action,
@@ -166,7 +166,7 @@ export async function recordAuditEvent(
   logger.info('[AUDIT]', {
     detail: JSON.stringify({
       id: row.id,
-      entityId: input.entityId,
+      orgId: input.orgId,
       action: input.action,
       targetType: input.targetType,
       targetId: input.targetId,
@@ -193,12 +193,12 @@ export interface ChainVerificationResult {
  * to confirm no tampering or gaps.
  */
 export async function verifyEntityAuditChain(
-  entityId: string,
+  orgId: string,
 ): Promise<ChainVerificationResult> {
   const events = await platformDb
     .select()
     .from(auditEvents)
-    .where(eq(auditEvents.entityId, entityId))
+    .where(eq(auditEvents.orgId, orgId))
     .orderBy(auditEvents.createdAt)
 
   if (events.length === 0) {
@@ -221,7 +221,7 @@ export async function verifyEntityAuditChain(
 
     // Recompute hash
     const payload = {
-      entityId: event.entityId,
+      orgId: event.orgId,
       actorClerkUserId: event.actorClerkUserId,
       action: event.action,
       targetType: event.targetType,
@@ -249,14 +249,14 @@ export async function verifyEntityAuditChain(
  * Get audit events for a specific target (e.g. all events for a governance action).
  */
 export async function getAuditTrailForTarget(
-  entityId: string,
+  orgId: string,
   _targetType: string,
   _targetId: string,
 ): Promise<AuditEventRow[]> {
   return platformDb
     .select()
     .from(auditEvents)
-    .where(eq(auditEvents.entityId, entityId))
+    .where(eq(auditEvents.orgId, orgId))
     .orderBy(auditEvents.createdAt) as unknown as Promise<AuditEventRow[]>
   // NOTE: drizzle doesn't chain .where() with AND automatically for
   // multiple calls — use `and()` for compound filters when needed.
@@ -268,11 +268,11 @@ export async function getAuditTrailForTarget(
  * Export audit events as a JSON buffer (for evidence pack artifacts).
  */
 export async function exportAuditTrailBuffer(
-  entityId: string,
+  orgId: string,
   targetType: string,
   targetId: string,
 ): Promise<Buffer> {
-  const events = await getAuditTrailForTarget(entityId, targetType, targetId)
+  const events = await getAuditTrailForTarget(orgId, targetType, targetId)
   // Filter to matching target
   const filtered = events.filter(
     (e) => e.targetType === targetType && e.targetId === targetId,

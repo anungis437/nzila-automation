@@ -32,8 +32,8 @@ Section 2 ❌ items → **Controlled rollout only**.
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
 | Cross-Org READ attempt returns 403/404 | ✅ | Static: `org-isolation.test.ts` L51 (9/9); `org-isolation-runtime.test.ts` (9/9) — all routes have auth guards; body injection blocked |
-| Cross-Org WRITE attempt returns 403 | ✅ | `authorizeEntityAccess()` in `@nzila/os-core/policy/authorize.ts`; enforced on all mutation routes |
-| Forged `org_id` in payload is ignored | ✅ | `org-isolation.test.ts` L88 — 0 routes read entityId from body without auth |
+| Cross-Org WRITE attempt returns 403 | ✅ | `authorizeOrgAccess()` in `@nzila/os-core/policy/authorize.ts`; enforced on all mutation routes |
+| Forged `org_id` in payload is ignored | ✅ | `org-isolation.test.ts` L88 — 0 routes read orgId from body without auth |
 | Missing Org context rejected (401) | ✅ | `clerkMiddleware` + `auth.protect()` in both console and partners middleware |
 | Enumeration protection (no object existence leakage) | ✅ | `org-isolation-runtime.test.ts` — error response leak test |
 | Automated cross-Org regression tests run in CI | ✅ | `contract-tests` job runs 9 org-isolation tests + 9 runtime tests |
@@ -48,8 +48,8 @@ Section 2 ❌ items → **Controlled rollout only**.
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
 | Org Admin cannot perform Platform Admin actions | ✅ | `privilege-escalation.test.ts` — 17 tests; `ConsoleRole.ADMIN` cannot reach `SUPER_ADMIN`-scoped actions |
-| Users cannot self-elevate roles | ✅ | `org-isolation.test.ts` L88 — body entityId injection blocked; `ROLE_HIERARCHY` centralized |
-| Role changes require proper permission | ✅ | `authorize()` in `@nzila/os-core/policy/authorize.ts`; `authorizeEntityAccess()` enforced |
+| Users cannot self-elevate roles | ✅ | `org-isolation.test.ts` L88 — body orgId injection blocked; `ROLE_HIERARCHY` centralized |
+| Role changes require proper permission | ✅ | `authorize()` in `@nzila/os-core/policy/authorize.ts`; `authorizeOrgAccess()` enforced |
 | Escalation attempts generate audit events | ✅ | `AUTHORIZATION_DENIED: 'authorization.denied'` in `AUDIT_ACTIONS` taxonomy |
 | Regression tests exist and run in CI | ✅ | `privilege-escalation.test.ts` (17/17) + `authz-regression.test.ts` (7/7) in CI |
 
@@ -67,7 +67,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 | Org settings changes audited (`ENTITY_UPDATE`) | ✅ | `AUDIT_ACTIONS.ENTITY_UPDATE: 'entity.update'` in taxonomy |
 | Data export audited (`DATA_EXPORT`) | ⏳ | **Not in taxonomy** → **REM-04** (sprint Wed, GA-blocking) |
 | Auth/security configuration audited | 🟡 | `AUTH_CONFIG_CHANGE` not yet in taxonomy → **REM-10** (post-launch, risk accepted) |
-| Audit events include actor, org, timestamp, object, severity | ✅ | `audit_events` schema: `actorId`, `entityId`, `createdAt`, `objectType`, `severity` columns confirmed |
+| Audit events include actor, org, timestamp, object, severity | ✅ | `audit_events` schema: `actorId`, `orgId`, `createdAt`, `objectType`, `severity` columns confirmed |
 | Audit integrity tests exist and run in CI | ✅ | `audit-immutability.test.ts` — 7/7 pass; `ci.yml` `contract-tests` job |
 
 > **Note on REM-11 vs GA-blocking:** The application-layer hash chain (`computeEntryHash`, `verifyEntityAuditChain`) provides strong integrity guarantees for external audit verification. DB-level trigger enforcement is an additional defense-in-depth layer. However, enterprise compliance reviewers (SOC 2 Type II, ISO 27001) will specifically ask whether a DBA can silently delete audit rows. Until REM-11 is merged, the honest answer is **yes** — which makes this a hard blocker for regulated enterprise customers.
@@ -113,7 +113,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 |------|--------|--------------------|
 | Structured JSON logging everywhere | ✅ | `packages/os-core/src/telemetry/logger.ts` — `JSON.stringify(entry)` per log entry |
 | Correlation ID attached to every request | ✅ | `requestContext.ts` — `AsyncLocalStorage<RequestContext>`, `requestId: randomUUID()` or `x-request-id` header |
-| Org ID included in log context | ❌ | `RequestContext` interface has `userId`, `requestId`, `traceId` but **no `orgId` / `entityId` field**. Org context is not automatically injected into every log entry. |
+| Org ID included in log context | ❌ | `RequestContext` interface has `userId`, `requestId`, `traceId` but **no `orgId` / `orgId` field**. Org context is not automatically injected into every log entry. |
 | Redaction rules active (no token/PII leakage) | ✅ | `logger.ts` `REDACT_KEYS` Set: password, token, secret, accessToken, refreshToken, idToken, email, bearerToken |
 | OTel baseline active | ✅ | `packages/os-core/src/telemetry/otel.ts` — `initOtel()`, NodeSDK + OTLP exporter (OTLP_ENDPOINT env-gated) |
 | `/health` endpoint present | ⏳ | `apps/orchestrator-api` ✅; console + partners ❌ → **REM-05** (sprint Tue) |

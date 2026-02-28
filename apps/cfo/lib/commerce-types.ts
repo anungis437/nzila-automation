@@ -2,7 +2,7 @@
  * Commerce domain types — CFO app.
  *
  * Re-exports @nzila/commerce-core types used by the CFO financial dashboards:
- * invoices, payments, credit notes, disputes, and reconciliation entities.
+ * invoices, payments, credit notes, disputes, and reconciliation orgs.
  */
 export type {
   Invoice,

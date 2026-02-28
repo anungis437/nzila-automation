@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/24/outline'
 
 interface AnalyticsData {
-  entities: number
+  orgs: number
   uniqueShareholders: { count: number; precision: number; standardError: number }
   uniquePeople: { count: number; precision: number; standardError: number }
   totalDocuments: number
@@ -63,7 +63,7 @@ export default function AnalyticsPage() {
   }
 
   const stats = [
-    { label: 'Entities', value: data.entities.toString(), icon: BuildingOffice2Icon },
+    { label: 'Entities', value: data.orgs.toString(), icon: BuildingOffice2Icon },
     {
       label: 'Unique Shareholders',
       value: data.uniqueShareholders.count.toString(),
@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
         <p className="font-medium text-gray-700 text-sm">Probabilistic Cardinality Estimation</p>
         <p className="text-xs mt-1 max-w-md mx-auto">
           Shareholder and people counts use HyperLogLog (Murmur3-based) for
-          O(1) space-efficient cardinality estimation across entities.
+          O(1) space-efficient cardinality estimation across orgs.
           Standard error: ~1.04/√m where m is the register count.
         </p>
       </div>

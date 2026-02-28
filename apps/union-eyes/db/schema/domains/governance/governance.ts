@@ -171,7 +171,7 @@ export const governanceEvents = pgTable("governance_events", {
   eventType: text("event_type").notNull(), // 'golden_share_issued' | 'reserved_matter_vote' | 'mission_audit' | 'sunset_triggered' | 'share_converted'
   eventDate: timestamp("event_date").notNull(),
   
-  // Related entities
+  // Related orgs
   goldenShareId: uuid("golden_share_id"),
   reservedMatterVoteId: uuid("reserved_matter_vote_id"),
   missionAuditId: uuid("mission_audit_id"),

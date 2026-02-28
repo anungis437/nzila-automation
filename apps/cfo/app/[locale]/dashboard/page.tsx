@@ -32,9 +32,9 @@ async function getDashboardStats(): Promise<DashboardStats> {
 
     // Parallel queries for dashboard metrics
     const [clientsResult, reportsResult, teamResult] = await Promise.allSettled([
-      db.execute(sql`SELECT COUNT(*) as count FROM entities WHERE status = 'active'`),
+      db.execute(sql`SELECT COUNT(*) as count FROM orgs WHERE status = 'active'`),
       db.execute(sql`SELECT COUNT(*) as count FROM audit_log WHERE action LIKE 'report.%'`),
-      db.execute(sql`SELECT COUNT(*) as count FROM entity_members WHERE status = 'active'`),
+      db.execute(sql`SELECT COUNT(*) as count FROM org_members WHERE status = 'active'`),
     ])
 
     return {

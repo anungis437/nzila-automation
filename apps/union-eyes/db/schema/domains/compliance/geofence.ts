@@ -94,7 +94,7 @@ export const geofences = pgTable("geofences", {
   centerLongitude: decimal("center_longitude", { precision: 11, scale: 8 }).notNull(),
   radiusMeters: decimal("radius_meters", { precision: 10, scale: 2 }).notNull(), // Geofence radius
   
-  // Associated entities
+  // Associated orgs
   strikeId: uuid("strike_id"),
   unionLocalId: uuid("union_local_id"),
   

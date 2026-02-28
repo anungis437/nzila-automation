@@ -71,7 +71,7 @@ export function evaluateFinanceGovernanceRequirements(
     )
   }
 
-  // CO-17 warning for QC entities
+  // CO-17 warning for QC orgs
   if (ctx.province === 'QC') {
     warnings.push('Quebec entity — CO-17 filing artifact required in addition to T2.')
   }

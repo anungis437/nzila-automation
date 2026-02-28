@@ -32,7 +32,7 @@ describe('calculateCorporateDeadlines', () => {
     expect(t2Payment!.dueDate).toBe('2026-02-28')
   })
 
-  it('generates CO-17 only for Quebec entities', () => {
+  it('generates CO-17 only for Quebec orgs', () => {
     const onDeadlines = calculateCorporateDeadlines('12-31', 2025, 'ON')
     expect(onDeadlines.find((d) => d.label.includes('CO-17'))).toBeUndefined()
 
@@ -78,7 +78,7 @@ describe('calculateCorporateDeadlines', () => {
     expect(gst!.dueDate).toBe('2026-03-31')
   })
 
-  it('generates RL-3 for Quebec entities', () => {
+  it('generates RL-3 for Quebec orgs', () => {
     const qcDeadlines = calculateCorporateDeadlines('12-31', 2025, 'QC')
     expect(qcDeadlines.find((d) => d.label.includes('RL-3'))).toBeDefined()
     const onDeadlines = calculateCorporateDeadlines('12-31', 2025, 'ON')

@@ -12,7 +12,7 @@ import {
 interface PeriodDetail {
   period: {
     id: string
-    entityId: string
+    orgId: string
     accountId: string
     taxType: string
     startDate: string

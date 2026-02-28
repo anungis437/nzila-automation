@@ -27,7 +27,7 @@ export interface ChatMessage {
 // ── Request types ───────────────────────────────────────────────────────────
 
 export interface GenerateOptions {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   promptKey?: string
@@ -39,7 +39,7 @@ export interface GenerateOptions {
 }
 
 export interface EmbedOptions {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   input: string | string[]
@@ -47,7 +47,7 @@ export interface EmbedOptions {
 }
 
 export interface ExtractOptions {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   promptKey: string
@@ -59,7 +59,7 @@ export interface ExtractOptions {
 }
 
 export interface RagQueryOptions {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   query: string
@@ -69,7 +69,7 @@ export interface RagQueryOptions {
 }
 
 export interface ActionProposeOptions {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   actionType: string

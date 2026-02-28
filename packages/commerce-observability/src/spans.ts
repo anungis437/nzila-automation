@@ -16,7 +16,7 @@
  *   commerce.saga       → saga name
  *   commerce.step       → saga step name
  *   commerce.gate       → governance gate name
- *   nzila.entity_id     → org identifier (from os-core convention)
+ *   nzila.org_id     → org identifier (from os-core convention)
  *
  * @module @nzila/commerce-observability/spans
  */
@@ -35,7 +35,7 @@ export const COMMERCE_SPAN_ATTR = {
   STEP_NAME: 'commerce.step',
   GATE_NAME: 'commerce.gate',
   GATE_PASSED: 'commerce.gate_passed',
-  ENTITY_ID: 'nzila.entity_id',
+  ENTITY_ID: 'nzila.org_id',
   ACTOR_ID: 'nzila.actor_id',
   EVIDENCE_PACK_ID: 'commerce.evidence_pack_id',
   CONTROL_FAMILY: 'commerce.control_family',
@@ -81,7 +81,7 @@ export interface SagaSpanAttributes {
  * @param machine - Machine type (quote, order, invoice, fulfillment)
  * @param from    - Source state
  * @param to      - Target state
- * @param orgId   - Org identifier (entityId)
+ * @param orgId   - Org identifier (orgId)
  */
 export function buildTransitionSpanAttrs(
   machine: string,

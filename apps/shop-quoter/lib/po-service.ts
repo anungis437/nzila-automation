@@ -40,7 +40,7 @@ export interface POLine {
 }
 
 export interface CreatePOInput {
-  entityId: string
+  orgId: string
   supplierId: string
   lines: POLine[]
   expectedDeliveryDate?: Date
@@ -72,7 +72,7 @@ export interface POWithLines {
 }
 
 export interface POListFilter {
-  entityId: string
+  orgId: string
   status?: POStatus | POStatus[]
   supplierId?: string
   fromDate?: Date
@@ -84,7 +84,7 @@ export interface POListFilter {
 // Reference Number Generation
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function generatePORef(entityId: string): Promise<string> {
+async function generatePORef(orgId: string): Promise<string> {
   const year = new Date().getFullYear()
   const prefix = `PO-${year}-`
 
@@ -94,7 +94,7 @@ async function generatePORef(entityId: string): Promise<string> {
     .from(commercePurchaseOrders)
     .where(
       and(
-        eq(commercePurchaseOrders.entityId, entityId),
+        eq(commercePurchaseOrders.orgId, orgId),
         sql`${commercePurchaseOrders.ref} LIKE ${prefix + '%'}`,
       ),
     )
@@ -130,7 +130,7 @@ function calculateLineTotals(lines: POLine[]): { subtotal: number; lineItems: Ar
 
 export async function createPurchaseOrder(input: CreatePOInput): Promise<POWithLines> {
   const {
-    entityId,
+    orgId,
     supplierId,
     lines,
     expectedDeliveryDate,
@@ -140,11 +140,11 @@ export async function createPurchaseOrder(input: CreatePOInput): Promise<POWithL
     createdBy,
   } = input
 
-  const ref = await generatePORef(entityId)
+  const ref = await generatePORef(orgId)
   const { subtotal, lineItems } = calculateLineTotals(lines)
   const total = subtotal + shippingCost
 
-  logger.info('Creating purchase order', { entityId, ref, supplierId, lineCount: lines.length })
+  logger.info('Creating purchase order', { orgId, ref, supplierId, lineCount: lines.length })
 
   // Create PO in transaction
   const result = await db.transaction(async (tx) => {
@@ -152,7 +152,7 @@ export async function createPurchaseOrder(input: CreatePOInput): Promise<POWithL
     const [po] = await tx
       .insert(commercePurchaseOrders)
       .values({
-        entityId,
+        orgId,
         supplierId,
         ref,
         status: 'draft',
@@ -172,7 +172,7 @@ export async function createPurchaseOrder(input: CreatePOInput): Promise<POWithL
       .insert(commercePurchaseOrderLines)
       .values(
         lineItems.map((line, index) => ({
-          entityId,
+          orgId,
           purchaseOrderId: po.id,
           productId: line.productId ?? null,
           description: line.description,
@@ -226,7 +226,7 @@ export async function getPurchaseOrder(poId: string): Promise<POWithLines | null
 }
 
 export async function listPurchaseOrders(filter: POListFilter): Promise<POWithLines[]> {
-  const conditions = [eq(commercePurchaseOrders.entityId, filter.entityId)]
+  const conditions = [eq(commercePurchaseOrders.orgId, filter.orgId)]
 
   if (filter.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]
@@ -304,7 +304,7 @@ export async function updatePurchaseOrder(poId: string, input: UpdatePOInput): P
         .insert(commercePurchaseOrderLines)
         .values(
           lineItems.map((line, index) => ({
-            entityId: existing.po.entityId,
+            orgId: existing.po.orgId,
             purchaseOrderId: poId,
             productId: line.productId ?? null,
             description: line.description,
@@ -459,7 +459,7 @@ export async function receivePOLine(input: ReceiveLineInput): Promise<typeof com
         .from(commerceInventory)
         .where(
           and(
-            eq(commerceInventory.entityId, line.entityId),
+            eq(commerceInventory.orgId, line.orgId),
             eq(commerceInventory.productId, line.productId),
           ),
         )
@@ -469,7 +469,7 @@ export async function receivePOLine(input: ReceiveLineInput): Promise<typeof com
         [inventory] = await tx
           .insert(commerceInventory)
           .values({
-            entityId: line.entityId,
+            orgId: line.orgId,
             productId: line.productId,
             currentStock: 0,
             allocatedStock: 0,
@@ -499,7 +499,7 @@ export async function receivePOLine(input: ReceiveLineInput): Promise<typeof com
 
       // Record stock movement
       await tx.insert(commerceStockMovements).values({
-        entityId: line.entityId,
+        orgId: line.orgId,
         inventoryId: inventory.id,
         productId: line.productId,
         movementType: 'receipt',
@@ -628,8 +628,8 @@ export interface POSummary {
   topSuppliers: Array<{ supplierId: string; supplierName: string; poCount: number; totalValue: number }>
 }
 
-export async function getPOSummary(entityId: string, fromDate?: Date, toDate?: Date): Promise<POSummary> {
-  const conditions = [eq(commercePurchaseOrders.entityId, entityId)]
+export async function getPOSummary(orgId: string, fromDate?: Date, toDate?: Date): Promise<POSummary> {
+  const conditions = [eq(commercePurchaseOrders.orgId, orgId)]
 
   if (fromDate) {
     conditions.push(gte(commercePurchaseOrders.createdAt, fromDate))

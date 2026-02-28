@@ -45,7 +45,7 @@ export interface QboClient {
   /** Create an entity. Returns the created object. */
   create<T>(entity: string, body: unknown): Promise<T>
 
-  /** Full-update an entity (sparse_update not supported on all entities). */
+  /** Full-update an entity (sparse_update not supported on all orgs). */
   update<T>(entity: string, body: object & { Id: string; SyncToken: string }): Promise<T>
 
   /** Fetch a financial report (ProfitAndLoss, BalanceSheet, CashFlow, etc.). */

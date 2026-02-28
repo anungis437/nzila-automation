@@ -36,7 +36,7 @@ interface ActionResult<T> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function createSupplierAction(
-  input: Omit<CreateSupplierInput, 'entityId'>,
+  input: Omit<CreateSupplierInput, 'orgId'>,
 ): Promise<ActionResult<typeof commerceSuppliers.$inferSelect>> {
   const { userId } = await auth()
   if (!userId) {
@@ -44,10 +44,10 @@ export async function createSupplierAction(
   }
 
   try {
-    // In production, get entityId from user's organization
-    const entityId = userId // Replace with actual entity lookup
+    // In production, get orgId from user's organization
+    const orgId = userId // Replace with actual entity lookup
 
-    const supplier = await createSupplier({ ...input, entityId })
+    const supplier = await createSupplier({ ...input, orgId })
 
     revalidatePath('/suppliers')
 
@@ -94,9 +94,9 @@ export async function listSuppliersAction(filter?: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const suppliers = await listSuppliers({ entityId, ...filter })
+    const suppliers = await listSuppliers({ orgId, ...filter })
 
     return { success: true, data: suppliers }
   } catch (error) {
@@ -162,7 +162,7 @@ export async function syncSupplierToZohoAction(_supplierId: string): Promise<Act
 
   try {
     // Note: In production, initialize ZohoBooksClient with proper credentials
-    // const booksClient = new ZohoBooksClient(entityId, accessToken, organizationId)
+    // const booksClient = new ZohoBooksClient(orgId, accessToken, organizationId)
     // const zohoVendorId = await syncSupplierToZoho(supplierId, booksClient)
 
     return { success: false, error: 'Zoho sync not configured. Please connect your Zoho account.' }

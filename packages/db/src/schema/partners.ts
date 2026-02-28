@@ -119,12 +119,12 @@ export const partnerUsers = pgTable('partner_users', {
 export const partnerEntities = pgTable('partner_entities', {
   id: uuid('id').primaryKey().defaultRandom(),
   partnerId: uuid('partner_id').notNull().references(() => partners.id),
-  entityId: varchar('entity_id', { length: 255 }).notNull(),
+  orgId: varchar('org_id', { length: 255 }).notNull(),
   /** Which views/data sets the partner may access for this entity, e.g. ["ml:summary"] */
   allowedViews: jsonb('allowed_views').$type<string[]>().default([]).notNull(),
   /**
    * Optional sub-entity (subsidiary relationship).
-   * When set, this record grants the partner access to a subsidiary of entityId.
+   * When set, this record grants the partner access to a subsidiary of orgId.
    */
   subsidiaryId: varchar('subsidiary_id', { length: 255 }),
   /**

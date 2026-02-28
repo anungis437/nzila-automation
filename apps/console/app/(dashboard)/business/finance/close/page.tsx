@@ -14,7 +14,7 @@ interface Entity {
 
 interface ClosePeriod {
   id: string
-  entityId: string
+  orgId: string
   periodLabel: string
   periodType: string
   startDate: string
@@ -46,14 +46,14 @@ function periodTypeLabel(t: string) {
 }
 
 export default function CloseManagementPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
   const [periods, setPeriods] = useState<ClosePeriod[]>([])
   const [loading, setLoading] = useState(true)
   const [dataLoading, setDataLoading] = useState(false)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then((data: Entity[]) => {
         setEntities(data)
@@ -68,7 +68,7 @@ export default function CloseManagementPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show spinner immediately before async fetch
     setDataLoading(true)
 
-    fetch(`/api/finance/close?entityId=${selectedEntityId}`)
+    fetch(`/api/finance/close?orgId=${selectedEntityId}`)
       .then((r) => r.json())
       .then(setPeriods)
       .catch(() => {})
@@ -95,7 +95,7 @@ export default function CloseManagementPage() {
       </div>
 
       {/* Entity selector */}
-      {entities.length > 1 && (
+      {orgs.length > 1 && (
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">Entity</label>
           <select
@@ -104,7 +104,7 @@ export default function CloseManagementPage() {
             className="w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             aria-label="Select entity"
           >
-            {entities.map((e) => (
+            {orgs.map((e) => (
               <option key={e.id} value={e.id}>{e.legalName}</option>
             ))}
           </select>

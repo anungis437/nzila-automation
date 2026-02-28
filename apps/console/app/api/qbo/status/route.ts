@@ -2,15 +2,15 @@
 /**
  * API — QBO Connection Status + Disconnect
  *
- * GET    /api/qbo/status?entityId=...   → current connection info
- * DELETE /api/qbo/status?entityId=...   → revoke tokens + disconnect
+ * GET    /api/qbo/status?orgId=...   → current connection info
+ * DELETE /api/qbo/status?orgId=...   → revoke tokens + disconnect
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { platformDb } from '@nzila/db/platform'
 import { qboConnections, qboTokens } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { revokeToken } from '@nzila/qbo/oauth'
 import { createLogger } from '@nzila/os-core'
 
@@ -19,17 +19,17 @@ const logger = createLogger('qbo:status')
 // ── GET — connection status ───────────────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
-  const entityId = req.nextUrl.searchParams.get('entityId')
-  if (!entityId) {
-    return NextResponse.json({ error: 'entityId required' }, { status: 400 })
+  const orgId = req.nextUrl.searchParams.get('orgId')
+  if (!orgId) {
+    return NextResponse.json({ error: 'orgId required' }, { status: 400 })
   }
 
-  const access = await requireEntityAccess(entityId)
+  const access = await requireOrgAccess(orgId)
   if (!access.ok) return access.response
 
   const connection = await platformDb.query.qboConnections.findFirst({
     where: and(
-      eq(qboConnections.entityId, entityId),
+      eq(qboConnections.orgId, orgId),
       eq(qboConnections.isActive, true),
     ),
     orderBy: [desc(qboConnections.connectedAt)],
@@ -62,18 +62,18 @@ export async function GET(req: NextRequest) {
 // ── DELETE — disconnect ───────────────────────────────────────────────────────
 
 export async function DELETE(req: NextRequest) {
-  const entityIdResult = z.string().min(1).safeParse(req.nextUrl.searchParams.get('entityId'))
+  const entityIdResult = z.string().min(1).safeParse(req.nextUrl.searchParams.get('orgId'))
   if (!entityIdResult.success) {
-    return NextResponse.json({ error: 'entityId required' }, { status: 400 })
+    return NextResponse.json({ error: 'orgId required' }, { status: 400 })
   }
-  const entityId = entityIdResult.data
+  const orgId = entityIdResult.data
 
-  const access = await requireEntityAccess(entityId, { minRole: 'entity_admin' })
+  const access = await requireOrgAccess(orgId, { minRole: 'org_admin' })
   if (!access.ok) return access.response
 
   const connection = await platformDb.query.qboConnections.findFirst({
     where: and(
-      eq(qboConnections.entityId, entityId),
+      eq(qboConnections.orgId, orgId),
       eq(qboConnections.isActive, true),
     ),
   })

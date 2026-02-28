@@ -7,7 +7,7 @@
  * Features:
  * - OAuth2 authentication with automatic token refresh
  * - Full and incremental sync
- * - Invoice, payment, contact, and account entities
+ * - Invoice, payment, contact, and account orgs
  * - Webhook support for real-time updates
  * 
  * @see https://developer.xero.com/documentation/api/accounting/overview
@@ -132,9 +132,9 @@ export class XeroAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, message: `Syncing ${entity}` });
 

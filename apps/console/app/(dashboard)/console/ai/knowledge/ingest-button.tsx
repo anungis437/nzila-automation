@@ -3,11 +3,11 @@
 import { useState } from 'react'
 
 export function IngestButton({
-  entityId,
+  orgId,
   appKey = 'console',
   profileKey = 'knowledge',
 }: {
-  entityId: string
+  orgId: string
   appKey?: string
   profileKey?: string
 }) {
@@ -28,7 +28,7 @@ export function IngestButton({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          entityId,
+          orgId,
           appKey,
           profileKey,
           source: {

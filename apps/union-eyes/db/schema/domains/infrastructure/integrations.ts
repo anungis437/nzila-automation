@@ -98,7 +98,7 @@ export const integrationSyncLog = pgTable('integration_sync_log', {
   organizationId: uuid('organization_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
   provider: integrationProviderEnum('provider').notNull(),
   syncType: syncTypeEnum('sync_type').notNull(),
-  entities: text('entities').array(),
+  orgs: text('orgs').array(),
   status: syncStatusEnum('status').notNull(),
   recordsProcessed: integer('records_processed').default(0),
   recordsCreated: integer('records_created').default(0),
@@ -129,7 +129,7 @@ export const integrationSyncSchedules = pgTable('integration_sync_schedules', {
   organizationId: uuid('organization_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
   provider: integrationProviderEnum('provider').notNull(),
   syncType: syncTypeEnum('sync_type').notNull(),
-  entities: text('entities').array(),
+  orgs: text('orgs').array(),
   schedule: text('schedule').notNull(), // Cron expression
   enabled: boolean('enabled').default(true),
   lastRunAt: timestamp('last_run_at'),

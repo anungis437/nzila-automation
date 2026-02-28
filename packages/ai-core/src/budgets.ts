@@ -17,7 +17,7 @@ import { AiControlPlaneError } from './types'
  * Throws AiControlPlaneError if budget is blocked.
  */
 export async function checkBudget(opts: {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
 }): Promise<{
@@ -31,7 +31,7 @@ export async function checkBudget(opts: {
     .from(aiUsageBudgets)
     .where(
       and(
-        eq(aiUsageBudgets.entityId, opts.entityId),
+        eq(aiUsageBudgets.orgId, opts.orgId),
         eq(aiUsageBudgets.appKey, opts.appKey),
         eq(aiUsageBudgets.profileKey, opts.profileKey),
         eq(aiUsageBudgets.month, currentMonth),
@@ -62,7 +62,7 @@ export async function checkBudget(opts: {
  * Increment spend and update budget status after a request completes.
  */
 export async function recordSpend(opts: {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   costUsd: number
@@ -77,7 +77,7 @@ export async function recordSpend(opts: {
     .from(aiUsageBudgets)
     .where(
       and(
-        eq(aiUsageBudgets.entityId, opts.entityId),
+        eq(aiUsageBudgets.orgId, opts.orgId),
         eq(aiUsageBudgets.appKey, opts.appKey),
         eq(aiUsageBudgets.profileKey, opts.profileKey),
         eq(aiUsageBudgets.month, currentMonth),
@@ -114,7 +114,7 @@ export async function recordSpend(opts: {
  * Called from admin endpoints or on-demand.
  */
 export async function ensureBudgetRow(opts: {
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   budgetUsd: number
@@ -126,7 +126,7 @@ export async function ensureBudgetRow(opts: {
     .from(aiUsageBudgets)
     .where(
       and(
-        eq(aiUsageBudgets.entityId, opts.entityId),
+        eq(aiUsageBudgets.orgId, opts.orgId),
         eq(aiUsageBudgets.appKey, opts.appKey),
         eq(aiUsageBudgets.profileKey, opts.profileKey),
         eq(aiUsageBudgets.month, currentMonth),
@@ -139,7 +139,7 @@ export async function ensureBudgetRow(opts: {
   const [row] = await db
     .insert(aiUsageBudgets)
     .values({
-      entityId: opts.entityId,
+      orgId: opts.orgId,
       appKey: opts.appKey,
       profileKey: opts.profileKey,
       month: currentMonth,

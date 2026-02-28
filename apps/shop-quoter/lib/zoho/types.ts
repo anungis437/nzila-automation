@@ -278,7 +278,7 @@ export interface FieldMapping {
 
 export interface SyncConfig {
   id: string
-  entityId: string
+  orgId: string
   name: string
   nzilaTable: string
   zohoModule: string

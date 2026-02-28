@@ -53,7 +53,7 @@ for (const exec of failed) {
   console.log(`  Steps completed: ${exec.stepsCompleted.join(', ')}`)
   console.log(`  Steps compensated: ${exec.stepsCompensated.join(', ')}`)
   console.log(`  Error: ${exec.error}`)
-  console.log(`  Entity (org): ${exec.entityId}`)
+  console.log(`  Entity (org): ${exec.orgId}`)
 }
 ```
 

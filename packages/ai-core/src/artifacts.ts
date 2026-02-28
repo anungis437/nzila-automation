@@ -16,7 +16,7 @@ import { eq, desc } from 'drizzle-orm'
 export interface StoreAiArtifactInput {
   content: string | Buffer
   contentType?: string
-  entityId: string
+  orgId: string
   classification: 'public' | 'internal' | 'confidential'
   category: 'minute_book' | 'filing' | 'resolution' | 'minutes' | 'certificate' | 'year_end' | 'export' | 'attestation' | 'ingestion_report' | 'other'
   title: string
@@ -48,7 +48,7 @@ export async function storeAiArtifactAsDocument(
 
   const containerName = input.container ?? 'evidence'
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const blobPath = `ai-artifacts/${input.entityId}/${timestamp}-${slugify(input.title)}`
+  const blobPath = `ai-artifacts/${input.orgId}/${timestamp}-${slugify(input.title)}`
 
   // 1. Upload to blob
   const uploaded = await uploadBuffer({
@@ -62,7 +62,7 @@ export async function storeAiArtifactAsDocument(
   const [doc] = await db
     .insert(documents)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       category: input.category,
       title: input.title,
       blobContainer: containerName,
@@ -81,13 +81,13 @@ export async function storeAiArtifactAsDocument(
   const [latest] = await db
     .select({ hash: auditEvents.hash })
     .from(auditEvents)
-    .where(eq(auditEvents.entityId, input.entityId))
+    .where(eq(auditEvents.orgId, input.orgId))
     .orderBy(desc(auditEvents.createdAt))
     .limit(1)
 
   const previousHash = latest?.hash ?? null
   const payload = {
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.uploadedBy,
     action: 'ai.artifact_stored',
     targetType: 'document',
@@ -104,7 +104,7 @@ export async function storeAiArtifactAsDocument(
   const hash = computeEntryHash(payload, previousHash)
 
   await db.insert(auditEvents).values({
-    entityId: input.entityId,
+    orgId: input.orgId,
     actorClerkUserId: input.uploadedBy,
     action: 'ai.artifact_stored',
     targetType: 'document',

@@ -55,7 +55,7 @@ export async function createQuoteAction(
     }
     if (!customer) {
       customer = await customerRepo.create({
-        entityId: 'default', // TODO: pull from Clerk org
+        orgId: 'default', // TODO: pull from Clerk org
         name: formData.clientName,
         email: formData.clientEmail || null,
         phone: formData.clientPhone || null,
@@ -74,7 +74,7 @@ export async function createQuoteAction(
 
     // 3. Create quote via repository
     const quote = await quoteRepo.create({
-      entityId: 'default',
+      orgId: 'default',
       title: formData.title,
       tier: formData.tier,
       customerId: customer.id,
@@ -149,7 +149,7 @@ export async function importLegacyRecordsAction(
       }
 
       await quoteRepo.create({
-        entityId: 'default',
+        orgId: 'default',
         title: record.title,
         tier,
         customerId: record.client_id,
@@ -215,7 +215,7 @@ export async function updateQuoteStatusAction(
     const transition = transitionQuote(
       quote.status as Parameters<typeof transitionQuote>[0],
       newStatus,
-      { entityId: quoteId, actorId: 'server-action', role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
+      { orgId: quoteId, actorId: 'server-action', role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
       quoteId,
     )
     if (!transition.ok) {
@@ -234,7 +234,7 @@ export async function updateQuoteStatusAction(
         fromStatus: quote.status,
         toStatus: newStatus,
         userId: 'server-action',
-        entityId: quoteId,
+        orgId: quoteId,
       })
       logTransition(
         { orgId: quoteId },

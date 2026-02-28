@@ -129,7 +129,7 @@ export const mobileSyncQueue = pgTable('mobile_sync_queue', {
   
   // Sync details
   entityType: varchar('entity_type', { length: 100 }).notNull(), // 'claim', 'member', 'grievance', etc.
-  entityId: varchar('entity_id', { length: 255 }).notNull(),
+  orgId: varchar('org_id', { length: 255 }).notNull(),
   operation: varchar('operation', { length: 20 }).notNull(), // 'create', 'update', 'delete'
   
   // Payload
@@ -154,7 +154,7 @@ export const mobileSyncQueue = pgTable('mobile_sync_queue', {
 }, (table) => [
   index('idx_mobile_sync_queue_device_id').on(table.deviceId),
   index('idx_mobile_sync_queue_status').on(table.status),
-  index('idx_mobile_sync_queue_entity').on(table.entityType, table.entityId),
+  index('idx_mobile_sync_queue_entity').on(table.entityType, table.orgId),
   index('idx_mobile_sync_queue_created').on(table.createdAt),
 ]);
 

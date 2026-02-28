@@ -25,7 +25,7 @@ export type ProductStatus = 'active' | 'inactive' | 'discontinued'
 export type MovementType = 'in' | 'out' | 'adjustment' | 'transfer'
 
 export interface CreateProductInput {
-  entityId: string
+  orgId: string
   sku: string
   name: string
   description?: string
@@ -68,7 +68,7 @@ export interface ProductWithInventory {
 }
 
 export interface StockMovementInput {
-  entityId: string
+  orgId: string
   productId: string
   type: MovementType
   quantity: number
@@ -81,7 +81,7 @@ export interface StockMovementInput {
 }
 
 export interface ProductListFilter {
-  entityId: string
+  orgId: string
   status?: ProductStatus | ProductStatus[]
   search?: string
   categoryId?: string
@@ -106,13 +106,13 @@ export interface InventorySnapshot {
 export async function createProduct(
   input: CreateProductInput,
 ): Promise<ProductWithInventory> {
-  logger.info('Creating product', { entityId: input.entityId, sku: input.sku })
+  logger.info('Creating product', { orgId: input.orgId, sku: input.sku })
 
   // Check for duplicate SKU
   const [existing] = await db
     .select({ id: commerceProducts.id })
     .from(commerceProducts)
-    .where(and(eq(commerceProducts.entityId, input.entityId), eq(commerceProducts.sku, input.sku)))
+    .where(and(eq(commerceProducts.orgId, input.orgId), eq(commerceProducts.sku, input.sku)))
     .limit(1)
 
   if (existing) {
@@ -122,7 +122,7 @@ export async function createProduct(
   const [product] = await db
     .insert(commerceProducts)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       sku: input.sku,
       name: input.name,
       description: input.description ?? null,
@@ -143,7 +143,7 @@ export async function createProduct(
   const [inventory] = await db
     .insert(commerceInventory)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       productId: product.id,
       currentStock: 0,
       allocatedStock: 0,
@@ -197,13 +197,13 @@ export async function getProduct(productId: string): Promise<ProductWithInventor
 }
 
 export async function getProductBySku(
-  entityId: string,
+  orgId: string,
   sku: string,
 ): Promise<ProductWithInventory | null> {
   const [product] = await db
     .select()
     .from(commerceProducts)
-    .where(and(eq(commerceProducts.entityId, entityId), eq(commerceProducts.sku, sku)))
+    .where(and(eq(commerceProducts.orgId, orgId), eq(commerceProducts.sku, sku)))
     .limit(1)
 
   if (!product) return null
@@ -212,7 +212,7 @@ export async function getProductBySku(
 }
 
 export async function listProducts(filter: ProductListFilter): Promise<ProductWithInventory[]> {
-  const conditions = [eq(commerceProducts.entityId, filter.entityId)]
+  const conditions = [eq(commerceProducts.orgId, filter.orgId)]
 
   if (filter.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]
@@ -373,7 +373,7 @@ export async function recordStockMovement(
     const [created] = await db
       .insert(commerceInventory)
       .values({
-        entityId: input.entityId,
+        orgId: input.orgId,
         productId: input.productId,
         currentStock: 0,
         allocatedStock: 0,
@@ -412,7 +412,7 @@ export async function recordStockMovement(
   const [movement] = await db
     .insert(commerceStockMovements)
     .values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       inventoryId: inventory.id,
       productId: input.productId,
       movementType: input.type,
@@ -533,11 +533,11 @@ export async function getStockHistory(
 // Inventory Analytics
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getInventorySnapshot(entityId: string): Promise<InventorySnapshot> {
+export async function getInventorySnapshot(orgId: string): Promise<InventorySnapshot> {
   const products = await db
     .select()
     .from(commerceProducts)
-    .where(and(eq(commerceProducts.entityId, entityId), eq(commerceProducts.status, 'active')))
+    .where(and(eq(commerceProducts.orgId, orgId), eq(commerceProducts.status, 'active')))
 
   const productIds = products.map((p) => p.id)
 
@@ -576,7 +576,7 @@ export async function getInventorySnapshot(entityId: string): Promise<InventoryS
   const recentMovements = await db
     .select()
     .from(commerceStockMovements)
-    .where(eq(commerceStockMovements.entityId, entityId))
+    .where(eq(commerceStockMovements.orgId, orgId))
     .orderBy(desc(commerceStockMovements.createdAt))
     .limit(10)
 
@@ -596,8 +596,8 @@ export async function getInventorySnapshot(entityId: string): Promise<InventoryS
   }
 }
 
-export async function getLowStockProducts(entityId: string): Promise<ProductWithInventory[]> {
-  const products = await listProducts({ entityId, status: 'active', lowStock: true })
+export async function getLowStockProducts(orgId: string): Promise<ProductWithInventory[]> {
+  const products = await listProducts({ orgId, status: 'active', lowStock: true })
   return products
 }
 
@@ -652,7 +652,7 @@ export async function syncProductToZoho(
 }
 
 export async function syncProductFromZoho(
-  entityId: string,
+  orgId: string,
   zohoItem: ZohoItem,
   supplierId?: string,
 ): Promise<typeof commerceProducts.$inferSelect> {
@@ -697,7 +697,7 @@ export async function syncProductFromZoho(
     const [created] = await db
       .insert(commerceProducts)
       .values({
-        entityId,
+        orgId,
         sku: zohoItem.sku ?? zohoItem.item_id,
         name: zohoItem.name,
         description: zohoItem.description ?? null,
@@ -712,7 +712,7 @@ export async function syncProductFromZoho(
 
     // Create inventory record
     await db.insert(commerceInventory).values({
-      entityId,
+      orgId,
       productId: created.id,
       currentStock: zohoItem.stock_on_hand ?? 0,
       allocatedStock: 0,

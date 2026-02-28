@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateUser } from '@/lib/api-guards'
 import { platformDb } from '@nzila/db/platform'
-import { auditEvents, entities } from '@nzila/db/schema'
+import { auditEvents, orgs } from '@nzila/db/schema'
 import { eq, count, desc, sql } from 'drizzle-orm'
 import { createLogger } from '@nzila/os-core'
 
@@ -31,26 +31,26 @@ export async function GET(req: NextRequest) {
     .select({
       targetType: auditEvents.targetType,
       action: auditEvents.action,
-      entityId: auditEvents.entityId,
-      entityName: entities.legalName,
+      orgId: auditEvents.orgId,
+      entityName: orgs.legalName,
       total: count().as('total'),
     })
     .from(auditEvents)
-    .leftJoin(entities, eq(auditEvents.entityId, entities.id))
+    .leftJoin(orgs, eq(auditEvents.orgId, orgs.id))
 
   const query = orgId
-    ? baseQuery.where(eq(auditEvents.entityId, orgId))
+    ? baseQuery.where(eq(auditEvents.orgId, orgId))
     : baseQuery
 
   const rows = await query
-    .groupBy(auditEvents.targetType, auditEvents.action, auditEvents.entityId, entities.legalName)
+    .groupBy(auditEvents.targetType, auditEvents.action, auditEvents.orgId, orgs.legalName)
     .orderBy(desc(sql`count(*)`))
     .limit(10000)
 
-  const header = 'target_type,action,entity_id,entity_name,total'
+  const header = 'target_type,action,org_id,entity_name,total'
   const lines = rows.map(
     (r) =>
-      `${r.targetType},${r.action},${r.entityId},"${(r.entityName ?? '').replace(/"/g, '""')}",${r.total}`,
+      `${r.targetType},${r.action},${r.orgId},"${(r.entityName ?? '').replace(/"/g, '""')}",${r.total}`,
   )
   const csv = [header, ...lines].join('\n')
   logger.info('Audit insights export', { orgId, rowCount: rows.length })

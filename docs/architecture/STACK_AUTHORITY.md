@@ -86,7 +86,7 @@ For apps where **TS/Drizzle is authoritative**:
 ### 3.1. Canonical DB Access
 
 All domain queries and mutations MUST go through:
-- `createScopedDb(entityId)` — for org-scoped tables
+- `createScopedDb(orgId)` — for org-scoped tables
 - `createAuditedScopedDb({orgId, actorId})` — for audited mutations  
 - `platformDb` — for platform-level (non-org-scoped) tables
 

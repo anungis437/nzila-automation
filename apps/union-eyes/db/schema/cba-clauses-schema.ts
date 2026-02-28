@@ -66,8 +66,8 @@ export const cbaClause = pgTable("cba_clauses", {
   embedding: text("embedding"), // Vector embedding as text (JSON array)
   confidenceScore: decimal("confidence_score", { precision: 5, scale: 4 }), // Confidence in clause classification
   
-  // Extracted entities (NER results)
-  entities: jsonb("entities").$type<Array<{
+  // Extracted orgs (NER results)
+  orgs: jsonb("orgs").$type<Array<{
     type: string;
     value: string;
     startOffset: number;

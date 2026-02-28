@@ -4,7 +4,7 @@
  * Creators, content assets, releases, revenue events,
  * payouts, and wallets for the Zonga platform.
  *
- * Every table is scoped by entity_id (org identity).
+ * Every table is scoped by org_id (org identity).
  * Follows existing patterns from commerce.ts.
  */
 import {
@@ -19,7 +19,7 @@ import {
   varchar,
   boolean,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── Zonga Enums ─────────────────────────────────────────────────────────────
 
@@ -84,9 +84,9 @@ export const zongaLedgerEntryTypeEnum = pgEnum('zonga_ledger_entry_type', [
 
 export const zongaCreators = pgTable('zonga_creators', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   userId: uuid('user_id').notNull(),
   displayName: varchar('display_name', { length: 255 }).notNull(),
   bio: text('bio'),
@@ -104,9 +104,9 @@ export const zongaCreators = pgTable('zonga_creators', {
 
 export const zongaContentAssets = pgTable('zonga_content_assets', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   creatorId: uuid('creator_id')
     .notNull()
     .references(() => zongaCreators.id),
@@ -128,9 +128,9 @@ export const zongaContentAssets = pgTable('zonga_content_assets', {
 
 export const zongaReleases = pgTable('zonga_releases', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   creatorId: uuid('creator_id')
     .notNull()
     .references(() => zongaCreators.id),
@@ -146,9 +146,9 @@ export const zongaReleases = pgTable('zonga_releases', {
 
 export const zongaRevenueEvents = pgTable('zonga_revenue_events', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   creatorId: uuid('creator_id')
     .notNull()
     .references(() => zongaCreators.id),
@@ -173,9 +173,9 @@ export const zongaRevenueEvents = pgTable('zonga_revenue_events', {
 
 export const zongaWalletLedger = pgTable('zonga_wallet_ledger', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   creatorId: uuid('creator_id')
     .notNull()
     .references(() => zongaCreators.id),
@@ -194,9 +194,9 @@ export const zongaWalletLedger = pgTable('zonga_wallet_ledger', {
 
 export const zongaPayouts = pgTable('zonga_payouts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   creatorId: uuid('creator_id')
     .notNull()
     .references(() => zongaCreators.id),
@@ -223,9 +223,9 @@ export const zongaPayouts = pgTable('zonga_payouts', {
 
 export const zongaRoyaltySplits = pgTable('zonga_royalty_splits', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   releaseId: uuid('release_id')
     .notNull()
     .references(() => zongaReleases.id),
@@ -242,9 +242,9 @@ export const zongaRoyaltySplits = pgTable('zonga_royalty_splits', {
 
 export const zongaOutbox = pgTable('zonga_outbox', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   eventType: varchar('event_type', { length: 255 }).notNull(),
   payload: jsonb('payload').notNull().default({}),
   status: text('status').notNull().default('pending'),

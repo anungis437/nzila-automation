@@ -16,7 +16,7 @@ import { fulfillmentMachine } from './machines/fulfillment'
 const ORG_ID = 'org-001'
 
 const ctx = (role: OrgRole = OrgRole.ADMIN): TransitionContext => ({
-  entityId: ORG_ID,
+  orgId: ORG_ID,
   actorId: 'actor-001',
   role,
   meta: {},

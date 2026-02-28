@@ -183,11 +183,11 @@ describe('INV-23 — No writes without actor context', () => {
   it('audit event includes all required fields', () => {
     const auditPath = join(ROOT, 'packages', 'db', 'src', 'audit.ts')
     const content = readFileSync(auditPath, 'utf-8')
-    // AuditEvent must include: entityId, actorId, table, action, timestamp, correlationId
+    // AuditEvent must include: orgId, actorId, table, action, timestamp, correlationId
     const eventMatch = content.match(/interface AuditEvent\s*\{[\s\S]*?\}/)
     expect(eventMatch, 'AuditEvent interface must exist').toBeTruthy()
     const eventBody = eventMatch![0]
-    expect(eventBody).toContain('entityId')
+    expect(eventBody).toContain('orgId')
     expect(eventBody).toContain('actorId')
     expect(eventBody).toContain('table')
     expect(eventBody).toContain('action')

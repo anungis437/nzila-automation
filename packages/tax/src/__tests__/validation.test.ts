@@ -114,8 +114,8 @@ describe('enforceSoD', () => {
     expect(result.allowed).toBe(true)
   })
 
-  it('allows entity_admin to override', () => {
-    const result = enforceSoD('user-1', 'entity_admin', 'user-1')
+  it('allows org_admin to override', () => {
+    const result = enforceSoD('user-1', 'org_admin', 'user-1')
     expect(result.allowed).toBe(true)
   })
 })

@@ -3,7 +3,7 @@
 // =====================================================================================
 // Version: 1.0
 // Created: February 13, 2026
-// Purpose: Input validation for union structure entities (employers, worksites, units, etc.)
+// Purpose: Input validation for union structure orgs (employers, worksites, units, etc.)
 // Roadmap: UnionWare Phase 1.1 - Core AMS Parity
 // =====================================================================================
 

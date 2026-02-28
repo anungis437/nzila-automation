@@ -21,7 +21,7 @@ Browser / Client
 Next.js / Fastify Service
       │ @nzila/os-core/telemetry/otel
       │ → creates new Span (or continues incoming trace context)
-      │ → attaches entityId, userId, correlationId as span attributes
+      │ → attaches orgId, userId, correlationId as span attributes
       ▼
 OTLP Exporter (HTTP/gRPC)
       │
@@ -66,7 +66,7 @@ import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch'
 
 | Attribute | Where | Description |
 |-----------|-------|-------------|
-| `nzila.entity_id` | All business spans | Opaque entity identifier (never PII) |
+| `nzila.org_id` | All business spans | Opaque entity identifier (never PII) |
 | `nzila.app` | All spans | App name (console, partners, …) |
 | `nzila.action_type` | AI action spans | e.g., `finance.generate_stripe_monthly_reports` |
 | `nzila.risk_tier` | AI action spans | low / medium / high |

@@ -11,7 +11,7 @@
 import { requireRole } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
 import {
-  entities,
+  orgs,
   auditEvents,
   ueCases,
   zongaRevenueEvents,
@@ -63,7 +63,7 @@ async function computePlatformEconomics(): Promise<PlatformEconomics> {
     quotesResult,
     automationResult,
   ] = await Promise.all([
-    platformDb.select({ total: count().as('total') }).from(entities),
+    platformDb.select({ total: count().as('total') }).from(orgs),
     platformDb
       .select({ total: count().as('total') })
       .from(auditEvents)

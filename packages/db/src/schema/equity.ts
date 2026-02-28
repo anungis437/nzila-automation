@@ -18,7 +18,7 @@ import {
   date,
   varchar,
 } from 'drizzle-orm/pg-core'
-import { entities, people } from './entities'
+import { orgs, people } from './orgs'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
 
@@ -37,9 +37,9 @@ export const ledgerEntryTypeEnum = pgEnum('ledger_entry_type', [
 
 export const shareClasses = pgTable('share_classes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   code: varchar('code', { length: 30 }).notNull(), // e.g. COMMON_A
   displayName: text('display_name').notNull(),
   votesPerShare: numeric('votes_per_share').notNull().default('1'),
@@ -57,9 +57,9 @@ export const shareClasses = pgTable('share_classes', {
 
 export const shareholders = pgTable('shareholders', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   holderPersonId: uuid('holder_person_id')
     .notNull()
     .references(() => people.id),
@@ -73,9 +73,9 @@ export const shareholders = pgTable('shareholders', {
 
 export const shareLedgerEntries = pgTable('share_ledger_entries', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   entryType: ledgerEntryTypeEnum('entry_type').notNull(),
   classId: uuid('class_id')
     .notNull()
@@ -98,9 +98,9 @@ export const shareLedgerEntries = pgTable('share_ledger_entries', {
 
 export const shareCertificates = pgTable('share_certificates', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   shareholderId: uuid('shareholder_id')
     .notNull()
     .references(() => shareholders.id),
@@ -119,9 +119,9 @@ export const shareCertificates = pgTable('share_certificates', {
 
 export const capTableSnapshots = pgTable('cap_table_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   asOfDate: date('as_of_date').notNull(),
   snapshotJson: jsonb('snapshot_json').notNull(),
   generatedBy: text('generated_by').notNull(), // clerk_user_id

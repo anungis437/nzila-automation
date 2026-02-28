@@ -6,7 +6,7 @@
  * RBAC: any active entity member.
  *
  * Query params:
- *   entityId    required
+ *   orgId    required
  *   modelKey    optional — filter to a specific model key
  *   limit       optional — default 20, max 100
  */
@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { mlTrainingRuns } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('ml:runs:training')
@@ -25,15 +25,15 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityId = searchParams.get('entityId')
+    const orgId = searchParams.get('orgId')
     const modelKey = searchParams.get('modelKey')
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '20', 10), 100)
 
-    if (!entityId) {
-      return NextResponse.json({ error: 'entityId is required' }, { status: 400 })
+    if (!orgId) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
     }
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     const rows = await platformDb
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       .from(mlTrainingRuns)
       .where(
         and(
-          eq(mlTrainingRuns.entityId, entityId),
+          eq(mlTrainingRuns.orgId, orgId),
           ...(modelKey ? [eq(mlTrainingRuns.modelKey, modelKey)] : []),
         ),
       )
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       rows.map((r) => ({
         id: r.id,
-        entityId: r.entityId,
+        orgId: r.orgId,
         modelKey: r.modelKey,
         datasetId: r.datasetId,
         status: r.status,

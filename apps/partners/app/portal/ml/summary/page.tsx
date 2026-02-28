@@ -16,7 +16,7 @@ import { ChartBarIcon, ShieldCheckIcon, ExclamationTriangleIcon } from '@heroico
 export const dynamic = 'force-dynamic'
 
 interface MlSummaryResponse {
-  entityId: string
+  orgId: string
   daysScored: number
   recentAnomalyDays: number
   totalDailyAnomalies: number
@@ -41,7 +41,7 @@ async function fetchMlSummary(): Promise<FetchResult> {
     process.env.NEXT_PUBLIC_PARTNERS_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3002')
 
-  // No entityId — route self-resolves from the partner session.
+  // No orgId — route self-resolves from the partner session.
   const res = await fetch(`${baseUrl}/portal/api/ml/summary`, {
     headers: {
       Authorization: `Bearer ${token ?? ''}`,

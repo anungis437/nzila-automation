@@ -43,7 +43,7 @@ describe('INV-08 — Automatic audit emission for CRUD operations', () => {
     const content = readFileSync(auditPath, 'utf-8')
     expect(content).toContain('export function withAudit')
     expect(content).toContain('actorId')
-    expect(content).toContain('entityId')
+    expect(content).toContain('orgId')
     expect(content).toContain('correlationId')
   })
 
@@ -61,7 +61,7 @@ describe('INV-08 — Automatic audit emission for CRUD operations', () => {
     expect(content).toContain('emitter(auditEvent)')
   })
 
-  it('withAudit validates entityId consistency', () => {
+  it('withAudit validates orgId consistency', () => {
     const auditPath = join(ROOT, 'packages', 'db', 'src', 'audit.ts')
     const content = readFileSync(auditPath, 'utf-8')
     expect(content).toContain('does not match')
@@ -73,7 +73,7 @@ describe('INV-08 — Automatic audit emission for CRUD operations', () => {
     const content = readFileSync(auditPath, 'utf-8')
 
     // Required fields in AuditEvent interface
-    expect(content).toContain('entityId: string')
+    expect(content).toContain('orgId: string')
     expect(content).toContain('actorId: string')
     expect(content).toContain('table: string')
     expect(content).toMatch(/action:\s*'insert'\s*\|\s*'update'\s*\|\s*'delete'/)

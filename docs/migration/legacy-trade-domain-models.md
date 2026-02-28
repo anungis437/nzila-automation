@@ -445,7 +445,7 @@ OneToOne → Deal. Status: `incomplete / complete / verified`. Has `update_statu
 | rejection_reason | TextField | |
 
 #### `MediaFile`
-Generic polymorphic via `entity_type` + `entity_id`. File types: image / video / pdf / other.
+Generic polymorphic via `entity_type` + `org_id`. File types: image / video / pdf / other.
 
 ---
 

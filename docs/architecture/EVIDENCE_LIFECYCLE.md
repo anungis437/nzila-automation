@@ -27,7 +27,7 @@ Only after `draft.seal()` produces a `SealedEvidencePack` can the pack be
 persisted via `processEvidencePack()` or `persistSealedEvidencePack()`.
 
 ```ts
-const draft = createEvidencePackDraft({ packId, entityId, ... })
+const draft = createEvidencePackDraft({ packId, orgId, ... })
 draft.addArtifact(artifact1)
 draft.addArtifact(artifact2)
 const sealed = draft.seal()

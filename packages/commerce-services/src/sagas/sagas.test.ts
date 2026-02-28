@@ -32,7 +32,7 @@ import type { InvoiceEntity } from '../invoice-service'
 function mockQuote(overrides?: Partial<QuoteEntity>): QuoteEntity {
   return {
     id: 'q-1',
-    entityId: 'org-1',
+    orgId: 'org-1',
     ref: 'QUO-001',
     customerId: 'cust-1',
     opportunityId: null,
@@ -82,7 +82,7 @@ function mockQuoteLines(): QuoteLineEntity[] {
 function mockOrder(overrides?: Partial<OrderEntity>): OrderEntity {
   return {
     id: 'ord-1',
-    entityId: 'org-1',
+    orgId: 'org-1',
     ref: 'ORD-001',
     customerId: 'cust-1',
     quoteId: 'q-1',
@@ -128,7 +128,7 @@ function mockOrderLines(): OrderLineEntity[] {
 function mockInvoice(overrides?: Partial<InvoiceEntity>): InvoiceEntity {
   return {
     id: 'inv-1',
-    entityId: 'org-1',
+    orgId: 'org-1',
     ref: 'INV-001',
     orderId: 'ord-1',
     customerId: 'cust-1',
@@ -192,7 +192,7 @@ describe('quote-to-order saga', () => {
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { quoteId: 'q-1' },
     }
@@ -209,7 +209,7 @@ describe('quote-to-order saga', () => {
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { quoteId: 'q-1' },
     }
@@ -231,7 +231,7 @@ describe('quote-to-order saga', () => {
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { quoteId: 'q-1' },
     }
@@ -259,7 +259,7 @@ describe('quote-to-order saga', () => {
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { quoteId: 'nonexistent' },
     }
@@ -281,7 +281,7 @@ describe('quote-to-order saga', () => {
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { quoteId: 'q-1' },
     }
@@ -304,7 +304,7 @@ describe('quote-to-order saga', () => {
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { quoteId: 'q-1' },
     }
@@ -317,13 +317,13 @@ describe('quote-to-order saga', () => {
     expect(execution.error).toContain('create-order')
   })
 
-  it('OrgContext carries entityId from saga context (org isolation)', async () => {
+  it('OrgContext carries orgId from saga context (org isolation)', async () => {
     const saga = createQuoteToOrderSaga(ports)
     const orchestrator = createSagaOrchestrator(bus)
     const ctx: SagaContext<QuoteToOrderData> = {
       sagaId: 'saga-1',
       correlationId: 'corr-1',
-      entityId: 'org-42',
+      orgId: 'org-42',
       actorId: 'actor-7',
       data: { quoteId: 'q-1' },
     }
@@ -332,7 +332,7 @@ describe('quote-to-order saga', () => {
 
     const getQuoteCall = (ports.getQuoteById as ReturnType<typeof vi.fn>).mock.calls[0]!
     const orgCtx = getQuoteCall[0] as Record<string, unknown>
-    expect(orgCtx.entityId).toBe('org-42')
+    expect(orgCtx.orgId).toBe('org-42')
     expect(orgCtx.actorId).toBe('actor-7')
     expect(orgCtx.requestId).toBe('corr-1')
   })
@@ -347,7 +347,7 @@ describe('quote-to-order saga', () => {
     const event = createDomainEvent(
       CommerceEventTypes.QUOTE_ACCEPTED,
       { quoteId: 'q-1' },
-      { entityId: 'org-1', actorId: 'actor-1', correlationId: 'corr-event-1' },
+      { orgId: 'org-1', actorId: 'actor-1', correlationId: 'corr-event-1' },
     )
 
     await bus.emitAndWait(event)
@@ -404,7 +404,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-2',
       correlationId: 'corr-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1' },
     }
@@ -421,7 +421,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-2',
       correlationId: 'corr-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1' },
     }
@@ -446,7 +446,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-2',
       correlationId: 'corr-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1' },
     }
@@ -470,7 +470,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-2',
       correlationId: 'corr-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'nonexistent' },
     }
@@ -492,7 +492,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-2',
       correlationId: 'corr-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1' },
     }
@@ -515,7 +515,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-2',
       correlationId: 'corr-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1' },
     }
@@ -539,7 +539,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-comp',
       correlationId: 'corr-comp',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1', invoice },
     }
@@ -560,7 +560,7 @@ describe('order-to-invoice saga', () => {
     const ctx: SagaContext<OrderToInvoiceData> = {
       sagaId: 'saga-comp-2',
       correlationId: 'corr-comp-2',
-      entityId: 'org-1',
+      orgId: 'org-1',
       actorId: 'actor-1',
       data: { orderId: 'ord-1' },
     }
@@ -581,7 +581,7 @@ describe('order-to-invoice saga', () => {
     const event = createDomainEvent(
       CommerceEventTypes.ORDER_CONFIRMED,
       { orderId: 'ord-1' },
-      { entityId: 'org-1', actorId: 'actor-1', correlationId: 'corr-event-2' },
+      { orgId: 'org-1', actorId: 'actor-1', correlationId: 'corr-event-2' },
     )
 
     await bus.emitAndWait(event)

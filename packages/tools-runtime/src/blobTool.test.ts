@@ -17,7 +17,7 @@ import { buildExportPath, buildEvidencePath, buildAttestationPath } from './blob
 describe('buildExportPath', () => {
   it('constructs the correct path', () => {
     const path = buildExportPath({
-      entityId: 'acme-123',
+      orgId: 'acme-123',
       domain: 'stripe',
       year: '2026',
       month: '02',
@@ -30,7 +30,7 @@ describe('buildExportPath', () => {
 describe('buildEvidencePath', () => {
   it('constructs the correct path', () => {
     const path = buildEvidencePath({
-      entityId: 'acme-123',
+      orgId: 'acme-123',
       periodLabel: '2026-02',
       subPath: 'payments/stripe/manifest.json',
     })
@@ -41,7 +41,7 @@ describe('buildEvidencePath', () => {
 describe('buildAttestationPath', () => {
   it('constructs the correct path with dotted actionType', () => {
     const path = buildAttestationPath({
-      entityId: 'acme-123',
+      orgId: 'acme-123',
       year: '2026',
       month: '02',
       actionType: 'finance.generate_stripe_monthly_reports',
@@ -54,7 +54,7 @@ describe('buildAttestationPath', () => {
 
   it('handles actionType without dots', () => {
     const path = buildAttestationPath({
-      entityId: 'acme-123',
+      orgId: 'acme-123',
       year: '2026',
       month: '01',
       actionType: 'simple_action',

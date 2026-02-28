@@ -51,7 +51,7 @@ ORDER BY updated_at ASC;
 -- Check audit trail for the stuck entity
 SELECT *
 FROM commerce.audit_entries
-WHERE entity_id = '<stuck_entity_id>'
+WHERE org_id = '<stuck_entity_id>'
 ORDER BY created_at DESC
 LIMIT 20;
 ```

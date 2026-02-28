@@ -3,7 +3,7 @@
  * 
  * Extends governance workflows with replicability notation support.
  * Enables:
- * - Cloning governance templates across entities
+ * - Cloning governance templates across orgs
  * - Tracking template lineage and provenance
  * - Auditing divergence from templates
  * - Version-controlled governance policies
@@ -81,8 +81,8 @@ export const ReplicabilityMetadataSchema = z.object({
   updatedAt: z.string().datetime(),
   
   // Access control
-  isPublic: z.boolean().default(false),      // Can other entities clone this?
-  allowedCloners: z.array(z.string().uuid()).default([]), // Specific entities allowed
+  isPublic: z.boolean().default(false),      // Can other orgs clone this?
+  allowedCloners: z.array(z.string().uuid()).default([]), // Specific orgs allowed
   
   // Audit
   cloneCount: z.number().int().nonnegative().default(0),
@@ -371,14 +371,14 @@ class TemplateRegistry {
    */
   clone(
     templateId: string,
-    entityId: string,
+    orgId: string,
     userId: string,
     modifications?: Partial<Record<string, unknown>>
   ): { content: Record<string, unknown>; replicability: ReplicabilityMetadata } | null {
     const template = this.templates.get(templateId)
     if (!template) return null
     
-    const result = cloneFromTemplate(template, entityId, userId, modifications)
+    const result = cloneFromTemplate(template, orgId, userId, modifications)
     
     // Update clone count on template
     template.replicability.cloneCount++

@@ -214,7 +214,7 @@ export interface SyncHealthReport {
   syncedEntities: number
   overdueEntities: number
   unresolvedConflicts: number
-  entities: Array<{
+  orgs: Array<{
     entityType: SyncEntityType
     status: SyncState['lastSyncStatus']
     overdue: boolean
@@ -230,7 +230,7 @@ export function generateSyncHealthReport(
   schedules: SyncSchedule[],
   unresolvedConflicts: SyncConflict[],
 ): SyncHealthReport {
-  const entities = states.map((state) => {
+  const orgs = states.map((state) => {
     const schedule = schedules.find((s) => s.entityType === state.entityType)
     const overdue = schedule ? isSyncOverdue(state, schedule) : false
     const entityConflicts = unresolvedConflicts.filter(
@@ -245,8 +245,8 @@ export function generateSyncHealthReport(
     }
   })
 
-  const overdueCount = entities.filter((e) => e.overdue).length
-  const failedCount = entities.filter((e) => e.status === 'failed').length
+  const overdueCount = orgs.filter((e) => e.overdue).length
+  const failedCount = orgs.filter((e) => e.status === 'failed').length
   const totalUnresolved = unresolvedConflicts.filter((c) => !c.resolvedAt).length
 
   let overallStatus: SyncHealthReport['overallStatus'] = 'healthy'
@@ -255,10 +255,10 @@ export function generateSyncHealthReport(
 
   return {
     overallStatus,
-    totalEntities: entities.length,
-    syncedEntities: entities.filter((e) => e.status === 'success').length,
+    totalEntities: orgs.length,
+    syncedEntities: orgs.filter((e) => e.status === 'success').length,
     overdueEntities: overdueCount,
     unresolvedConflicts: totalUnresolved,
-    entities,
+    orgs,
   }
 }

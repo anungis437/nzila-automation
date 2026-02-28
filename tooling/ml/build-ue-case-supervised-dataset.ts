@@ -18,8 +18,8 @@
  *     [--created-by system]
  *
  * Output:
- *   exports/{entityId}/ml/datasets/ue_case_priority_dataset_v1/{start}-{end}/dataset.csv
- *   exports/{entityId}/ml/datasets/ue_case_sla_dataset_v1/{start}-{end}/dataset.csv
+ *   exports/{orgId}/ml/datasets/ue_case_priority_dataset_v1/{start}-{end}/dataset.csv
+ *   exports/{orgId}/ml/datasets/ue_case_sla_dataset_v1/{start}-{end}/dataset.csv
  *
  * Requires: DATABASE_URL, AZURE_STORAGE_ACCOUNT_NAME, AZURE_STORAGE_ACCOUNT_KEY
  *
@@ -27,7 +27,7 @@
  * The query below targets a table named `ue_cases` with the following columns
  * (adjust the raw SQL if your schema differs):
  *   id              uuid         — case primary key
- *   entity_id       uuid         — entity scoping FK
+ *   org_id       uuid         — entity scoping FK
  *   created_at      timestamptz  — case creation time
  *   updated_at      timestamptz  — last update time
  *   category        text         — case category/type
@@ -82,7 +82,7 @@ function fatal(msg: string): never {
 // ── Query UE cases ────────────────────────────────────────────────────────────
 
 async function fetchRawCases(
-  entityId: string,
+  orgId: string,
   periodStart: string,
   periodEnd: string,
 ): Promise<RawUECase[]> {
@@ -91,7 +91,7 @@ async function fetchRawCases(
   const rows = await db
     .select({
       caseId: ueCases.id,
-      entityId: ueCases.entityId,
+      orgId: ueCases.orgId,
       createdAt: ueCases.createdAt,
       updatedAt: ueCases.updatedAt,
       category: ueCases.category,
@@ -107,7 +107,7 @@ async function fetchRawCases(
     .from(ueCases)
     .where(
       and(
-        eq(ueCases.entityId, entityId),
+        eq(ueCases.orgId, orgId),
         gte(ueCases.createdAt, new Date(periodStart + 'T00:00:00Z')),
         lte(ueCases.createdAt, new Date(periodEnd + 'T23:59:59Z')),
       ),
@@ -116,7 +116,7 @@ async function fetchRawCases(
 
   return rows.map((r) => ({
     caseId: r.caseId,
-    entityId: r.entityId,
+    orgId: r.orgId,
     createdAt: r.createdAt,
     updatedAt: r.updatedAt,
     category: r.category,
@@ -134,22 +134,22 @@ async function fetchRawCases(
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const entityId = values['entity-id'] ?? fatal('--entity-id is required')
+  const orgId = values['entity-id'] ?? fatal('--entity-id is required')
   const periodStart = values.start ?? fatal('--start is required')
   const periodEnd = values.end ?? fatal('--end is required')
   const createdBy = values['created-by'] as string
 
   console.error(
-    `Building UE supervised datasets for ${entityId} (${periodStart} → ${periodEnd})`,
+    `Building UE supervised datasets for ${orgId} (${periodStart} → ${periodEnd})`,
   )
 
   // Fetch raw case rows
-  const rawCases = await fetchRawCases(entityId, periodStart, periodEnd)
+  const rawCases = await fetchRawCases(orgId, periodStart, periodEnd)
   console.error(`  Loaded ${rawCases.length} raw UE case rows`)
 
   if (rawCases.length === 0) {
     fatal(
-      `No UE case rows found for entity ${entityId} in period ${periodStart}→${periodEnd}. ` +
+      `No UE case rows found for entity ${orgId} in period ${periodStart}→${periodEnd}. ` +
         `Verify that ue_cases table has data for this entity/period.`,
     )
   }
@@ -175,7 +175,7 @@ async function main(): Promise<void> {
     script: 'build-ue-case-supervised-dataset.ts',
     periodStart,
     periodEnd,
-    entityId,
+    orgId,
     totalRows: featureRows.length,
     trainRows: trainCount,
     valRows: valCount,
@@ -187,7 +187,7 @@ async function main(): Promise<void> {
 
   console.error('\n  Writing ue_case_priority_dataset_v1 …')
   const priorityResult = await writeBlobDataset({
-    entityId,
+    orgId,
     datasetKey: 'ue_case_priority_dataset_v1',
     periodStart,
     periodEnd,
@@ -202,7 +202,7 @@ async function main(): Promise<void> {
 
   console.error('\n  Writing ue_case_sla_dataset_v1 …')
   const slaResult = await writeBlobDataset({
-    entityId,
+    orgId,
     datasetKey: 'ue_case_sla_dataset_v1',
     periodStart,
     periodEnd,

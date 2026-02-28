@@ -41,14 +41,14 @@ function hashData(data: Record<string, unknown>): string {
 
 function buildPackIndex(
   evidenceType: string,
-  entityId: string,
+  orgId: string,
   dealId: string,
   artifacts: EvidenceArtifact[],
   metadata: Record<string, unknown>,
 ) {
   return {
     evidenceType,
-    entityId,
+    orgId,
     dealId,
     artifacts: artifacts.map((a) => ({
       name: a.name,
@@ -90,7 +90,7 @@ export function buildQuoteAcceptancePack(
 
   const packIndex = buildPackIndex(
     TradeEvidenceType.QUOTE_ACCEPTANCE,
-    deal.entityId,
+    deal.orgId,
     deal.id,
     artifacts,
     {
@@ -101,7 +101,7 @@ export function buildQuoteAcceptancePack(
     },
   )
 
-  const sealEnvelope = generateSeal(packIndex, { hmacKey }) as Record<string, unknown>
+  const sealEnvelope = generateSeal(packIndex, { hmacKey }) as unknown as Record<string, unknown>
 
   return {
     evidenceType: TradeEvidenceType.QUOTE_ACCEPTANCE,
@@ -150,7 +150,7 @@ export function buildShipmentDocsPack(
 
   const packIndex = buildPackIndex(
     TradeEvidenceType.SHIPMENT_DOCS,
-    deal.entityId,
+    deal.orgId,
     deal.id,
     artifacts,
     {
@@ -160,7 +160,7 @@ export function buildShipmentDocsPack(
     },
   )
 
-  const sealEnvelope = generateSeal(packIndex, { hmacKey }) as Record<string, unknown>
+  const sealEnvelope = generateSeal(packIndex, { hmacKey }) as unknown as Record<string, unknown>
 
   return {
     evidenceType: TradeEvidenceType.SHIPMENT_DOCS,
@@ -203,7 +203,7 @@ export function buildCommissionSettlementPack(
 
   const packIndex = buildPackIndex(
     TradeEvidenceType.COMMISSION_SETTLEMENT,
-    deal.entityId,
+    deal.orgId,
     deal.id,
     artifacts,
     {
@@ -215,7 +215,7 @@ export function buildCommissionSettlementPack(
     },
   )
 
-  const sealEnvelope = generateSeal(packIndex, { hmacKey }) as Record<string, unknown>
+  const sealEnvelope = generateSeal(packIndex, { hmacKey }) as unknown as Record<string, unknown>
 
   return {
     evidenceType: TradeEvidenceType.COMMISSION_SETTLEMENT,
@@ -231,18 +231,18 @@ export function buildCommissionSettlementPack(
 
 export interface OrgTradeExport {
   exportedAt: string
-  entityId: string
+  orgId: string
   packs: EvidencePackResult[]
   totalPacks: number
 }
 
 export function buildOrgTradeExport(
-  entityId: string,
+  orgId: string,
   packs: EvidencePackResult[],
 ): OrgTradeExport {
   return {
     exportedAt: new Date().toISOString(),
-    entityId,
+    orgId,
     packs,
     totalPacks: packs.length,
   }

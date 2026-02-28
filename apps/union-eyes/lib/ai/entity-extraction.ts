@@ -1,7 +1,7 @@
 /**
  * Union-Specific Entity Extraction (NER)
  * 
- * Extracts union-relevant entities from text:
+ * Extracts union-relevant orgs from text:
  * - Members (names, IDs, contact info)
  * - Employers (company names, locations)
  * - Claims (amounts, dates, types)
@@ -46,13 +46,13 @@ export interface EntityRelationship {
 }
 
 export interface ExtractionResult {
-  entities: ExtractedEntity[];
+  orgs: ExtractedEntity[];
   relationships: EntityRelationship[];
   documentType: 'member_record' | 'claim' | 'contract' | 'grievance' | 'meeting_minutes' | 'unknown';
   confidence: number;
 }
 
-// Regex patterns for union entities
+// Regex patterns for union orgs
 const PATTERNS = {
   // Canadian SIN (9 digits with dashes)
   SIN: /\b\d{3}-\d{3}-\d{3}\b/g,
@@ -107,30 +107,30 @@ class EntityExtractionService {
   private customPatterns: Map<UnionEntityType, RegExp[]> = new Map();
 
   /**
-   * Extract entities from text
+   * Extract orgs from text
    */
   extract(text: string, context?: { documentType?: string; jurisdiction?: string }): ExtractionResult {
-    const entities: ExtractedEntity[] = [];
+    const orgs: ExtractedEntity[] = [];
     const relationships: EntityRelationship[] = [];
     
     // Extract by pattern
-    entities.push(...this.extractByPattern(text));
+    orgs.push(...this.extractByPattern(text));
     
     // Extract by context keywords
-    entities.push(...this.extractByContext(text));
+    orgs.push(...this.extractByContext(text));
     
     // Extract relationships
-    const rels = this.extractRelationships(entities);
+    const rels = this.extractRelationships(orgs);
     relationships.push(...rels);
     
     // Determine document type
     const docType = this.detectDocumentType(text, context);
     
     // Calculate confidence
-    const confidence = this.calculateConfidence(entities, text);
+    const confidence = this.calculateConfidence(orgs, text);
 
-    // Deduplicate entities
-    const uniqueEntities = this.deduplicate(entities);
+    // Deduplicate orgs
+    const uniqueEntities = this.deduplicate(orgs);
 
     logger.info('Entity extraction complete', {
       entityCount: uniqueEntities.length,
@@ -139,7 +139,7 @@ class EntityExtractionService {
     });
 
     return {
-      entities: uniqueEntities,
+      orgs: uniqueEntities,
       relationships,
       documentType: docType,
       confidence,
@@ -147,15 +147,15 @@ class EntityExtractionService {
   }
 
   /**
-   * Extract entities by regex patterns
+   * Extract orgs by regex patterns
    */
   private extractByPattern(text: string): ExtractedEntity[] {
-    const entities: ExtractedEntity[] = [];
+    const orgs: ExtractedEntity[] = [];
 
     // SIN
     let match;
     while ((match = PATTERNS.SIN.exec(text)) !== null) {
-      entities.push(this.createEntity('MEMBER', match[0], match.index, {
+      orgs.push(this.createEntity('MEMBER', match[0], match.index, {
         type: 'government_id',
         category: 'sin',
       }));
@@ -163,7 +163,7 @@ class EntityExtractionService {
 
     // Phone
     while ((match = PATTERNS.PHONE.exec(text)) !== null) {
-      entities.push(this.createEntity('MEMBER', match[0], match.index, {
+      orgs.push(this.createEntity('MEMBER', match[0], match.index, {
         type: 'contact',
         category: 'phone',
       }));
@@ -171,7 +171,7 @@ class EntityExtractionService {
 
     // Email
     while ((match = PATTERNS.EMAIL.exec(text)) !== null) {
-      entities.push(this.createEntity('MEMBER', match[0], match.index, {
+      orgs.push(this.createEntity('MEMBER', match[0], match.index, {
         type: 'contact',
         category: 'email',
       }));
@@ -180,7 +180,7 @@ class EntityExtractionService {
     // Money
     while ((match = PATTERNS.MONEY.exec(text)) !== null) {
       const amount = parseFloat(match[0].replace(/[$,]/g, ''));
-      entities.push(this.createEntity('MONEY', match[0], match.index, {
+      orgs.push(this.createEntity('MONEY', match[0], match.index, {
         amount,
         currency: 'CAD',
       }));
@@ -188,54 +188,54 @@ class EntityExtractionService {
 
     // Dates
     while ((match = PATTERNS.DATE.exec(text)) !== null) {
-      entities.push(this.createEntity('DATE', match[0], match.index, {
+      orgs.push(this.createEntity('DATE', match[0], match.index, {
         original: match[0],
       }));
     }
 
     // Jurisdiction (Province)
     while ((match = PATTERNS.PROVINCE.exec(text)) !== null) {
-      entities.push(this.createEntity('JURISDICTION', match[0].toUpperCase(), match.index, {
+      orgs.push(this.createEntity('JURISDICTION', match[0].toUpperCase(), match.index, {
         type: 'province',
       }));
     }
 
     // Contract numbers
     while ((match = PATTERNS.CONTRACT_NO.exec(text)) !== null) {
-      entities.push(this.createEntity('CONTRACT', match[0], match.index, {
+      orgs.push(this.createEntity('CONTRACT', match[0], match.index, {
         type: 'contract_number',
       }));
     }
 
     // Claim numbers
     while ((match = PATTERNS.CLAIM_NO.exec(text)) !== null) {
-      entities.push(this.createEntity('CLAIM', match[0], match.index, {
+      orgs.push(this.createEntity('CLAIM', match[0], match.index, {
         type: 'claim_number',
       }));
     }
 
     // Grievance numbers
     while ((match = PATTERNS.GRIEVANCE_NO.exec(text)) !== null) {
-      entities.push(this.createEntity('GRIEVANCE', match[0], match.index, {
+      orgs.push(this.createEntity('GRIEVANCE', match[0], match.index, {
         type: 'grievance_number',
       }));
     }
 
     // Member numbers
     while ((match = PATTERNS.MEMBER_NO.exec(text)) !== null) {
-      entities.push(this.createEntity('MEMBER', match[0], match.index, {
+      orgs.push(this.createEntity('MEMBER', match[0], match.index, {
         type: 'member_number',
       }));
     }
 
-    return entities;
+    return orgs;
   }
 
   /**
-   * Extract entities by context keywords
+   * Extract orgs by context keywords
    */
   private extractByContext(text: string): ExtractedEntity[] {
-    const entities: ExtractedEntity[] = [];
+    const orgs: ExtractedEntity[] = [];
     const _lowerText = text.toLowerCase();
 
     for (const [entityType, keywords] of Object.entries(ENTITY_KEYWORDS)) {
@@ -248,7 +248,7 @@ class EntityExtractionService {
           const captured = match[1].trim();
           if (captured.length < 3) continue;
           
-          entities.push(this.createEntity(
+          orgs.push(this.createEntity(
             entityType as UnionEntityType,
             captured,
             match.index + match[0].indexOf(captured),
@@ -262,18 +262,18 @@ class EntityExtractionService {
       }
     }
 
-    return entities;
+    return orgs;
   }
 
   /**
-   * Extract relationships between entities
+   * Extract relationships between orgs
    */
-  private extractRelationships(entities: ExtractedEntity[]): EntityRelationship[] {
+  private extractRelationships(orgs: ExtractedEntity[]): EntityRelationship[] {
     const relationships: EntityRelationship[] = [];
 
     // Find member-claim relationships
-    const members = entities.filter(e => e.type === 'MEMBER');
-    const claims = entities.filter(e => e.type === 'CLAIM');
+    const members = orgs.filter(e => e.type === 'MEMBER');
+    const claims = orgs.filter(e => e.type === 'CLAIM');
 
     for (const member of members) {
       for (const claim of claims) {
@@ -289,8 +289,8 @@ class EntityExtractionService {
     }
 
     // Find employer-worksite relationships
-    const employers = entities.filter(e => e.type === 'EMPLOYER');
-    const worksites = entities.filter(e => e.type === 'WORKSITE');
+    const employers = orgs.filter(e => e.type === 'EMPLOYER');
+    const worksites = orgs.filter(e => e.type === 'WORKSITE');
 
     for (const employer of employers) {
       for (const worksite of worksites) {
@@ -339,14 +339,14 @@ class EntityExtractionService {
   /**
    * Calculate extraction confidence
    */
-  private calculateConfidence(entities: ExtractedEntity[], text: string): number {
-    if (entities.length === 0) return 0;
+  private calculateConfidence(orgs: ExtractedEntity[], text: string): number {
+    if (orgs.length === 0) return 0;
     
-    const avgConfidence = entities.reduce((sum, e) => sum + e.confidence, 0) / entities.length;
-    const density = entities.length / (text.length / 100); // entities per 100 chars
+    const avgConfidence = orgs.reduce((sum, e) => sum + e.confidence, 0) / orgs.length;
+    const density = orgs.length / (text.length / 100); // orgs per 100 chars
     
     // Boost for having multiple entity types
-    const types = new Set(entities.map(e => e.type)).size;
+    const types = new Set(orgs.map(e => e.type)).size;
     const typeBonus = Math.min(types * 0.05, 0.2);
     
     return Math.min(1, avgConfidence * (1 + density * 0.1) + typeBonus);
@@ -376,12 +376,12 @@ class EntityExtractionService {
   }
 
   /**
-   * Deduplicate entities
+   * Deduplicate orgs
    */
-  private deduplicate(entities: ExtractedEntity[]): ExtractedEntity[] {
+  private deduplicate(orgs: ExtractedEntity[]): ExtractedEntity[] {
     const seen = new Map<string, ExtractedEntity>();
     
-    for (const entity of entities) {
+    for (const entity of orgs) {
       const key = `${entity.type}:${entity.normalizedValue}`;
       
       if (!seen.has(key) || seen.get(key)!.confidence < entity.confidence) {

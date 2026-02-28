@@ -154,14 +154,14 @@ async function upsertSubscription(sub: Stripe.Subscription): Promise<void> {
       .set(values)
       .where(eq(stripeSubscriptions.stripeSubscriptionId, sub.id))
   } else {
-    // Insert new record — entityId comes from metadata set during creation
-    const entityId = (sub.metadata as Record<string, string>)?.entity_id
-    if (!entityId) {
-      logger.warn(`[stripe/webhooks] No entity_id in subscription metadata: ${sub.id}`)
+    // Insert new record — orgId comes from metadata set during creation
+    const orgId = (sub.metadata as Record<string, string>)?.org_id
+    if (!orgId) {
+      logger.warn(`[stripe/webhooks] No org_id in subscription metadata: ${sub.id}`)
       return
     }
     await platformDb.insert(stripeSubscriptions).values({
-      entityId,
+      orgId,
       stripeSubscriptionId: sub.id,
       createdBy: 'webhook',
       ...values,

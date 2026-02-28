@@ -9,10 +9,10 @@
  *
  * RBAC:
  *   - View scores: any active entity member
- *   - includeFeatures=true: entity_admin only
+ *   - includeFeatures=true: org_admin only
  *
  * Query params:
- *   entityId        required
+ *   orgId        required
  *   startDate       required (YYYY-MM-DD)
  *   endDate         required (YYYY-MM-DD)
  *   breach          optional — "true" | "false" to filter by predictedBreach
@@ -28,7 +28,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { mlScoresUESlaRisk, mlModels } from '@nzila/db/schema'
 import { eq, and, gte, lte, lt, desc, or } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('ml:scores:ue:cases:sla-risk')
@@ -42,7 +42,7 @@ const MAX_LIMIT = 500
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityId = searchParams.get('entityId')
+    const orgId = searchParams.get('orgId')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
     const breachParam = searchParams.get('breach')
@@ -52,20 +52,20 @@ export async function GET(req: NextRequest) {
     const rawLimit = searchParams.get('limit')
     const limit = Math.min(Number(rawLimit ?? DEFAULT_LIMIT) || DEFAULT_LIMIT, MAX_LIMIT)
 
-    if (!entityId || !startDate || !endDate) {
+    if (!orgId || !startDate || !endDate) {
       return NextResponse.json(
-        { error: 'entityId, startDate, and endDate are required' },
+        { error: 'orgId, startDate, and endDate are required' },
         { status: 400 },
       )
     }
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
-    // featuresJson only for entity_admin
-    if (includeFeatures && access.context.membership?.role !== 'entity_admin') {
+    // featuresJson only for org_admin
+    if (includeFeatures && access.context.membership?.role !== 'org_admin') {
       return NextResponse.json(
-        { error: 'Forbidden: includeFeatures requires entity_admin role' },
+        { error: 'Forbidden: includeFeatures requires org_admin role' },
         { status: 403 },
       )
     }
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
     }
 
     const whereClause = and(
-      eq(mlScoresUESlaRisk.entityId, entityId),
+      eq(mlScoresUESlaRisk.orgId, orgId),
       gte(mlScoresUESlaRisk.occurredAt, startTs),
       lte(mlScoresUESlaRisk.occurredAt, endTs),
       ...(breachFilter !== null ? [eq(mlScoresUESlaRisk.predictedBreach, breachFilter)] : []),

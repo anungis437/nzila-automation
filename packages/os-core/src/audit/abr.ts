@@ -147,7 +147,7 @@ export function validateAbrAuditEvent(event: AbrAuditEvent): string[] {
   if (!event.correlationId) errors.push('correlationId is required')
   if (!event.action) errors.push('action is required')
   if (!event.entityType) errors.push('entityType is required')
-  if (!event.entityId) errors.push('entityId is required')
+  if (!event.orgId) errors.push('orgId is required')
   if (!event.timestamp) errors.push('timestamp is required')
 
   const validActions = Object.values(AbrAuditAction) as string[]

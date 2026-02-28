@@ -7,7 +7,7 @@
  * Features:
  * - OAuth2 client credentials authentication
  * - Full sync support (incremental via event monitoring in future)
- * - Worker (employee) and organizational unit entities
+ * - Worker (employee) and organizational unit orgs
  * - Comprehensive payroll and benefits data
  * 
  * @see https://developers.adp.com/articles/api/workforce-now-api
@@ -125,10 +125,10 @@ export class ADPAdapter extends BaseIntegration {
 
     try {
       // Filter out 'payroll' for now - requires separate implementation
-      const entities = (options.entities || this.capabilities.supportedEntities)
+      const orgs = (options.orgs || this.capabilities.supportedEntities)
         .filter(e => e !== 'payroll');
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, action: 'start' });
 

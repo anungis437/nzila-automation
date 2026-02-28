@@ -57,13 +57,13 @@ export async function followUser(followingId: string, followingName?: string): P
 
     // Check if already following
     const [existing] = (await platformDb.execute(
-      sql`SELECT entity_id FROM audit_log
+      sql`SELECT org_id FROM audit_log
       WHERE action = 'social.followed'
         AND metadata->>'followerId' = ${ctx.actorId}
         AND metadata->>'followingId' = ${followingId}
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
       LIMIT 1`,
-    )) as unknown as [{ entity_id: string } | undefined]
+    )) as unknown as [{ org_id: string } | undefined]
 
     if (existing) {
       return { success: true } // Already following
@@ -71,7 +71,7 @@ export async function followUser(followingId: string, followingName?: string): P
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.followed', ${ctx.actorId}, 'follow', ${followId}, ${ctx.entityId},
+      VALUES ('social.followed', ${ctx.actorId}, 'follow', ${followId}, ${ctx.orgId},
         ${JSON.stringify({
           followerId: ctx.actorId,
           followingId,
@@ -95,7 +95,7 @@ export async function unfollowUser(followingId: string): Promise<{ success: bool
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.unfollowed', ${ctx.actorId}, 'follow', ${unfollowId}, ${ctx.entityId},
+      VALUES ('social.unfollowed', ${ctx.actorId}, 'follow', ${unfollowId}, ${ctx.orgId},
         ${JSON.stringify({
           followerId: ctx.actorId,
           followingId,
@@ -116,18 +116,18 @@ export async function listFollowers(creatorId: string): Promise<Follow[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'followerId' as "followerId",
         metadata->>'followingId' as "followingId",
         metadata->>'followingName' as "followingName",
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'social.followed' AND metadata->>'followingId' = ${creatorId}
-        AND org_id = ${ctx.entityId}
-        AND entity_id NOT IN (
+        AND org_id = ${ctx.orgId}
+        AND org_id NOT IN (
           SELECT metadata->>'originalFollowId' FROM audit_log
           WHERE action = 'social.unfollowed' AND metadata->>'followingId' = ${creatorId}
-            AND org_id = ${ctx.entityId}
+            AND org_id = ${ctx.orgId}
         )
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Follow[] }
@@ -146,14 +146,14 @@ export async function listFollowing(userId_?: string): Promise<Follow[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'followerId' as "followerId",
         metadata->>'followingId' as "followingId",
         metadata->>'followingName' as "followingName",
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'social.followed' AND metadata->>'followerId' = ${targetUser}
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Follow[] }
 
@@ -177,7 +177,7 @@ export async function likeAsset(
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.liked', ${ctx.actorId}, 'like', ${likeId}, ${ctx.entityId},
+      VALUES ('social.liked', ${ctx.actorId}, 'like', ${likeId}, ${ctx.orgId},
         ${JSON.stringify({
           userId: ctx.actorId,
           assetId,
@@ -201,7 +201,7 @@ export async function unlikeAsset(assetId: string): Promise<{ success: boolean }
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.unliked', ${ctx.actorId}, 'like', ${unlikeId}, ${ctx.entityId},
+      VALUES ('social.unliked', ${ctx.actorId}, 'like', ${unlikeId}, ${ctx.orgId},
         ${JSON.stringify({
           userId: ctx.actorId,
           assetId,
@@ -222,13 +222,13 @@ export async function getAssetLikeCount(assetId: string): Promise<number> {
     const [likes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
       WHERE action = 'social.liked' AND metadata->>'assetId' = ${assetId}
-        AND org_id = ${ctx.entityId}`,
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [unlikes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
       WHERE action = 'social.unliked' AND metadata->>'assetId' = ${assetId}
-        AND org_id = ${ctx.entityId}`,
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return Math.max(0, Number(likes?.total ?? 0) - Number(unlikes?.total ?? 0))
@@ -252,7 +252,7 @@ export async function postComment(data: {
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.commented', ${ctx.actorId}, 'comment', ${commentId}, ${ctx.entityId},
+      VALUES ('social.commented', ${ctx.actorId}, 'comment', ${commentId}, ${ctx.orgId},
         ${JSON.stringify({
           userId: ctx.actorId,
           userName: data.userName,
@@ -276,7 +276,7 @@ export async function listComments(assetId: string): Promise<Comment[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'userId' as "userId",
         metadata->>'userName' as "userName",
         metadata->>'assetId' as "assetId",
@@ -284,7 +284,7 @@ export async function listComments(assetId: string): Promise<Comment[]> {
         created_at as "createdAt"
       FROM audit_log
       WHERE action = 'social.commented' AND metadata->>'assetId' = ${assetId}
-        AND org_id = ${ctx.entityId}
+        AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Comment[] }
 
@@ -311,7 +311,7 @@ export async function tipCreator(data: {
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.tipped', ${ctx.actorId}, 'tip', ${tipId}, ${ctx.entityId},
+      VALUES ('social.tipped', ${ctx.actorId}, 'tip', ${tipId}, ${ctx.orgId},
         ${JSON.stringify({
           senderId: ctx.actorId,
           creatorId: data.creatorId,
@@ -325,7 +325,7 @@ export async function tipCreator(data: {
     // Also record it as revenue for the creator
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.entityId},
+      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.orgId},
         ${JSON.stringify({
           type: RevenueType.TIP,
           creatorId: data.creatorId,
@@ -344,32 +344,32 @@ export async function tipCreator(data: {
 
 /* ─── Social Stats ─── */
 
-export async function getSocialStats(entityId: string): Promise<SocialStats> {
+export async function getSocialStats(orgId: string): Promise<SocialStats> {
   const ctx = await resolveOrgContext()
 
   try {
     const [followers] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followingId' = ${entityId}
-        AND org_id = ${ctx.entityId}`,
+      WHERE action = 'social.followed' AND metadata->>'followingId' = ${orgId}
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [following] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followerId' = ${entityId}
-        AND org_id = ${ctx.entityId}`,
+      WHERE action = 'social.followed' AND metadata->>'followerId' = ${orgId}
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [likes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.liked' AND metadata->>'userId' = ${entityId}
-        AND org_id = ${ctx.entityId}`,
+      WHERE action = 'social.liked' AND metadata->>'userId' = ${orgId}
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [comments] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.commented' AND metadata->>'userId' = ${entityId}
-        AND org_id = ${ctx.entityId}`,
+      WHERE action = 'social.commented' AND metadata->>'userId' = ${orgId}
+        AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {

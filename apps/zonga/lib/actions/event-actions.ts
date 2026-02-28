@@ -80,7 +80,7 @@ export async function listEvents(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'title' as title,
         metadata->>'description' as description,
         metadata->>'venue' as venue,
@@ -98,13 +98,13 @@ export async function listEvents(opts?: {
         metadata->>'genre' as genre,
         created_at as "createdAt"
       FROM audit_log
-      WHERE (action = 'event.created' OR action = 'event.published') AND org_id = ${ctx.entityId}
+      WHERE (action = 'event.created' OR action = 'event.published') AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: ZongaEvent[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'event.%' AND action != 'event.ticket.purchased' AND org_id = ${ctx.entityId}`,
+      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'event.%' AND action != 'event.ticket.purchased' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -130,7 +130,7 @@ export async function getEventDetail(eventId: string): Promise<{
   try {
     const [event] = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'title' as title,
         metadata->>'description' as description,
         metadata->>'venue' as venue,
@@ -147,13 +147,13 @@ export async function getEventDetail(eventId: string): Promise<{
         metadata->>'genre' as genre,
         created_at as "createdAt"
       FROM audit_log
-      WHERE entity_id = ${eventId} AND action LIKE 'event.%' AND org_id = ${ctx.entityId}
+      WHERE org_id = ${eventId} AND action LIKE 'event.%' AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC LIMIT 1`,
     )) as unknown as [ZongaEvent | undefined]
 
     const ticketRows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'eventId' as "eventId",
         metadata->>'eventTitle' as "eventTitle",
         metadata->>'buyerEmail' as "buyerEmail",
@@ -165,7 +165,7 @@ export async function getEventDetail(eventId: string): Promise<{
         metadata->>'stripeSessionId' as "stripeSessionId",
         created_at as "createdAt"
       FROM audit_log
-      WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${eventId} AND org_id = ${ctx.entityId}
+      WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${eventId} AND org_id = ${ctx.orgId}
       ORDER BY created_at DESC`,
     )) as unknown as { rows: Ticket[] }
 
@@ -214,7 +214,7 @@ export async function createEvent(data: {
 
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('event.created', ${ctx.actorId}, 'event', ${eventId}, ${ctx.entityId},
+      VALUES ('event.created', ${ctx.actorId}, 'event', ${eventId}, ${ctx.orgId},
         ${JSON.stringify({
           ...data,
           id: eventId,
@@ -226,7 +226,7 @@ export async function createEvent(data: {
     const auditEvent = buildZongaAuditEvent({
       action: 'event.created' as ZongaAuditAction,
       entityType: 'event' as ZongaEntityType,
-      entityId: eventId,
+      orgId: eventId,
       actorId: ctx.actorId,
       targetId: eventId,
       metadata: { title: data.title, venue: data.venue },
@@ -235,7 +235,7 @@ export async function createEvent(data: {
 
     const pack = buildEvidencePackFromAction({
       actionType: 'EVENT_CREATED',
-      entityId: eventId,
+      orgId: eventId,
       executedBy: ctx.actorId,
       actionId: crypto.randomUUID(),
     })
@@ -259,7 +259,7 @@ export async function publishEvent(
   try {
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('event.published', ${ctx.actorId}, 'event', ${eventId}, ${ctx.entityId},
+      VALUES ('event.published', ${ctx.actorId}, 'event', ${eventId}, ${ctx.orgId},
         ${JSON.stringify({ status: 'published', publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
@@ -293,7 +293,7 @@ export async function purchaseTicket(data: {
 
     // Create Stripe checkout session
     const session = await createCheckoutSession({
-      entityId: data.eventId,
+      orgId: data.eventId,
       lineItems: [
         {
           name: `${data.eventTitle} — Ticket`,
@@ -313,7 +313,7 @@ export async function purchaseTicket(data: {
     // Record ticket purchase (pending until webhook confirms)
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('event.ticket.purchased', ${ctx.actorId}, 'ticket', ${ticketId}, ${ctx.entityId},
+      VALUES ('event.ticket.purchased', ${ctx.actorId}, 'ticket', ${ticketId}, ${ctx.orgId},
         ${JSON.stringify({
           eventId: data.eventId,
           eventTitle: data.eventTitle,
@@ -330,7 +330,7 @@ export async function purchaseTicket(data: {
     // Record revenue event
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.entityId},
+      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.orgId},
         ${JSON.stringify({
           type: 'ticket_sale',
           eventId: data.eventId,
@@ -366,12 +366,12 @@ export async function listTickets(opts?: {
 
   try {
     const whereClause = opts?.eventId
-      ? sql`WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${opts.eventId} AND org_id = ${ctx.entityId}`
-      : sql`WHERE action = 'event.ticket.purchased' AND org_id = ${ctx.entityId}`
+      ? sql`WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${opts.eventId} AND org_id = ${ctx.orgId}`
+      : sql`WHERE action = 'event.ticket.purchased' AND org_id = ${ctx.orgId}`
 
     const rows = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'eventId' as "eventId",
         metadata->>'eventTitle' as "eventTitle",
         metadata->>'buyerEmail' as "buyerEmail",

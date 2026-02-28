@@ -67,7 +67,7 @@ export async function createWorkflowTemplate(data: {
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('workflow.registered', ${userId}, 'workflow', 'platform',
         ${JSON.stringify({
           name: data.name,
@@ -134,7 +134,7 @@ export async function startWorkflowInstance(templateId: string): Promise<{ succe
     }))
 
     const result = (await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('workflow.instance.created', ${userId}, 'workflow_instance', ${templateId},
         ${JSON.stringify({
           templateId,
@@ -167,7 +167,7 @@ export async function getWorkflowInstance(instanceId: string): Promise<WorkflowI
 
   try {
     const [row] = (await platformDb.execute(
-      sql`SELECT id, entity_id as "templateId",
+      sql`SELECT id, org_id as "templateId",
         metadata->>'templateName' as "templateName",
         metadata->>'status' as status,
         COALESCE((metadata->>'currentStep')::int, 0) as "currentStep",
@@ -194,7 +194,7 @@ export async function listWorkflowInstances(): Promise<WorkflowInstance[]> {
 
   try {
     const rows = (await platformDb.execute(
-      sql`SELECT id, entity_id as "templateId",
+      sql`SELECT id, org_id as "templateId",
         metadata->>'templateName' as "templateName",
         metadata->>'status' as status,
         COALESCE((metadata->>'currentStep')::int, 0) as "currentStep",
@@ -247,7 +247,7 @@ export async function approveWorkflowStep(
 
     // Log step completion
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('workflow.step.approved', ${userId}, 'workflow_instance', ${instanceId},
         ${JSON.stringify({
           stepIndex: instance.currentStep,
@@ -292,7 +292,7 @@ export async function rejectWorkflowStep(
     )
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('workflow.step.rejected', ${userId}, 'workflow_instance', ${instanceId},
         ${JSON.stringify({
           stepIndex: instance.currentStep,

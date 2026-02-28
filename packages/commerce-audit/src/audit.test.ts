@@ -24,7 +24,7 @@ const TIMESTAMP = '2026-01-15T10:00:00.000Z'
 function makeTransitionCtx(overrides?: Partial<TransitionAuditContext>): TransitionAuditContext {
   return {
     id: 'audit-001',
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     actorId: ACTOR_ID,
     role: OrgRole.SALES,
     entityType: CommerceEntityType.QUOTE,
@@ -37,7 +37,7 @@ function makeTransitionCtx(overrides?: Partial<TransitionAuditContext>): Transit
 function makeActionCtx(overrides?: Partial<ActionAuditContext>): ActionAuditContext {
   return {
     id: 'audit-action-001',
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     actorId: ACTOR_ID,
     role: OrgRole.FINANCE,
     entityType: CommerceEntityType.PAYMENT,
@@ -57,7 +57,7 @@ describe('buildTransitionAuditEntry', () => {
       quoteMachine,
       QuoteStatus.DRAFT,
       QuoteStatus.PRICING,
-      { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
+      { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
       ORG_ID,
       {},
     )
@@ -67,7 +67,7 @@ describe('buildTransitionAuditEntry', () => {
     const entry = buildTransitionAuditEntry(result, makeTransitionCtx())
 
     expect(entry.id).toBe('audit-001')
-    expect(entry.entityId).toBe(ORG_ID)
+    expect(entry.orgId).toBe(ORG_ID)
     expect(entry.actorId).toBe(ACTOR_ID)
     expect(entry.role).toBe(OrgRole.SALES)
     expect(entry.entityType).toBe(CommerceEntityType.QUOTE)
@@ -83,7 +83,7 @@ describe('buildTransitionAuditEntry', () => {
       quoteMachine,
       QuoteStatus.SENT,
       QuoteStatus.ACCEPTED,
-      { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.ADMIN, meta: {} },
+      { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.ADMIN, meta: {} },
       ORG_ID,
       {},
     )
@@ -101,7 +101,7 @@ describe('buildTransitionAuditEntry', () => {
       quoteMachine,
       QuoteStatus.READY,
       QuoteStatus.SENT,
-      { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
+      { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
       ORG_ID,
       {},
     )
@@ -118,7 +118,7 @@ describe('buildTransitionAuditEntry', () => {
       quoteMachine,
       QuoteStatus.DRAFT,
       QuoteStatus.PRICING,
-      { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
+      { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
       ORG_ID,
       {},
     )
@@ -140,7 +140,7 @@ describe('buildActionAuditEntry', () => {
     const entry = buildActionAuditEntry(makeActionCtx())
 
     expect(entry.id).toBe('audit-action-001')
-    expect(entry.entityId).toBe(ORG_ID)
+    expect(entry.orgId).toBe(ORG_ID)
     expect(entry.action).toBe(AuditAction.PAYMENT_RECORDED)
     expect(entry.fromState).toBeNull()
     expect(entry.toState).toBeNull()
@@ -168,7 +168,7 @@ describe('validateAuditEntry', () => {
       quoteMachine,
       QuoteStatus.DRAFT,
       QuoteStatus.PRICING,
-      { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
+      { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
       ORG_ID,
       {},
     )
@@ -188,7 +188,7 @@ describe('validateAuditEntry', () => {
   it('should detect missing fields', () => {
     const bad = {
       id: '',
-      entityId: '',
+      orgId: '',
       actorId: '',
       role: '' as OrgRole,
       entityType: '' as CommerceEntityType,
@@ -206,7 +206,7 @@ describe('validateAuditEntry', () => {
     const errors = validateAuditEntry(bad)
     expect(errors.length).toBeGreaterThan(0)
     expect(errors).toContain('id is required')
-    expect(errors).toContain('entityId is required (org scope)')
+    expect(errors).toContain('orgId is required (org scope)')
   })
 
   it('should require fromState/toState for state transitions', () => {
@@ -251,7 +251,7 @@ describe('summarizeAuditTrail', () => {
       quoteMachine,
       QuoteStatus.DRAFT,
       QuoteStatus.PRICING,
-      { entityId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
+      { orgId: ORG_ID, actorId: ACTOR_ID, role: OrgRole.SALES, meta: {} },
       ORG_ID,
       {},
     )
@@ -268,7 +268,7 @@ describe('summarizeAuditTrail', () => {
     const summary = summarizeAuditTrail([entry1, entry2])
 
     expect(summary.entryCount).toBe(2)
-    expect(summary.entityId).toBe(ORG_ID)
+    expect(summary.orgId).toBe(ORG_ID)
     expect(summary.actors).toContain(ACTOR_ID)
     expect(summary.actors).toContain('actor-002')
     expect(summary.firstEntry).toBe('2026-01-15T10:00:00.000Z')

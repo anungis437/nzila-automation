@@ -14,7 +14,7 @@ import {
   type AuditedScopedDb,
 } from '@nzila/db'
 import { platformDb } from '@nzila/db/platform'
-import { entityMembers } from '@nzila/db/schema'
+import { orgMembers } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { createRequestContext, runWithContext } from '@nzila/os-core'
 
@@ -47,7 +47,7 @@ export async function authenticateUser(): Promise<
  * Combines Clerk auth with createAuditedScopedDb so routes get a
  * write-enabled, auto-auditing DB in one call.
  */
-export async function getAuditedDb(entityId: string): Promise<
+export async function getAuditedDb(orgId: string): Promise<
   | { ok: true; db: AuditedScopedDb; userId: string }
   | { ok: false; response: NextResponse }
 > {
@@ -55,7 +55,7 @@ export async function getAuditedDb(entityId: string): Promise<
   if (!authResult.ok) return authResult
 
   const db = createAuditedScopedDb({
-    orgId: entityId,
+    orgId: orgId,
     actorId: authResult.userId,
   })
 
@@ -65,16 +65,16 @@ export async function getAuditedDb(entityId: string): Promise<
 /**
  * Create a read-only, Org-scoped database for the given entity.
  */
-export function getReadOnlyDb(entityId: string) {
-  return createScopedDb({ orgId: entityId })
+export function getReadOnlyDb(orgId: string) {
+  return createScopedDb({ orgId: orgId })
 }
 
 /**
  * Require entity access — ensures the authenticated user is a member
- * of the entity (via entity_members table lookup).
+ * of the entity (via org_members table lookup).
  */
-export async function requireEntityAccess(
-  entityId: string,
+export async function requireOrgAccess(
+  orgId: string,
 ): Promise<
   | { ok: true; userId: string }
   | { ok: false; response: NextResponse }
@@ -84,11 +84,11 @@ export async function requireEntityAccess(
 
   const [membership] = await platformDb
     .select()
-    .from(entityMembers)
+    .from(orgMembers)
     .where(
       and(
-        eq(entityMembers.entityId, entityId),
-        eq(entityMembers.clerkUserId, authResult.userId),
+        eq(orgMembers.orgId, orgId),
+        eq(orgMembers.clerkUserId, authResult.userId),
       ),
     )
     .limit(1)

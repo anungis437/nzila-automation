@@ -84,7 +84,7 @@ export interface CommerceArtifactDescriptor {
  */
 export interface CommerceEvidenceRequest {
   /** Org scope */
-  readonly entityId: string
+  readonly orgId: string
   /** Commerce entity type (quote, order, invoice, etc.) */
   readonly entityType: CommerceEntityType
   /** ID of the commerce entity generating evidence */
@@ -106,7 +106,7 @@ export interface CommerceEvidencePackResult {
   /** Generated pack ID */
   readonly packId: string
   /** Org scope */
-  readonly entityId: string
+  readonly orgId: string
   /** Control family from COMMERCE_CONTROL_MAPPINGS */
   readonly controlFamily: string
   /** Controls covered */
@@ -151,7 +151,7 @@ export function buildCommerceEvidencePack(
 
   return {
     packId,
-    entityId: req.entityId,
+    orgId: req.orgId,
     controlFamily,
     controlsCovered,
     retentionClass,

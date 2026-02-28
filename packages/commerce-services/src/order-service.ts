@@ -55,7 +55,7 @@ export interface OrderLineInput {
 
 export interface OrderEntity {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly ref: string
   readonly customerId: string
   readonly quoteId: string
@@ -101,7 +101,7 @@ export interface OrderRepository {
 export function createOrderService(repo: OrderRepository) {
   function buildTransitionCtx(ctx: OrgContext): TransitionContext {
     return {
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       meta: {},
@@ -118,7 +118,7 @@ export function createOrderService(repo: OrderRepository) {
       order.status,
       targetStatus,
       buildTransitionCtx(ctx),
-      order.entityId,
+      order.orgId,
       order,
     )
   }
@@ -132,7 +132,7 @@ export function createOrderService(repo: OrderRepository) {
     const ref = await repo.nextRef(ctx)
 
     const order = await repo.createOrder(ctx, {
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       ref,
       customerId: input.customerId,
       quoteId: input.quoteId,
@@ -159,7 +159,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildActionAuditEntry({
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -185,7 +185,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -209,7 +209,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -234,7 +234,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -258,7 +258,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -282,7 +282,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -307,7 +307,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -332,7 +332,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -357,7 +357,7 @@ export function createOrderService(repo: OrderRepository) {
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.ORDER,
@@ -375,7 +375,7 @@ export function createOrderService(repo: OrderRepository) {
     order: OrderEntity,
   ): readonly string[] {
     const tctx = buildTransitionCtx(ctx)
-    return getAvailableTransitions(orderMachine, order.status, tctx, order.entityId, order)
+    return getAvailableTransitions(orderMachine, order.status, tctx, order.orgId, order)
       .map((t) => t.to)
   }
 

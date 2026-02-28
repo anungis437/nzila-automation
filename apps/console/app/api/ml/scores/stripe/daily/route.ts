@@ -6,10 +6,10 @@
  *
  * RBAC:
  *   - View scores: any active entity member
- *   - includeFeatures=true: entity_admin only
+ *   - includeFeatures=true: org_admin only
  *
  * Query params:
- *   entityId        required
+ *   orgId        required
  *   startDate       required (YYYY-MM-DD)
  *   endDate         required (YYYY-MM-DD)
  *   modelKey        optional — filters to scores from a specific model key
@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { mlScoresStripeDaily, mlModels } from '@nzila/db/schema'
 import { eq, and, gte, lte } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('ml:scores:stripe:daily')
@@ -30,26 +30,26 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityId = searchParams.get('entityId')
+    const orgId = searchParams.get('orgId')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
     const modelKey = searchParams.get('modelKey')
     const includeFeatures = searchParams.get('includeFeatures') === 'true'
 
-    if (!entityId || !startDate || !endDate) {
+    if (!orgId || !startDate || !endDate) {
       return NextResponse.json(
-        { error: 'entityId, startDate, and endDate are required' },
+        { error: 'orgId, startDate, and endDate are required' },
         { status: 400 },
       )
     }
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
-    // featuresJson only allowed for entity_admin
-    if (includeFeatures && access.context.membership?.role !== 'entity_admin') {
+    // featuresJson only allowed for org_admin
+    if (includeFeatures && access.context.membership?.role !== 'org_admin') {
       return NextResponse.json(
-        { error: 'Forbidden: includeFeatures requires entity_admin role' },
+        { error: 'Forbidden: includeFeatures requires org_admin role' },
         { status: 403 },
       )
     }
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
       const models = await platformDb
         .select({ id: mlModels.id })
         .from(mlModels)
-        .where(and(eq(mlModels.entityId, entityId), eq(mlModels.modelKey, modelKey)))
+        .where(and(eq(mlModels.orgId, orgId), eq(mlModels.modelKey, modelKey)))
       modelIds = models.map((m) => m.id)
       if (modelIds.length === 0) {
         return NextResponse.json([], { status: 200 })
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
       .innerJoin(mlModels, eq(mlScoresStripeDaily.modelId, mlModels.id))
       .where(
         and(
-          eq(mlScoresStripeDaily.entityId, entityId),
+          eq(mlScoresStripeDaily.orgId, orgId),
           gte(mlScoresStripeDaily.date, startDate),
           lte(mlScoresStripeDaily.date, endDate),
         ),

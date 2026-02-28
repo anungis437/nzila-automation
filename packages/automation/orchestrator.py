@@ -178,7 +178,7 @@ class MigrationOrchestrator:
                 "duration_weeks": profile["migration_estimate_weeks"],
                 "end_week": current_week + profile["migration_estimate_weeks"],
                 "complexity": profile["complexity"],
-                "entities": profile["entity_count"]
+                "orgs": profile["entity_count"]
             }
             plan["phases"].append(phase)
             current_week += profile["migration_estimate_weeks"]
@@ -308,7 +308,7 @@ class MigrationOrchestrator:
                 lines.append(f"- **Platform**: `{phase['platform_id']}`\n")
                 lines.append(f"- **Weeks {phase['start_week']+1}-{phase['end_week']}** ({phase['duration_weeks']} weeks)\n")
                 lines.append(f"- **Complexity**: {phase['complexity']}\n")
-                lines.append(f"- **Entities**: {phase['entities']}\n\n")
+                lines.append(f"- **Entities**: {phase['orgs']}\n\n")
         
         with open(output_file, "w") as f:
             f.writelines(lines)

@@ -4,14 +4,14 @@
  * GET   /api/finance/indirect-tax/periods/[periodId]  → period detail + summary
  * PATCH /api/finance/indirect-tax/periods/[periodId]  → update period
  *
- * PR5 — Entity-scoped auth + audit events
+ * PR5 — Org-scoped auth + audit events
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { platformDb } from '@nzila/db/platform'
 import { indirectTaxPeriods, indirectTaxSummary, indirectTaxAccounts } from '@nzila/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { buildIndirectTaxDeadlines } from '@nzila/tax/deadlines'
 import {
   recordFinanceAuditEvent,
@@ -33,7 +33,7 @@ export async function GET(
     return NextResponse.json({ error: 'Period not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(period.entityId)
+  const access = await requireOrgAccess(period.orgId)
   if (!access.ok) return access.response
 
   // Get account info
@@ -43,7 +43,7 @@ export async function GET(
     .where(eq(indirectTaxAccounts.id, period.accountId))
 
   const deadlines = buildIndirectTaxDeadlines({
-    entityId: period.entityId,
+    orgId: period.orgId,
     taxType: period.taxType,
     filingDue: period.filingDue,
     paymentDue: period.paymentDue,
@@ -82,8 +82,8 @@ export async function PATCH(
     return NextResponse.json({ error: 'Period not found' }, { status: 404 })
   }
 
-  const access = await requireEntityAccess(existing.entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(existing.orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
@@ -101,7 +101,7 @@ export async function PATCH(
         : FINANCE_AUDIT_ACTIONS.INDIRECT_TAX_PERIOD_CREATE
 
   await recordFinanceAuditEvent({
-    entityId: existing.entityId,
+    orgId: existing.orgId,
     actorClerkUserId: access.context.userId,
     actorRole: access.context.membership?.role ?? access.context.platformRole,
     action: auditAction,

@@ -74,8 +74,8 @@ async function simulateSchemaRestore(dbUrl: string): Promise<DrSimulationStep> {
     try {
       // Check that core tables exist
       const coreTables = [
-        'entities',
-        'entity_members',
+        'orgs',
+        'org_members',
         'audit_events',
         'documents',
         'evidence_packs',

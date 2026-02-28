@@ -130,7 +130,7 @@ describe('mapLegacyClient', () => {
 
     expect(result.data.name).toBe('Acme Corp')
     expect(result.data.email).toBe('jane@acme.com')
-    expect(result.data.entityId).toBe(TEST_ENTITY_ID)
+    expect(result.data.orgId).toBe(TEST_ENTITY_ID)
     expect(result.data.externalIds.legacyClientId).toBe('cli-legacy-001')
     expect(result.data.address).not.toBeNull()
     expect(result.data.address?.city).toBe('Montréal')
@@ -252,7 +252,7 @@ describe('buildMigrationContext', () => {
   it('builds OrgContext for migration operations', () => {
     const config = { ...DEFAULT_ADAPTER_CONFIG, defaultEntityId: 'ent-test' }
     const ctx = buildMigrationContext(config, 'req-123')
-    expect(ctx.entityId).toBe('ent-test')
+    expect(ctx.orgId).toBe('ent-test')
     expect(ctx.actorId).toBe('system:migration')
     expect(ctx.requestId).toBe('req-123')
     expect(ctx.permissions).toContain('commerce:quote:create')

@@ -3,7 +3,7 @@
  *
  * NzilaOS PR-UE-03: Mirrors packages/db/src/org-registry.ts for UE's local schema.
  *
- * UE tables use `org_id` (not `entity_id` like the shared package schema).
+ * UE tables use `org_id` (not `org_id` like the shared package schema).
  * This registry tracks which UE tables are org-scoped and must be filtered
  * by orgId in all queries.
  *

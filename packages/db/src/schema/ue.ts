@@ -17,7 +17,7 @@ import {
   integer,
   index,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── ueCases ───────────────────────────────────────────────────────────────────
 
@@ -25,9 +25,9 @@ export const ueCases = pgTable(
   'ue_cases',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
 
     /** Case category / type (e.g., "grievance", "inquiry", "complaint") */
     category: text('category'),
@@ -62,8 +62,8 @@ export const ueCases = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('ue_cases_entity_id_idx').on(table.entityId),
-    index('ue_cases_entity_status_idx').on(table.entityId, table.status),
-    index('ue_cases_entity_created_at_idx').on(table.entityId, table.createdAt),
+    index('ue_cases_entity_id_idx').on(table.orgId),
+    index('ue_cases_entity_status_idx').on(table.orgId, table.status),
+    index('ue_cases_entity_created_at_idx').on(table.orgId, table.createdAt),
   ],
 )

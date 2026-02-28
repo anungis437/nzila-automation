@@ -70,7 +70,7 @@ describe('API Authorization Contract (INV-04)', () => {
       /withAuth\(/,
       /getAuth\(/,
       /currentUser\(\)/,
-      /requireEntityAccess\(/,
+      /requireOrgAccess\(/,
       /verifyWebhookSignature\(/,
       /authenticateUser\(/,
       /requirePlatformRole\(/,

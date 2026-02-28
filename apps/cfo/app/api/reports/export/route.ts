@@ -20,7 +20,7 @@ interface ReportRow {
   createdAt: string
   generatedBy: string
   narrative: string | null
-  entityId: string | null
+  orgId: string | null
 }
 
 export async function GET(request: NextRequest) {
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
             sql`SELECT id, metadata->>'title' as title, metadata->>'type' as type,
               metadata->>'status' as status, metadata->>'period' as period,
               created_at as "createdAt", actor_id as "generatedBy",
-              metadata->>'narrative' as narrative, entity_id as "entityId"
+              metadata->>'narrative' as narrative, org_id as "orgId"
             FROM audit_log WHERE id = ${reportId}
             AND (action = 'report.generated' OR action = 'report.created')`,
           )) as unknown as { rows: ReportRow[] }
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
             sql`SELECT id, metadata->>'title' as title, metadata->>'type' as type,
               metadata->>'status' as status, metadata->>'period' as period,
               created_at as "createdAt", actor_id as "generatedBy",
-              metadata->>'narrative' as narrative, entity_id as "entityId"
+              metadata->>'narrative' as narrative, org_id as "orgId"
             FROM audit_log
             WHERE action = 'report.generated' OR action = 'report.created'
             ORDER BY created_at DESC LIMIT 500`,
@@ -115,7 +115,7 @@ function generateCsv(rows: ReportRow[]): string {
         escapeCsv(row.period),
         escapeCsv(row.createdAt),
         escapeCsv(row.generatedBy),
-        escapeCsv(row.entityId),
+        escapeCsv(row.orgId),
         escapeCsv(row.narrative),
       ].join(','),
     )

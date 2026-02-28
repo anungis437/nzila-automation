@@ -2,10 +2,10 @@
 /**
  * API — Year-End Pack
  *
- * GET  /api/finance/year-end-pack?entityId=&fiscalYear=  → completeness status
+ * GET  /api/finance/year-end-pack?orgId=&fiscalYear=  → completeness status
  * POST /api/finance/year-end-pack                        → build / refresh manifest
  *
- * PR5 — Entity-scoped auth + audit events
+ * PR5 — Org-scoped auth + audit events
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -23,7 +23,7 @@ import {
   financeGovernanceLinks,
 } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import {
   buildYearEndManifest,
   evaluatePackCompleteness,
@@ -39,23 +39,23 @@ import {
 } from '@/lib/finance-audit'
 
 export async function GET(req: NextRequest) {
-  const entityId = req.nextUrl.searchParams.get('entityId')
+  const orgId = req.nextUrl.searchParams.get('orgId')
   const fiscalYear = req.nextUrl.searchParams.get('fiscalYear')
-  if (!entityId || !fiscalYear) {
+  if (!orgId || !fiscalYear) {
     return NextResponse.json(
-      { error: 'entityId and fiscalYear are required' },
+      { error: 'orgId and fiscalYear are required' },
       { status: 400 },
     )
   }
 
-  const access = await requireEntityAccess(entityId)
+  const access = await requireOrgAccess(orgId)
   if (!access.ok) return access.response
 
   // Find the tax year
   const [taxYear] = await platformDb
     .select()
     .from(taxYears)
-    .where(and(eq(taxYears.entityId, entityId), eq(taxYears.fiscalYearLabel, fiscalYear)))
+    .where(and(eq(taxYears.orgId, orgId), eq(taxYears.fiscalYearLabel, fiscalYear)))
 
   if (!taxYear) {
     return NextResponse.json(
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
   const [profile] = await platformDb
     .select()
     .from(taxProfiles)
-    .where(eq(taxProfiles.entityId, entityId))
+    .where(eq(taxProfiles.orgId, orgId))
 
   const isQcEntity = profile?.provinceOfRegistration === 'QC'
 
@@ -78,10 +78,10 @@ export async function GET(req: NextRequest) {
       platformDb.select().from(taxFilings).where(eq(taxFilings.taxYearId, taxYear.id)),
       platformDb.select().from(taxNotices).where(eq(taxNotices.taxYearId, taxYear.id)),
       platformDb.select().from(taxInstallments).where(eq(taxInstallments.taxYearId, taxYear.id)),
-      platformDb.select().from(indirectTaxAccounts).where(eq(indirectTaxAccounts.entityId, entityId)),
-      platformDb.select().from(indirectTaxPeriods).where(eq(indirectTaxPeriods.entityId, entityId)),
-      platformDb.select().from(financeGovernanceLinks).where(eq(financeGovernanceLinks.entityId, entityId)),
-      platformDb.select().from(closePeriods).where(eq(closePeriods.entityId, entityId)),
+      platformDb.select().from(indirectTaxAccounts).where(eq(indirectTaxAccounts.orgId, orgId)),
+      platformDb.select().from(indirectTaxPeriods).where(eq(indirectTaxPeriods.orgId, orgId)),
+      platformDb.select().from(financeGovernanceLinks).where(eq(financeGovernanceLinks.orgId, orgId)),
+      platformDb.select().from(closePeriods).where(eq(closePeriods.orgId, orgId)),
       platformDb.select().from(closeApprovals),
     ])
 
@@ -132,7 +132,7 @@ export async function GET(req: NextRequest) {
   const allQstFiled = qstPeriods.length > 0 && qstPeriods.every((p) => p.status === 'filed' || p.status === 'paid' || p.status === 'closed')
 
   const packInput: YearEndPackInput = {
-    entityId,
+    orgId,
     fiscalYear,
     financial: {
       // Financial artifacts come from QBO sync (documents) — reference by doc ID if available
@@ -165,7 +165,7 @@ export async function GET(req: NextRequest) {
   const manifest = buildYearEndManifest(packInput)
   const completeness = evaluatePackCompleteness(manifest, isQcEntity)
   const deadlines = sortDeadlines(buildTaxYearDeadlines(taxYear))
-  const basePath = yearEndPackBasePath(entityId, fiscalYear)
+  const basePath = yearEndPackBasePath(orgId, fiscalYear)
 
   // Auto-calculated CRA statutory deadlines from the entity's FYE + province
   const fye = profile?.fiscalYearEnd ?? '12-31'
@@ -200,26 +200,26 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const YearEndPackPostSchema = z.object({
-    entityId: z.string().min(1),
+    orgId: z.string().min(1),
     fiscalYear: z.string().min(1),
   })
   const parsed = YearEndPackPostSchema.safeParse(await req.json())
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'entityId and fiscalYear are required' },
+      { error: 'orgId and fiscalYear are required' },
       { status: 400 },
     )
   }
-  const { entityId, fiscalYear } = parsed.data
+  const { orgId, fiscalYear } = parsed.data
 
-  const access = await requireEntityAccess(entityId, {
-    minRole: 'entity_secretary',
+  const access = await requireOrgAccess(orgId, {
+    minRole: 'org_secretary',
   })
   if (!access.ok) return access.response
 
   // Rebuild manifest via GET logic
   const url = new URL(req.url)
-  url.searchParams.set('entityId', entityId)
+  url.searchParams.set('orgId', orgId)
   url.searchParams.set('fiscalYear', fiscalYear)
 
   const response = await GET(
@@ -230,12 +230,12 @@ export async function POST(req: NextRequest) {
   if (response.ok) {
     const data = await response.clone().json()
     await recordFinanceAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: access.context.userId,
       actorRole: access.context.membership?.role ?? access.context.platformRole,
       action: FINANCE_AUDIT_ACTIONS.EVIDENCE_PACK_GENERATED,
       targetType: 'year_end_pack',
-      targetId: `${entityId}:${fiscalYear}`,
+      targetId: `${orgId}:${fiscalYear}`,
       afterJson: {
         fiscalYear,
         completeness: data.completeness?.percentage,

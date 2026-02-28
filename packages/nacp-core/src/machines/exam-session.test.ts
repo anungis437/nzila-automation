@@ -12,7 +12,7 @@ const ORG_ID = 'org-uuid-001'
 
 function makeCtx(overrides: Partial<TransitionContext<NacpRole>> = {}): TransitionContext<NacpRole> {
   return {
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     actorId: 'actor-uuid-001',
     role: NacpRole.ADMIN,
     meta: {},
@@ -23,7 +23,7 @@ function makeCtx(overrides: Partial<TransitionContext<NacpRole>> = {}): Transiti
 function makeSession(overrides: Partial<ExamSession> = {}): ExamSession {
   return {
     id: 'session-uuid-001',
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     examId: 'exam-uuid-001',
     centerId: 'center-uuid-001',
     ref: 'SES-ENT-000001' as ExamSession['ref'],
@@ -175,7 +175,7 @@ describe('examSessionMachine', () => {
         examSessionMachine,
         ExamSessionStatus.SCHEDULED,
         ExamSessionStatus.OPENED,
-        makeCtx({ entityId: 'different-org-uuid' }),
+        makeCtx({ orgId: 'different-org-uuid' }),
         ORG_ID,
         makeSession(),
       )

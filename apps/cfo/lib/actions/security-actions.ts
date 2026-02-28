@@ -298,7 +298,7 @@ export async function runSecurityScan(): Promise<{ success: boolean; findings: n
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata)
+      sql`INSERT INTO audit_log (action, actor_id, entity_type, org_id, metadata)
       VALUES ('security.scan', ${userId}, 'security', 'platform',
         ${JSON.stringify({ type: 'on-demand', initiatedBy: userId, status: 'completed', findings: 0 })}::jsonb)`,
     )

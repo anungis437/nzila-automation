@@ -17,18 +17,18 @@ export const dynamic = 'force-dynamic'
 
 const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
-async function getKnowledgeData(entityId: string) {
+async function getKnowledgeData(orgId: string) {
   const sources = await platformDb
     .select()
     .from(aiKnowledgeSources)
-    .where(eq(aiKnowledgeSources.entityId, entityId))
+    .where(eq(aiKnowledgeSources.orgId, orgId))
     .orderBy(desc(aiKnowledgeSources.createdAt))
     .limit(50)
 
   const ingestionRuns = await platformDb
     .select()
     .from(aiKnowledgeIngestionRuns)
-    .where(eq(aiKnowledgeIngestionRuns.entityId, entityId))
+    .where(eq(aiKnowledgeIngestionRuns.orgId, orgId))
     .orderBy(desc(aiKnowledgeIngestionRuns.createdAt))
     .limit(100)
 
@@ -63,7 +63,7 @@ export default async function AiKnowledgePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">AI Knowledge Sources</h1>
-        <IngestButton entityId={DEFAULT_ENTITY_ID} />
+        <IngestButton orgId={DEFAULT_ENTITY_ID} />
       </div>
 
       <div className="rounded-lg border">

@@ -47,7 +47,7 @@ export interface FeatureSpec {
 
 export interface MlModel {
   id: string
-  entityId: string
+  orgId: string
   modelKey: string
   algorithm: string
   version: number
@@ -65,7 +65,7 @@ export interface MlModel {
 
 export interface MlTrainingRun {
   id: string
-  entityId: string
+  orgId: string
   modelKey: string
   datasetId: string
   status: MlRunStatus
@@ -77,7 +77,7 @@ export interface MlTrainingRun {
 
 export interface MlInferenceRun {
   id: string
-  entityId: string
+  orgId: string
   modelId: string
   status: MlRunStatus
   startedAt: string
@@ -91,7 +91,7 @@ export interface MlInferenceRun {
 
 export interface MlScoreStripeDaily {
   id: string
-  entityId: string
+  orgId: string
   date: string
   featuresJson: Record<string, unknown>
   score: string
@@ -109,7 +109,7 @@ export type UEPriorityClass = 'low' | 'medium' | 'high' | 'critical'
 
 export interface MlScoreUECasePriority {
   id: string
-  entityId: string
+  orgId: string
   caseId: string
   occurredAt: string
   /** Calibrated confidence for predictedPriority — range 0..1 */
@@ -125,7 +125,7 @@ export interface MlScoreUECasePriority {
 
 export interface MlScoreUESlaRisk {
   id: string
-  entityId: string
+  orgId: string
   caseId: string
   occurredAt: string
   /** P(SLA breach) — range 0..1 */
@@ -140,7 +140,7 @@ export interface MlScoreUESlaRisk {
 }
 export interface MlScoreStripeTxn {
   id: string
-  entityId: string
+  orgId: string
   stripeEventId: string | null
   stripeChargeId: string | null
   stripePaymentIntentId: string | null

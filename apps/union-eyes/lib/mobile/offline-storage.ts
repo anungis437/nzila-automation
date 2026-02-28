@@ -465,7 +465,7 @@ export interface SyncOperation {
   type: 'create' | 'update' | 'delete';
   entity: 'claim' | 'member' | 'message' | 'document';
   data: Record<string, unknown>;
-  entityId: string;
+  orgId: string;
 }
 
 export interface QueuedOperation extends SyncOperation {

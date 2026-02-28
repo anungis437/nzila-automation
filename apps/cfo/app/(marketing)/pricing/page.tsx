@@ -7,7 +7,7 @@ const plans = [
     price: "Contact Us",
     description: "For firms onboarding their first VCFO clients.",
     features: [
-      "Up to 10 client entities",
+      "Up to 10 client orgs",
       "AI-powered financial reports",
       "Document management",
       "Tax deadline tracking",
@@ -24,7 +24,7 @@ const plans = [
     description:
       "For growing advisory practices scaling their VCFO services.",
     features: [
-      "Unlimited client entities",
+      "Unlimited client orgs",
       "AI-powered financial reports",
       "Document management with blob storage",
       "Full tax compliance engine",

@@ -18,7 +18,7 @@ async function getReleaseDetail(releaseId: string) {
   try {
     const [row] = (await platformDb.execute(
       sql`SELECT
-        entity_id as id, metadata->>'title' as title,
+        org_id as id, metadata->>'title' as title,
         metadata->>'status' as status,
         metadata->>'type' as type,
         metadata->>'trackCount' as "trackCount",
@@ -28,7 +28,7 @@ async function getReleaseDetail(releaseId: string) {
         metadata->'royaltySplits' as "royaltySplits",
         created_at as "createdAt"
       FROM audit_log
-      WHERE entity_id = ${releaseId} AND action LIKE 'release.%'
+      WHERE org_id = ${releaseId} AND action LIKE 'release.%'
       ORDER BY created_at DESC
       LIMIT 1`,
     )) as unknown as [Record<string, unknown> | undefined]
@@ -43,7 +43,7 @@ async function getReleaseTracks(releaseId: string) {
   try {
     const result = (await platformDb.execute(
       sql`SELECT
-        entity_id as id,
+        org_id as id,
         metadata->>'title' as title,
         metadata->>'genre' as genre,
         metadata->>'creatorName' as "creatorName",

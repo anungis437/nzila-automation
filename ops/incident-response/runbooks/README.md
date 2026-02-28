@@ -28,15 +28,15 @@ During and after every incident, capture the following:
 
 | Step | Artifact | How to Generate | Where to Store |
 |---|---|---|---|
-| Detect | Alert screenshot/log, incident ticket | Copy from monitoring/PagerDuty | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/detection/{incident_id}/` |
-| Contain | Containment actions log (systems isolated, IPs blocked) | Document manually or export from firewall/network tools | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/containment-log/{incident_id}/` |
-| Eradicate | Patch/fix details, credential rotation log | Export from CI/CD, Clerk admin | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/eradication/{incident_id}/` |
-| Recover | Health check results, monitoring dashboard snapshot | Capture from monitoring tools | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/recovery/{incident_id}/` |
-| PIR | Postmortem PDF, remediation tracker, audit trail export | Use postmortem template, export from DB | `evidence/{entity_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/` |
+| Detect | Alert screenshot/log, incident ticket | Copy from monitoring/PagerDuty | `evidence/{org_id}/incident-response/{YYYY}/{MM}/detection/{incident_id}/` |
+| Contain | Containment actions log (systems isolated, IPs blocked) | Document manually or export from firewall/network tools | `evidence/{org_id}/incident-response/{YYYY}/{MM}/containment-log/{incident_id}/` |
+| Eradicate | Patch/fix details, credential rotation log | Export from CI/CD, Clerk admin | `evidence/{org_id}/incident-response/{YYYY}/{MM}/eradication/{incident_id}/` |
+| Recover | Health check results, monitoring dashboard snapshot | Capture from monitoring tools | `evidence/{org_id}/incident-response/{YYYY}/{MM}/recovery/{incident_id}/` |
+| PIR | Postmortem PDF, remediation tracker, audit trail export | Use postmortem template, export from DB | `evidence/{org_id}/incident-response/{YYYY}/{MM}/postmortem/{incident_id}/` |
 
 ### Required Metadata Fields
 
-- `entity_id` — Which legal entity was affected
+- `org_id` — Which legal entity was affected
 - `artifact_id` — e.g., `IR-2026-001-containment`
 - `sha256` — Auto-computed by `@nzila/blob` at upload
 - `created_by` — Clerk user ID of the person uploading

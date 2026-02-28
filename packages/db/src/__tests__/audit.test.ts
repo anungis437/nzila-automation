@@ -6,7 +6,7 @@
  *   2. Update → audit event emitted automatically
  *   3. Delete → audit event emitted automatically
  *   4. Select → no audit event (reads are not audited)
- *   5. Audit context validation (entityId mismatch → throw)
+ *   5. Audit context validation (orgId mismatch → throw)
  *   6. Correlation ID propagation
  *   7. Audit immutability contract preserved
  */
@@ -21,15 +21,14 @@ const ACTOR_ID = 'user_2abc123'
 
 // ── Mock ScopedDb ──────────────────────────────────────────────────────────
 
-function createMockScopedDb(entityId: string): ScopedDb {
+function createMockScopedDb(orgId: string): ScopedDb {
   return {
-    orgId: entityId,
-    entityId,
+    orgId,
     select: vi.fn().mockReturnValue(Promise.resolve([])),
     insert: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([]) }),
     update: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([]) }),
     delete: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([]) }),
-    transaction: vi.fn().mockImplementation(async (fn) => fn(createMockScopedDb(entityId))),
+    transaction: vi.fn().mockImplementation(async (fn) => fn(createMockScopedDb(orgId))),
   }
 }
 
@@ -38,7 +37,7 @@ function createMockScopedDb(entityId: string): ScopedDb {
 const mockTable = {
   [Symbol.for('drizzle:Name')]: 'meetings',
   id: { name: 'id' },
-  entityId: { name: 'entity_id' },
+  orgId: { name: 'org_id' },
 }
 
 // ── 1. Audit emission on mutations ──────────────────────────────────────────
@@ -49,14 +48,14 @@ describe('withAudit — automatic audit emission', () => {
     const emitter: AuditEmitter = async (event) => { emitted.push(event) }
 
     const scopedDb = createMockScopedDb(ENTITY_ID)
-    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, entityId: ENTITY_ID }, emitter)
+    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, orgId: ENTITY_ID }, emitter)
 
     auditedDb.insert(mockTable as any, { kind: 'board' })
 
     expect(emitted).toHaveLength(1)
     expect(emitted[0].action).toBe('insert')
     expect(emitted[0].table).toBe('meetings')
-    expect(emitted[0].entityId).toBe(ENTITY_ID)
+    expect(emitted[0].orgId).toBe(ENTITY_ID)
     expect(emitted[0].actorId).toBe(ACTOR_ID)
     expect(emitted[0].correlationId).toBeTruthy()
     expect(emitted[0].timestamp).toBeTruthy()
@@ -67,7 +66,7 @@ describe('withAudit — automatic audit emission', () => {
     const emitter: AuditEmitter = async (event) => { emitted.push(event) }
 
     const scopedDb = createMockScopedDb(ENTITY_ID)
-    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, entityId: ENTITY_ID }, emitter)
+    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, orgId: ENTITY_ID }, emitter)
 
     auditedDb.update(mockTable as any, { status: 'held' })
 
@@ -82,7 +81,7 @@ describe('withAudit — automatic audit emission', () => {
     const emitter: AuditEmitter = async (event) => { emitted.push(event) }
 
     const scopedDb = createMockScopedDb(ENTITY_ID)
-    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, entityId: ENTITY_ID }, emitter)
+    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, orgId: ENTITY_ID }, emitter)
 
     auditedDb.delete(mockTable as any)
 
@@ -96,7 +95,7 @@ describe('withAudit — automatic audit emission', () => {
     const emitter: AuditEmitter = async (event) => { emitted.push(event) }
 
     const scopedDb = createMockScopedDb(ENTITY_ID)
-    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, entityId: ENTITY_ID }, emitter)
+    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, orgId: ENTITY_ID }, emitter)
 
     auditedDb.select(mockTable as any)
 
@@ -107,19 +106,19 @@ describe('withAudit — automatic audit emission', () => {
 // ── 2. Context validation ──────────────────────────────────────────────────
 
 describe('withAudit — context validation', () => {
-  it('throws when entityId mismatch between scopedDb and context', () => {
+  it('throws when orgId mismatch between scopedDb and context', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     const differentEntityId = '550e8400-e29b-41d4-a716-446655440099'
 
     expect(() =>
-      withAudit(scopedDb, { actorId: ACTOR_ID, entityId: differentEntityId }),
+      withAudit(scopedDb, { actorId: ACTOR_ID, orgId: differentEntityId }),
     ).toThrow('does not match')
   })
 
   it('accepts matching entityIds', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     expect(() =>
-      withAudit(scopedDb, { actorId: ACTOR_ID, entityId: ENTITY_ID }),
+      withAudit(scopedDb, { actorId: ACTOR_ID, orgId: ENTITY_ID }),
     ).not.toThrow()
   })
 })
@@ -135,7 +134,7 @@ describe('withAudit — correlation ID', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     const auditedDb = withAudit(
       scopedDb,
-      { actorId: ACTOR_ID, entityId: ENTITY_ID, correlationId },
+      { actorId: ACTOR_ID, orgId: ENTITY_ID, correlationId },
       emitter,
     )
 
@@ -150,7 +149,7 @@ describe('withAudit — correlation ID', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     const auditedDb = withAudit(
       scopedDb,
-      { actorId: ACTOR_ID, entityId: ENTITY_ID },
+      { actorId: ACTOR_ID, orgId: ENTITY_ID },
       emitter,
     )
 
@@ -166,7 +165,7 @@ describe('withAudit — correlation ID', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     const auditedDb = withAudit(
       scopedDb,
-      { actorId: ACTOR_ID, entityId: ENTITY_ID },
+      { actorId: ACTOR_ID, orgId: ENTITY_ID },
       emitter,
     )
 
@@ -190,12 +189,12 @@ describe('withAudit — actor role', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     const auditedDb = withAudit(
       scopedDb,
-      { actorId: ACTOR_ID, entityId: ENTITY_ID, actorRole: 'entity_admin' },
+      { actorId: ACTOR_ID, orgId: ENTITY_ID, actorRole: 'org_admin' },
       emitter,
     )
 
     auditedDb.insert(mockTable as any, { kind: 'board' })
-    expect(emitted[0].actorRole).toBe('entity_admin')
+    expect(emitted[0].actorRole).toBe('org_admin')
   })
 
   it('omits actorRole when not provided', () => {
@@ -205,7 +204,7 @@ describe('withAudit — actor role', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
     const auditedDb = withAudit(
       scopedDb,
-      { actorId: ACTOR_ID, entityId: ENTITY_ID },
+      { actorId: ACTOR_ID, orgId: ENTITY_ID },
       emitter,
     )
 
@@ -217,15 +216,15 @@ describe('withAudit — actor role', () => {
 // ── 5. AuditedScopedDb properties ──────────────────────────────────────────
 
 describe('withAudit — AuditedScopedDb interface', () => {
-  it('exposes entityId from wrapped scopedDb', () => {
+  it('exposes orgId from wrapped scopedDb', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
-    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, entityId: ENTITY_ID })
-    expect(auditedDb.entityId).toBe(ENTITY_ID)
+    const auditedDb = withAudit(scopedDb, { actorId: ACTOR_ID, orgId: ENTITY_ID })
+    expect(auditedDb.orgId).toBe(ENTITY_ID)
   })
 
   it('exposes auditContext', () => {
     const scopedDb = createMockScopedDb(ENTITY_ID)
-    const context = { actorId: ACTOR_ID, entityId: ENTITY_ID, actorRole: 'entity_admin' }
+    const context = { actorId: ACTOR_ID, orgId: ENTITY_ID, actorRole: 'org_admin' }
     const auditedDb = withAudit(scopedDb, context)
 
     expect(auditedDb.auditContext).toEqual(context)

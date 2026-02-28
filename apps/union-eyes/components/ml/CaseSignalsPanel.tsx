@@ -14,7 +14,7 @@ import { PriorityBadge } from './PriorityBadge'
 import { SlaRiskBadge } from './SlaRiskBadge'
 
 interface CaseSignalsPanelProps {
-  entityId: string
+  orgId: string
   caseId: string
 }
 
@@ -59,20 +59,20 @@ function ModelMeta({
   )
 }
 
-export function CaseSignalsPanel({ entityId, caseId }: CaseSignalsPanelProps) {
+export function CaseSignalsPanel({ orgId, caseId }: CaseSignalsPanelProps) {
   const { getToken } = useAuth()
 
   const {
     score: priorityScore,
     isLoading: priorityLoading,
     error: priorityError,
-  } = useCasePrioritySignal(entityId, caseId, getToken)
+  } = useCasePrioritySignal(orgId, caseId, getToken)
 
   const {
     score: slaScore,
     isLoading: slaLoading,
     error: slaError,
-  } = useCaseSlaRiskSignal(entityId, caseId, getToken)
+  } = useCaseSlaRiskSignal(orgId, caseId, getToken)
 
   const anyLoading = priorityLoading || slaLoading
   const anyError = priorityError ?? slaError

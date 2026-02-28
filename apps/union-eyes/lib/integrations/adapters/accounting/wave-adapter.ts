@@ -7,7 +7,7 @@
  * - OAuth2 authentication
  * - GraphQL API
  * - Full sync (no incremental - Wave doesn&apos;t provide modification dates easily)
- * - Invoice, customer, payment entities
+ * - Invoice, customer, payment orgs
  * 
  * @see https://developer.waveapps.com/hc/en-us
  */
@@ -129,9 +129,9 @@ export class WaveAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, message: `Syncing ${entity}` });
 

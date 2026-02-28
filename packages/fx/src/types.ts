@@ -221,7 +221,7 @@ export interface DualCurrencyAmount {
  * Entity-level currency configuration.
  */
 export interface EntityCurrencyConfig {
-  entityId: string
+  orgId: string
   /** The entity's functional (reporting) currency — typically CAD for Canadian corps */
   functionalCurrency: CurrencyCode
   /** Currencies the entity transacts in */
@@ -248,7 +248,7 @@ export const ConversionRequestSchema = z.object({
 })
 
 export const EntityCurrencyConfigSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   functionalCurrency: CurrencyCodeSchema.default('CAD'),
   transactionCurrencies: z.array(CurrencyCodeSchema).default(['CAD']),
   rateSource: z.enum(['bank_of_canada', 'manual', 'ecb', 'fallback']).default('bank_of_canada'),

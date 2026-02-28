@@ -208,7 +208,7 @@ export const DocumentVaultSchema = z.object({
   
   // Metadata
   entityType: z.enum(['COMPANY', 'SHAREHOLDER', 'SHARE_CLASS', 'WORKFLOW']),
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   
   // Signatures
   requiresSignature: z.boolean().default(false),

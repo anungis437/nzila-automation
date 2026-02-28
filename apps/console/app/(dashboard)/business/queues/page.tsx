@@ -28,11 +28,11 @@ const iconMap = {
 }
 
 export default function QueuesPage() {
-  const [entities, setEntities] = useState<{ id: string; legalName: string }[]>([])
+  const [orgs, setEntities] = useState<{ id: string; legalName: string }[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -67,7 +67,7 @@ export default function QueuesPage() {
       count: 0,
       href: '/business/yearend',
       icon: 'yearend',
-      description: 'Annual compliance tasks due across entities',
+      description: 'Annual compliance tasks due across orgs',
     },
     {
       name: 'Documents',
@@ -87,7 +87,7 @@ export default function QueuesPage() {
         </p>
         <h1 className="text-2xl font-bold text-gray-900">Action Queues</h1>
         <p className="text-sm text-gray-500 mt-1">
-          All pending actions across your entities in one place.
+          All pending actions across your orgs in one place.
         </p>
       </div>
 
@@ -125,15 +125,15 @@ export default function QueuesPage() {
       <div className="border-t border-gray-200 pt-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">By Entity</h2>
         {loading ? (
-          <p className="text-gray-400 text-sm">Loading entities...</p>
-        ) : entities.length === 0 ? (
-          <p className="text-gray-400 text-sm">No entities yet.</p>
+          <p className="text-gray-400 text-sm">Loading orgs...</p>
+        ) : orgs.length === 0 ? (
+          <p className="text-gray-400 text-sm">No orgs yet.</p>
         ) : (
           <div className="space-y-2">
-            {entities.map((entity) => (
+            {orgs.map((entity) => (
               <Link
                 key={entity.id}
-                href={`/business/entities/${entity.id}`}
+                href={`/business/orgs/${entity.id}`}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <span className="text-sm font-medium text-gray-700">{entity.legalName}</span>

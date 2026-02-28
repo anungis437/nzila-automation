@@ -16,7 +16,7 @@ const ENTITY_ID = '00000000-0000-0000-0000-000000000001'
 
 describe('FinanceStripeMonthlyReportsProposalSchema', () => {
   const validProposal = {
-    entityId: ENTITY_ID,
+    orgId: ENTITY_ID,
     appKey: 'console',
     profileKey: 'finance-default',
     period: {
@@ -35,7 +35,7 @@ describe('FinanceStripeMonthlyReportsProposalSchema', () => {
 
   it('fills defaults for outputs and evidence', () => {
     const minimal = {
-      entityId: ENTITY_ID,
+      orgId: ENTITY_ID,
       appKey: 'console',
       profileKey: 'finance-default',
       period: {
@@ -63,8 +63,8 @@ describe('FinanceStripeMonthlyReportsProposalSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects missing entityId', () => {
-    const { entityId, ...rest } = validProposal
+  it('rejects missing orgId', () => {
+    const { orgId, ...rest } = validProposal
     const result = FinanceStripeMonthlyReportsProposalSchema.safeParse(rest)
     expect(result.success).toBe(false)
   })
@@ -75,8 +75,8 @@ describe('FinanceStripeMonthlyReportsProposalSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects non-UUID entityId', () => {
-    const bad = { ...validProposal, entityId: 'not-a-uuid' }
+  it('rejects non-UUID orgId', () => {
+    const bad = { ...validProposal, orgId: 'not-a-uuid' }
     const result = FinanceStripeMonthlyReportsProposalSchema.safeParse(bad)
     expect(result.success).toBe(false)
   })
@@ -86,7 +86,7 @@ describe('FinanceStripeMonthlyReportsProposalSchema', () => {
 
 describe('AiIngestKnowledgeSourceProposalSchema', () => {
   const validProposal = {
-    entityId: ENTITY_ID,
+    orgId: ENTITY_ID,
     appKey: 'console',
     profileKey: 'knowledge-default',
     source: {
@@ -116,7 +116,7 @@ describe('AiIngestKnowledgeSourceProposalSchema', () => {
 
   it('fills ingestion defaults', () => {
     const minimal = {
-      entityId: ENTITY_ID,
+      orgId: ENTITY_ID,
       appKey: 'console',
       profileKey: 'knowledge-default',
       source: { sourceType: 'manual_text', title: 'Test', text: 'Content here' },
@@ -191,7 +191,7 @@ describe('validateActionProposal', () => {
     const result = validateActionProposal(
       ACTION_TYPES.FINANCE_STRIPE_MONTHLY_REPORTS,
       {
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         appKey: 'console',
         profileKey: 'finance',
         period: { startDate: '2026-01-01', endDate: '2026-01-31', periodLabel: '2026-01' },
@@ -203,7 +203,7 @@ describe('validateActionProposal', () => {
   it('rejects invalid data for a recognized action type', () => {
     const result = validateActionProposal(
       ACTION_TYPES.FINANCE_STRIPE_MONTHLY_REPORTS,
-      { entityId: 'bad' },
+      { orgId: 'bad' },
     )
     expect(result.valid).toBe(false)
   })

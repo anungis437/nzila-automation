@@ -25,14 +25,14 @@ Governance actions produce evidence stored in the `minutebook` container:
 
 | Artifact | Format | Storage Path | Retention |
 |---|---|---|---|
-| Board resolution (signed) | PDF | `minutebook/{entity_id}/resolutions/{YYYY}/{doc_id}/resolution.pdf` | PERMANENT |
-| Meeting minutes | PDF | `minutebook/{entity_id}/meetings/{YYYY}/{meeting_id}/minutes.pdf` | PERMANENT |
-| Share certificate | PDF | `minutebook/{entity_id}/certificates/{YYYY}/{cert_id}/certificate.pdf` | PERMANENT |
-| Shareholder register export | CSV/PDF | `exports/{entity_id}/register/{YYYY}/{MM}/register.csv` | 7_YEARS |
+| Board resolution (signed) | PDF | `minutebook/{org_id}/resolutions/{YYYY}/{doc_id}/resolution.pdf` | PERMANENT |
+| Meeting minutes | PDF | `minutebook/{org_id}/meetings/{YYYY}/{meeting_id}/minutes.pdf` | PERMANENT |
+| Share certificate | PDF | `minutebook/{org_id}/certificates/{YYYY}/{cert_id}/certificate.pdf` | PERMANENT |
+| Shareholder register export | CSV/PDF | `exports/{org_id}/register/{YYYY}/{MM}/register.csv` | 7_YEARS |
 
 ### Required Metadata Fields
 
-- `entity_id`, `doc_id` (FK → `documents.id`), `sha256`, `created_by`, `retention_class = 'PERMANENT'`
+- `org_id`, `doc_id` (FK → `documents.id`), `sha256`, `created_by`, `retention_class = 'PERMANENT'`
 
 ### Hashing Expectation
 

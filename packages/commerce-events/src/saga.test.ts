@@ -23,7 +23,7 @@ function makeCtx<T extends Record<string, unknown>>(
   return {
     sagaId: crypto.randomUUID(),
     correlationId: 'corr-001',
-    entityId: TEST_ORG,
+    orgId: TEST_ORG,
     actorId: TEST_ACTOR,
     data,
     ...overrides,
@@ -246,7 +246,7 @@ describe('SagaOrchestrator', () => {
       // Emit the trigger event
       await bus.emitAndWait(
         createDomainEvent('quote.accepted', { quoteId: 'q-1' }, {
-          entityId: TEST_ORG,
+          orgId: TEST_ORG,
           actorId: TEST_ACTOR,
           correlationId: 'corr-auto',
         }),
@@ -272,7 +272,7 @@ describe('SagaOrchestrator', () => {
 
       await bus.emitAndWait(
         createDomainEvent('test.event', {}, {
-          entityId: TEST_ORG,
+          orgId: TEST_ORG,
           actorId: TEST_ACTOR,
           correlationId: 'c',
         }),
@@ -336,7 +336,7 @@ describe('SagaOrchestrator', () => {
       const ctx = makeCtx({}, {
         sagaId: 'saga-123',
         correlationId: 'corr-456',
-        entityId: 'org-789',
+        orgId: 'org-789',
         actorId: 'actor-abc',
       })
 
@@ -345,7 +345,7 @@ describe('SagaOrchestrator', () => {
       expect(result.sagaId).toBe('saga-123')
       expect(result.sagaName).toBe('metadata-test')
       expect(result.correlationId).toBe('corr-456')
-      expect(result.entityId).toBe('org-789')
+      expect(result.orgId).toBe('org-789')
       expect(result.actorId).toBe('actor-abc')
       expect(result.startedAt).toBeTruthy()
     })

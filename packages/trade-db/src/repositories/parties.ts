@@ -11,7 +11,7 @@ import type { TradeDbContext, TradeReadContext } from '../types'
 
 export interface TradePartyRow {
   id: string
-  entityId: string
+  orgId: string
   role: string
   name: string
   contactEmail: string

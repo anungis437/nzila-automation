@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: 'Grievance management, claims processing, member engagement, and operational excellence — built with unions, not for unions. Powered by Nzila.',
   openGraph: {
     title: 'Union Eyes — AI-Powered Union Management',
-    description: 'Empowering 4,773 union entities with intelligent tools for grievance tracking, member engagement, and data-driven decision making.',
+    description: 'Empowering 4,773 union orgs with intelligent tools for grievance tracking, member engagement, and data-driven decision making.',
     images: [{ url: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=1200&h=630&fit=crop&q=80', width: 1200, height: 630, alt: 'Workers in a professional labor meeting — Union Eyes platform' }],
   },
 };
@@ -91,7 +91,7 @@ export default function HomePage() {
           <ScrollReveal delay={0.2}>
             <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl">
               AI-powered grievance management, claims processing, and member
-              engagement — one platform for 4,773 union entities.
+              engagement — one platform for 4,773 union orgs.
             </p>
           </ScrollReveal>
 

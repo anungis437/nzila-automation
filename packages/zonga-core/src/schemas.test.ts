@@ -194,7 +194,7 @@ describe('@nzila/zonga-core — schemas', () => {
   describe('ZongaOrgContextSchema', () => {
     it('accepts valid org context', () => {
       const result = ZongaOrgContextSchema.safeParse({
-        entityId: VALID_UUID,
+        orgId: VALID_UUID,
         actorId: VALID_UUID,
         role: 'admin',
         permissions: ['content.publish', 'payout.approve'],
@@ -205,7 +205,7 @@ describe('@nzila/zonga-core — schemas', () => {
 
     it('rejects invalid role', () => {
       const result = ZongaOrgContextSchema.safeParse({
-        entityId: VALID_UUID,
+        orgId: VALID_UUID,
         actorId: VALID_UUID,
         role: 'superadmin',
         permissions: [],

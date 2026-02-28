@@ -34,7 +34,7 @@ export interface Insight {
 
 export async function askAdvisor(
   question: string,
-  context?: { entityId?: string; conversationHistory?: ChatMessage[] },
+  context?: { orgId?: string; conversationHistory?: ChatMessage[] },
 ): Promise<{ answer: string; sources: string[] }> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
@@ -75,7 +75,7 @@ state your assumptions clearly. Format with markdown for readability.`
     const pack = buildEvidencePackFromAction({
       actionId: `advisory-${Date.now()}`,
       actionType: 'ADVISORY_QUERY',
-      entityId: context?.entityId ?? 'platform',
+      orgId: context?.orgId ?? 'platform',
       executedBy: userId,
     })
     await processEvidencePack(pack)

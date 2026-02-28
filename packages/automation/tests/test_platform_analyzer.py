@@ -80,7 +80,7 @@ class TestPlatformAnalyzer:
         assert auth_info["detected"] is True
     
     def test_count_drizzle_entities(self, mock_legacy_platform):
-        """Test counting Drizzle schema entities"""
+        """Test counting Drizzle schema orgs"""
         analyzer = PlatformAnalyzerV2(platforms_dir=mock_legacy_platform.parent)
         db_info = analyzer._analyze_database(mock_legacy_platform, "nextjs")
         
@@ -107,7 +107,7 @@ class TestPlatformAnalyzer:
         
         # Low complexity
         score = analyzer._calculate_complexity_score(
-            entities=10,
+            orgs=10,
             pages=5,
             components=10,
             api_routes=3
@@ -116,7 +116,7 @@ class TestPlatformAnalyzer:
         
         # Medium complexity
         score = analyzer._calculate_complexity_score(
-            entities=100,
+            orgs=100,
             pages=20,
             components=50,
             api_routes=15
@@ -125,7 +125,7 @@ class TestPlatformAnalyzer:
         
         # High complexity
         score = analyzer._calculate_complexity_score(
-            entities=500,
+            orgs=500,
             pages=50,
             components=200,
             api_routes=40
@@ -134,7 +134,7 @@ class TestPlatformAnalyzer:
         
         # Extreme complexity
         score = analyzer._calculate_complexity_score(
-            entities=4000,
+            orgs=4000,
             pages=200,
             components=1000,
             api_routes=100
@@ -155,19 +155,19 @@ class TestPlatformAnalyzer:
         analyzer = PlatformAnalyzerV2()
         
         # Low complexity: 2-4 weeks
-        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.LOW, entities=10)
+        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.LOW, orgs=10)
         assert 2 <= weeks <= 4
         
         # Medium complexity: 4-8 weeks
-        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.MEDIUM, entities=100)
+        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.MEDIUM, orgs=100)
         assert 4 <= weeks <= 8
         
         # High complexity: 8-12 weeks
-        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.HIGH, entities=500)
+        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.HIGH, orgs=500)
         assert 8 <= weeks <= 12
         
         # Extreme complexity: 12-14 weeks (capped)
-        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.EXTREME, entities=5000)
+        weeks = analyzer._estimate_migration_weeks(ComplexityLevel.EXTREME, orgs=5000)
         assert 12 <= weeks <= 14
     
     def test_feature_detection_ai(self, temp_dir):
@@ -226,10 +226,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         
         # Validate benchmark structure
         benchmark = analyzer.CALIBRATION_BENCHMARKS["union-eyes"]
-        assert "entities" in benchmark
+        assert "orgs" in benchmark
         assert "complexity" in benchmark
         assert "actual_weeks" in benchmark
-        assert benchmark["entities"] == 4773
+        assert benchmark["orgs"] == 4773
         assert benchmark["complexity"] == "EXTREME"
     
     def test_analyze_all_platforms(self, mock_legacy_platform, temp_dir):
@@ -371,18 +371,18 @@ class TestPlatformAnalyzerIntegration:
         """Test that calibration improves estimation accuracy"""
         analyzer = PlatformAnalyzerV2()
         
-        # Simulate Union Eyes platform (4773 entities)
+        # Simulate Union Eyes platform (4773 orgs)
         benchmark = analyzer.CALIBRATION_BENCHMARKS["union-eyes"]
         
         score = analyzer._calculate_complexity_score(
-            entities=4773,
+            orgs=4773,
             pages=238,  # Approximate from RLS policies count
             components=500,  # Estimate
             api_routes=100  # Estimate
         )
         
         complexity = analyzer._classify_complexity(score)
-        weeks = analyzer._estimate_migration_weeks(complexity, entities=4773)
+        weeks = analyzer._estimate_migration_weeks(complexity, orgs=4773)
         
         # Should classify as EXTREME
         assert complexity == ComplexityLevel.EXTREME

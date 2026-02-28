@@ -31,7 +31,7 @@ export interface PipelineConfig {
 export interface PipelineResult {
   response: string;
   sources: { id: string; content: string; score: number }[];
-  entities: ExtractionResult['entities'];
+  orgs: ExtractionResult['orgs'];
   safety: SafetyCheckResult;
   metadata: {
     latency: number;
@@ -87,7 +87,7 @@ class AIPipeline {
         return {
           response: 'I\'m sorry, but I can\'t help with that request.',
           sources: [],
-          entities: [],
+          orgs: [],
           safety,
           metadata: {
             latency: Date.now() - startTime,
@@ -119,13 +119,13 @@ class AIPipeline {
         userRole: 'member',
         intent: this.classifyIntent(query),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        entities: [] as any[],
+        orgs: [] as any[],
         retrievedContext: sources.map(s => s.chunk.content),
         sla: 'standard',
         organizationId: context.organizationId,
       };
 
-      // 4. Extract entities if enabled
+      // 4. Extract orgs if enabled
       let extraction: ExtractionResult | null = null;
       
       if (this.config.enableExtraction && sources.length > 0) {
@@ -133,7 +133,7 @@ class AIPipeline {
         extraction = entityExtraction.extract(contextText, {
           jurisdiction: context.jurisdiction,
         });
-        templateContext.entities = extraction.entities;
+        templateContext.orgs = extraction.orgs;
       }
 
       // 5. Generate response using template engine
@@ -154,7 +154,7 @@ class AIPipeline {
             content: s.chunk.content.substring(0, 200),
             score: s.score,
           })),
-          entities: extraction?.entities || [],
+          orgs: extraction?.orgs || [],
           safety: outputSafety,
           metadata: {
             latency: Date.now() - startTime,
@@ -175,7 +175,7 @@ class AIPipeline {
           content: s.chunk.content.substring(0, 200),
           score: s.score,
         })),
-        entities: extraction?.entities || [],
+        orgs: extraction?.orgs || [],
         safety,
         metadata: {
           latency: Date.now() - startTime,
@@ -190,7 +190,7 @@ class AIPipeline {
       return {
         response: this.config.fallbackResponse,
         sources: [],
-        entities: [],
+        orgs: [],
         safety: { safe: true, flags: [] },
         metadata: {
           latency: Date.now() - startTime,
@@ -218,7 +218,7 @@ class AIPipeline {
     // 1. Ingest and validate
     const document = await dataIngestion.ingest(buffer, contentType, filename, metadata);
 
-    // 2. Extract entities
+    // 2. Extract orgs
     const extraction = entityExtraction.extract(document.content, {
       jurisdiction: metadata.jurisdiction,
     });
@@ -240,7 +240,7 @@ class AIPipeline {
 
     logger.info('Document processed through pipeline', {
       documentId: document.id,
-      entityCount: extraction.entities.length,
+      entityCount: extraction.orgs.length,
       documentType: extraction.documentType,
     });
 

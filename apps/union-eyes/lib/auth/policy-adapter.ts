@@ -29,7 +29,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   authorize,
   withAuth,
-  authorizeEntityAccess,
+  authorizeOrgAccess,
   type AuthContext,
   type AuthorizeOptions,
   AuthorizationError,
@@ -129,7 +129,7 @@ export function withAuthorizedRoute<T>(
 /**
  * Check entity-level access (e.g., partner-portal isolation).
  */
-export { authorizeEntityAccess, AuthorizationError }
+export { authorizeOrgAccess, AuthorizationError }
 
 // Re-export for convenience
 export { UERole } from '@nzila/os-core/policy'

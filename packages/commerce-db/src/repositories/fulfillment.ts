@@ -19,7 +19,7 @@ export async function listFulfillmentTasks(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -40,7 +40,7 @@ export async function getFulfillmentTaskById(
   ctx: CommerceReadContext,
   taskId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceFulfillmentTasks,
     eq(commerceFulfillmentTasks.id, taskId),
@@ -52,7 +52,7 @@ export async function listFulfillmentTasksByOrder(
   ctx: CommerceReadContext,
   orderId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   return db.select(
     commerceFulfillmentTasks,
     eq(commerceFulfillmentTasks.orderId, orderId),
@@ -72,7 +72,7 @@ export async function createFulfillmentTask(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -95,7 +95,7 @@ export async function updateFulfillmentTask(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

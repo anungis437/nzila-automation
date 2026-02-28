@@ -74,7 +74,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
    - Screenshot or log of restored database health
 7. **Store evidence**:
    ```
-   evidence/{entity_id}/dr-bcp/{YYYY}/Q{N}/restore-test-report/DR-Q{N}-{YYYY}/
+   evidence/{org_id}/dr-bcp/{YYYY}/Q{N}/restore-test-report/DR-Q{N}-{YYYY}/
    ├── restore-test-report.json
    ├── chain-verify-share-ledger.json
    ├── chain-verify-audit-events.json
@@ -101,26 +101,26 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 **Procedure:**
 
 1. **Export Clerk users**: Pull all active users from Clerk organization
-2. **Export entity_members**: Query `entity_members` table for all entities under review
+2. **Export org_members**: Query `org_members` table for all entities under review
 3. **Cross-reference**:
-   - Every `entity_members.clerk_user_id` maps to an active Clerk user
+   - Every `org_members.clerk_user_id` maps to an active Clerk user
    - No Clerk users have entity access they shouldn't (compare with HR active roster)
-   - No orphaned `entity_members` rows (user deactivated but membership remains)
+   - No orphaned `org_members` rows (user deactivated but membership remains)
 4. **Role distribution audit**:
    - Count users per role (admin, editor, viewer) per entity
    - Flag any entity where admin count > 3 or where admin:total ratio > 25%
 5. **Off-boarding check**:
    - Get list of terminations from HR in the review period
    - Confirm each terminated user was deactivated in Clerk within 24 hours
-   - Confirm `entity_members` rows were deleted
+   - Confirm `org_members` rows were deleted
 6. **Generate evidence**:
    - Access review report (JSON) with user counts, role distributions, exceptions
    - Clerk user export (sanitized — no passwords/tokens)
-   - entity_members export per entity
+   - org_members export per entity
    - Off-boarding compliance report (termination date vs deactivation date deltas)
 7. **Store evidence**:
    ```
-   evidence/{entity_id}/access/{YYYY}/Q{N}/access-review-report/ACR-Q{N}-{YYYY}/
+   evidence/{org_id}/access/{YYYY}/Q{N}/access-review-report/ACR-Q{N}-{YYYY}/
    ├── access-review-report.json
    ├── clerk-user-export.json
    ├── entity-members-export.json
@@ -162,7 +162,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
    - Exception log (any bypasses with justification)
 6. **Store evidence**:
    ```
-   evidence/{entity_id}/change-mgmt/{YYYY}/Q{N}/change-mgmt-sampling/CMS-Q{N}-{YYYY}/
+   evidence/{org_id}/change-mgmt/{YYYY}/Q{N}/change-mgmt-sampling/CMS-Q{N}-{YYYY}/
    ├── pr-sampling-report.json
    ├── release-checklists/
    │   ├── v2.1.0-checklist.pdf
@@ -192,7 +192,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
    SELECT id, hash, previous_hash,
      sha256(concat(entry_data::text, previous_hash)) as computed_hash
    FROM share_ledger_entries
-   WHERE entity_id = '{entity_id}'
+   WHERE org_id = '{org_id}'
    ORDER BY created_at ASC;
    -- Flag any row where hash != computed_hash
    ```
@@ -201,7 +201,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
    SELECT id, hash, previous_hash,
      sha256(concat(event_data::text, previous_hash)) as computed_hash
    FROM audit_events
-   WHERE entity_id = '{entity_id}'
+   WHERE org_id = '{org_id}'
    ORDER BY created_at ASC;
    ```
 3. **Check for gaps**: Verify `previous_hash` chain has no breaks (every `previous_hash` matches the preceding row's `hash`)
@@ -209,7 +209,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
    - Chain verification reports (JSON) for both tables with row counts, verification results, any anomalies
 5. **Store evidence**:
    ```
-   evidence/{entity_id}/integrity/{YYYY}/{MM}/chain-verify/CHK-{YYYY}-{MM}/
+   evidence/{org_id}/integrity/{YYYY}/{MM}/chain-verify/CHK-{YYYY}-{MM}/
    ├── share-ledger-chain-verify.json
    ├── audit-events-chain-verify.json
    └── evidence-pack-index.json
@@ -240,7 +240,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
    - Hash verification report (JSON) with document IDs, expected hashes, computed hashes, match status
 4. **Store evidence**:
    ```
-   evidence/{entity_id}/integrity/{YYYY}/{MM}/document-hash-audit/DHA-{YYYY}-{MM}/
+   evidence/{org_id}/integrity/{YYYY}/{MM}/document-hash-audit/DHA-{YYYY}-{MM}/
    ├── document-hash-audit.json
    └── evidence-pack-index.json
    ```
@@ -265,7 +265,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 3. For each critical/high: create remediation ticket or document accepted risk
 4. **Store evidence**:
    ```
-   evidence/{entity_id}/sdlc/{YYYY}/{MM}/dependency-audit/DEP-{YYYY}-{MM}-{DD}/
+   evidence/{org_id}/sdlc/{YYYY}/{MM}/dependency-audit/DEP-{YYYY}-{MM}-{DD}/
    ├── pnpm-audit-results.json
    └── evidence-pack-index.json
    ```
@@ -284,7 +284,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 4. **Monthly review**: Export scanning results, store as evidence
 5. **Store evidence**:
    ```
-   evidence/{entity_id}/sdlc/{YYYY}/{MM}/secret-scan-results/SEC-{YYYY}-{MM}/
+   evidence/{org_id}/sdlc/{YYYY}/{MM}/secret-scan-results/SEC-{YYYY}-{MM}/
    ├── secret-scan-results.json
    └── evidence-pack-index.json
    ```
@@ -303,7 +303,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 4. Verify expired artifacts were properly purged (soft-delete → hard-delete cycle)
 5. **Store evidence**:
    ```
-   evidence/{entity_id}/retention/{YYYY}/retention-policy-export/RET-{YYYY}/
+   evidence/{org_id}/retention/{YYYY}/retention-policy-export/RET-{YYYY}/
    ├── lifecycle-policy-export.json
    ├── retention-compliance-report.json
    └── evidence-pack-index.json
@@ -323,7 +323,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 4. Version and store updated BCP
 5. **Store evidence**:
    ```
-   evidence/{entity_id}/dr-bcp/{YYYY}/bcp-review/BCP-{YYYY}/
+   evidence/{org_id}/dr-bcp/{YYYY}/bcp-review/BCP-{YYYY}/
    ├── bcp-document-v{version}.pdf
    ├── bcp-review-signoff.json
    └── evidence-pack-index.json
@@ -343,7 +343,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 4. Document any exceptions (emergency access with CISO approval)
 5. **Store evidence**:
    ```
-   evidence/{entity_id}/integrity/{YYYY}/Q{N}/db-access-audit/DBA-Q{N}-{YYYY}/
+   evidence/{org_id}/integrity/{YYYY}/Q{N}/db-access-audit/DBA-Q{N}-{YYYY}/
    ├── db-users-roles.json
    ├── query-log-review.json
    ├── exception-log.json
@@ -357,7 +357,7 @@ This plan covers all 7 control families from `Required-Evidence-Map.md`:
 All test outcomes follow the Evidence Storage Convention:
 
 - **Container**: `evidence`
-- **Path**: `evidence/{entity_id}/{control_family}/{YYYY}/{period}/{test_type}/{test_id}/`
+- **Path**: `evidence/{org_id}/{control_family}/{YYYY}/{period}/{test_type}/{test_id}/`
 - **Required files per test**: Test report + `evidence-pack-index.json`
 - **Metadata**: All artifacts registered in `documents` table with sha256
 - **Audit trail**: Each test completion logged in `audit_events` with hash chain
@@ -376,7 +376,7 @@ All test outcomes follow the Evidence Storage Convention:
 
 - **Quarterly**: Control test summary report covering all tests run that quarter
 - **Annual**: Comprehensive control effectiveness report for board/audit committee
-- Reports stored at: `evidence/{entity_id}/compliance-reports/{YYYY}/Q{N}/`
+- Reports stored at: `evidence/{org_id}/compliance-reports/{YYYY}/Q{N}/`
 
 ---
 

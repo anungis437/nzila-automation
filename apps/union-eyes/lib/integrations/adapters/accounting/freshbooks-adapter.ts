@@ -6,7 +6,7 @@
  * Features:
  * - OAuth2 authentication
  * - Full and incremental sync
- * - Invoice, client (customer), payment, expense entities
+ * - Invoice, client (customer), payment, expense orgs
  * 
  * @see https://www.freshbooks.com/api/start
  */
@@ -129,9 +129,9 @@ export class FreshBooksAdapter extends BaseIntegration {
     const errors: string[] = [];
 
     try {
-      const entities = options.entities || this.capabilities.supportedEntities;
+      const orgs = options.orgs || this.capabilities.supportedEntities;
 
-      for (const entity of entities) {
+      for (const entity of orgs) {
         try {
           this.logOperation('sync', { entity, message: `Syncing ${entity}` });
 

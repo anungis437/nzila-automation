@@ -60,11 +60,11 @@ describe('verifyWebhookSignature', () => {
 })
 
 describe('extractEntityIdFromEvent', () => {
-  it('extracts entity_id from top-level metadata', () => {
+  it('extracts org_id from top-level metadata', () => {
     const event = {
       data: {
         object: {
-          metadata: { entity_id: 'ent_123' },
+          metadata: { org_id: 'ent_123' },
         },
       },
     } as unknown as Stripe.Event
@@ -72,13 +72,13 @@ describe('extractEntityIdFromEvent', () => {
     expect(extractEntityIdFromEvent(event)).toBe('ent_123')
   })
 
-  it('extracts entity_id from payment_intent metadata', () => {
+  it('extracts org_id from payment_intent metadata', () => {
     const event = {
       data: {
         object: {
           metadata: {},
           payment_intent: {
-            metadata: { entity_id: 'ent_456' },
+            metadata: { org_id: 'ent_456' },
           },
         },
       },
@@ -87,7 +87,7 @@ describe('extractEntityIdFromEvent', () => {
     expect(extractEntityIdFromEvent(event)).toBe('ent_456')
   })
 
-  it('returns null when no metadata entity_id exists', () => {
+  it('returns null when no metadata org_id exists', () => {
     const event = {
       data: {
         object: {
@@ -113,9 +113,9 @@ describe('extractEntityIdFromEvent', () => {
     const event = {
       data: {
         object: {
-          metadata: { entity_id: 'top_level' },
+          metadata: { org_id: 'top_level' },
           payment_intent: {
-            metadata: { entity_id: 'nested' },
+            metadata: { org_id: 'nested' },
           },
         },
       },

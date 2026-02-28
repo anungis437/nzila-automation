@@ -16,11 +16,11 @@ interface Entity {
 }
 
 export default function ComplianceHubPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -37,18 +37,18 @@ export default function ComplianceHubPage() {
         <h1 className="text-2xl font-bold text-gray-900">Compliance</h1>
         <p className="text-sm text-gray-500 mt-1">
           Track filings, compliance tasks, and regulatory obligations across all
-          entities.
+          orgs.
         </p>
       </div>
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Loading entities...</p>
-      ) : entities.length === 0 ? (
+        <p className="text-gray-400 text-sm">Loading orgs...</p>
+      ) : orgs.length === 0 ? (
         <div className="text-center py-12 text-gray-400">
           <ClipboardDocumentCheckIcon className="h-12 w-12 mx-auto mb-3" />
-          <p className="font-medium">No entities yet</p>
+          <p className="font-medium">No orgs yet</p>
           <Link
-            href="/business/entities"
+            href="/business/orgs"
             className="mt-4 inline-block text-sm text-blue-600 hover:underline"
           >
             Go to Entities →
@@ -56,10 +56,10 @@ export default function ComplianceHubPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {entities.map((entity) => (
+          {orgs.map((entity) => (
             <Link
               key={entity.id}
-              href={`/business/entities/${entity.id}/compliance`}
+              href={`/business/orgs/${entity.id}/compliance`}
               className="block"
             >
               <Card variant="bordered" className="hover:border-emerald-300 hover:shadow-sm transition-all">

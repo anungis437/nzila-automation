@@ -53,10 +53,10 @@ export async function createInvoiceFromOrderAction(input: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     const data = await createInvoiceFromOrder({
-      entityId,
+      orgId,
       orderId: input.orderId,
       dueDate: input.dueDate ? new Date(input.dueDate) : undefined,
       notes: input.notes,
@@ -111,10 +111,10 @@ export async function listInvoicesAction(filter?: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     const invoices = await listInvoices({
-      entityId,
+      orgId,
       status: filter?.status,
       customerId: filter?.customerId,
       dateFrom: filter?.dateFrom ? new Date(filter.dateFrom) : undefined,
@@ -273,14 +273,14 @@ export async function getFinancialSummaryAction(input?: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     // Default to current year if not specified
     const now = new Date()
     const from = input?.from ? new Date(input.from) : new Date(now.getFullYear(), 0, 1)
     const to = input?.to ? new Date(input.to) : now
 
-    const summary = await getFinancialSummary(entityId, from, to)
+    const summary = await getFinancialSummary(orgId, from, to)
 
     return { success: true, data: summary }
   } catch (error) {
@@ -298,9 +298,9 @@ export async function getAgingReportAction(): Promise<ActionResult<AgingReport>>
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const report = await getAgingReport(entityId)
+    const report = await getAgingReport(orgId)
 
     return { success: true, data: report }
   } catch (error) {
@@ -321,13 +321,13 @@ export async function getRevenueRecognitionAction(input?: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     const now = new Date()
     const from = input?.from ? new Date(input.from) : new Date(now.getFullYear(), 0, 1)
     const to = input?.to ? new Date(input.to) : now
 
-    const report = await getRevenueRecognition(entityId, from, to)
+    const report = await getRevenueRecognition(orgId, from, to)
 
     return { success: true, data: report }
   } catch (error) {

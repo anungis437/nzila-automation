@@ -138,7 +138,7 @@ jobs:
 
 - All docs, comments, test descriptions, and error messages use **"Org"**.
 - No references to "tenant", "multi-tenant", or "entity isolation".
-- DB column `entity_id` is the internal column name — do not change it, but never surface "entity" in user-facing text.
+- DB column `org_id` is the internal column name — do not change it, but never surface "entity" in user-facing text.
 
 ---
 

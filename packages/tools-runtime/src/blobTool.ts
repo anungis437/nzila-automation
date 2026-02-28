@@ -12,32 +12,32 @@ const BLOB_CONTAINER = 'exports'
 // ── Path builders ───────────────────────────────────────────────────────────
 
 export function buildExportPath(parts: {
-  entityId: string
+  orgId: string
   domain: string // e.g., "stripe", "ai"
   year: string
   month: string
   subPath: string // e.g., "revenue_summary/{artifactId}/report.json"
 }): string {
-  return `exports/${parts.entityId}/${parts.domain}/${parts.year}/${parts.month}/${parts.subPath}`
+  return `exports/${parts.orgId}/${parts.domain}/${parts.year}/${parts.month}/${parts.subPath}`
 }
 
 export function buildEvidencePath(parts: {
-  entityId: string
+  orgId: string
   periodLabel: string
   subPath: string
 }): string {
-  return `evidence/${parts.entityId}/month/${parts.periodLabel}/${parts.subPath}`
+  return `evidence/${parts.orgId}/month/${parts.periodLabel}/${parts.subPath}`
 }
 
 export function buildAttestationPath(parts: {
-  entityId: string
+  orgId: string
   year: string
   month: string
   actionType: string
   runId: string
 }): string {
   const safeType = parts.actionType.replace(/\./g, '/')
-  return `exports/${parts.entityId}/attestations/${parts.year}/${parts.month}/${safeType}/${parts.runId}/attestation.json`
+  return `exports/${parts.orgId}/attestations/${parts.year}/${parts.month}/${safeType}/${parts.runId}/attestation.json`
 }
 
 // ── Upload ──────────────────────────────────────────────────────────────────

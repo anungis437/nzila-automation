@@ -41,7 +41,7 @@ export async function listCandidates(opts?: {
 }): Promise<{ candidates: CandidateRow[] }> {
   const ctx = await resolveOrgContext()
 
-  let filter = sql`c.org_id = ${ctx.entityId}`
+  let filter = sql`c.org_id = ${ctx.orgId}`
   if (opts?.status) {
     filter = sql`${filter} AND c.status = ${opts.status}`
   }
@@ -84,7 +84,7 @@ export async function getCandidateStats(): Promise<CandidateStats> {
       COUNT(*) FILTER (WHERE status = ${CandidateStatus.ELIGIBLE})::int as completed,
       COUNT(*) FILTER (WHERE status = ${CandidateStatus.SUSPENDED})::int as suspended
     FROM candidates
-    WHERE org_id = ${ctx.entityId}
+    WHERE org_id = ${ctx.orgId}
   `)
 
   const r = row as Record<string, number>
@@ -120,7 +120,7 @@ export async function registerCandidate(data: {
     INSERT INTO candidates (id, org_id, first_name, last_name, email, date_of_birth, candidate_number, status, session_id, created_by, created_at)
     VALUES (
       ${id},
-      ${ctx.entityId},
+      ${ctx.orgId},
       ${data.firstName},
       ${data.lastName},
       ${data.email},
@@ -136,7 +136,7 @@ export async function registerCandidate(data: {
   await buildExamEvidencePack({
     action: 'candidate.registered',
     entityType: 'candidate',
-    entityId: id,
+    orgId: id,
     actorId: ctx.actorId,
     payload: { candidateNumber, sessionId: data.sessionId },
   }).catch(() => {})
@@ -153,13 +153,13 @@ export async function updateCandidateStatus(
   await platformDb.execute(sql`
     UPDATE candidates
     SET status = ${status}, updated_at = NOW()
-    WHERE id = ${candidateId} AND org_id = ${ctx.entityId}
+    WHERE id = ${candidateId} AND org_id = ${ctx.orgId}
   `)
 
   await buildExamEvidencePack({
     action: 'candidate.status_changed',
     entityType: 'candidate',
-    entityId: candidateId,
+    orgId: candidateId,
     actorId: ctx.actorId,
     payload: { newStatus: status },
   }).catch(() => {})

@@ -4,7 +4,7 @@
  * GET  /api/ai/prompts?appKey=...   → list prompts
  * POST /api/ai/prompts              → create prompt
  *
- * RBAC: entity_admin or platform ai_admin
+ * RBAC: org_admin or platform ai_admin
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'

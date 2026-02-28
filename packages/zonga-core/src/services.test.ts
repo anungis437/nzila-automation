@@ -11,7 +11,7 @@ const ACTOR_ID = '770e8400-e29b-41d4-a716-446655440002'
 function makeRevenueEvent(overrides: Partial<RevenueEvent> = {}): RevenueEvent {
   return {
     id: '880e8400-e29b-41d4-a716-446655440003',
-    entityId: ENTITY_ID,
+    orgId: ENTITY_ID,
     creatorId: CREATOR_ID,
     assetId: null,
     type: RevenueType.STREAM,
@@ -37,7 +37,7 @@ describe('@nzila/zonga-core — services', () => {
 
       const preview = computePayoutPreview({
         creatorId: CREATOR_ID,
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         periodStart: '2025-01-01T00:00:00Z',
         periodEnd: '2025-01-31T23:59:59Z',
         revenueEvents: events,
@@ -50,13 +50,13 @@ describe('@nzila/zonga-core — services', () => {
       expect(preview.netPayout).toBeCloseTo(148.75)
       expect(preview.revenueEventCount).toBe(3)
       expect(preview.creatorId).toBe(CREATOR_ID)
-      expect(preview.entityId).toBe(ENTITY_ID)
+      expect(preview.orgId).toBe(ENTITY_ID)
     })
 
     it('handles empty events list', () => {
       const preview = computePayoutPreview({
         creatorId: CREATOR_ID,
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         periodStart: '2025-01-01T00:00:00Z',
         periodEnd: '2025-01-31T23:59:59Z',
         revenueEvents: [],
@@ -81,7 +81,7 @@ describe('@nzila/zonga-core — services', () => {
 
       const preview = computePayoutPreview({
         creatorId: CREATOR_ID,
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         periodStart: '2025-01-01T00:00:00Z',
         periodEnd: '2025-01-31T23:59:59Z',
         revenueEvents: events,
@@ -105,7 +105,7 @@ describe('@nzila/zonga-core — services', () => {
 
       const preview = computePayoutPreview({
         creatorId: CREATOR_ID,
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         periodStart: '2025-01-01T00:00:00Z',
         periodEnd: '2025-01-31T23:59:59Z',
         revenueEvents: events,
@@ -122,7 +122,7 @@ describe('@nzila/zonga-core — services', () => {
 
       const preview = computePayoutPreview({
         creatorId: CREATOR_ID,
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         periodStart: '2025-01-01T00:00:00Z',
         periodEnd: '2025-01-31T23:59:59Z',
         revenueEvents: events,
@@ -138,7 +138,7 @@ describe('@nzila/zonga-core — services', () => {
   describe('buildZongaAuditEvent', () => {
     it('builds a valid audit event', () => {
       const event = buildZongaAuditEvent({
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         actorId: ACTOR_ID,
         action: ZongaAuditAction.CONTENT_PUBLISH,
         entityType: ZongaEntityType.CONTENT_ASSET,
@@ -146,7 +146,7 @@ describe('@nzila/zonga-core — services', () => {
         metadata: { title: 'Mama Africa' },
       })
 
-      expect(event.entityId).toBe(ENTITY_ID)
+      expect(event.orgId).toBe(ENTITY_ID)
       expect(event.actorId).toBe(ACTOR_ID)
       expect(event.action).toBe('content.publish')
       expect(event.entityType).toBe('content_asset')
@@ -157,7 +157,7 @@ describe('@nzila/zonga-core — services', () => {
 
     it('defaults metadata to empty object when omitted', () => {
       const event = buildZongaAuditEvent({
-        entityId: ENTITY_ID,
+        orgId: ENTITY_ID,
         actorId: ACTOR_ID,
         action: ZongaAuditAction.PAYOUT_EXECUTE,
         entityType: ZongaEntityType.PAYOUT,

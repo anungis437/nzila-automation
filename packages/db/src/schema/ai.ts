@@ -19,7 +19,7 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 import { documents } from './operations'
 
 // ── Enums ───────────────────────────────────────────────────────────────────
@@ -128,9 +128,9 @@ export const aiCapabilityProfiles = pgTable(
   'ai_capability_profiles',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     environment: aiEnvironmentEnum('environment').notNull().default('dev'),
     profileKey: varchar('profile_key', { length: 120 }).notNull(),
@@ -152,7 +152,7 @@ export const aiCapabilityProfiles = pgTable(
   },
   (table) => [
     uniqueIndex('uq_ai_profile').on(
-      table.entityId,
+      table.orgId,
       table.appKey,
       table.environment,
       table.profileKey,
@@ -211,9 +211,9 @@ export const aiRequests = pgTable(
   'ai_requests',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     profileKey: varchar('profile_key', { length: 120 }).notNull(),
     feature: aiRequestFeatureEnum('feature').notNull(),
@@ -234,7 +234,7 @@ export const aiRequests = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('idx_ai_requests_entity_app').on(table.entityId, table.appKey),
+    index('idx_ai_requests_entity_app').on(table.orgId, table.appKey),
     index('idx_ai_requests_occurred').on(table.occurredAt),
   ],
 )
@@ -258,9 +258,9 @@ export const aiUsageBudgets = pgTable(
   'ai_usage_budgets',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     profileKey: varchar('profile_key', { length: 120 }).notNull(),
     month: varchar('month', { length: 7 }).notNull(), // YYYY-MM
@@ -272,7 +272,7 @@ export const aiUsageBudgets = pgTable(
   },
   (table) => [
     uniqueIndex('uq_ai_budget').on(
-      table.entityId,
+      table.orgId,
       table.appKey,
       table.profileKey,
       table.month,
@@ -286,9 +286,9 @@ export const aiKnowledgeSources = pgTable(
   'ai_knowledge_sources',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     sourceType: aiKnowledgeSourceTypeEnum('source_type').notNull(),
     title: text('title').notNull(),
@@ -300,7 +300,7 @@ export const aiKnowledgeSources = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('idx_ai_knowledge_entity_app').on(table.entityId, table.appKey),
+    index('idx_ai_knowledge_entity_app').on(table.orgId, table.appKey),
   ],
 )
 
@@ -322,9 +322,9 @@ export const aiEmbeddings = pgTable(
   'ai_embeddings',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     sourceId: uuid('source_id')
       .notNull()
@@ -338,7 +338,7 @@ export const aiEmbeddings = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('idx_ai_embeddings_entity_app').on(table.entityId, table.appKey),
+    index('idx_ai_embeddings_entity_app').on(table.orgId, table.appKey),
     index('idx_ai_embeddings_source').on(table.sourceId),
   ],
 )
@@ -349,9 +349,9 @@ export const aiActions = pgTable(
   'ai_actions',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     profileKey: varchar('profile_key', { length: 120 }).notNull(),
     actionType: varchar('action_type', { length: 120 }).notNull(),
@@ -371,7 +371,7 @@ export const aiActions = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index('idx_ai_actions_entity_app').on(table.entityId, table.appKey),
+    index('idx_ai_actions_entity_app').on(table.orgId, table.appKey),
     index('idx_ai_actions_status').on(table.status),
     index('idx_ai_actions_type').on(table.actionType),
   ],
@@ -386,9 +386,9 @@ export const aiActionRuns = pgTable(
     actionId: uuid('action_id')
       .notNull()
       .references(() => aiActions.id),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     status: aiActionRunStatusEnum('status').notNull().default('started'),
     startedAt: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
     finishedAt: timestamp('finished_at', { withTimezone: true }),
@@ -401,7 +401,7 @@ export const aiActionRuns = pgTable(
   },
   (table) => [
     index('idx_ai_action_runs_action').on(table.actionId),
-    index('idx_ai_action_runs_entity').on(table.entityId),
+    index('idx_ai_action_runs_entity').on(table.orgId),
   ],
 )
 
@@ -411,9 +411,9 @@ export const aiKnowledgeIngestionRuns = pgTable(
   'ai_knowledge_ingestion_runs',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     sourceId: uuid('source_id')
       .notNull()
       .references(() => aiKnowledgeSources.id),
@@ -425,7 +425,7 @@ export const aiKnowledgeIngestionRuns = pgTable(
   },
   (table) => [
     index('idx_ai_ingestion_runs_source').on(table.sourceId),
-    index('idx_ai_ingestion_runs_entity').on(table.entityId),
+    index('idx_ai_ingestion_runs_entity').on(table.orgId),
   ],
 )
 
@@ -475,9 +475,9 @@ export const aiDeploymentRoutes = pgTable(
     deploymentId: uuid('deployment_id')
       .notNull()
       .references(() => aiDeployments.id),
-    entityId: uuid('entity_id')
+    orgId: uuid('org_id')
       .notNull()
-      .references(() => entities.id),
+      .references(() => orgs.id),
     appKey: varchar('app_key', { length: 60 }).notNull(),
     profileKey: varchar('profile_key', { length: 60 }).notNull(),
     feature: aiRequestFeatureEnum('feature').notNull(),
@@ -485,7 +485,7 @@ export const aiDeploymentRoutes = pgTable(
   },
   (table) => [
     uniqueIndex('idx_ai_routes_unique').on(
-      table.entityId, table.appKey, table.profileKey, table.feature,
+      table.orgId, table.appKey, table.profileKey, table.feature,
     ),
     index('idx_ai_routes_deployment').on(table.deploymentId),
   ],

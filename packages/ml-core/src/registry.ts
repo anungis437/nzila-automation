@@ -10,16 +10,16 @@ import { eq, and, desc } from 'drizzle-orm'
 import type { MlModelKey, MlModelStatus } from './types'
 
 /**
- * Return the latest active model for a given entityId + modelKey.
+ * Return the latest active model for a given orgId + modelKey.
  * Returns null if none exists.
  */
-export async function getActiveModel(entityId: string, modelKey: MlModelKey) {
+export async function getActiveModel(orgId: string, modelKey: MlModelKey) {
   const rows = await db
     .select()
     .from(mlModels)
     .where(
       and(
-        eq(mlModels.entityId, entityId),
+        eq(mlModels.orgId, orgId),
         eq(mlModels.modelKey, modelKey),
         eq(mlModels.status, 'active' as MlModelStatus),
       ),
@@ -31,13 +31,13 @@ export async function getActiveModel(entityId: string, modelKey: MlModelKey) {
 }
 
 /**
- * Return all models for a given entityId, ordered by modelKey asc + version desc.
+ * Return all models for a given orgId, ordered by modelKey asc + version desc.
  */
-export async function listModels(entityId: string) {
+export async function listModels(orgId: string) {
   return db
     .select()
     .from(mlModels)
-    .where(eq(mlModels.entityId, entityId))
+    .where(eq(mlModels.orgId, orgId))
     .orderBy(desc(mlModels.version))
 }
 
@@ -45,18 +45,18 @@ export async function listModels(entityId: string) {
  * Activate a model by id (sets status = active, retires all others of same key).
  */
 export async function activateModel(
-  entityId: string,
+  orgId: string,
   modelId: string,
   approvedBy: string,
 ): Promise<void> {
   const model = await db
     .select()
     .from(mlModels)
-    .where(and(eq(mlModels.id, modelId), eq(mlModels.entityId, entityId)))
+    .where(and(eq(mlModels.id, modelId), eq(mlModels.orgId, orgId)))
     .limit(1)
     .then((r) => r[0])
 
-  if (!model) throw new Error(`Model ${modelId} not found for entity ${entityId}`)
+  if (!model) throw new Error(`Model ${modelId} not found for entity ${orgId}`)
 
   // Retire all other active versions of same key
   await db
@@ -64,7 +64,7 @@ export async function activateModel(
     .set({ status: 'retired', updatedAt: new Date() })
     .where(
       and(
-        eq(mlModels.entityId, entityId),
+        eq(mlModels.orgId, orgId),
         eq(mlModels.modelKey, model.modelKey),
         eq(mlModels.status, 'active'),
       ),
@@ -80,21 +80,21 @@ export async function activateModel(
 /**
  * Retire a model by id.
  */
-export async function retireModel(entityId: string, modelId: string): Promise<void> {
+export async function retireModel(orgId: string, modelId: string): Promise<void> {
   await db
     .update(mlModels)
     .set({ status: 'retired', updatedAt: new Date() })
-    .where(and(eq(mlModels.id, modelId), eq(mlModels.entityId, entityId)))
+    .where(and(eq(mlModels.id, modelId), eq(mlModels.orgId, orgId)))
 }
 
 /**
  * Get dataset by id.
  */
-export async function getDataset(entityId: string, datasetId: string) {
+export async function getDataset(orgId: string, datasetId: string) {
   const rows = await db
     .select()
     .from(mlDatasets)
-    .where(and(eq(mlDatasets.id, datasetId), eq(mlDatasets.entityId, entityId)))
+    .where(and(eq(mlDatasets.id, datasetId), eq(mlDatasets.orgId, orgId)))
     .limit(1)
   return rows[0] ?? null
 }

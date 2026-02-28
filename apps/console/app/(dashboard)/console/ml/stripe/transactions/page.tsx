@@ -46,9 +46,9 @@ export default async function MlStripeTxnPage({ searchParams }: PageProps) {
   const endDate = params.endDate ?? today
   const cursor = params.cursor
 
-  const entityId = getEntityId()
+  const orgId = getEntityId()
   const result = await mlClient().getStripeTxnScores({
-    entityId,
+    orgId,
     startDate,
     endDate,
     isAnomaly: anomalyOnly ? true : undefined,

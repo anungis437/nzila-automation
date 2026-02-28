@@ -173,9 +173,9 @@ function resolveScopes(role: NzilaRole): Scope[] {
  * For console routes, the entity must match session context.
  * For partner routes, the entity must have a partner_entities row.
  */
-export async function authorizeEntityAccess(
+export async function authorizeOrgAccess(
   ctx: AuthContext,
-  entityId: string,
+  orgId: string,
 ): Promise<void> {
   if (ctx.partnerId) {
     // Partner context — must have partner_entities row
@@ -189,14 +189,14 @@ export async function authorizeEntityAccess(
       .where(
         and(
           eq(partnerEntities.partnerId, ctx.partnerId),
-          eq(partnerEntities.entityId, entityId),
+          eq(partnerEntities.orgId, orgId),
         ),
       )
       .limit(1)
 
     if (!entitlement) {
       throw new AuthorizationError(
-        `Partner ${ctx.partnerId} is not entitled to access entity ${entityId}`,
+        `Partner ${ctx.partnerId} is not entitled to access entity ${orgId}`,
         403,
       )
     }

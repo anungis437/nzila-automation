@@ -51,10 +51,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   // 3. Extract entity ID from event metadata
-  const entityId = extractEntityIdFromEvent(event)
-  if (!entityId) {
+  const orgId = extractEntityIdFromEvent(event)
+  if (!orgId) {
     // Cannot process without an entity — log and return 200 to avoid retries
-    logger.warn(`[stripe-webhook] No entity_id in event ${event.id} (${event.type})`)
+    logger.warn(`[stripe-webhook] No org_id in event ${event.id} (${event.type})`)
     return NextResponse.json({ received: true, warning: 'no_entity_id' })
   }
 
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const [inserted] = await platformDb
     .insert(stripeWebhookEvents)
     .values({
-      entityId,
+      orgId,
       stripeEventId: event.id,
       type: event.type,
       apiVersion: event.api_version,
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   // 6. Append audit_event: stripe.webhook_received
   await recordAuditEvent({
-    entityId,
+    orgId,
     actorClerkUserId: 'system',
     actorRole: 'system',
     action: 'stripe.webhook_received',
@@ -107,15 +107,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   await platformDb
     .update(stripeConnections)
     .set({ lastEventAt: new Date() })
-    .where(eq(stripeConnections.entityId, entityId))
+    .where(eq(stripeConnections.orgId, orgId))
 
   // 8. Normalize inline (v1)
   try {
-    const result = await normalizeAndPersist(event, webhookEventId, entityId)
+    const result = await normalizeAndPersist(event, webhookEventId, orgId)
 
     // 9. Append audit_event: stripe.webhook_processed
     await recordAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId: 'system',
       actorRole: 'system',
       action: 'stripe.webhook_processed',

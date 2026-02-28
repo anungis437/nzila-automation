@@ -18,7 +18,7 @@ import type { ToolCallEntry } from '@nzila/tools-runtime'
 export interface AttestationInput {
   action: {
     id: string
-    entityId: string
+    orgId: string
     appKey: string
     profileKey: string
     actionType: string
@@ -48,7 +48,7 @@ export interface AttestationJson {
   attestationVersion: '1.0'
   actionId: string
   runId: string
-  entityId: string
+  orgId: string
   appKey: string
   profileKey: string
   actionType: string
@@ -103,7 +103,7 @@ export function createActionAttestation(input: AttestationInput): AttestationJso
     attestationVersion: '1.0',
     actionId: input.action.id,
     runId: input.run.id,
-    entityId: input.action.entityId,
+    orgId: input.action.orgId,
     appKey: input.action.appKey,
     profileKey: input.action.profileKey,
     actionType: input.action.actionType,
@@ -159,7 +159,7 @@ export async function storeAttestation(
   const month = (now.getMonth() + 1).toString().padStart(2, '0')
 
   const blobPath = buildAttestationPath({
-    entityId: attestation.entityId,
+    orgId: attestation.orgId,
     year,
     month,
     actionType: attestation.actionType,
@@ -180,7 +180,7 @@ export async function storeAttestation(
   const [doc] = await db
     .insert(documents)
     .values({
-      entityId: attestation.entityId,
+      orgId: attestation.orgId,
       category: 'attestation',
       title: `AI Action Attestation — ${attestation.actionType} — ${attestation.runId}`,
       blobContainer: 'exports',
@@ -199,13 +199,13 @@ export async function storeAttestation(
   const [latest] = await db
     .select({ hash: auditEvents.hash })
     .from(auditEvents)
-    .where(eq(auditEvents.entityId, attestation.entityId))
+    .where(eq(auditEvents.orgId, attestation.orgId))
     .orderBy(desc(auditEvents.createdAt))
     .limit(1)
 
   const previousHash = latest?.hash ?? null
   const auditPayload = {
-    entityId: attestation.entityId,
+    orgId: attestation.orgId,
     actorClerkUserId,
     action: 'ai.attestation_stored',
     targetType: 'document',
@@ -221,7 +221,7 @@ export async function storeAttestation(
   const hash = computeEntryHash(auditPayload, previousHash)
 
   await db.insert(auditEvents).values({
-    entityId: attestation.entityId,
+    orgId: attestation.orgId,
     actorClerkUserId,
     action: 'ai.attestation_stored',
     targetType: 'document',

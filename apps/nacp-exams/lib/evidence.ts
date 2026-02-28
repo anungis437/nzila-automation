@@ -20,7 +20,7 @@ export type { EvidencePackResult }
 export interface ExamEvidenceAction {
   action: string
   entityType: string
-  entityId: string
+  orgId: string
   actorId: string
   payload?: Record<string, unknown>
 }
@@ -35,9 +35,9 @@ export async function buildExamEvidencePack(
   const ctx: GovernanceActionContext = 'actionId' in action
     ? action
     : {
-        actionId: action.entityId,
+        actionId: action.orgId,
         actionType: action.action,
-        entityId: action.entityId,
+        orgId: action.orgId,
         executedBy: action.actorId,
       }
   const pack = await buildEvidencePackFromAction(ctx)

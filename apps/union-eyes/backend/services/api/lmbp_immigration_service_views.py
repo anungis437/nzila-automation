@@ -74,7 +74,7 @@ class LmbpImmigrationServiceViewSet(viewsets.ViewSet):
                     action="foreign_worker_registered",
                     actor_id=str(request.user.id),
                     entity_type="foreign_worker",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 ForeignWorkersSerializer(instance).data,
@@ -115,7 +115,7 @@ class LmbpImmigrationServiceViewSet(viewsets.ViewSet):
                     action="lmbp_letter_generated",
                     actor_id=str(request.user.id),
                     entity_type="lmbp_letter",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 LmbpLettersSerializer(instance).data,
@@ -159,7 +159,7 @@ class LmbpImmigrationServiceViewSet(viewsets.ViewSet):
                     action="gss_application_submitted",
                     actor_id=str(request.user.id),
                     entity_type="gss_application",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 GssApplicationsSerializer(instance).data,
@@ -206,7 +206,7 @@ class LmbpImmigrationServiceViewSet(viewsets.ViewSet):
                     action="mentorship_created",
                     actor_id=str(request.user.id),
                     entity_type="mentorship",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 MentorshipsSerializer(instance).data,
@@ -267,7 +267,7 @@ class LmbpImmigrationServiceViewSet(viewsets.ViewSet):
                     action="lmbp_compliance_report_generated",
                     actor_id=str(request.user.id),
                     entity_type="lmbp_compliance_report",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 LmbpComplianceReportsSerializer(instance).data,

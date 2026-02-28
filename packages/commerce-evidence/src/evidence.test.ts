@@ -34,7 +34,7 @@ function makeArtifact(overrides?: Partial<CommerceArtifact>): CommerceArtifact {
 function makeAuditEntry(overrides?: Partial<AuditEntry>): AuditEntry {
   return {
     id: 'audit-001',
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     actorId: 'actor-001',
     role: OrgRole.SALES,
     entityType: CommerceEntityType.QUOTE,
@@ -53,7 +53,7 @@ function makeAuditEntry(overrides?: Partial<AuditEntry>): AuditEntry {
 
 function makePackCtx(overrides?: Partial<BuildCommercePackContext>): BuildCommercePackContext {
   return {
-    entityId: ORG_ID,
+    orgId: ORG_ID,
     commerceEntityType: 'quote',
     commerceEntityId: 'quote-001',
     createdBy: 'actor-001',
@@ -125,7 +125,7 @@ describe('buildCommerceEvidencePack', () => {
     const auditEntries = [makeAuditEntry()]
     const pack = buildCommerceEvidencePack(makePackCtx(), artifacts, auditEntries)
 
-    expect(pack.entityId).toBe(ORG_ID)
+    expect(pack.orgId).toBe(ORG_ID)
     expect(pack.commerceEntityType).toBe('quote')
     expect(pack.commerceEntityId).toBe('quote-001')
     expect(pack.createdBy).toBe('actor-001')
@@ -198,7 +198,7 @@ describe('validateCommerceEvidencePack', () => {
   })
 
   it('should detect org mismatch in audit entries', () => {
-    const badEntry = makeAuditEntry({ entityId: 'other-org' })
+    const badEntry = makeAuditEntry({ orgId: 'other-org' })
     const pack = buildCommerceEvidencePack(makePackCtx(), [makeArtifact()], [badEntry])
     const errors = validateCommerceEvidencePack(pack)
     expect(errors.some(e => e.includes('org'))).toBe(true)
@@ -229,7 +229,7 @@ describe('toSealableIndex', () => {
     const index = toSealableIndex(pack)
 
     expect(index.packId).toBe(pack.packId)
-    expect(index.entityId).toBe(ORG_ID)
+    expect(index.orgId).toBe(ORG_ID)
     expect(index.artifacts).toHaveLength(1)
     expect(index.artifacts[0]).toHaveProperty('sha256')
     expect(index.artifacts[0]).toHaveProperty('artifactId')

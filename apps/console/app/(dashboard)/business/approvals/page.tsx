@@ -10,7 +10,7 @@ import {
 
 interface Approval {
   id: string
-  entityId: string
+  orgId: string
   entityName: string
   subjectType: string
   subjectId: string
@@ -24,7 +24,7 @@ export default function ApprovalsHubPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch approvals across all user's entities
+    // Fetch approvals across all user's orgs
     fetch('/api/approvals')
       .then((r) => r.json())
       .then(setApprovals)
@@ -44,7 +44,7 @@ export default function ApprovalsHubPage() {
         </p>
         <h1 className="text-2xl font-bold text-gray-900">Pending Approvals</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Review and action pending approvals across all your entities.
+          Review and action pending approvals across all your orgs.
         </p>
       </div>
 
@@ -103,7 +103,7 @@ export default function ApprovalsHubPage() {
                     {approval.approvalType} approval — {approval.subjectType}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {approval.entityName || approval.entityId}
+                    {approval.entityName || approval.orgId}
                   </p>
                 </div>
                 <span

@@ -1,12 +1,12 @@
 /**
  * Nzila OS — Trade tables
  *
- * Core trade entities: parties, listings, deals, quotes, financing,
+ * Core trade orgs: parties, listings, deals, quotes, financing,
  * shipments, documents, commissions.
  * Cars vertical: vehicle_listings, vehicle_docs.
  *
- * Every table is scoped by entity_id (org identity).
- * Follows existing patterns from commerce.ts and entities.ts.
+ * Every table is scoped by org_id (org identity).
+ * Follows existing patterns from commerce.ts and orgs.ts.
  */
 import {
   pgTable,
@@ -19,7 +19,7 @@ import {
   numeric,
   varchar,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ── Trade Enums ──────────────────────────────────────────────────────────────
@@ -171,9 +171,9 @@ export const vehicleDocTypeEnum = pgEnum('vehicle_doc_type', [
 
 export const tradeParties = pgTable('trade_parties', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   role: tradePartyRoleEnum('role').notNull(),
   name: text('name').notNull(),
   contactEmail: text('contact_email').notNull(),
@@ -190,9 +190,9 @@ export const tradeParties = pgTable('trade_parties', {
 
 export const tradeListings = pgTable('trade_listings', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   partyId: uuid('party_id')
     .notNull()
     .references(() => tradeParties.id),
@@ -212,9 +212,9 @@ export const tradeListings = pgTable('trade_listings', {
 
 export const tradeListingMedia = pgTable('trade_listing_media', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   listingId: uuid('listing_id')
     .notNull()
     .references(() => tradeListings.id),
@@ -228,9 +228,9 @@ export const tradeListingMedia = pgTable('trade_listing_media', {
 
 export const tradeDeals = pgTable('trade_deals', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   refNumber: varchar('ref_number', { length: 30 }).notNull(),
   sellerPartyId: uuid('seller_party_id')
     .notNull()
@@ -252,9 +252,9 @@ export const tradeDeals = pgTable('trade_deals', {
 
 export const tradeQuotes = pgTable('trade_quotes', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   dealId: uuid('deal_id')
     .notNull()
     .references(() => tradeDeals.id),
@@ -274,9 +274,9 @@ export const tradeQuotes = pgTable('trade_quotes', {
 
 export const tradeFinancingTerms = pgTable('trade_financing_terms', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   dealId: uuid('deal_id')
     .notNull()
     .references(() => tradeDeals.id),
@@ -291,9 +291,9 @@ export const tradeFinancingTerms = pgTable('trade_financing_terms', {
 
 export const tradeShipments = pgTable('trade_shipments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   dealId: uuid('deal_id')
     .notNull()
     .references(() => tradeDeals.id),
@@ -316,9 +316,9 @@ export const tradeShipments = pgTable('trade_shipments', {
 
 export const tradeDocuments = pgTable('trade_documents', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   dealId: uuid('deal_id')
     .notNull()
     .references(() => tradeDeals.id),
@@ -334,9 +334,9 @@ export const tradeDocuments = pgTable('trade_documents', {
 
 export const tradeCommissions = pgTable('trade_commissions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   dealId: uuid('deal_id')
     .notNull()
     .references(() => tradeDeals.id),
@@ -356,9 +356,9 @@ export const tradeCommissions = pgTable('trade_commissions', {
 
 export const tradeEvidenceArtifacts = pgTable('trade_evidence_artifacts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   dealId: uuid('deal_id')
     .notNull()
     .references(() => tradeDeals.id),
@@ -377,9 +377,9 @@ export const tradeEvidenceArtifacts = pgTable('trade_evidence_artifacts', {
 
 export const tradeVehicleListings = pgTable('trade_vehicle_listings', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   listingId: uuid('listing_id')
     .notNull()
     .references(() => tradeListings.id),
@@ -405,9 +405,9 @@ export const tradeVehicleListings = pgTable('trade_vehicle_listings', {
 
 export const tradeVehicleDocs = pgTable('trade_vehicle_docs', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   listingId: uuid('listing_id')
     .notNull()
     .references(() => tradeListings.id),

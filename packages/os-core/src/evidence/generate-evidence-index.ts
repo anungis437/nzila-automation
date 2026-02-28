@@ -57,7 +57,7 @@ export interface LocalEvidencePackIndex {
   $schema: string
   packId: string
   runId: string
-  entityId: string
+  orgId: string
   controlFamily: string
   eventType: string
   eventId: string
@@ -96,7 +96,7 @@ export function buildLocalEvidencePackIndex(
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const basePath =
     opts.basePath ??
-    `${request.entityId}/${request.controlFamily}/${year}/${month}/${request.packId}`
+    `${request.orgId}/${request.controlFamily}/${year}/${month}/${request.packId}`
 
   const artifacts = request.artifacts.map((artifact) => {
     const sha256 = createHash('sha256').update(artifact.buffer).digest('hex')
@@ -118,7 +118,7 @@ export function buildLocalEvidencePackIndex(
     $schema: 'Evidence-Pack-Index.schema.json',
     packId: request.packId,
     runId,
-    entityId: request.entityId,
+    orgId: request.orgId,
     controlFamily: request.controlFamily,
     eventType: request.eventType,
     eventId: request.eventId,
@@ -159,10 +159,10 @@ export async function processEvidencePack(
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const basePath =
     opts.basePath ??
-    `${request.entityId}/${request.controlFamily}/${year}/${month}/${request.packId}`
+    `${request.orgId}/${request.controlFamily}/${year}/${month}/${request.packId}`
 
   console.log(`[evidence-index] Processing pack ${request.packId} (run ${runId})`)
-  console.log(`[evidence-index]   entity: ${request.entityId}`)
+  console.log(`[evidence-index]   entity: ${request.orgId}`)
   console.log(`[evidence-index]   control family: ${request.controlFamily}`)
   console.log(`[evidence-index]   artifacts: ${request.artifacts.length}`)
 
@@ -189,7 +189,7 @@ export async function processEvidencePack(
       const [doc] = await db
         .insert(documents)
         .values({
-          entityId: request.entityId,
+          orgId: request.orgId,
           category: 'other', // could be refined based on artifactType
           title: `${request.packId} — ${artifact.artifactType}`,
           blobContainer,
@@ -211,13 +211,13 @@ export async function processEvidencePack(
       const [latestAudit] = await db
         .select({ hash: auditEvents.hash })
         .from(auditEvents)
-        .where(eq(auditEvents.entityId, request.entityId))
+        .where(eq(auditEvents.orgId, request.orgId))
         .orderBy(desc(auditEvents.createdAt))
         .limit(1)
 
       const previousHash = latestAudit?.hash ?? null
       const auditPayload = {
-        entityId: request.entityId,
+        orgId: request.orgId,
         actorClerkUserId: request.createdBy,
         action: 'document.upload',
         targetType: 'document',
@@ -230,7 +230,7 @@ export async function processEvidencePack(
       const [auditRow] = await db
         .insert(auditEvents)
         .values({
-          entityId: request.entityId,
+          orgId: request.orgId,
           actorClerkUserId: request.createdBy,
           action: 'document.upload',
           targetType: 'document',
@@ -278,7 +278,7 @@ export async function processEvidencePack(
     $schema: 'Evidence-Pack-Index.schema.json',
     packId: request.packId,
     runId,
-    entityId: request.entityId,
+    orgId: request.orgId,
     controlFamily: request.controlFamily,
     eventType: request.eventType,
     eventId: request.eventId,
@@ -323,7 +323,7 @@ export async function processEvidencePack(
     const [indexDoc] = await db
       .insert(documents)
       .values({
-        entityId: request.entityId,
+        orgId: request.orgId,
         category: 'other',
         title: `${request.packId} — Evidence Pack Index`,
         blobContainer,
@@ -345,7 +345,7 @@ export async function processEvidencePack(
       .insert(evidencePacks)
       .values({
         packId: request.packId,
-        entityId: request.entityId,
+        orgId: request.orgId,
         controlFamily: request.controlFamily,
         eventType: request.eventType,
         eventId: request.eventId,
@@ -397,7 +397,7 @@ export async function processEvidencePack(
   return {
     packId: request.packId,
     runId,
-    entityId: request.entityId,
+    orgId: request.orgId,
     controlFamily: request.controlFamily,
     eventType: request.eventType,
     eventId: request.eventId,

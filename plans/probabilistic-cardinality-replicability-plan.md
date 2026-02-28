@@ -116,7 +116,7 @@ Your [`equity/models.ts`](apps/console/lib/equity/models.ts:18) defines ShareCla
 
 #### C. Runbook Replication Across Entities
 From [`ops/ops/compliance/Required-Evidence-Map.md`](ops/ops/compliance/Required-Evidence-Map.md:1), you capture evidence metadata:
-- `entity_id`, `artifact_id`, `blob_path`, `sha256`
+- `org_id`, `artifact_id`, `blob_path`, `sha256`
 
 Replicability notation would add:
 - `template_source_id` - which runbook this was cloned from
@@ -140,7 +140,7 @@ flowchart TB
         E[entities]
         S[shareholdings]
         P[people]
-        R[entity_roles]
+        R[org_roles]
     end
     
     subgraph Analytics["Probabilistic Analytics"]

@@ -15,7 +15,7 @@ import { createLogger } from '@nzila/os-core'
 const logger = createLogger('stripe:reports:generate')
 
 const GenerateReportsSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD'),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD'),
   periodId: z.string().optional(),
@@ -31,11 +31,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 400 })
   }
 
-  const { entityId, startDate, endDate, periodId } = parsed.data
+  const { orgId, startDate, endDate, periodId } = parsed.data
 
   try {
     const artifacts = await generateStripeReports({
-      entityId,
+      orgId,
       startDate,
       endDate,
       periodId,
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Audit each report generated
     for (const artifact of artifacts) {
       await recordAuditEvent({
-        entityId,
+        orgId,
         actorClerkUserId: auth.userId,
         actorRole: auth.platformRole,
         action: AUDIT_ACTIONS.DATA_EXPORT,

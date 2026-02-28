@@ -80,11 +80,11 @@ export async function createOrderAction(input: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     const data = await createOrder({
       ...input,
-      entityId,
+      orgId,
       userId,
     })
 
@@ -134,10 +134,10 @@ export async function listOrdersAction(filter?: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     const filterObj: OrderListFilter = {
-      entityId,
+      orgId,
       status: filter?.status,
       customerId: filter?.customerId,
       dateFrom: filter?.dateFrom ? new Date(filter.dateFrom) : undefined,
@@ -401,9 +401,9 @@ export async function getProductionDashboardAction(): Promise<ActionResult<Produ
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const dashboard = await getProductionDashboard(entityId)
+    const dashboard = await getProductionDashboard(orgId)
 
     return { success: true, data: dashboard }
   } catch (error) {

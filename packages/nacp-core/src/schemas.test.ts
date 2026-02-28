@@ -97,7 +97,7 @@ describe('MarkSubmissionSchema', () => {
 describe('NacpOrgContextSchema', () => {
   it('validates org context', () => {
     const result = NacpOrgContextSchema.safeParse({
-      entityId: '550e8400-e29b-41d4-a716-446655440000',
+      orgId: '550e8400-e29b-41d4-a716-446655440000',
       actorId: '660e8400-e29b-41d4-a716-446655440000',
       role: 'admin',
       permissions: ['exam.create', 'session.seal'],

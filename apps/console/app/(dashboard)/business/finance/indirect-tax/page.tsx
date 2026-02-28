@@ -16,7 +16,7 @@ interface Entity {
 
 interface IndirectTaxAccount {
   id: string
-  entityId: string
+  orgId: string
   taxType: 'GST' | 'HST' | 'QST'
   filingFrequency: 'monthly' | 'quarterly' | 'annual'
   programAccountNumber: string | null
@@ -24,7 +24,7 @@ interface IndirectTaxAccount {
 
 interface IndirectTaxPeriod {
   id: string
-  entityId: string
+  orgId: string
   accountId: string
   taxType: 'GST' | 'HST' | 'QST'
   startDate: string
@@ -79,7 +79,7 @@ function urgencyIcon(urgency: Urgency) {
 }
 
 export default function IndirectTaxPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
   const [accounts, setAccounts] = useState<IndirectTaxAccount[]>([])
   const [periods, setPeriods] = useState<IndirectTaxPeriod[]>([])
@@ -87,7 +87,7 @@ export default function IndirectTaxPage() {
   const [dataLoading, setDataLoading] = useState(false)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then((data: Entity[]) => {
         setEntities(data)
@@ -103,8 +103,8 @@ export default function IndirectTaxPage() {
     setDataLoading(true)
 
     Promise.all([
-      fetch(`/api/finance/indirect-tax/accounts?entityId=${selectedEntityId}`).then((r) => r.json()),
-      fetch(`/api/finance/indirect-tax/periods?entityId=${selectedEntityId}`).then((r) => r.json()),
+      fetch(`/api/finance/indirect-tax/accounts?orgId=${selectedEntityId}`).then((r) => r.json()),
+      fetch(`/api/finance/indirect-tax/periods?orgId=${selectedEntityId}`).then((r) => r.json()),
     ])
       .then(([accts, prds]) => {
         setAccounts(accts)
@@ -148,7 +148,7 @@ export default function IndirectTaxPage() {
       </div>
 
       {/* Entity selector */}
-      {entities.length > 1 && (
+      {orgs.length > 1 && (
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">Entity</label>
           <select
@@ -157,7 +157,7 @@ export default function IndirectTaxPage() {
             className="w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             aria-label="Select entity"
           >
-            {entities.map((e) => (
+            {orgs.map((e) => (
               <option key={e.id} value={e.id}>{e.legalName}</option>
             ))}
           </select>

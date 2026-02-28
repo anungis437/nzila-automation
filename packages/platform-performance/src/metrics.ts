@@ -54,7 +54,7 @@ export interface AppThroughput {
 export async function trackRequestMetrics(metric: RequestMetric): Promise<void> {
   await platformDb.insert(platformRequestMetrics).values({
     route: metric.route,
-    entityId: metric.orgId,
+    orgId: metric.orgId,
     latencyMs: metric.latencyMs,
     statusCode: metric.statusCode,
     recordedAt: metric.timestamp ?? new Date(),
@@ -84,7 +84,7 @@ export async function getPerformanceEnvelope(
     .from(platformRequestMetrics)
     .where(
       and(
-        eq(platformRequestMetrics.entityId, orgId),
+        eq(platformRequestMetrics.orgId, orgId),
         gte(platformRequestMetrics.recordedAt, windowStart),
       ),
     )

@@ -4,7 +4,7 @@
  * National exam session management, candidates, submissions,
  * centers, subjects, and integrity artifacts.
  *
- * Every table is scoped by entity_id (org identity).
+ * Every table is scoped by org_id (org identity).
  * Follows existing patterns from commerce.ts.
  */
 import {
@@ -19,7 +19,7 @@ import {
   varchar,
   boolean,
 } from 'drizzle-orm/pg-core'
-import { entities } from './entities'
+import { orgs } from './orgs'
 
 // ── NACP Enums ──────────────────────────────────────────────────────────────
 
@@ -74,9 +74,9 @@ export const nacpGenderEnum = pgEnum('nacp_gender', ['male', 'female'])
 
 export const nacpSubjects = pgTable('nacp_subjects', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   name: varchar('name', { length: 255 }).notNull(),
   code: varchar('code', { length: 50 }).notNull(),
   level: nacpSubjectLevelEnum('level').notNull(),
@@ -88,9 +88,9 @@ export const nacpSubjects = pgTable('nacp_subjects', {
 
 export const nacpCenters = pgTable('nacp_centers', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   name: varchar('name', { length: 255 }).notNull(),
   code: varchar('code', { length: 50 }).notNull(),
   province: varchar('province', { length: 255 }).notNull(),
@@ -107,9 +107,9 @@ export const nacpCenters = pgTable('nacp_centers', {
 
 export const nacpExams = pgTable('nacp_exams', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   title: varchar('title', { length: 255 }).notNull(),
   code: varchar('code', { length: 50 }).notNull(),
   subjectId: uuid('subject_id')
@@ -128,9 +128,9 @@ export const nacpExams = pgTable('nacp_exams', {
 
 export const nacpExamSessions = pgTable('nacp_exam_sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   examId: uuid('exam_id')
     .notNull()
     .references(() => nacpExams.id),
@@ -155,9 +155,9 @@ export const nacpExamSessions = pgTable('nacp_exam_sessions', {
 
 export const nacpCandidates = pgTable('nacp_candidates', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   ref: varchar('ref', { length: 50 }).notNull(),
   firstName: varchar('first_name', { length: 255 }).notNull(),
   lastName: varchar('last_name', { length: 255 }).notNull(),
@@ -176,9 +176,9 @@ export const nacpCandidates = pgTable('nacp_candidates', {
 
 export const nacpSubmissions = pgTable('nacp_submissions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   sessionId: uuid('session_id')
     .notNull()
     .references(() => nacpExamSessions.id),
@@ -206,9 +206,9 @@ export const nacpSubmissions = pgTable('nacp_submissions', {
 
 export const nacpIntegrityArtifacts = pgTable('nacp_integrity_artifacts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   sessionId: uuid('session_id')
     .notNull()
     .references(() => nacpExamSessions.id),
@@ -225,9 +225,9 @@ export const nacpIntegrityArtifacts = pgTable('nacp_integrity_artifacts', {
 
 export const nacpOutbox = pgTable('nacp_outbox', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   eventType: varchar('event_type', { length: 255 }).notNull(),
   payload: jsonb('payload').notNull().default({}),
   status: text('status').notNull().default('pending'),
@@ -242,9 +242,9 @@ export const nacpOutbox = pgTable('nacp_outbox', {
 
 export const nacpSyncQueue = pgTable('nacp_sync_queue', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id')
+  orgId: uuid('org_id')
     .notNull()
-    .references(() => entities.id),
+    .references(() => orgs.id),
   entityType: varchar('entity_type', { length: 100 }).notNull(),
   action: varchar('action', { length: 20 }).notNull(),
   payload: jsonb('payload').notNull().default({}),

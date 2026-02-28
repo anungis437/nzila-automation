@@ -18,6 +18,21 @@ const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX ?? '120')
 const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS ?? '60000')
 
 export default clerkMiddleware(async (auth, request) => {
+  // ── Legacy route redirects (entity → org migration) ──────────────────
+  const pathname = request.nextUrl.pathname
+  if (pathname.startsWith('/business/orgs')) {
+    const newPath = pathname.replace(/^\/business\/orgs/, '/orgs')
+    const url = request.nextUrl.clone()
+    url.pathname = newPath
+    return NextResponse.redirect(url, 308)
+  }
+  if (pathname.startsWith('/api/orgs')) {
+    const newPath = pathname.replace(/^\/api\/orgs/, '/api/orgs')
+    const url = request.nextUrl.clone()
+    url.pathname = newPath
+    return NextResponse.redirect(url, 308)
+  }
+
   // ── Rate limiting (skip in dev — HMR triggers too many requests) ──────
   if (process.env.NODE_ENV !== 'development') {
     const ip =

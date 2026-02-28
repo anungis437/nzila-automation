@@ -19,7 +19,7 @@ export async function listDisputes(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -40,7 +40,7 @@ export async function getDisputeById(
   ctx: CommerceReadContext,
   disputeId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceDisputes,
     eq(commerceDisputes.id, disputeId),
@@ -52,7 +52,7 @@ export async function listDisputesByInvoice(
   ctx: CommerceReadContext,
   invoiceId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   return db.select(
     commerceDisputes,
     eq(commerceDisputes.invoiceId, invoiceId),
@@ -71,7 +71,7 @@ export async function createDispute(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -90,7 +90,7 @@ export async function updateDispute(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

@@ -262,7 +262,7 @@ async function migrateParties(config: MigrationConfig): Promise<MigrationResult>
   // 1. Check if legacySourceId exists in destination
   // 2. If not, map fields and insert:
   //    - id: generateId()
-  //    - entityId: party.org_id (maps to NzilaOS entity)
+  //    - orgId: party.org_id (maps to NzilaOS entity)
   //    - name: party.name
   //    - role: mapPartyRole(party.role)
   //    - email: party.email
@@ -289,7 +289,7 @@ async function migrateListings(
   // TODO: Connect to source DB and fetch listings
   // Map fields:
   //   - id: generateId()
-  //   - entityId: listing.org_id
+  //   - orgId: listing.org_id
   //   - sellerId: partyIdMap.get(listing.party_id)
   //   - title: listing.title
   //   - listingType: listing.listing_type (general, vehicle, equipment, commodity)
@@ -316,7 +316,7 @@ async function migrateDeals(
 
   // TODO: Map fields:
   //   - id: generateId()
-  //   - entityId: deal.org_id
+  //   - orgId: deal.org_id
   //   - listingId: listingIdMap.get(deal.listing_id)
   //   - buyerId: partyIdMap.get(deal.buyer_id)
   //   - sellerId: partyIdMap.get(deal.seller_id)

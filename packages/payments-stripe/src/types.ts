@@ -14,7 +14,7 @@ export type { Stripe }
  * `...(ventureId && { venture_id: ventureId })`) before passing here.
  */
 export interface NzilaStripeMetadata {
-  entity_id: string
+  org_id: string
   [key: string]: string
 }
 
@@ -54,7 +54,7 @@ export type StripeReportType =
 // ── Normalized event result ─────────────────────────────────────────────────
 
 export interface NormalizedPayment {
-  entityId: string
+  orgId: string
   stripeObjectId: string
   objectType: PaymentObjectType
   status: string
@@ -80,7 +80,7 @@ export type StripeDisputeStatus =
   | 'lost'
 
 export interface NormalizedRefund {
-  entityId: string
+  orgId: string
   refundId: string
   paymentStripeObjectId: string
   amountCents: bigint
@@ -89,7 +89,7 @@ export interface NormalizedRefund {
 }
 
 export interface NormalizedDispute {
-  entityId: string
+  orgId: string
   disputeId: string
   paymentStripeObjectId: string
   amountCents: bigint
@@ -100,7 +100,7 @@ export interface NormalizedDispute {
 }
 
 export interface NormalizedPayout {
-  entityId: string
+  orgId: string
   payoutId: string
   amountCents: bigint
   currency: string
@@ -126,7 +126,7 @@ export interface WebhookVerifyResult {
 // ── Report generation input ─────────────────────────────────────────────────
 
 export interface ReportGenerateInput {
-  entityId: string
+  orgId: string
   startDate: string // YYYY-MM-DD
   endDate: string // YYYY-MM-DD
   periodId?: string

@@ -7,7 +7,7 @@ import type { AiFeature, DataClass } from './types'
 // ── Request validation schemas ──────────────────────────────────────────────
 
 export const AiGenerateRequestSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   promptKey: z.string().optional(),
@@ -32,7 +32,7 @@ export const AiGenerateRequestSchema = z.object({
 export const AiChatStreamRequestSchema = AiGenerateRequestSchema
 
 export const AiEmbedRequestSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   input: z.union([z.string(), z.array(z.string())]),
@@ -40,7 +40,7 @@ export const AiEmbedRequestSchema = z.object({
 })
 
 export const AiRagQueryRequestSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   query: z.string().min(1),
@@ -50,7 +50,7 @@ export const AiRagQueryRequestSchema = z.object({
 })
 
 export const AiExtractRequestSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   promptKey: z.string(),
@@ -66,7 +66,7 @@ export const AiExtractRequestSchema = z.object({
 })
 
 export const AiActionProposeRequestSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   actionType: z.string().min(1).max(120),
@@ -96,7 +96,7 @@ export type ActionType = (typeof ACTION_TYPES)[keyof typeof ACTION_TYPES]
 // ── Action proposal schemas ─────────────────────────────────────────────────
 
 export const FinanceStripeMonthlyReportsProposalSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   period: z.object({
@@ -118,7 +118,7 @@ export const FinanceStripeMonthlyReportsProposalSchema = z.object({
 export type FinanceStripeMonthlyReportsProposal = z.infer<typeof FinanceStripeMonthlyReportsProposalSchema>
 
 export const AiIngestKnowledgeSourceProposalSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   appKey: z.string().min(1).max(60),
   profileKey: z.string().min(1).max(120),
   source: z.object({

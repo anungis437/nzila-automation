@@ -13,6 +13,4 @@ export {
   isOrgContext,
   isDbContext,
   toDbContext,
-  fromEntityId,
-  fromEntityIdDb,
 } from './context/types'

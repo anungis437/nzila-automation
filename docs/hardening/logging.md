@@ -33,7 +33,7 @@ Every request must carry a correlation ID (`x-correlation-id` header or auto-gen
 {
   "level": "info",
   "correlationId": "01HXN5PMFBP0HRYHGMJ4JG8E9P",
-  "entityId": "[REDACTED]",  ← never log entity IDs in plaintext in shared infra logs
+  "orgId": "[REDACTED]",  ← never log entity IDs in plaintext in shared infra logs
   "msg": "Payment created",
   "service": "console"
 }

@@ -12,7 +12,7 @@ import { mlScoresStripeDaily, mlScoresStripeTxn, mlModels } from '@nzila/db/sche
 import { eq, and, desc, gte, count } from 'drizzle-orm'
 
 export interface PartnerMlSummary {
-  entityId: string
+  orgId: string
   daysScored: number
   recentAnomalyDays: number
   totalDailyAnomalies: number
@@ -32,7 +32,7 @@ export interface PartnerMlSummary {
  * This is the server-side implementation backing the partner portal's
  * /portal/api/ml/summary endpoint.
  */
-export async function getPartnerMlSummary(entityId: string): Promise<PartnerMlSummary> {
+export async function getPartnerMlSummary(orgId: string): Promise<PartnerMlSummary> {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     .toISOString()
     .slice(0, 10)
@@ -49,7 +49,7 @@ export async function getPartnerMlSummary(entityId: string): Promise<PartnerMlSu
       .innerJoin(mlModels, eq(mlScoresStripeDaily.modelId, mlModels.id))
       .where(
         and(
-          eq(mlScoresStripeDaily.entityId, entityId),
+          eq(mlScoresStripeDaily.orgId, orgId),
           gte(mlScoresStripeDaily.date, thirtyDaysAgo),
         ),
       )
@@ -61,7 +61,7 @@ export async function getPartnerMlSummary(entityId: string): Promise<PartnerMlSu
       .from(mlScoresStripeTxn)
       .where(
         and(
-          eq(mlScoresStripeTxn.entityId, entityId),
+          eq(mlScoresStripeTxn.orgId, orgId),
           eq(mlScoresStripeTxn.isAnomaly, true),
         ),
       ),
@@ -71,7 +71,7 @@ export async function getPartnerMlSummary(entityId: string): Promise<PartnerMlSu
       .from(mlScoresStripeDaily)
       .where(
         and(
-          eq(mlScoresStripeDaily.entityId, entityId),
+          eq(mlScoresStripeDaily.orgId, orgId),
           eq(mlScoresStripeDaily.isAnomaly, true),
         ),
       ),
@@ -81,7 +81,7 @@ export async function getPartnerMlSummary(entityId: string): Promise<PartnerMlSu
   const recentAnomalyDays = recentDailyScores.filter((s) => s.isAnomaly).length
 
   return {
-    entityId,
+    orgId,
     daysScored,
     recentAnomalyDays,
     totalDailyAnomalies: totalDailyAnomalies?.count ?? 0,

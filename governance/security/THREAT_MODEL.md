@@ -141,7 +141,7 @@ This threat model is stored as an evidence artifact under:
 - **Control family:** `sdlc`
 - **Retention class:** `PERMANENT`
 - **Container:** `evidence`
-- **Path:** `{entityId}/sdlc/{year}/threat-model/TM-{year}-{seq}/threat-model.md`
+- **Path:** `{orgId}/sdlc/{year}/threat-model/TM-{year}-{seq}/threat-model.md`
 
 Re-export after each quarterly review via:
 ```bash

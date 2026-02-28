@@ -6,7 +6,7 @@ import type { TradeDbContext, TradeReadContext } from '../types'
 
 export interface TradeQuoteRow {
   id: string
-  entityId: string
+  orgId: string
   dealId: string
   terms: Record<string, unknown>
   unitPrice: string

@@ -201,7 +201,7 @@ export async function ensureOrgAlias(client: Client, orgId: string, docType: str
 ### 4.3 Phase 3: Standardize pgvector Usage Across Apps (High Value)
 
 **Current State**: pgvector is **already implemented**:
-- `packages/db/src/schema/ai.ts` defines the `ai_embeddings` table with `entity_id`, `app_key`,
+- `packages/db/src/schema/ai.ts` defines the `ai_embeddings` table with `org_id`, `app_key`,
   `source_id`, `chunk_id`, `chunk_text`, and an `embedding` column (text placeholder, migrated
   to `vector(1536)` via `packages/db/migrations/ai-control-plane-pgvector.sql`)
 - HNSW index (m=16, ef_construction=64) for cosine similarity is already created
@@ -222,7 +222,7 @@ not introduce pgvector from scratch.
 ```typescript
 export const aiEmbeddings = pgTable('ai_embeddings', {
   id: uuid('id').primaryKey().defaultRandom(),
-  entityId: uuid('entity_id').notNull().references(() => entities.id),
+  orgId: uuid('org_id').notNull().references(() => entities.id),
   appKey: varchar('app_key', { length: 60 }).notNull(),
   sourceId: uuid('source_id').notNull().references(() => aiKnowledgeSources.id),
   chunkId: varchar('chunk_id', { length: 255 }).notNull(),

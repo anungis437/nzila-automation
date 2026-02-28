@@ -3,14 +3,14 @@
  * API — Analytics Overview
  * GET /api/analytics   → portfolio-level analytics powered by HyperLogLog
  *
- * Computes cardinality estimates across entities: unique shareholders,
+ * Computes cardinality estimates across orgs: unique shareholders,
  * unique people, document counts, action counts, audit chain stats.
  */
 import { NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import {
-  entities,
-  entityMembers,
+  orgs,
+  orgMembers,
   people,
   shareholders,
   documents,
@@ -29,21 +29,21 @@ export async function GET() {
   if (!authResult.ok) return authResult.response
   const { userId } = authResult
 
-  // Find all entities the user can access
+  // Find all orgs the user can access
   const userEntities = await platformDb
     .select({
-      id: entities.id,
-      legalName: entities.legalName,
-      jurisdiction: entities.jurisdiction,
-      status: entities.status,
+      id: orgs.id,
+      legalName: orgs.legalName,
+      jurisdiction: orgs.jurisdiction,
+      status: orgs.status,
     })
-    .from(entities)
+    .from(orgs)
     .innerJoin(
-      entityMembers,
+      orgMembers,
       and(
-        eq(entityMembers.entityId, entities.id),
-        eq(entityMembers.clerkUserId, userId),
-        eq(entityMembers.status, 'active'),
+        eq(orgMembers.orgId, orgs.id),
+        eq(orgMembers.clerkUserId, userId),
+        eq(orgMembers.status, 'active'),
       ),
     )
 
@@ -51,7 +51,7 @@ export async function GET() {
 
   if (entityIds.length === 0) {
     return NextResponse.json({
-      entities: 0,
+      orgs: 0,
       uniqueShareholders: { count: 0, precision: 0, standardError: 0 },
       uniquePeople: { count: 0, precision: 0, standardError: 0 },
       totalDocuments: 0,
@@ -64,13 +64,13 @@ export async function GET() {
     })
   }
 
-  // Gather data across all entities for HyperLogLog cardinality estimation
+  // Gather data across all orgs for HyperLogLog cardinality estimation
   const allShareholders = await platformDb
     .select({ legalName: people.legalName, email: people.email })
     .from(shareholders)
     .innerJoin(people, eq(people.id, shareholders.holderPersonId))
     .where(
-      sql`${shareholders.entityId} IN (${sql.join(
+      sql`${shareholders.orgId} IN (${sql.join(
         entityIds.map((id) => sql`${id}`),
         sql`, `,
       )})`,
@@ -81,7 +81,7 @@ export async function GET() {
     .from(people)
     .where(
       sql`${people.id} IN (
-        SELECT person_id FROM entity_roles WHERE entity_id IN (${sql.join(
+        SELECT person_id FROM org_roles WHERE org_id IN (${sql.join(
           entityIds.map((id) => sql`${id}`),
           sql`, `,
         )})
@@ -100,7 +100,7 @@ export async function GET() {
   const uniquePeople = estimateUnique(peopleIdentifiers)
 
   // Aggregate counts
-  const entityFilter = sql`entity_id IN (${sql.join(
+  const entityFilter = sql`org_id IN (${sql.join(
     entityIds.map((id) => sql`${id}`),
     sql`, `,
   )})`
@@ -136,7 +136,7 @@ export async function GET() {
     .where(entityFilter)
 
   return NextResponse.json({
-    entities: entityIds.length,
+    orgs: entityIds.length,
     uniqueShareholders,
     uniquePeople,
     totalDocuments: docCount?.count ?? 0,

@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic'
 
 const DEFAULT_ENTITY_ID = process.env.NZILA_DEFAULT_ENTITY_ID ?? ''
 
-async function getModelRegistryData(entityId: string) {
+async function getModelRegistryData(orgId: string) {
   const models = await platformDb
     .select()
     .from(aiModels)
@@ -49,7 +49,7 @@ async function getModelRegistryData(entityId: string) {
   const routes = await platformDb
     .select({
       id: aiDeploymentRoutes.id,
-      entityId: aiDeploymentRoutes.entityId,
+      orgId: aiDeploymentRoutes.orgId,
       appKey: aiDeploymentRoutes.appKey,
       profileKey: aiDeploymentRoutes.profileKey,
       feature: aiDeploymentRoutes.feature,
@@ -59,7 +59,7 @@ async function getModelRegistryData(entityId: string) {
     })
     .from(aiDeploymentRoutes)
     .innerJoin(aiDeployments, eq(aiDeploymentRoutes.deploymentId, aiDeployments.id))
-    .where(eq(aiDeploymentRoutes.entityId, entityId))
+    .where(eq(aiDeploymentRoutes.orgId, orgId))
     .orderBy(desc(aiDeploymentRoutes.createdAt))
 
   return { models, deployments, routes }

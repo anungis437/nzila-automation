@@ -14,14 +14,14 @@ import type { RevenueType } from '../enums'
  */
 export function computePayoutPreview(params: {
   creatorId: string
-  entityId: string
+  orgId: string
   periodStart: string
   periodEnd: string
   revenueEvents: readonly RevenueEvent[]
   platformFeePercent: number
   currency: string
 }): PayoutPreview {
-  const { creatorId, entityId, periodStart, periodEnd, revenueEvents, platformFeePercent, currency } = params
+  const { creatorId, orgId, periodStart, periodEnd, revenueEvents, platformFeePercent, currency } = params
 
   const totalRevenue = revenueEvents.reduce((sum, e) => sum + e.amount, 0)
   const platformFee = totalRevenue * (platformFeePercent / 100)
@@ -49,7 +49,7 @@ export function computePayoutPreview(params: {
 
   return {
     creatorId,
-    entityId,
+    orgId,
     periodStart,
     periodEnd,
     totalRevenue,

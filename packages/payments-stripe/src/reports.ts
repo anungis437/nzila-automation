@@ -22,13 +22,13 @@ const BLOB_CONTAINER = 'exports'
 // ── Blob path builder ───────────────────────────────────────────────────────
 
 export function buildReportBlobPath(
-  entityId: string,
+  orgId: string,
   reportType: StripeReportType,
   startDate: string,
   artifactId: string,
 ): string {
   const [year, month] = startDate.split('-')
-  return `exports/${entityId}/stripe/${year}/${month}/${reportType}/${artifactId}/report.json`
+  return `exports/${orgId}/stripe/${year}/${month}/${reportType}/${artifactId}/report.json`
 }
 
 // ── Main report generation ──────────────────────────────────────────────────
@@ -40,7 +40,7 @@ export function buildReportBlobPath(
 export async function generateStripeReports(
   input: ReportGenerateInput,
 ): Promise<ReportArtifact[]> {
-  const { entityId, startDate, endDate, periodId, actorClerkUserId } = input
+  const { orgId, startDate, endDate, periodId, actorClerkUserId } = input
 
   const startTs = new Date(`${startDate}T00:00:00Z`)
   const endTs = new Date(`${endDate}T23:59:59.999Z`)
@@ -49,22 +49,22 @@ export async function generateStripeReports(
 
   // 1. Revenue Summary
   artifacts.push(
-    await generateRevenueReport(entityId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
+    await generateRevenueReport(orgId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
   )
 
   // 2. Payout Reconciliation
   artifacts.push(
-    await generatePayoutReconReport(entityId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
+    await generatePayoutReconReport(orgId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
   )
 
   // 3. Refunds Summary
   artifacts.push(
-    await generateRefundsReport(entityId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
+    await generateRefundsReport(orgId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
   )
 
   // 4. Disputes Summary
   artifacts.push(
-    await generateDisputesReport(entityId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
+    await generateDisputesReport(orgId, startTs, endTs, startDate, endDate, periodId, actorClerkUserId),
   )
 
   return artifacts
@@ -73,7 +73,7 @@ export async function generateStripeReports(
 // ── Individual report generators ────────────────────────────────────────────
 
 async function generateRevenueReport(
-  entityId: string,
+  orgId: string,
   startTs: Date,
   endTs: Date,
   startDate: string,
@@ -86,7 +86,7 @@ async function generateRevenueReport(
     .from(stripePayments)
     .where(
       and(
-        eq(stripePayments.entityId, entityId),
+        eq(stripePayments.orgId, orgId),
         gte(stripePayments.occurredAt, startTs),
         lte(stripePayments.occurredAt, endTs),
       ),
@@ -98,7 +98,7 @@ async function generateRevenueReport(
 
   const report = {
     reportType: 'revenue_summary' as const,
-    entityId,
+    orgId,
     period: { startDate, endDate, periodId },
     generatedAt: new Date().toISOString(),
     summary: {
@@ -121,11 +121,11 @@ async function generateRevenueReport(
     })),
   }
 
-  return uploadReport(entityId, 'revenue_summary', startDate, endDate, periodId, report, actorClerkUserId)
+  return uploadReport(orgId, 'revenue_summary', startDate, endDate, periodId, report, actorClerkUserId)
 }
 
 async function generatePayoutReconReport(
-  entityId: string,
+  orgId: string,
   startTs: Date,
   endTs: Date,
   startDate: string,
@@ -138,7 +138,7 @@ async function generatePayoutReconReport(
     .from(stripePayouts)
     .where(
       and(
-        eq(stripePayouts.entityId, entityId),
+        eq(stripePayouts.orgId, orgId),
         gte(stripePayouts.occurredAt, startTs),
         lte(stripePayouts.occurredAt, endTs),
       ),
@@ -148,7 +148,7 @@ async function generatePayoutReconReport(
 
   const report = {
     reportType: 'payout_recon' as const,
-    entityId,
+    orgId,
     period: { startDate, endDate, periodId },
     generatedAt: new Date().toISOString(),
     summary: {
@@ -167,11 +167,11 @@ async function generatePayoutReconReport(
     })),
   }
 
-  return uploadReport(entityId, 'payout_recon', startDate, endDate, periodId, report, actorClerkUserId)
+  return uploadReport(orgId, 'payout_recon', startDate, endDate, periodId, report, actorClerkUserId)
 }
 
 async function generateRefundsReport(
-  entityId: string,
+  orgId: string,
   startTs: Date,
   endTs: Date,
   startDate: string,
@@ -184,7 +184,7 @@ async function generateRefundsReport(
     .from(stripeRefunds)
     .where(
       and(
-        eq(stripeRefunds.entityId, entityId),
+        eq(stripeRefunds.orgId, orgId),
         gte(stripeRefunds.occurredAt, startTs),
         lte(stripeRefunds.occurredAt, endTs),
       ),
@@ -194,7 +194,7 @@ async function generateRefundsReport(
 
   const report = {
     reportType: 'refunds_summary' as const,
-    entityId,
+    orgId,
     period: { startDate, endDate, periodId },
     generatedAt: new Date().toISOString(),
     summary: {
@@ -213,11 +213,11 @@ async function generateRefundsReport(
     })),
   }
 
-  return uploadReport(entityId, 'refunds_summary', startDate, endDate, periodId, report, actorClerkUserId)
+  return uploadReport(orgId, 'refunds_summary', startDate, endDate, periodId, report, actorClerkUserId)
 }
 
 async function generateDisputesReport(
-  entityId: string,
+  orgId: string,
   startTs: Date,
   endTs: Date,
   startDate: string,
@@ -230,7 +230,7 @@ async function generateDisputesReport(
     .from(stripeDisputes)
     .where(
       and(
-        eq(stripeDisputes.entityId, entityId),
+        eq(stripeDisputes.orgId, orgId),
         gte(stripeDisputes.occurredAt, startTs),
         lte(stripeDisputes.occurredAt, endTs),
       ),
@@ -240,7 +240,7 @@ async function generateDisputesReport(
 
   const report = {
     reportType: 'disputes_summary' as const,
-    entityId,
+    orgId,
     period: { startDate, endDate, periodId },
     generatedAt: new Date().toISOString(),
     summary: {
@@ -260,13 +260,13 @@ async function generateDisputesReport(
     })),
   }
 
-  return uploadReport(entityId, 'disputes_summary', startDate, endDate, periodId, report, actorClerkUserId)
+  return uploadReport(orgId, 'disputes_summary', startDate, endDate, periodId, report, actorClerkUserId)
 }
 
 // ── Upload + persist helper ─────────────────────────────────────────────────
 
 async function uploadReport(
-  entityId: string,
+  orgId: string,
   reportType: StripeReportType,
   startDate: string,
   endDate: string,
@@ -275,7 +275,7 @@ async function uploadReport(
   actorClerkUserId: string,
 ): Promise<ReportArtifact> {
   const artifactId = crypto.randomUUID()
-  const blobPath = buildReportBlobPath(entityId, reportType, startDate, artifactId)
+  const blobPath = buildReportBlobPath(orgId, reportType, startDate, artifactId)
 
   const buffer = Buffer.from(JSON.stringify(reportData, null, 2), 'utf-8')
 
@@ -290,7 +290,7 @@ async function uploadReport(
   const [docRow] = await db
     .insert(documents)
     .values({
-      entityId,
+      orgId,
       category: 'export',
       title: `Stripe ${reportType.replace(/_/g, ' ')} — ${startDate} to ${endDate}`,
       blobContainer: BLOB_CONTAINER,
@@ -308,7 +308,7 @@ async function uploadReport(
   const [reportRow] = await db
     .insert(stripeReports)
     .values({
-      entityId,
+      orgId,
       periodId,
       reportType,
       startDate,

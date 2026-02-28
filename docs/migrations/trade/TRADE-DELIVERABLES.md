@@ -47,9 +47,9 @@
 **Acceptance Criteria:**
 - [x] 14 tables: `trade_parties`, `trade_listings`, `trade_listing_media`, `trade_deals`, `trade_quotes`, `trade_financing_terms`, `trade_shipments`, `trade_documents`, `trade_commissions`, `trade_evidence_artifacts`, `trade_vehicle_listings`, `trade_vehicle_docs`
 - [x] 12 pgEnums covering roles, statuses, stages, doc types
-- [x] Every table scoped by `entity_id` FK → `entities.id`
+- [x] Every table scoped by `org_id` FK → `entities.id`
 - [x] Cars vertical tables link via `listing_id` FK → `trade_listings.id`
-- [x] Repository interfaces require `TradeDbContext({ entityId })` — no unscoped queries
+- [x] Repository interfaces require `TradeDbContext({ orgId })` — no unscoped queries
 - [x] 5 cross-org isolation tests pass
 
 ---
@@ -190,16 +190,16 @@
 
 | # | Table | Purpose | Key Columns | FK |
 |---|-------|---------|-------------|-----|
-| 1 | `trade_parties` | Trade counterparties | entity_id, name, role, status, contact_json | entities.id |
-| 2 | `trade_listings` | Items for trade | entity_id, party_id, type (generic/vehicle), title, description, price, currency, status | entities.id, trade_parties.id |
+| 1 | `trade_parties` | Trade counterparties | org_id, name, role, status, contact_json | entities.id |
+| 2 | `trade_listings` | Items for trade | org_id, party_id, type (generic/vehicle), title, description, price, currency, status | entities.id, trade_parties.id |
 | 3 | `trade_listing_media` | Photos/docs per listing | listing_id, media_type, url, storage_key | trade_listings.id |
-| 4 | `trade_deals` | A negotiation + lifecycle | entity_id, listing_id, buyer_id, seller_id, stage (FSM-controlled), currency | entities.id, trade_listings.id, trade_parties.id |
+| 4 | `trade_deals` | A negotiation + lifecycle | org_id, listing_id, buyer_id, seller_id, stage (FSM-controlled), currency | entities.id, trade_listings.id, trade_parties.id |
 | 5 | `trade_quotes` | Price proposals | deal_id, quoted_by_id, amount, currency, status, valid_until | trade_deals.id, trade_parties.id |
 | 6 | `trade_financing_terms` | Financing arrangements | deal_id, terms (JSONB), status, provider | trade_deals.id |
 | 7 | `trade_shipments` | Physical logistics | deal_id, origin/destination_country, lane, carrier, tracking, status, milestones (JSONB) | trade_deals.id |
 | 8 | `trade_documents` | Trade paperwork | deal_id, doc_type, title, storage_key, content_hash, verified_at/by | trade_deals.id |
 | 9 | `trade_commissions` | Broker/agent fees | deal_id, party_id, policy (JSONB), calculated_amount, currency, status | trade_deals.id, trade_parties.id |
-| 10 | `trade_evidence_artifacts` | Tamper-evident seals | entity_id, deal_id, evidence_type, artifact_json, merkle_root, sealed_at | entities.id, trade_deals.id |
+| 10 | `trade_evidence_artifacts` | Tamper-evident seals | org_id, deal_id, evidence_type, artifact_json, merkle_root, sealed_at | entities.id, trade_deals.id |
 | 11 | `trade_vehicle_listings` | 🚗 Cars vertical | listing_id, make, model, year, VIN, mileage, condition, transmission, drivetrain, fuel_type, color, specs (JSONB) | trade_listings.id |
 | 12 | `trade_vehicle_docs` | 🚗 Vehicle-specific docs | vehicle_listing_id, doc_type, storage_key, content_hash, verified_at/by | trade_vehicle_listings.id |
 
@@ -252,7 +252,7 @@ pnpm --filter @nzila/trade dev
 ┌─────────────────────────────────────────────────────────────────┐
 │ 1. AUTHENTICATE                                                 │
 │    Sign in via Clerk → org context auto-resolved                │
-│    resolveOrgContext() → { orgId, entityId, userId, roles }     │
+│    resolveOrgContext() → { orgId, orgId, userId, roles }     │
 └──────────────────────────────▼──────────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
@@ -366,7 +366,7 @@ pnpm --filter @nzila/trade dev
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
 │ 12. EXPORT ORG DATA                                             │
-│     → buildOrgTradeExport(entityId)                             │
+│     → buildOrgTradeExport(orgId)                             │
 │       ├── Fetch all deals, parties, listings for org             │
 │       ├── SHA-256 each record                                   │
 │       ├── computeMerkleRoot([...allHashes])                     │

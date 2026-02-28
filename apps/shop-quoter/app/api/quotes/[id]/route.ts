@@ -66,7 +66,7 @@ export async function PATCH(
       const transition = transitionQuote(
         existing.status as Parameters<typeof transitionQuote>[0],
         body.status,
-        { entityId: id, actorId: userId, role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
+        { orgId: id, actorId: userId, role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
         id,
       )
       if (!transition.ok) {
@@ -85,7 +85,7 @@ export async function PATCH(
           fromStatus: existing.status,
           toStatus: body.status,
           userId,
-          entityId: id,
+          orgId: id,
         })
         logTransition(
           { orgId: id },

@@ -36,7 +36,7 @@ export async function GET() {
     })
     .from(entities)
     .innerJoin(entityMembers, and(
-      eq(entityMembers.entityId, entities.id),
+      eq(entityMembers.orgId, entities.id),
       eq(entityMembers.clerkUserId, userId),
       eq(entityMembers.status, 'active'),
     ))
@@ -66,11 +66,11 @@ export async function POST(req: NextRequest) {
     })
     .returning()
 
-  // Auto-add creator as entity_admin
+  // Auto-add creator as org_admin
   await platformDb.insert(entityMembers).values({
-    entityId: entity.id,
+    orgId: entity.id,
     clerkUserId: userId,
-    role: 'entity_admin',
+    role: 'org_admin',
   })
 
   return NextResponse.json(entity, { status: 201 })

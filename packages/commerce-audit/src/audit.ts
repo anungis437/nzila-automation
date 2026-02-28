@@ -8,7 +8,7 @@
  * The entry contains the full transition context including:
  *  - who (actorId, role)
  *  - what (entity type, target entity, action, from/to state)
- *  - where (entityId = org scope)
+ *  - where (orgId = org scope)
  *  - when (timestamp)
  *  - why (metadata from guards/transition label)
  *
@@ -62,8 +62,8 @@ export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
 export interface AuditEntry {
   /** Unique audit entry ID (caller generates, typically UUID) */
   readonly id: string
-  /** Org scope — entity_id */
-  readonly entityId: string
+  /** Org scope — org_id */
+  readonly orgId: string
   /** Actor who performed the action */
   readonly actorId: string
   /** Actor's role at time of action */
@@ -97,7 +97,7 @@ export interface TransitionAuditContext {
   /** Unique ID for this audit entry */
   readonly id: string
   /** Org scope */
-  readonly entityId: string
+  readonly orgId: string
   /** Actor performing the transition */
   readonly actorId: string
   /** Actor's role */
@@ -117,7 +117,7 @@ export interface TransitionAuditContext {
  */
 export interface ActionAuditContext {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly actorId: string
   readonly role: OrgRole
   readonly entityType: CommerceEntityType
@@ -140,7 +140,7 @@ export function buildTransitionAuditEntry<TState extends string>(
 ): AuditEntry {
   return {
     id: ctx.id,
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: ctx.entityType,
@@ -167,7 +167,7 @@ export function buildTransitionAuditEntry<TState extends string>(
 export function buildActionAuditEntry(ctx: ActionAuditContext): AuditEntry {
   return {
     id: ctx.id,
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: ctx.entityType,
@@ -191,7 +191,7 @@ export function validateAuditEntry(entry: AuditEntry): string[] {
   const errors: string[] = []
 
   if (!entry.id) errors.push('id is required')
-  if (!entry.entityId) errors.push('entityId is required (org scope)')
+  if (!entry.orgId) errors.push('orgId is required (org scope)')
   if (!entry.actorId) errors.push('actorId is required')
   if (!entry.role) errors.push('role is required')
   if (!entry.entityType) errors.push('entityType is required')
@@ -220,7 +220,7 @@ export function hashAuditEntry(entry: AuditEntry): string {
  * Create an audit trail (ordered list of entries) summary for evidence packs.
  */
 export function summarizeAuditTrail(entries: readonly AuditEntry[]): {
-  entityId: string
+  orgId: string
   entryCount: number
   firstEntry: string
   lastEntry: string
@@ -231,7 +231,7 @@ export function summarizeAuditTrail(entries: readonly AuditEntry[]): {
 } {
   if (entries.length === 0) {
     return {
-      entityId: '',
+      orgId: '',
       entryCount: 0,
       firstEntry: '',
       lastEntry: '',
@@ -250,7 +250,7 @@ export function summarizeAuditTrail(entries: readonly AuditEntry[]): {
   const last = sorted[sorted.length - 1]!
 
   return {
-    entityId: first.entityId,
+    orgId: first.orgId,
     entryCount: sorted.length,
     firstEntry: first.timestamp,
     lastEntry: last.timestamp,

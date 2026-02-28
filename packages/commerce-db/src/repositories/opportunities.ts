@@ -19,7 +19,7 @@ export async function listOpportunities(
   ctx: CommerceReadContext,
   opts: PaginationOpts = {},
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
 
@@ -40,7 +40,7 @@ export async function getOpportunityById(
   ctx: CommerceReadContext,
   opportunityId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   const rows = await db.select(
     commerceOpportunities,
     eq(commerceOpportunities.id, opportunityId),
@@ -52,7 +52,7 @@ export async function listOpportunitiesByCustomer(
   ctx: CommerceReadContext,
   customerId: string,
 ) {
-  const db = createScopedDb({ orgId: ctx.entityId })
+  const db = createScopedDb({ orgId: ctx.orgId })
   return db.select(
     commerceOpportunities,
     eq(commerceOpportunities.customerId, customerId),
@@ -72,7 +72,7 @@ export async function createOpportunity(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,
@@ -93,7 +93,7 @@ export async function updateOpportunity(
   },
 ) {
   const db = createAuditedScopedDb({
-    orgId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.actorId,
     correlationId: ctx.correlationId,
     actorRole: ctx.actorRole,

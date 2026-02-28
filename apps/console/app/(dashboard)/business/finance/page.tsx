@@ -15,11 +15,11 @@ interface Entity {
 }
 
 export default function FinanceHubPage() {
-  const [entities, setEntities] = useState<Entity[]>([])
+  const [orgs, setEntities] = useState<Entity[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then(setEntities)
       .catch(() => {})
@@ -35,7 +35,7 @@ export default function FinanceHubPage() {
         </p>
         <h1 className="text-2xl font-bold text-gray-900">Finance</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Expenses, invoicing, and financial operations across all entities.
+          Expenses, invoicing, and financial operations across all orgs.
         </p>
       </div>
 
@@ -49,21 +49,21 @@ export default function FinanceHubPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Loading entities...</p>
-      ) : entities.length === 0 ? (
+        <p className="text-gray-400 text-sm">Loading orgs...</p>
+      ) : orgs.length === 0 ? (
         <div className="text-center py-12 text-gray-400">
           <CurrencyDollarIcon className="h-12 w-12 mx-auto mb-3" />
-          <p className="font-medium">No entities yet</p>
-          <Link href="/business/entities" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
+          <p className="font-medium">No orgs yet</p>
+          <Link href="/business/orgs" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
             Go to Entities →
           </Link>
         </div>
       ) : (
         <div className="space-y-3">
-          {entities.map((entity) => (
+          {orgs.map((entity) => (
             <Link
               key={entity.id}
-              href={`/business/entities/${entity.id}/finance`}
+              href={`/business/orgs/${entity.id}/finance`}
               className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:border-green-300 hover:shadow-sm transition-all"
             >
               <div>

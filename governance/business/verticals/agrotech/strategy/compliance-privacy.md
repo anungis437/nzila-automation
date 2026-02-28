@@ -180,7 +180,7 @@ Every data mutation in CORA and PonduOps generates an audit record:
 {
   "audit_id": "uuid-v4",
   "entity": "harvest_record",
-  "entity_id": "harvest-12345",
+  "org_id": "harvest-12345",
   "action": "create",
   "actor_id": "user-67890",
   "actor_role": "cooperative_manager",

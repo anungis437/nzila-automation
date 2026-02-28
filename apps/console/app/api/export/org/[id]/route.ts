@@ -5,7 +5,7 @@
  * Org admin can export own org only; platform admin can export any org.
  */
 import { NextRequest, NextResponse } from 'next/server'
-import { authenticateUser, getEntityMembership } from '@/lib/api-guards'
+import { authenticateUser, getOrgMembership } from '@/lib/api-guards'
 import { exportOrgData, datasetToCsv } from '@nzila/platform-export'
 import { recordAuditEvent, AUDIT_ACTIONS } from '@/lib/audit-db'
 import { createLogger } from '@nzila/os-core'
@@ -27,7 +27,7 @@ export async function GET(
 
   // Org admin can export own org only
   if (!isPlatformAdmin) {
-    const membership = await getEntityMembership(orgId, userId)
+    const membership = await getOrgMembership(orgId, userId)
     if (!membership) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -35,7 +35,7 @@ export async function GET(
 
   // Record the export request as an audit event
   await recordAuditEvent({
-    entityId: orgId,
+    orgId: orgId,
     actorClerkUserId: userId,
     actorRole: platformRole,
     action: AUDIT_ACTIONS.DATA_EXPORT_REQUEST,

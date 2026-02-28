@@ -32,11 +32,11 @@ export function auditQuoteTransition(ctx: {
   fromStatus: string
   toStatus: string
   userId: string
-  entityId: string
+  orgId: string
 }) {
   const auditCtx: TransitionAuditContext = {
     id: crypto.randomUUID(),
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     actorId: ctx.userId,
     role: OrgRole.ADMIN,
     entityType: CommerceEntityType.QUOTE,
@@ -70,14 +70,14 @@ export async function buildQuoteEvidencePack(
  */
 export function buildEvidencePackFromAction(ctx: {
   actionType: string
-  entityId: string
+  orgId: string
   actorId: string
   metadata?: Record<string, unknown>
 }): CommerceEvidenceRequest {
   return {
-    entityId: ctx.entityId,
+    orgId: ctx.orgId,
     entityType: CommerceEntityType.QUOTE,
-    targetEntityId: ctx.entityId,
+    targetEntityId: ctx.orgId,
     triggerEvent: ctx.actionType.toLowerCase(),
     actorId: ctx.actorId,
     auditTrail: [],

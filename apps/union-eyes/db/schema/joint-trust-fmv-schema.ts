@@ -253,7 +253,7 @@ export const fmvViolations = pgTable("fmv_violations", {
   violationType: varchar("violation_type", { length: 50 }).notNull(), // "no_competitive_bidding", "insufficient_bids", "no_fmv_verification", "no_appraisal"
   violationDescription: text("violation_description").notNull(),
   
-  // Associated entities
+  // Associated orgs
   procurementRequestId: uuid("procurement_request_id"),
   transactionId: uuid("transaction_id"),
   
@@ -281,7 +281,7 @@ export const fmvAuditLog = pgTable("fmv_audit_log", {
   actionType: varchar("action_type", { length: 50 }).notNull(), // "benchmark_created", "procurement_initiated", "bid_submitted", "appraisal_completed", "cpi_adjusted"
   actionDescription: text("action_description").notNull(),
   
-  // Related entities
+  // Related orgs
   procurementRequestId: uuid("procurement_request_id"),
   bidId: uuid("bid_id"),
   appraisalId: uuid("appraisal_id"),

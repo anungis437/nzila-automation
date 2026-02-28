@@ -21,10 +21,10 @@ const flagships = [
     vertical: 'Uniontech',
     status: 'Flagship',
     tam: '$50B',
-    entities: '4,773',
+    orgs: '4,773',
     image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800',
     alt: 'Union Eyes — comprehensive union management platform for pension forecasting and labor analytics',
-    description: 'The most comprehensive union management platform — pension forecasting, grievance tracking, member analytics, and labor organizing tools for 4,773 entities.',
+    description: 'The most comprehensive union management platform — pension forecasting, grievance tracking, member analytics, and labor organizing tools for 4,773 orgs.',
     features: ['Pension Forecasting', 'Grievance Tracking', 'Collective Bargaining AI', 'Member Analytics'],
   },
   {
@@ -32,10 +32,10 @@ const flagships = [
     vertical: 'Fintech',
     status: 'Flagship',
     tam: '$100B',
-    entities: '485',
+    orgs: '485',
     image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800',
     alt: 'DiasporaCore — diaspora banking platform for multi-currency remittances and community lending',
-    description: 'Full-stack diaspora banking platform — KYC/AML compliance, multi-currency remittances, savings groups, and community lending across 485 financial entities.',
+    description: 'Full-stack diaspora banking platform — KYC/AML compliance, multi-currency remittances, savings groups, and community lending across 485 financial orgs.',
     features: ['KYC/AML Engine', 'Multi-Currency Transfers', 'Savings Groups', 'Community Lending'],
   },
   {
@@ -43,10 +43,10 @@ const flagships = [
     vertical: 'EdTech / Legaltech',
     status: 'Production Ready',
     tam: '$1.5B',
-    entities: '132',
+    orgs: '132',
     image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800',
     alt: 'ABR Insights — anti-bias research platform with AI coaching and tribunal case database',
-    description: 'Anti-bias research and educational insights — LMS, tribunal case database, AI coaching, and DEI analytics powering 132 curated entities.',
+    description: 'Anti-bias research and educational insights — LMS, tribunal case database, AI coaching, and DEI analytics powering 132 curated orgs.',
     features: ['AI Coach', 'Tribunal Database', 'DEI Analytics', 'Custom LMS'],
   },
   {
@@ -54,7 +54,7 @@ const flagships = [
     vertical: 'Agrotech',
     status: 'Beta',
     tam: '$8.6B',
-    entities: '80+',
+    orgs: '80+',
     image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800',
     alt: 'CORA — AI-powered agricultural management platform with farm planning and IoT integration',
     description: 'Agricultural management and supply-chain intelligence built on verified Canadian agricultural data — farm planning, crop management, IoT integration, and market intelligence.',
@@ -63,17 +63,17 @@ const flagships = [
 ];
 
 const pipeline = [
-  { name: 'CongoWave', vertical: 'Entertainment', tam: '$50B', entities: '83+', status: 'Production Ready' },
-  { name: 'SentryIQ360', vertical: 'Insurtech', tam: '$30B', entities: '79+', status: 'In Development' },
-  { name: 'Court Lens', vertical: 'Legaltech', tam: '$12B', entities: '682', status: 'In Development' },
-  { name: 'CyberLearn', vertical: 'EdTech', tam: '$8B', entities: '30+', status: 'In Development' },
-  { name: 'Shop Quoter', vertical: 'Commerce', tam: '$5B', entities: '93', status: 'In Development' },
-  { name: 'Trade OS', vertical: 'Trade', tam: '$15B', entities: '337', status: 'In Development' },
-  { name: 'eExports', vertical: 'Trade', tam: '$3B', entities: '78', status: 'Django PoC' },
-  { name: 'PonduOps', vertical: 'Agrotech (DRC/CA)', tam: '$8B', entities: '220', status: 'In Development' },
-  { name: 'Insight CFO', vertical: 'Fintech', tam: '$2B', entities: '37', status: 'In Development' },
-  { name: 'STSA / Lexora', vertical: 'Fintech', tam: '$5B', entities: '95', status: 'In Development' },
-  { name: 'Memora', vertical: 'Healthtech', tam: '$20B', entities: '150', status: 'Legacy' },
+  { name: 'CongoWave', vertical: 'Entertainment', tam: '$50B', orgs: '83+', status: 'Production Ready' },
+  { name: 'SentryIQ360', vertical: 'Insurtech', tam: '$30B', orgs: '79+', status: 'In Development' },
+  { name: 'Court Lens', vertical: 'Legaltech', tam: '$12B', orgs: '682', status: 'In Development' },
+  { name: 'CyberLearn', vertical: 'EdTech', tam: '$8B', orgs: '30+', status: 'In Development' },
+  { name: 'Shop Quoter', vertical: 'Commerce', tam: '$5B', orgs: '93', status: 'In Development' },
+  { name: 'Trade OS', vertical: 'Trade', tam: '$15B', orgs: '337', status: 'In Development' },
+  { name: 'eExports', vertical: 'Trade', tam: '$3B', orgs: '78', status: 'Django PoC' },
+  { name: 'PonduOps', vertical: 'Agrotech (DRC/CA)', tam: '$8B', orgs: '220', status: 'In Development' },
+  { name: 'Insight CFO', vertical: 'Fintech', tam: '$2B', orgs: '37', status: 'In Development' },
+  { name: 'STSA / Lexora', vertical: 'Fintech', tam: '$5B', orgs: '95', status: 'In Development' },
+  { name: 'Memora', vertical: 'Healthtech', tam: '$20B', orgs: '150', status: 'Legacy' },
 ];
 
 function getStatusStyle(status: string) {
@@ -160,7 +160,7 @@ export default function ProductsPage() {
                     </div>
                     <div className="flex items-center gap-6 text-sm">
                       <span className="font-bold text-gold">{product.tam} TAM</span>
-                      <span className="font-semibold text-electric">{product.entities} entities</span>
+                      <span className="font-semibold text-electric">{product.orgs} orgs</span>
                     </div>
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export default function ProductsPage() {
                   <p className="text-sm text-gray-400 mb-3">{product.vertical}</p>
                   <div className="flex items-center gap-4 text-sm">
                     <span className="text-gold font-semibold">{product.tam}</span>
-                    <span className="text-gray-400">{product.entities} entities</span>
+                    <span className="text-gray-400">{product.orgs} orgs</span>
                   </div>
                 </div>
               </ScrollReveal>

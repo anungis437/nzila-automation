@@ -56,7 +56,7 @@ FROM commerce.quotes q
 WHERE q.updated_at > NOW() - INTERVAL '1 hour'
   AND NOT EXISTS (
     SELECT 1 FROM commerce.audit_entries ae
-    WHERE ae.entity_id = q.id
+    WHERE ae.org_id = q.id
       AND ae.created_at > q.updated_at - INTERVAL '1 minute'
   );
 ```
@@ -106,7 +106,7 @@ For each transition without an audit entry:
 import { buildActionAuditEntry } from '@nzila/commerce-audit'
 
 const backfillEntry = buildActionAuditEntry({
-  entityId: entity.id,
+  orgId: entity.id,
   entityType: 'quote', // or order/invoice
   actorId: 'system-backfill',
   orgId: entity.orgId,

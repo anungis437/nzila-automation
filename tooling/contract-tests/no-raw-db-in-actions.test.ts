@@ -84,7 +84,7 @@ const RAW_DB_PATTERNS: Array<{ pattern: RegExp; label: string }> = [
   // rawDb identifier alongside @nzila/db
   {
     pattern: /\brawDb\b/,
-    label: 'rawDb access forbidden — use createScopedDb(entityId)',
+    label: 'rawDb access forbidden — use createScopedDb(orgId)',
   },
   // Direct drizzle() instantiation
   {

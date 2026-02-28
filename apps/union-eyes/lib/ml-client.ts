@@ -47,10 +47,10 @@ export function makeMlClient(getToken: () => Promise<string | null>) {
 export async function runPrediction(opts: {
   model: string
   features?: Record<string, unknown>
-  entityId?: string
+  orgId?: string
 }): Promise<Record<string, unknown> | null> {
   const client = getMlClient()
-  const runs = await client.getInferenceRuns(opts.entityId ?? 'platform', 10)
+  const runs = await client.getInferenceRuns(opts.orgId ?? 'platform', 10)
   const match = runs.find((r) => r.modelKey === opts.model)
   return match?.summaryJson ?? null
 }

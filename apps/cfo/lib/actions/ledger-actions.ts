@@ -111,7 +111,7 @@ export async function runReconciliation(): Promise<ReconciliationResult> {
     const pack = buildEvidencePackFromAction({
       actionId: `recon-${Date.now()}`,
       actionType: 'RECONCILIATION_RUN',
-      entityId: 'platform',
+      orgId: 'platform',
       executedBy: userId,
     })
     await processEvidencePack(pack)

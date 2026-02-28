@@ -18,7 +18,7 @@ import type { TradeListingId } from '@nzila/trade-core/types'
 
 export interface MappedVehicleListing {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly listingId: TradeListingId
   readonly vin: string
   readonly make: string
@@ -40,7 +40,7 @@ export interface MappedVehicleListing {
 
 export interface MappedVehicleDoc {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly listingId: TradeListingId
   readonly docType: VehicleDocType
   readonly title: string
@@ -146,12 +146,12 @@ const DOC_TYPE_MAP: Record<string, VehicleDocType> = {
 
 export function mapLegacyVehicle(
   legacy: LegacyEExportsVehicle,
-  entityId: string,
+  orgId: string,
   listingId: TradeListingId,
 ): MappedVehicleListing {
   return {
     id: crypto.randomUUID(),
-    entityId,
+    orgId,
     listingId,
     vin: legacy.vin,
     make: legacy.make,
@@ -174,12 +174,12 @@ export function mapLegacyVehicle(
 
 export function mapLegacyDoc(
   legacy: LegacyEExportsDoc,
-  entityId: string,
+  orgId: string,
   listingId: TradeListingId,
 ): MappedVehicleDoc {
   return {
     id: crypto.randomUUID(),
-    entityId,
+    orgId,
     listingId,
     docType: DOC_TYPE_MAP[legacy.doc_type?.toLowerCase() ?? ''] ?? 'bill_of_sale',
     title: legacy.title,

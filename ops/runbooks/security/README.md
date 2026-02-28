@@ -23,7 +23,7 @@ and security monitoring within Nzila OS.
 See `Control-Test-Plan.md` → CT-02 for full procedure.
 
 1. Export Clerk users for the organization
-2. Export `entity_members` table per entity
+2. Export `org_members` table per entity
 3. Cross-reference: every member maps to an active Clerk user
 4. Audit role assignments (flag excessive admin access)
 5. Review off-boardings for the quarter
@@ -42,14 +42,14 @@ See `Control-Test-Plan.md` → CT-02 for full procedure.
 
 | Artifact | Format | Control | Storage Path | Retention |
 |---|---|---|---|---|
-| Access review report | JSON/PDF | AC-02, AC-03 | `evidence/{entity_id}/access/{YYYY}/Q{N}/access-review-report/ACR-Q{N}-{YYYY}/` | 3_YEARS |
-| Key rotation log | JSON | AC-04 | `evidence/{entity_id}/access/{YYYY}/{MM}/key-rotation-log/` | 3_YEARS |
-| Off-boarding evidence | JSON | AC-05 | `evidence/{entity_id}/access/{YYYY}/{MM}/offboarding/{user_id}/` | 7_YEARS |
-| Vulnerability scan results | JSON | SDLC-03 | `evidence/{entity_id}/sdlc/{YYYY}/{MM}/dependency-audit/` | 1_YEAR |
+| Access review report | JSON/PDF | AC-02, AC-03 | `evidence/{org_id}/access/{YYYY}/Q{N}/access-review-report/ACR-Q{N}-{YYYY}/` | 3_YEARS |
+| Key rotation log | JSON | AC-04 | `evidence/{org_id}/access/{YYYY}/{MM}/key-rotation-log/` | 3_YEARS |
+| Off-boarding evidence | JSON | AC-05 | `evidence/{org_id}/access/{YYYY}/{MM}/offboarding/{user_id}/` | 7_YEARS |
+| Vulnerability scan results | JSON | SDLC-03 | `evidence/{org_id}/sdlc/{YYYY}/{MM}/dependency-audit/` | 1_YEAR |
 
 ### Required Metadata Fields
 
-- `entity_id`, `artifact_id`, `sha256`, `created_by`, `retention_class` per table above
+- `org_id`, `artifact_id`, `sha256`, `created_by`, `retention_class` per table above
 
 ### Hashing Expectation
 

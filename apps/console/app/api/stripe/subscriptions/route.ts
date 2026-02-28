@@ -5,7 +5,7 @@
  * Creates a Subscription with payment_behavior='default_incomplete'.
  * Returns the clientSecret for the frontend <PaymentElement> to confirm.
  *
- * GET /api/stripe/subscriptions?entityId=... — List subscriptions for an entity
+ * GET /api/stripe/subscriptions?orgId=... — List subscriptions for an entity
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -20,7 +20,7 @@ import { createLogger } from '@nzila/os-core'
 const logger = createLogger('stripe:subscriptions')
 
 const CreateSubscriptionSchema = z.object({
-  entityId: z.string().uuid(),
+  orgId: z.string().uuid(),
   ventureId: z.string().optional(),
   customerId: z.string().min(1),
   priceId: z.string().min(1),
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const result = await createSubscription({
       customerId: input.customerId,
       priceId: input.priceId,
-      entityId: input.entityId,
+      orgId: input.orgId,
       ventureId: input.ventureId,
       trialDays: input.trialDays,
       metadata: input.metadata,
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     // Persist to DB (status will be updated via webhook)
     await platformDb.insert(stripeSubscriptions).values({
-      entityId: input.entityId,
+      orgId: input.orgId,
       stripeCustomerId: input.customerId,
       stripeSubscriptionId: result.subscriptionId,
       stripePriceId: input.priceId,
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
 
     await recordAuditEvent({
-      entityId: input.entityId,
+      orgId: input.orgId,
       actorClerkUserId: auth.userId,
       actorRole: auth.platformRole,
       action: 'stripe.subscription_created',
@@ -104,17 +104,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   if (!auth.ok) return auth.response
 
   const { searchParams } = new URL(req.url)
-  const entityId = searchParams.get('entityId')
+  const orgId = searchParams.get('orgId')
 
-  if (!entityId) {
-    return NextResponse.json({ error: 'entityId is required' }, { status: 400 })
+  if (!orgId) {
+    return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
   }
 
   try {
     const subs = await platformDb
       .select()
       .from(stripeSubscriptions)
-      .where(eq(stripeSubscriptions.entityId, entityId))
+      .where(eq(stripeSubscriptions.orgId, orgId))
       .orderBy(stripeSubscriptions.createdAt)
 
     return NextResponse.json({ subscriptions: subs })

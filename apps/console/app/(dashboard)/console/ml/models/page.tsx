@@ -2,7 +2,7 @@
  * /console/ml/models — ML Model Registry
  *
  * Shows all versions of every model for this entity.
- * Active/retire actions are entity_admin only (shown server-side
+ * Active/retire actions are org_admin only (shown server-side
  * based on role; actual mutations go through API routes).
  *
  * Dogfoods @nzila/ml-sdk — zero direct DB access.
@@ -26,8 +26,8 @@ export default async function MlModelsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const entityId = getEntityId()
-  const models = await mlClient().getAllModels(entityId)
+  const orgId = getEntityId()
+  const models = await mlClient().getAllModels(orgId)
 
   const byKey: Record<string, typeof models> = {}
   for (const m of models) {
@@ -53,9 +53,9 @@ export default async function MlModelsPage() {
       <h1 className="text-2xl font-bold text-gray-900">ML Model Registry</h1>
       <p className="text-sm text-gray-500">
         All model versions for entity{' '}
-        <span className="font-mono text-xs">{entityId}</span>.
+        <span className="font-mono text-xs">{orgId}</span>.
         Status transitions (draft → active → retired) are performed by running training /
-        activation scripts; entity_admin may retire a model via the API.
+        activation scripts; org_admin may retire a model via the API.
       </p>
 
       {Object.keys(byKey).length === 0 ? (

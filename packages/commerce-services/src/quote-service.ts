@@ -71,7 +71,7 @@ export interface QuoteLineInput {
  */
 export interface QuoteEntity {
   readonly id: string
-  readonly entityId: string
+  readonly orgId: string
   readonly ref: string
   readonly customerId: string
   readonly opportunityId: string | null
@@ -184,7 +184,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
   function buildTransitionCtx(ctx: OrgContext): TransitionContext {
     return {
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       meta: {},
@@ -201,7 +201,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
       quote.status,
       targetStatus,
       buildTransitionCtx(ctx),
-      quote.entityId,
+      quote.orgId,
       quote,
     )
   }
@@ -219,7 +219,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
       : null
 
     const quote = await repo.createQuote(ctx, {
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       ref,
       customerId: input.customerId,
       opportunityId: input.opportunityId ?? null,
@@ -250,7 +250,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const auditEntry = buildActionAuditEntry({
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -335,7 +335,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const transitionAudit = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -364,7 +364,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -388,7 +388,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -413,7 +413,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -438,7 +438,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -463,7 +463,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
 
     const auditEntry = buildTransitionAuditEntry(result, {
       id: crypto.randomUUID(),
-      entityId: ctx.entityId,
+      orgId: ctx.orgId,
       actorId: ctx.actorId,
       role: ctx.role as OrgRole,
       entityType: CommerceEntityType.QUOTE,
@@ -481,7 +481,7 @@ export function createQuoteService(repo: QuoteRepository, template?: PricingTemp
     quote: QuoteEntity,
   ): readonly string[] {
     const tctx = buildTransitionCtx(ctx)
-    const transitions = getAvailableTransitions(quoteMachine, quote.status, tctx, quote.entityId, quote)
+    const transitions = getAvailableTransitions(quoteMachine, quote.status, tctx, quote.orgId, quote)
     return transitions.map((t) => t.to)
   }
 

@@ -70,7 +70,7 @@ Données Supabase héritées (JSON)
 2. Les ID héritées sont préservés dans `externalIds` et `metadata`
 3. Les enregistrements invalides sont rapportés individuellement sans
    bloquer le lot complet
-4. L'`OrgContext.entityId` scope chaque opération
+4. L'`OrgContext.orgId` scope chaque opération
 5. Chaque import produit des entrées d'audit avec les ID héritées pour traçabilité
 
 ### 2.3 Tests

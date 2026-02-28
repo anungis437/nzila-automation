@@ -23,7 +23,7 @@ export type { EvidencePackResult }
  * ```ts
  * const result = await buildUnionEvidencePack({
  *   actionType: 'GRIEVANCE_RESOLVED',
- *   entityId: grievanceId,
+ *   orgId: grievanceId,
  *   actorId: userId,
  *   artifacts: [{ type: 'resolution', data: resolution }],
  * })

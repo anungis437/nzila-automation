@@ -2,18 +2,18 @@
 /**
  * GET /api/ml/models
  *
- * Returns all ML models (all statuses) for a given entityId.
+ * Returns all ML models (all statuses) for a given orgId.
  * RBAC: any active entity member.
  *
  * Query params:
- *   entityId    required
+ *   orgId    required
  *   status      optional — filter to a specific status (draft|active|retired)
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { platformDb } from '@nzila/db/platform'
 import { mlModels } from '@nzila/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
-import { requireEntityAccess } from '@/lib/api-guards'
+import { requireOrgAccess } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('ml:models')
@@ -24,18 +24,18 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const entityId = searchParams.get('entityId')
+    const orgId = searchParams.get('orgId')
     const status = searchParams.get('status')
 
-    if (!entityId) {
-      return NextResponse.json({ error: 'entityId is required' }, { status: 400 })
+    if (!orgId) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
     }
 
-    const access = await requireEntityAccess(entityId)
+    const access = await requireOrgAccess(orgId)
     if (!access.ok) return access.response
 
     const conditions = [
-      eq(mlModels.entityId, entityId),
+      eq(mlModels.orgId, orgId),
       ...(status ? [eq(mlModels.status, status as 'draft' | 'active' | 'retired')] : []),
     ]
 
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       rows.map((m) => ({
         id: m.id,
-        entityId: m.entityId,
+        orgId: m.orgId,
         modelKey: m.modelKey,
         algorithm: m.algorithm,
         version: m.version,

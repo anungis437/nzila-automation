@@ -3,7 +3,7 @@
  *
  * Deterministic text chunking, embedding, and storage into
  * aiEmbeddings + aiKnowledgeSources.
- * Idempotent by (entityId, sourceId, chunkSize, overlap).
+ * Idempotent by (orgId, sourceId, chunkSize, overlap).
  *
  * Moved from @nzila/tools-runtime to break the circular dependency.
  * Pure chunking utilities remain in @nzila/tools-runtime.
@@ -31,12 +31,12 @@ import { createHash } from 'node:crypto'
 // ── Idempotency ─────────────────────────────────────────────────────────────
 
 function buildIngestionIdempotencyKey(
-  entityId: string,
+  orgId: string,
   sourceId: string,
   chunkSize: number,
   overlap: number,
 ): string {
-  return `${entityId}::${sourceId}::${chunkSize}::${overlap}`
+  return `${orgId}::${sourceId}::${chunkSize}::${overlap}`
 }
 
 // ── Resolve source text ─────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ export async function ingestKnowledgeSource(
 ): Promise<IngestionResult> {
   const toolCalls: ToolCallEntry[] = []
   const { source, ingestion, retention, citations } = proposal
-  const entityId = proposal.entityId
+  const orgId = proposal.orgId
 
   // 1. Upsert knowledge source
   let [existingSource] = await db
@@ -168,7 +168,7 @@ export async function ingestKnowledgeSource(
     .from(aiKnowledgeSources)
     .where(
       and(
-        eq(aiKnowledgeSources.entityId, entityId),
+        eq(aiKnowledgeSources.orgId, orgId),
         eq(aiKnowledgeSources.title, source.title),
         eq(aiKnowledgeSources.appKey, proposal.appKey),
       ),
@@ -179,7 +179,7 @@ export async function ingestKnowledgeSource(
     const [newSource] = await db
       .insert(aiKnowledgeSources)
       .values({
-        entityId,
+        orgId,
         appKey: proposal.appKey,
         sourceType: source.sourceType === 'manual_text' ? 'manual' : source.sourceType,
         title: source.title,
@@ -198,7 +198,7 @@ export async function ingestKnowledgeSource(
   const [ingestionRun] = await db
     .insert(aiKnowledgeIngestionRuns)
     .values({
-      entityId,
+      orgId,
       sourceId,
       status: 'queued',
     })
@@ -271,7 +271,7 @@ export async function ingestKnowledgeSource(
       const batchTexts = batch.map((c) => c.text)
 
       const embedResult = await embed({
-        entityId,
+        orgId,
         appKey: proposal.appKey,
         profileKey: proposal.profileKey,
         input: batchTexts,
@@ -283,7 +283,7 @@ export async function ingestKnowledgeSource(
         const embeddingVector = embedResult.embeddings[j]
 
         await db.insert(aiEmbeddings).values({
-          entityId,
+          orgId,
           appKey: proposal.appKey,
           sourceId,
           chunkId: chunk.chunkId,
@@ -327,7 +327,7 @@ export async function ingestKnowledgeSource(
     const report = {
       sourceId,
       ingestionRunId: ingestionRun.id,
-      entityId,
+      orgId,
       source: { title: source.title, sourceType: source.sourceType },
       metrics: {
         textLength: sourceText.length,
@@ -350,7 +350,7 @@ export async function ingestKnowledgeSource(
 
     const reportBuffer = Buffer.from(JSON.stringify(report, null, 2), 'utf-8')
     const reportSha256 = createHash('sha256').update(reportBuffer).digest('hex')
-    const reportBlobPath = `exports/${entityId}/ai/ingestion/${sourceId}/${ingestionRun.id}/report.json`
+    const reportBlobPath = `exports/${orgId}/ai/ingestion/${sourceId}/${ingestionRun.id}/report.json`
 
     const uploadResult = await uploadWithLogging({
       blobPath: reportBlobPath,
@@ -362,7 +362,7 @@ export async function ingestKnowledgeSource(
     const [reportDoc] = await db
       .insert(documents)
       .values({
-        entityId,
+        orgId,
         category: 'ingestion_report',
         title: `Knowledge ingestion report — ${source.title}`,
         blobContainer: 'exports',
@@ -387,7 +387,7 @@ export async function ingestKnowledgeSource(
       .where(eq(aiKnowledgeIngestionRuns.id, ingestionRun.id))
 
     await appendAiAuditEvent({
-      entityId,
+      orgId,
       actorClerkUserId,
       action: 'ai.knowledge_ingested',
       targetType: 'ai_knowledge_source',

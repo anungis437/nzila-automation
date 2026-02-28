@@ -285,7 +285,7 @@ def analyze_automation_opportunities():
             "problem": "Knowledge is siloed across products, docs, code, people. Hard to see connections.",
             "solution": "Build knowledge graph connecting strategy, tech, compliance, user research across all products.",
             "features": [
-                "🕸️ Knowledge Graph Visualization (entities, relationships)",
+                "🕸️ Knowledge Graph Visualization (orgs, relationships)",
                 "🔍 Intelligent Search (find connections across domains)",
                 "📊 Insight Discovery (what patterns emerge?)",
                 "🔗 Auto-Linking (connect related docs, code, features)",

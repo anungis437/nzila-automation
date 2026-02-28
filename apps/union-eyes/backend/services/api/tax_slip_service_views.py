@@ -67,7 +67,7 @@ class TaxSlipServiceViewSet(viewsets.ViewSet):
                     action="t4a_tax_slip_generated",
                     actor_id=str(request.user.id),
                     entity_type="t4a_tax_slip",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 T4aTaxSlipsSerializer(instance).data,
@@ -108,7 +108,7 @@ class TaxSlipServiceViewSet(viewsets.ViewSet):
                     action="rl1_tax_slip_generated",
                     actor_id=str(request.user.id),
                     entity_type="rl1_tax_slip",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 Rl1TaxSlipsSerializer(instance).data,
@@ -146,7 +146,7 @@ class TaxSlipServiceViewSet(viewsets.ViewSet):
                     action="tax_year_end_started",
                     actor_id=str(request.user.id),
                     entity_type="tax_year_end_processing",
-                    entity_id=str(instance.id),
+                    org_id=str(instance.id),
                 )
             return Response(
                 TaxYearEndProcessingSerializer(instance).data,

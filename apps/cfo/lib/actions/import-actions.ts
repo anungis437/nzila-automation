@@ -1,7 +1,7 @@
 /**
  * CFO Server Actions — Bulk client import via CSV.
  *
- * Parses a CSV file and batch-creates entities.
+ * Parses a CSV file and batch-creates orgs.
  * Expected CSV columns: name, email, jurisdiction, incorporationNumber,
  * fiscalYearEnd, businessType, industry, phone
  */
@@ -10,7 +10,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { requirePermission } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
-import { entities } from '@nzila/db/schema'
+import { orgs } from '@nzila/db/schema'
 import { revalidatePath } from 'next/cache'
 import { logger } from '@/lib/logger'
 
@@ -189,7 +189,7 @@ export async function importClientsFromCsv(csvText: string): Promise<ImportResul
     }
 
     try {
-      await platformDb.insert(entities).values({
+      await platformDb.insert(orgs).values({
         legalName: record.name.trim(),
         jurisdiction: normalizeProvince(record.jurisdiction),
         incorporationNumber: record.incorporationNumber?.trim() || null,

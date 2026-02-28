@@ -45,7 +45,7 @@ interface ActionResult<T> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function createProductAction(
-  input: Omit<CreateProductInput, 'entityId'>,
+  input: Omit<CreateProductInput, 'orgId'>,
 ): Promise<ActionResult<ProductWithInventory>> {
   const { userId } = await auth()
   if (!userId) {
@@ -53,9 +53,9 @@ export async function createProductAction(
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const data = await createProduct({ ...input, entityId })
+    const data = await createProduct({ ...input, orgId })
 
     revalidatePath('/products')
     revalidatePath('/inventory')
@@ -101,9 +101,9 @@ export async function getProductBySkuAction(
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const data = await getProductBySku(entityId, sku)
+    const data = await getProductBySku(orgId, sku)
     if (!data) {
       return { success: false, error: 'Product not found' }
     }
@@ -131,9 +131,9 @@ export async function listProductsAction(filter?: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const products = await listProducts({ entityId, ...filter })
+    const products = await listProducts({ orgId, ...filter })
 
     return { success: true, data: products }
   } catch (error) {
@@ -213,11 +213,11 @@ export async function recordStockMovementAction(input: {
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
     const movement = await recordStockMovement({
       ...input,
-      entityId,
+      orgId,
       userId,
     })
 
@@ -311,9 +311,9 @@ export async function getInventorySnapshotAction(): Promise<ActionResult<Invento
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const snapshot = await getInventorySnapshot(entityId)
+    const snapshot = await getInventorySnapshot(orgId)
 
     return { success: true, data: snapshot }
   } catch (error) {
@@ -331,9 +331,9 @@ export async function getLowStockProductsAction(): Promise<ActionResult<ProductW
   }
 
   try {
-    const entityId = userId // Replace with actual entity lookup
+    const orgId = userId // Replace with actual entity lookup
 
-    const products = await getLowStockProducts(entityId)
+    const products = await getLowStockProducts(orgId)
 
     return { success: true, data: products }
   } catch (error) {

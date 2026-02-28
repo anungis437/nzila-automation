@@ -4,7 +4,7 @@
  * POST /api/ai/ingest
  * - Upload documents for AI processing
  * - Parse PDF, DOCX, CSV, TXT, JSON, Email
- * - Extract entities and add to RAG
+ * - Extract orgs and add to RAG
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       tags: metadata.tags,
     });
 
-    // Extract entities if requested
+    // Extract orgs if requested
     let extraction: ExtractionResult | null = null;
     if (metadata.extractEntities) {
       extraction = entityExtraction.extract(document.content, {
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
 
       logger.info('Entities extracted', {
         documentId: document.id,
-        entityCount: extraction.entities.length,
+        entityCount: extraction.orgs.length,
         documentType: extraction.documentType,
       });
     }
@@ -166,8 +166,8 @@ export async function POST(request: NextRequest) {
       },
       extraction: extraction ? {
         documentType: extraction.documentType,
-        entityCount: extraction.entities.length,
-        entities: extraction.entities.slice(0, 10), // Return first 10
+        entityCount: extraction.orgs.length,
+        orgs: extraction.orgs.slice(0, 10), // Return first 10
       } : null,
       rag: ragResult,
     }, { status: 201 });

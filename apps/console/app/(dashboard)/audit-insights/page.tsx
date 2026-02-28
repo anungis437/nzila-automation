@@ -8,7 +8,7 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { getUserRole } from '@/lib/rbac'
 import { platformDb } from '@nzila/db/platform'
-import { auditEvents, entities } from '@nzila/db/schema'
+import { auditEvents, orgs } from '@nzila/db/schema'
 import { eq, sql, count, desc } from 'drizzle-orm'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic'
 interface AuditGroupRow {
   targetType: string
   action: string
-  entityId: string
+  orgId: string
   entityName: string | null
   total: number
 }
@@ -26,17 +26,17 @@ async function getPlatformAuditInsights(): Promise<AuditGroupRow[]> {
     .select({
       targetType: auditEvents.targetType,
       action: auditEvents.action,
-      entityId: auditEvents.entityId,
-      entityName: entities.legalName,
+      orgId: auditEvents.orgId,
+      entityName: orgs.legalName,
       total: count().as('total'),
     })
     .from(auditEvents)
-    .leftJoin(entities, eq(auditEvents.entityId, entities.id))
+    .leftJoin(orgs, eq(auditEvents.orgId, orgs.id))
     .groupBy(
       auditEvents.targetType,
       auditEvents.action,
-      auditEvents.entityId,
-      entities.legalName,
+      auditEvents.orgId,
+      orgs.legalName,
     )
     .orderBy(desc(sql`count(*)`))
     .limit(200)
@@ -44,7 +44,7 @@ async function getPlatformAuditInsights(): Promise<AuditGroupRow[]> {
   return rows.map((r) => ({
     targetType: r.targetType,
     action: r.action,
-    entityId: r.entityId,
+    orgId: r.orgId,
     entityName: r.entityName,
     total: r.total,
   }))
@@ -55,18 +55,18 @@ async function getOrgAuditInsights(orgId: string): Promise<AuditGroupRow[]> {
     .select({
       targetType: auditEvents.targetType,
       action: auditEvents.action,
-      entityId: auditEvents.entityId,
-      entityName: entities.legalName,
+      orgId: auditEvents.orgId,
+      entityName: orgs.legalName,
       total: count().as('total'),
     })
     .from(auditEvents)
-    .leftJoin(entities, eq(auditEvents.entityId, entities.id))
-    .where(eq(auditEvents.entityId, orgId))
+    .leftJoin(orgs, eq(auditEvents.orgId, orgs.id))
+    .where(eq(auditEvents.orgId, orgId))
     .groupBy(
       auditEvents.targetType,
       auditEvents.action,
-      auditEvents.entityId,
-      entities.legalName,
+      auditEvents.orgId,
+      orgs.legalName,
     )
     .orderBy(desc(sql`count(*)`))
     .limit(200)
@@ -74,17 +74,17 @@ async function getOrgAuditInsights(orgId: string): Promise<AuditGroupRow[]> {
   return rows.map((r) => ({
     targetType: r.targetType,
     action: r.action,
-    entityId: r.entityId,
+    orgId: r.orgId,
     entityName: r.entityName,
     total: r.total,
   }))
 }
 
 function insightsToCsv(rows: AuditGroupRow[]): string {
-  const header = 'target_type,action,entity_id,entity_name,total'
+  const header = 'target_type,action,org_id,entity_name,total'
   const lines = rows.map(
     (r) =>
-      `${r.targetType},${r.action},${r.entityId},"${r.entityName ?? ''}",${r.total}`,
+      `${r.targetType},${r.action},${r.orgId},"${r.entityName ?? ''}",${r.total}`,
   )
   return [header, ...lines].join('\n')
 }
@@ -117,11 +117,11 @@ export default async function AuditInsightsPage({
   // Most active orgs
   const orgTotals = new Map<string, { name: string; total: number }>()
   for (const r of rows) {
-    const existing = orgTotals.get(r.entityId)
+    const existing = orgTotals.get(r.orgId)
     if (existing) {
       existing.total += r.total
     } else {
-      orgTotals.set(r.entityId, { name: r.entityName ?? r.entityId, total: r.total })
+      orgTotals.set(r.orgId, { name: r.entityName ?? r.orgId, total: r.total })
     }
   }
   const mostActiveOrgs = [...orgTotals.entries()]
@@ -207,11 +207,11 @@ export default async function AuditInsightsPage({
           </thead>
           <tbody>
             {rows.slice(0, 50).map((row, i) => (
-              <tr key={`${row.entityId}-${row.action}-${i}`} className="border-t border-gray-100">
+              <tr key={`${row.orgId}-${row.action}-${i}`} className="border-t border-gray-100">
                 <td className="px-4 py-3 text-gray-900 font-mono text-xs">{row.targetType}</td>
                 <td className="px-4 py-3 text-gray-700 font-mono text-xs">{row.action}</td>
                 {isPlatformAdmin && (
-                  <td className="px-4 py-3 text-gray-600">{row.entityName ?? row.entityId.slice(0, 8)}</td>
+                  <td className="px-4 py-3 text-gray-600">{row.entityName ?? row.orgId.slice(0, 8)}</td>
                 )}
                 <td className="px-4 py-3 text-right text-gray-900 font-semibold">{row.total.toLocaleString()}</td>
               </tr>

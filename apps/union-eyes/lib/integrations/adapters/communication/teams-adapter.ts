@@ -96,7 +96,7 @@ export class TeamsAdapter extends BaseIntegration {
   async sync(options: SyncOptions): Promise<SyncResult> {
     await this.ensureConnected();
 
-    const entities = options.entities || ['teams', 'channels', 'messages', 'members', 'files'];
+    const orgs = options.orgs || ['teams', 'channels', 'messages', 'members', 'files'];
     const results: SyncResult = {
       success: true,
       recordsProcessed: 0,
@@ -107,22 +107,22 @@ export class TeamsAdapter extends BaseIntegration {
     };
 
     try {
-      // Teams are required for other entities
-      if (entities.includes('teams') || entities.includes('channels') || 
-          entities.includes('messages') || entities.includes('members') || 
-          entities.includes('files')) {
+      // Teams are required for other orgs
+      if (orgs.includes('teams') || orgs.includes('channels') || 
+          orgs.includes('messages') || orgs.includes('members') || 
+          orgs.includes('files')) {
         await this.syncTeamsAndChannels(options, results);
       }
 
-      if (entities.includes('messages')) {
+      if (orgs.includes('messages')) {
         await this.syncMessages(options, results);
       }
 
-      if (entities.includes('members')) {
+      if (orgs.includes('members')) {
         await this.syncMembers(options, results);
       }
 
-      if (entities.includes('files')) {
+      if (orgs.includes('files')) {
         await this.syncFiles(options, results);
       }
 

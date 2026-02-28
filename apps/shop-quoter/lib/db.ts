@@ -22,7 +22,7 @@ export interface QuoteLine {
 
 export interface Quote {
   id: string
-  entityId: string
+  orgId: string
   reference: string
   status: string
   title: string
@@ -43,7 +43,7 @@ export interface Quote {
 }
 
 export interface CreateQuoteInput {
-  entityId: string
+  orgId: string
   title?: string
   tier: string
   customerId: string
@@ -73,7 +73,7 @@ export interface CustomerAddress {
 export interface QuoteRepository {
   create(input: CreateQuoteInput): Promise<Quote>
   findById(id: string): Promise<Quote | null>
-  findAll(entityId: string): Promise<Quote[]>
+  findAll(orgId: string): Promise<Quote[]>
   update(id: string, patch: Partial<Quote>): Promise<Quote>
 }
 
@@ -109,7 +109,7 @@ function mapQuoteRow(
 ): Quote {
   return {
     id: row.id,
-    entityId: row.entityId,
+    orgId: row.orgId,
     reference: row.ref ?? '',
     status: row.status ?? 'draft',
     title: (row.metadata as Record<string, unknown>)?.title as string ?? '',
@@ -143,7 +143,7 @@ export const quoteRepo: QuoteRepository = {
       .insert(commerceQuotes)
       .values({
         id,
-        entityId: input.entityId,
+        orgId: input.orgId,
         ref,
         status: 'draft',
         pricingTier: input.tier?.toLowerCase() as 'budget' | 'standard' | 'premium',
@@ -170,7 +170,7 @@ export const quoteRepo: QuoteRepository = {
       await db.insert(commerceQuoteLines).values(
         input.lines.map((l) => ({
           id: l.id || crypto.randomUUID(),
-          entityId: input.entityId,
+          orgId: input.orgId,
           quoteId: id,
           description: l.description,
           sku: l.sku,
@@ -197,11 +197,11 @@ export const quoteRepo: QuoteRepository = {
     return mapQuoteRow(row, lines)
   },
 
-  async findAll(entityId) {
+  async findAll(orgId) {
     const rows = await db
       .select()
       .from(commerceQuotes)
-      .where(eq(commerceQuotes.entityId, entityId))
+      .where(eq(commerceQuotes.orgId, orgId))
       .orderBy(desc(commerceQuotes.createdAt))
 
     return Promise.all(
@@ -236,7 +236,7 @@ export const quoteRepo: QuoteRepository = {
 
 export interface CustomerRecord {
   id: string
-  entityId: string
+  orgId: string
   name: string
   email: string | null
   phone: string | null
@@ -248,7 +248,7 @@ export interface CustomerRecord {
 function mapCustomerRow(row: typeof commerceCustomers.$inferSelect): CustomerRecord {
   return {
     id: row.id,
-    entityId: row.entityId,
+    orgId: row.orgId,
     name: row.name ?? '',
     email: row.email ?? null,
     phone: row.phone ?? null,
@@ -288,7 +288,7 @@ export const customerRepo = {
       .insert(commerceCustomers)
       .values({
         id,
-        entityId: data.entityId,
+        orgId: data.orgId,
         name: data.name,
         email: data.email,
         phone: data.phone,

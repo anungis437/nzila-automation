@@ -2,7 +2,7 @@
  * @nzila/commerce-db — Shared types for commerce data access layer.
  *
  * Every repository function requires a CommerceDbContext to guarantee
- * org isolation (entityId) and audit attribution (actorId).
+ * org isolation (orgId) and audit attribution (actorId).
  *
  * @module @nzila/commerce-db/types
  */
@@ -12,7 +12,7 @@
 /**
  * Context required for all commerce database operations.
  *
- * - `entityId` → org scope (entity_id FK). Cannot be omitted.
+ * - `orgId` → org scope (org_id FK). Cannot be omitted.
  * - `actorId`  → Clerk user ID for audit trails. Cannot be omitted.
  * - `correlationId` → optional request-level trace ID.
  * - `actorRole` → optional role for audit enrichment.
@@ -20,10 +20,6 @@
 export interface CommerceDbContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
   /** Clerk user ID — recorded in every audit event. */
   readonly actorId: string
   /** Optional correlation/request ID for distributed tracing. */
@@ -39,10 +35,6 @@ export interface CommerceDbContext {
 export interface CommerceReadContext {
   /** Organisation UUID — canonical field. */
   readonly orgId: string
-  /**
-   * @deprecated Use `orgId` instead. Kept for backward compatibility.
-   */
-  readonly entityId: string
 }
 
 // ── Pagination ────────────────────────────────────────────────────────────
@@ -64,12 +56,12 @@ export interface PaginatedResult<T> {
 // ── Common insert/update shapes ───────────────────────────────────────────
 
 /**
- * Strip auto-generated fields (id, entityId, timestamps) from a table row
+ * Strip auto-generated fields (id, orgId, timestamps) from a table row
  * to produce the shape callers must supply on insert.
  */
-export type InsertShape<T> = Omit<T, 'id' | 'entityId' | 'createdAt' | 'updatedAt'>
+export type InsertShape<T> = Omit<T, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>
 
 /**
  * Partial update shape — every field is optional.
  */
-export type UpdateShape<T> = Partial<Omit<T, 'id' | 'entityId' | 'createdAt'>>
+export type UpdateShape<T> = Partial<Omit<T, 'id' | 'orgId' | 'createdAt'>>
