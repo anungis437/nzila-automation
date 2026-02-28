@@ -4,9 +4,16 @@
   "description": "NzilaOS evidence pack sealing and verification — adopted from @nzila/os-core",
   "type": "module",
   "main": "./index.mjs",
+  "types": "./index.d.ts",
   "exports": {
-    ".": "./index.mjs",
-    "./seal": "./index.mjs"
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.mjs"
+    },
+    "./seal": {
+      "types": "./index.d.ts",
+      "default": "./index.mjs"
+    }
   },
   "private": true,
   "keywords": ["nzila", "evidence", "seal", "governance"],

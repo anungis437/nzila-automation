@@ -35,8 +35,8 @@ function assertBootInvariants(): void {
 
   // 2. Verify os-core packages are importable (structural check)
   try {
-    // These dynamic imports validate that the platform layer is correctly installed
-    require.resolve('@nzila/db/scoped')
+    // Validates that the platform layer is correctly installed (resolve-only, no side effects)
+    import.meta.resolve('@nzila/db/scoped')
   } catch {
     errors.push(
       'BOOT ASSERTION FAILED: @nzila/db/scoped is not resolvable. ' +
@@ -45,7 +45,7 @@ function assertBootInvariants(): void {
   }
 
   try {
-    require.resolve('@nzila/db/audit')
+    import.meta.resolve('@nzila/db/audit')
   } catch {
     errors.push(
       'BOOT ASSERTION FAILED: @nzila/db/audit is not resolvable. ' +
