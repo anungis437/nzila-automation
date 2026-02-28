@@ -14,6 +14,8 @@ export default defineConfig({
       'apps/web',
       'apps/nacp-exams',
       'apps/zonga',
+      'apps/pondu',
+      'apps/cora',
       // Packages
       'packages/ai-core',
       'packages/ai-sdk',
@@ -58,6 +60,13 @@ export default defineConfig({
       'packages/chatops-teams',
       'packages/crm-hubspot',
       'packages/webhooks',
+      // Agri packages
+      'packages/agri-core',
+      'packages/agri-db',
+      'packages/agri-events',
+      'packages/agri-intelligence',
+      'packages/agri-traceability',
+      'packages/agri-adapters',
       // Contract tests (architectural invariants)
       'tooling/contract-tests',
     ],

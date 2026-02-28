@@ -37,6 +37,12 @@ export const taxFilingTypeEnum = pgEnum('tax_filing_type', [
   'T5',
   'RL-3',
   'Other',
+  'T1',
+  'T3',
+  'T4',
+  'T4A',
+  'T5013',
+  'PayrollRemittance',
 ])
 
 export const taxInstallmentStatusEnum = pgEnum('tax_installment_status', [

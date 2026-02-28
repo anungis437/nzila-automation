@@ -16,11 +16,19 @@
  *     // ... handler logic
  *   }
  */
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest, NextResponse } from 'next/server'
 import type { NzilaRole } from './roles'
 import type { Scope } from './scopes'
 import { roleIncludes } from './roles'
 import { ROLE_DEFAULT_SCOPES } from './scopes'
+
+// Dynamic import helper to avoid hard dependency on next/server
+// (orchestrator-api and other non-Next.js consumers must not crash)
+async function getNextServer() {
+  return import(/* webpackIgnore: true */ 'next/server') as Promise<{
+    NextResponse: typeof import('next/server').NextResponse
+  }>
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -133,6 +141,7 @@ export function withAuth<T>(
       return handler(req, ctx)
     } catch (err) {
       if (err instanceof AuthorizationError) {
+        const { NextResponse } = await getNextServer()
         return NextResponse.json(
           { error: err.message },
           { status: err.statusCode },

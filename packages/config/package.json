@@ -1,7 +1,7 @@
 {
   "name": "@nzila/config",
   "version": "0.1.0",
-  "private": true,
+  "private": true, "type": "module",
   "files": ["*.json", "eslint.js", "prettier.js"],
   "exports": {
     "./tsconfig/base": "./tsconfig.base.json",

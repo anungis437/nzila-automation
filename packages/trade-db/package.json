@@ -1,0 +1,37 @@
+{
+  "name": "@nzila/trade-db",
+  "version": "0.1.0",
+  "private": true, "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./parties": "./src/repositories/parties.ts",
+    "./listings": "./src/repositories/listings.ts",
+    "./deals": "./src/repositories/deals.ts",
+    "./quotes": "./src/repositories/quotes.ts",
+    "./financing": "./src/repositories/financing.ts",
+    "./shipments": "./src/repositories/shipments.ts",
+    "./documents": "./src/repositories/documents.ts",
+    "./commissions": "./src/repositories/commissions.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@nzila/trade-core": "workspace:*",
+    "@nzila/db": "workspace:*",
+    "drizzle-orm": "^0.39.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "vitest": "^4.0.18",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9"
+  }
+}

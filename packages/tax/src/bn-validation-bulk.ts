@@ -143,24 +143,49 @@ export function validateProgramAccounts(inputs: string[]): BulkValidationResult 
 /**
  * Validate an array of Quebec NEQ numbers in batch.
  */
-export function validateNeqs(inputs: string[]): {
-  items: Array<{ input: string; rowIndex: number; result: { valid: boolean; neq?: string; errors: string[] } }>
-  summary: { total: number; valid: number; invalid: number }
-} {
-  const items: Array<{ input: string; rowIndex: number; result: { valid: boolean; neq?: string; errors: string[] } }> = []
+export function validateNeqs(inputs: string[]): BulkValidationResult {
+  const items: BulkValidationItem[] = []
+  const neqSet = new Set<string>()
   let valid = 0
+  let duplicates = 0
 
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i].trim()
     if (!input) continue
     const result = validateNeq(input)
-    if (result.valid) valid++
-    items.push({ input, rowIndex: i, result })
+    const formatted = result.valid && result.neq ? result.neq : null
+
+    if (result.valid && result.neq) {
+      if (neqSet.has(result.neq)) {
+        duplicates++
+      }
+      neqSet.add(result.neq)
+      valid++
+    }
+
+    // Adapt NEQ result to BnValidationResult shape for type compatibility
+    items.push({
+      input,
+      rowIndex: i,
+      result: {
+        valid: result.valid,
+        errors: result.errors,
+        bn9: result.neq,
+      },
+      formatted,
+    })
   }
 
   return {
     items,
-    summary: { total: items.length, valid, invalid: items.length - valid },
+    summary: {
+      total: items.length,
+      valid,
+      invalid: items.length - valid,
+      duplicates,
+      uniqueBn9s: Array.from(neqSet),
+      validationRate: items.length > 0 ? Math.round((valid / items.length) * 10000) / 10000 : 0,
+    },
   }
 }
 
