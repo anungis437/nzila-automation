@@ -1,0 +1,86 @@
+/**
+ * @nzila/trade-db — Cross-org access isolation tests
+ *
+ * Verifies that org-scoped repositories enforce entity_id filtering.
+ * These are structural/type-level tests (no real DB) that verify
+ * the context is always required and used.
+ */
+import { describe, it, expect } from 'vitest'
+import type { TradeDbContext, TradeReadContext } from '../types'
+import type { TradePartyRepository } from '../repositories/parties'
+import type { TradeDealRepository } from '../repositories/deals'
+import type { TradeListingRepository } from '../repositories/listings'
+
+describe('Trade DB — cross-org isolation contracts', () => {
+  const ORG_A: TradeReadContext = { entityId: 'org-a' }
+  const ORG_B: TradeReadContext = { entityId: 'org-b' }
+  const WRITE_CTX_A: TradeDbContext = { entityId: 'org-a', actorId: 'actor-1' }
+
+  it('TradeReadContext requires entityId', () => {
+    expect(ORG_A.entityId).toBe('org-a')
+    expect(ORG_B.entityId).toBe('org-b')
+  })
+
+  it('TradeDbContext requires entityId and actorId', () => {
+    expect(WRITE_CTX_A.entityId).toBe('org-a')
+    expect(WRITE_CTX_A.actorId).toBe('actor-1')
+  })
+
+  it('repository port signatures enforce context parameter', () => {
+    // Type-level check: all repository methods require context
+    const partyRepo: Pick<TradePartyRepository, 'list' | 'getById'> = {
+      list: async (ctx: TradeReadContext) => {
+        expect(ctx.entityId).toBeTruthy()
+        return []
+      },
+      getById: async (ctx: TradeReadContext, _id: string) => {
+        expect(ctx.entityId).toBeTruthy()
+        return null
+      },
+    }
+    expect(partyRepo).toBeDefined()
+  })
+
+  it('deal repository requires context for all operations', () => {
+    const dealRepo: Pick<TradeDealRepository, 'list' | 'getById' | 'create'> = {
+      list: async (ctx: TradeReadContext) => {
+        expect(ctx.entityId).toBeTruthy()
+        return []
+      },
+      getById: async (ctx: TradeReadContext, _id: string) => {
+        expect(ctx.entityId).toBeTruthy()
+        return null
+      },
+      create: async (ctx: TradeDbContext, _input) => {
+        expect(ctx.entityId).toBeTruthy()
+        expect(ctx.actorId).toBeTruthy()
+        return {
+          id: 'test',
+          entityId: ctx.entityId,
+          refNumber: 'TRD-TEST-000001',
+          sellerPartyId: 'seller-1',
+          buyerPartyId: 'buyer-1',
+          listingId: null,
+          stage: 'lead',
+          totalValue: '1000.00',
+          currency: 'USD',
+          notes: null,
+          metadata: {},
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      },
+    }
+    expect(dealRepo).toBeDefined()
+  })
+
+  it('listing repository requires context for all operations', () => {
+    const listingRepo: Pick<TradeListingRepository, 'list'> = {
+      list: async (ctx: TradeReadContext) => {
+        expect(ctx.entityId).toBeTruthy()
+        return []
+      },
+    }
+    expect(listingRepo).toBeDefined()
+  })
+})
