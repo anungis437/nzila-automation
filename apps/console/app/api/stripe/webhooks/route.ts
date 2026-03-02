@@ -79,10 +79,10 @@ async function handleStripeEvent(event: Stripe.Event): Promise<void> {
 
     case 'invoice.paid': {
       const invoice = event.data.object as Stripe.Invoice
-      if (invoice.subscription) {
-        const subId = typeof invoice.subscription === 'string'
-          ? invoice.subscription
-          : invoice.subscription.id
+      // Stripe v20: invoice.subscription removed → use invoice.parent.subscription_details
+      const subRef = invoice.parent?.subscription_details?.subscription
+      if (subRef) {
+        const subId = typeof subRef === 'string' ? subRef : subRef.id
         await platformDb
           .update(stripeSubscriptions)
           .set({ status: 'active', updatedAt: new Date() })
@@ -94,10 +94,10 @@ async function handleStripeEvent(event: Stripe.Event): Promise<void> {
 
     case 'invoice.payment_failed': {
       const invoice = event.data.object as Stripe.Invoice
-      if (invoice.subscription) {
-        const subId = typeof invoice.subscription === 'string'
-          ? invoice.subscription
-          : invoice.subscription.id
+      // Stripe v20: invoice.subscription removed → use invoice.parent.subscription_details
+      const subRef = invoice.parent?.subscription_details?.subscription
+      if (subRef) {
+        const subId = typeof subRef === 'string' ? subRef : subRef.id
         await platformDb
           .update(stripeSubscriptions)
           .set({ status: 'past_due', updatedAt: new Date() })
@@ -124,6 +124,7 @@ async function upsertSubscription(sub: Stripe.Subscription): Promise<void> {
   const price = priceItem?.price
   const product = price?.product
 
+  // Stripe v20: current_period_start/end moved from Subscription to SubscriptionItem
   const values = {
     stripeCustomerId: typeof sub.customer === 'string' ? sub.customer : sub.customer.id,
     stripePriceId: price?.id ?? '',
@@ -133,8 +134,8 @@ async function upsertSubscription(sub: Stripe.Subscription): Promise<void> {
     amountCents: price?.unit_amount ? BigInt(price.unit_amount) : null,
     currency: (price?.currency?.toUpperCase() ?? 'CAD') as string,
     status: sub.status as 'incomplete' | 'incomplete_expired' | 'trialing' | 'active' | 'past_due' | 'canceled' | 'unpaid' | 'paused',
-    currentPeriodStart: new Date(sub.current_period_start * 1000),
-    currentPeriodEnd: new Date(sub.current_period_end * 1000),
+    currentPeriodStart: priceItem ? new Date(priceItem.current_period_start * 1000) : null,
+    currentPeriodEnd: priceItem ? new Date(priceItem.current_period_end * 1000) : null,
     cancelAtPeriodEnd: sub.cancel_at_period_end,
     canceledAt: sub.canceled_at ? new Date(sub.canceled_at * 1000) : null,
     trialStart: sub.trial_start ? new Date(sub.trial_start * 1000) : null,

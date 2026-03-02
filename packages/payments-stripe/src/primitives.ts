@@ -169,11 +169,14 @@ export async function createSubscription(
     payment_intent: Stripe.PaymentIntent
   }
 
+  // Stripe v20: current_period_end moved from Subscription to SubscriptionItem
+  const firstItem = subscription.items.data[0]
+
   return {
     subscriptionId: subscription.id,
     clientSecret: invoice?.payment_intent?.client_secret ?? null,
     status: subscription.status,
-    currentPeriodEnd: subscription.current_period_end,
+    currentPeriodEnd: firstItem.current_period_end,
   }
 }
 
