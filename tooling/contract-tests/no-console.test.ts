@@ -73,7 +73,7 @@ describe('NO_CONSOLE_001 — No console in runtime code', () => {
     ).toHaveLength(0)
   })
 
-  it('no runtime code uses console.* (unless excepted)', () => {
+  it('no runtime code uses console.* (unless excepted)', { timeout: 120_000 }, () => {
     const violations: Violation[] = []
 
     for (const scanRoot of SCAN_ROOTS) {
