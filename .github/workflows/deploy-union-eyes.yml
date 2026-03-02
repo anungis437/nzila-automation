@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload SLO summary
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: slo-summary-union-eyes
           path: slo-summary.txt
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload release attestation
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-attestation-union-eyes
           path: release-attestation.json
