@@ -157,7 +157,7 @@
     "simple-statistics": "^7.8.8",
     "sonner": "^2.0.7",
     "square": "^44.0.0",
-    "stripe": "^16.9.0",
+    "stripe": "^20.4.0",
     "swagger-ui-react": "^5.31.0",
     "swr": "^2.3.7",
     "tailwind-merge": "^2.5.2",
