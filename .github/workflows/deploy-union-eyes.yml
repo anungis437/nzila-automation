@@ -56,6 +56,28 @@ jobs:
           path: slo-summary.txt
           retention-days: 90
 
+      - name: Generate release attestation
+        if: always()
+        run: |
+          CONTRACT_FLAG="--contract-pass"
+          SLO_FLAG="--slo-pass"
+          if [ "${{ steps.*.outcome }}" = "failure" ]; then
+            CONTRACT_FLAG="--contract-fail"
+            SLO_FLAG="--slo-fail"
+          fi
+          node --import tsx scripts/release-attestation.ts \
+            --sha ${{ github.sha }} \
+            $CONTRACT_FLAG $SLO_FLAG \
+            --env pilot
+
+      - name: Upload release attestation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-attestation-union-eyes
+          path: release-attestation.json
+          retention-days: 365
+
   build-and-deploy:
     runs-on: ubuntu-latest
     needs: pre-deploy-gates
