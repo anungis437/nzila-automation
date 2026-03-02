@@ -14,6 +14,8 @@ import {
   real,
   jsonb,
   boolean,
+  index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 import { orgs } from './orgs'
 
@@ -54,3 +56,37 @@ export const platformProofPacks = pgTable('platform_proof_packs', {
   payload: jsonb('payload').notNull().default({}),
   generatedAt: timestamp('generated_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+// ── Idempotency Cache ───────────────────────────────────────────────────────
+
+/**
+ * Postgres-backed idempotency cache for multi-instance deployments.
+ *
+ * Stores cached responses keyed by (orgId + route + idempotencyKey) so that
+ * replayed mutation requests return the original response without re-executing
+ * the handler. Entries expire after 24 hours via `expires_at`.
+ */
+export const idempotencyCache = pgTable(
+  'idempotency_cache',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** Composite cache key: `idempotency:{orgId}:{route}:{idempotencyKey}` */
+    cacheKey: varchar('cache_key', { length: 768 }).notNull(),
+    /** SHA-256 of the original request body (for payload-mismatch detection) */
+    payloadHash: varchar('payload_hash', { length: 128 }).notNull(),
+    /** Cached HTTP status code */
+    status: integer('status').notNull(),
+    /** Cached response body (stringified JSON) */
+    body: text('body').notNull(),
+    /** Cached response headers */
+    headers: jsonb('headers').notNull().default({}),
+    /** When this entry was created */
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    /** Auto-expiry timestamp (used by cleanup jobs / queries) */
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    uniqueIndex('idempotency_cache_key_idx').on(table.cacheKey),
+    index('idempotency_cache_expires_idx').on(table.expiresAt),
+  ],
+)

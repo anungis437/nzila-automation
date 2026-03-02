@@ -231,6 +231,7 @@ export const NON_ORG_SCOPED_TABLES = [
   // Platform infrastructure — system-level, not Org-scoped
   { table: 'platformIsolationAudits', reason: 'System-level isolation audit results' },
   { table: 'platformProofPacks', reason: 'System-level governance proof packs' },
+  { table: 'idempotencyCache', reason: 'System-level idempotency cache — keyed by composite key containing orgId' },
 ] as const
 
 /**

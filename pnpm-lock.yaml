@@ -2669,6 +2669,9 @@ importers:
       '@nzila/db':
         specifier: workspace:*
         version: link:../db
+      drizzle-orm:
+        specifier: ^0.39.0
+        version: 0.39.3(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(pg@8.19.0)(postgres@3.4.8)
       zod:
         specifier: ^3.24.0
         version: 3.25.76
@@ -20864,7 +20867,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 22.19.13
+      '@types/node': 25.3.3
 
   '@types/d3-array@3.2.2': {}
 
@@ -21059,7 +21062,7 @@ snapshots:
   '@types/request@2.48.13':
     dependencies:
       '@types/caseless': 0.12.5
-      '@types/node': 22.19.13
+      '@types/node': 25.3.3
       '@types/tough-cookie': 4.0.5
       form-data: 2.5.5
     optional: true
@@ -24359,7 +24362,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.19.13
+      '@types/node': 25.3.3
       merge-stream: 2.0.0
       supports-color: 8.1.1
 

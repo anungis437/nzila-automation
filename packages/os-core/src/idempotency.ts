@@ -12,9 +12,10 @@
  * The cache key is `(orgId + route + idempotencyKey)` to ensure
  * org-scoped isolation.
  *
- * Two implementations are provided:
- *   - `InMemoryIdempotencyCache` — single-process / tests
- *   - Port interface `IdempotencyCache` — swap in Redis/Postgres for production
+ * Three implementations are provided:
+ *   - `InMemoryIdempotencyCache`   — single-process / tests
+ *   - `PostgresIdempotencyCache`   — multi-instance production (uses @nzila/db)
+ *   - Port interface `IdempotencyCache` — swap in any implementation
  *
  * @module @nzila/os-core/idempotency
  */
@@ -96,6 +97,80 @@ export class InMemoryIdempotencyCache implements IdempotencyCache {
 
   get size(): number {
     return this.store.size
+  }
+}
+
+// ── Postgres Cache Implementation ─────────────────────────────────────────
+
+/**
+ * Postgres-backed idempotency cache for multi-instance production deployments.
+ *
+ * Uses `@nzila/db` schema + drizzle ORM. Entries auto-expire via `expires_at`
+ * column — a scheduled cleanup query (`DELETE WHERE expires_at < now()`)
+ * should run periodically (e.g. daily cron).
+ *
+ * Concurrency-safe: uses `ON CONFLICT (cache_key) DO NOTHING` to prevent
+ * race conditions on duplicate inserts.
+ */
+export class PostgresIdempotencyCache implements IdempotencyCache {
+  private readonly ttlMs: number
+
+  constructor(ttlMs = DEFAULT_TTL_MS) {
+    this.ttlMs = ttlMs
+  }
+
+  private async getDb() {
+    // Dynamic import to avoid pulling in @nzila/db at module-load time
+    // (edge runtimes / middleware may not have DB access)
+    const { db } = await import('@nzila/db/client')
+    const { idempotencyCache } = await import('@nzila/db/schema')
+    return { db, idempotencyCache }
+  }
+
+  async get(key: string): Promise<CachedIdempotencyEntry | null> {
+    const { db, idempotencyCache } = await this.getDb()
+    const { eq, gt, and } = await import('drizzle-orm')
+
+    const rows = await db
+      .select()
+      .from(idempotencyCache)
+      .where(
+        and(
+          eq(idempotencyCache.cacheKey, key),
+          gt(idempotencyCache.expiresAt, new Date()),
+        ),
+      )
+      .limit(1)
+
+    if (rows.length === 0) return null
+
+    const row = rows[0]
+    return {
+      payloadHash: row.payloadHash,
+      status: row.status,
+      body: row.body,
+      headers: (row.headers ?? {}) as Record<string, string>,
+      createdAt: new Date(row.createdAt).getTime(),
+    }
+  }
+
+  async set(key: string, entry: CachedIdempotencyEntry, ttlMs?: number): Promise<void> {
+    const { db, idempotencyCache } = await this.getDb()
+
+    const expiresAt = new Date(Date.now() + (ttlMs ?? this.ttlMs))
+
+    await db
+      .insert(idempotencyCache)
+      .values({
+        cacheKey: key,
+        payloadHash: entry.payloadHash,
+        status: entry.status,
+        body: entry.body,
+        headers: entry.headers,
+        createdAt: new Date(entry.createdAt),
+        expiresAt,
+      })
+      .onConflictDoNothing({ target: idempotencyCache.cacheKey })
   }
 }
 
@@ -226,9 +301,20 @@ export function isStrictEnvironment(): boolean {
 
 let _globalCache: IdempotencyCache | null = null
 
-/** Return (or create) the module-level singleton idempotency cache. */
+/**
+ * Return (or create) the module-level singleton idempotency cache.
+ *
+ * - In production (NODE_ENV === 'production') with DATABASE_URL set → Postgres
+ * - Otherwise → InMemory (dev / test)
+ */
 export function getGlobalIdempotencyCache(): IdempotencyCache {
-  if (!_globalCache) _globalCache = new InMemoryIdempotencyCache()
+  if (!_globalCache) {
+    if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+      _globalCache = new PostgresIdempotencyCache()
+    } else {
+      _globalCache = new InMemoryIdempotencyCache()
+    }
+  }
   return _globalCache
 }
 

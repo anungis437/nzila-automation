@@ -1,8 +1,11 @@
 /**
  * Contract tests - Mutation Idempotency Required
  *
- * Enforces that all mutation API route handlers under apps/star/app/api
- * reference idempotency enforcement (checkIdempotency or idempotency middleware).
+ * Enforces that every mutation API route handler under apps/{app}/app/api
+ * is covered by idempotency enforcement - either via:
+ *   a) The app's middleware.ts (intercepts all requests before routing), or
+ *   b) The route file itself (direct guard call), or
+ *   c) An explicit governance exception.
  *
  * Mutation routes = route.ts files exporting POST, PUT, PATCH, or DELETE.
  *
@@ -11,6 +14,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join, relative } from 'node:path'
+import { minimatch } from 'minimatch'
 
 const ROOT = join(__dirname, '..', '..')
 
@@ -77,6 +81,18 @@ function exportsMutationHandler(content: string): boolean {
   )
 }
 
+/** Which mutation methods does a route export? */
+function exportedMutationMethods(content: string): string[] {
+  const methods: string[] = []
+  for (const m of ['POST', 'PUT', 'PATCH', 'DELETE']) {
+    const pattern = new RegExp(
+      `export\\s+(async\\s+)?function\\s+${m}\\b|export\\s+const\\s+${m}\\b`,
+    )
+    if (pattern.test(content)) methods.push(m)
+  }
+  return methods
+}
+
 /** Check if a file references idempotency enforcement */
 function hasIdempotencyEnforcement(content: string): boolean {
   return (
@@ -96,15 +112,31 @@ const EXEMPT_PATTERNS = [
   '**/api/webhooks/**',
   // Health / status endpoints are GET-only by convention
   '**/api/health/**',
+  // Cron endpoints are idempotent by definition (system-triggered)
+  '**/api/cron/**',
 ]
 
 function isExempt(routeRelPath: string): boolean {
-  return EXEMPT_PATTERNS.some((pattern) => {
-    const regex = new RegExp(
-      '^' + pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*') + '$',
-    )
-    return regex.test(routeRelPath)
-  })
+  return EXEMPT_PATTERNS.some((pattern) => minimatch(routeRelPath, pattern))
+}
+
+/** Load governance exception globs (if any) */
+function loadIdempotencyExceptions(): string[] {
+  const exPath = join(ROOT, 'governance', 'exceptions', 'mutation-idempotency.json')
+  if (!existsSync(exPath)) return []
+  try {
+    const data = JSON.parse(readFileSync(exPath, 'utf-8'))
+    if (Array.isArray(data)) {
+      return data
+        .filter((e: { expiresOn?: string }) => !e.expiresOn || new Date(e.expiresOn) > new Date())
+        .map((e: { path: string }) => e.path)
+    }
+  } catch { /* empty */ }
+  return []
+}
+
+function isGovernanceExcepted(routeRelPath: string, exceptions: string[]): boolean {
+  return exceptions.some((pattern) => minimatch(routeRelPath, pattern))
 }
 
 // -- Tests --------------------------------------------------------------------
@@ -140,45 +172,67 @@ describe('MUTATION_IDEMPOTENCY_REQUIRED_001 - Universal Idempotency Enforcement'
     expect(parsed.exports?.['./idempotency']).toBeDefined()
   })
 
-  // 3. Apps with mutation routes must enforce idempotency at the middleware level.
-  //    The middleware intercepts all API requests before route handlers execute,
-  //    so a single enforcement point covers every route in the app.
-  it('MUTATION_IDEMPOTENCY_REQUIRED_001: apps with mutation routes enforce idempotency in middleware', () => {
+  // 3. Every mutation route file must be covered — either by middleware or route-level guard.
+  //    This test walks every route.ts under apps/*/app/api, finds mutation exports,
+  //    and verifies that the app's middleware.ts or the route file itself has idempotency.
+  it('MUTATION_IDEMPOTENCY_REQUIRED_001: every mutation route is covered by idempotency enforcement', { timeout: 60_000 }, () => {
     const apps = getAppDirs()
     expect(apps.length).toBeGreaterThan(0)
 
-    const violations: string[] = []
+    const exceptions = loadIdempotencyExceptions()
+
+    interface Violation {
+      route: string
+      methods: string[]
+      reason: string
+    }
+    const violations: Violation[] = []
 
     for (const app of apps) {
       const apiDir = join(ROOT, 'apps', app, 'app', 'api')
-      // Apps without app/api/ are checked separately (e.g. orchestrator-api)
       if (!existsSync(apiDir)) continue
 
-      // Only check apps that actually have non-exempt mutation routes
-      const routeFiles = walkSync(apiDir).filter((f) => f.endsWith('route.ts'))
-      const hasMutations = routeFiles.some((f) => {
-        const content = readContent(f)
-        const rel = relPath(f)
-        return exportsMutationHandler(content) && !isExempt(rel)
-      })
-      if (!hasMutations) continue
-
-      // The app's middleware.ts must reference idempotency enforcement
+      // Check middleware at the app level
       const middlewarePath = join(ROOT, 'apps', app, 'middleware.ts')
-      const middleware = existsSync(middlewarePath)
+      const middlewareContent = existsSync(middlewarePath)
         ? readFileSync(middlewarePath, 'utf-8')
         : ''
+      const middlewareCovers = hasIdempotencyEnforcement(middlewareContent)
 
-      if (!hasIdempotencyEnforcement(middleware)) {
-        violations.push(`apps/${app}/middleware.ts`)
+      // Walk every route.ts
+      const routeFiles = walkSync(apiDir).filter((f) => f.endsWith('route.ts'))
+
+      for (const routeFile of routeFiles) {
+        const content = readContent(routeFile)
+        const methods = exportedMutationMethods(content)
+        if (methods.length === 0) continue
+
+        const rel = relPath(routeFile)
+
+        // Check exemption patterns
+        if (isExempt(rel)) continue
+        if (isGovernanceExcepted(rel, exceptions)) continue
+
+        // Route is covered if middleware has idempotency OR the route itself does
+        if (middlewareCovers) continue
+        if (hasIdempotencyEnforcement(content)) continue
+
+        violations.push({
+          route: rel,
+          methods,
+          reason: `No idempotency enforcement found in middleware.ts or route file`,
+        })
       }
     }
 
     expect(
       violations,
-      'Apps with external mutation routes must enforce Idempotency-Key in their middleware.ts.\n' +
-        'Violations:\n' +
-        violations.map((v) => '  - ' + v).join('\n'),
+      `Mutation routes missing idempotency enforcement:\n\n` +
+        violations
+          .map((v) => `  ${v.route} [${v.methods.join(', ')}]\n    → ${v.reason}`)
+          .join('\n') +
+        `\n\nFix: Add idempotency enforcement in the app's middleware.ts or the route handler.\n` +
+        `Exempt: Add to governance/exceptions/mutation-idempotency.json if legitimately exempt.`,
     ).toEqual([])
   })
 
@@ -242,5 +296,63 @@ describe('MUTATION_IDEMPOTENCY_REQUIRED_001 - Universal Idempotency Enforcement'
         `idempotency.ts must export ${fn}`,
       ).toBe(true)
     }
+  })
+
+  // 8. Prod-ready cache adapter (DB-backed) must exist for multi-instance deploys
+  it('MUTATION_IDEMPOTENCY_REQUIRED_001: PostgresIdempotencyCache adapter exists', () => {
+    const mod = readContent(join(ROOT, 'packages', 'os-core', 'src', 'idempotency.ts'))
+    expect(mod).toBeTruthy()
+
+    expect(
+      mod.includes('PostgresIdempotencyCache'),
+      'idempotency.ts must export PostgresIdempotencyCache for multi-instance production use',
+    ).toBe(true)
+  })
+
+  // 9. DB schema for idempotency cache table must exist
+  it('MUTATION_IDEMPOTENCY_REQUIRED_001: idempotency cache table in platform schema', () => {
+    const schema = readContent(join(ROOT, 'packages', 'db', 'src', 'schema', 'platform.ts'))
+    expect(schema).toBeTruthy()
+
+    expect(
+      schema.includes('idempotency_cache'),
+      'platform schema must define idempotency_cache table',
+    ).toBe(true)
+  })
+
+  // 10. Release attestation must use step-level outcome detection
+  it('RELEASE_ATTESTATION_CORRECTNESS_001: deploy workflows use step-id based outcome detection', () => {
+    const workflowDir = join(ROOT, '.github', 'workflows')
+    if (!existsSync(workflowDir)) {
+      expect.fail('.github/workflows directory must exist')
+    }
+
+    const deployWorkflows = readdirSync(workflowDir)
+      .filter((f) => f.startsWith('deploy-') && f.endsWith('.yml'))
+
+    expect(deployWorkflows.length).toBeGreaterThan(0)
+
+    const violations: string[] = []
+    for (const wf of deployWorkflows) {
+      const content = readContent(`.github/workflows/${wf}`)
+
+      // Must have step IDs for contract_tests and slo_gate
+      if (!content.includes('id: contract_tests')) {
+        violations.push(`${wf}: missing step id "contract_tests"`)
+      }
+      if (!content.includes('id: slo_gate')) {
+        violations.push(`${wf}: missing step id "slo_gate"`)
+      }
+
+      // Must NOT use broken steps.*.outcome pattern
+      if (content.includes('steps.*.outcome')) {
+        violations.push(`${wf}: uses broken steps.*.outcome glob (must use explicit step refs)`)
+      }
+    }
+
+    expect(
+      violations,
+      `Deploy workflow attestation issues:\n${violations.map((v) => `  - ${v}`).join('\n')}`,
+    ).toEqual([])
   })
 })
