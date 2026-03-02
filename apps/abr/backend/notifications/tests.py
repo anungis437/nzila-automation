@@ -12,10 +12,10 @@ class AlertPreferencesModelTest(TestCase):
 
     def test_create_alert_preferences(self):
         """Test creating a AlertPreferences instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_alert_preferences_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
