@@ -93,15 +93,37 @@ function exportedMutationMethods(content: string): string[] {
   return methods
 }
 
-/** Check if a file references idempotency enforcement */
+/**
+ * Check if a file contains genuine idempotency enforcement.
+ *
+ * We require one of:
+ *   1. An actual function call — `checkIdempotency(`, `requireIdempotencyKey(`,
+ *      or `resolveIdempotentReplay(`.
+ *   2. An import statement pulling from `@nzila/os-core/idempotency`.
+ *   3. Inline enforcement that emits the `IDEMPOTENCY_KEY_REQUIRED` error code
+ *      as a string literal (used by middleware / Fastify hooks).
+ *
+ * Loose substring checks (e.g. `content.includes('idempotency')`) are
+ * explicitly rejected — a code comment could satisfy those.
+ */
+const IDEMPOTENCY_CALL_PATTERNS = [
+  /checkIdempotency\s*\(/,
+  /requireIdempotencyKey\s*\(/,
+  /resolveIdempotentReplay\s*\(/,
+  /isMutationApiRoute\s*\(/,
+]
+
+const IDEMPOTENCY_IMPORT_PATTERN =
+  /(?:import|require)\s*\(?.*['"]@nzila\/os-core\/idempotency['"]/
+
+/** Inline enforcement emits this error code as a string literal */
+const IDEMPOTENCY_INLINE_PATTERN = /['"]IDEMPOTENCY_KEY_REQUIRED['"]/
+
 function hasIdempotencyEnforcement(content: string): boolean {
-  return (
-    content.includes('checkIdempotency') ||
-    content.includes('idempotency') ||
-    content.includes('Idempotency-Key') ||
-    content.includes('IDEMPOTENCY') ||
-    content.includes('@nzila/os-core/idempotency')
-  )
+  if (IDEMPOTENCY_IMPORT_PATTERN.test(content)) return true
+  if (IDEMPOTENCY_CALL_PATTERNS.some((p) => p.test(content))) return true
+  if (IDEMPOTENCY_INLINE_PATTERN.test(content)) return true
+  return false
 }
 
 // -- Exclusions ---------------------------------------------------------------

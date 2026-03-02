@@ -289,11 +289,19 @@ export async function checkIdempotency(opts: IdempotencyCheckOptions): Promise<I
   }
 }
 
+/** Environments where idempotency is strictly enforced (fail-closed). */
+const STRICT_NZILA_ENVS = new Set(['pilot', 'prod'])
+
 /**
  * Determine if the current environment is strict (pilot/prod).
- * Uses NODE_ENV as the primary signal: production === strict.
+ *
+ * Priority: `NZILA_ENV` (the platform's own env discriminator) takes
+ * precedence.  Falls back to `NODE_ENV === 'production'` so existing
+ * deploy pipelines that only set NODE_ENV still behave fail-closed.
  */
 export function isStrictEnvironment(): boolean {
+  const nzilaEnv = process.env.NZILA_ENV?.toLowerCase()
+  if (nzilaEnv) return STRICT_NZILA_ENVS.has(nzilaEnv)
   return process.env.NODE_ENV === 'production'
 }
 
@@ -304,12 +312,12 @@ let _globalCache: IdempotencyCache | null = null
 /**
  * Return (or create) the module-level singleton idempotency cache.
  *
- * - In production (NODE_ENV === 'production') with DATABASE_URL set → Postgres
+ * - In strict environments (pilot / prod) with DATABASE_URL set → Postgres
  * - Otherwise → InMemory (dev / test)
  */
 export function getGlobalIdempotencyCache(): IdempotencyCache {
   if (!_globalCache) {
-    if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+    if (isStrictEnvironment() && process.env.DATABASE_URL) {
       _globalCache = new PostgresIdempotencyCache()
     } else {
       _globalCache = new InMemoryIdempotencyCache()
