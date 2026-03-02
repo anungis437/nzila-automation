@@ -160,7 +160,7 @@
     "stripe": "^16.9.0",
     "swagger-ui-react": "^5.31.0",
     "swr": "^2.3.7",
-    "tailwind-merge": "^2.5.2",
+    "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
     "tesseract.js": "^7.0.0",
     "twilio": "^5.10.7",
