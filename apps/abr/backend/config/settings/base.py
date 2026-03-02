@@ -36,6 +36,9 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    # Governance guard — blocks direct audit/evidence writes outside governance bridge.
+    # Enforced (fail-closed) in pilot/prod; warning-only in dev.
+    "compliance.governance_guard.GovernanceGuardMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

@@ -12,12 +12,12 @@ class OrganizationsModelTest(TestCase):
 
     def test_create_organizations(self):
         """Test creating a Organizations instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_organizations_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -26,12 +26,12 @@ class ProfilesModelTest(TestCase):
 
     def test_create_profiles(self):
         """Test creating a Profiles instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_profiles_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -40,12 +40,12 @@ class RolesModelTest(TestCase):
 
     def test_create_roles(self):
         """Test creating a Roles instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_roles_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -54,12 +54,12 @@ class PermissionsModelTest(TestCase):
 
     def test_create_permissions(self):
         """Test creating a Permissions instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_permissions_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -68,12 +68,12 @@ class RolePermissionsModelTest(TestCase):
 
     def test_create_role_permissions(self):
         """Test creating a RolePermissions instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_role_permissions_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -82,12 +82,12 @@ class UserRolesModelTest(TestCase):
 
     def test_create_user_roles(self):
         """Test creating a UserRoles instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_user_roles_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -96,10 +96,10 @@ class AuditLogsModelTest(TestCase):
 
     def test_create_audit_logs(self):
         """Test creating a AuditLogs instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_audit_logs_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass

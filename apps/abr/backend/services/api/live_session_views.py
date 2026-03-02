@@ -61,7 +61,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Submit question in live session',
@@ -82,7 +82,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Answer question in live session',
@@ -103,7 +103,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Upvote a question',
@@ -124,7 +124,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Send chat message',
@@ -145,7 +145,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Create breakout rooms',
@@ -166,7 +166,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Assign to breakout room',
@@ -187,7 +187,7 @@ class LiveSessionViewSet(viewsets.ViewSet):
         try:
             data = request.data
             org_id = request.user.organization_id
-            # TODO: Implement business logic
+            # TODO(NZ-302): Implement business logic
             return Response({
                 'status': 'success',
                 'message': 'Close breakout rooms',

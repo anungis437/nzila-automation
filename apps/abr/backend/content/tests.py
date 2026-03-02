@@ -12,12 +12,12 @@ class ContentCategoriesModelTest(TestCase):
 
     def test_create_content_categories(self):
         """Test creating a ContentCategories instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_content_categories_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -26,12 +26,12 @@ class CoursesModelTest(TestCase):
 
     def test_create_courses(self):
         """Test creating a Courses instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_courses_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -40,12 +40,12 @@ class LessonsModelTest(TestCase):
 
     def test_create_lessons(self):
         """Test creating a Lessons instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_lessons_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -54,12 +54,12 @@ class QuizzesModelTest(TestCase):
 
     def test_create_quizzes(self):
         """Test creating a Quizzes instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_quizzes_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -68,12 +68,12 @@ class TribunalCasesModelTest(TestCase):
 
     def test_create_tribunal_cases(self):
         """Test creating a TribunalCases instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_tribunal_cases_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -82,12 +82,12 @@ class EnrollmentsModelTest(TestCase):
 
     def test_create_enrollments(self):
         """Test creating a Enrollments instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_enrollments_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -96,12 +96,12 @@ class LessonProgressModelTest(TestCase):
 
     def test_create_lesson_progress(self):
         """Test creating a LessonProgress instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_lesson_progress_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -110,12 +110,12 @@ class QuizAttemptsModelTest(TestCase):
 
     def test_create_quiz_attempts(self):
         """Test creating a QuizAttempts instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_quiz_attempts_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -124,12 +124,12 @@ class AchievementsModelTest(TestCase):
 
     def test_create_achievements(self):
         """Test creating a Achievements instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_achievements_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -138,12 +138,12 @@ class UserAchievementsModelTest(TestCase):
 
     def test_create_user_achievements(self):
         """Test creating a UserAchievements instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_user_achievements_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -152,12 +152,12 @@ class UserPointsModelTest(TestCase):
 
     def test_create_user_points(self):
         """Test creating a UserPoints instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_user_points_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -166,12 +166,12 @@ class LearningStreaksModelTest(TestCase):
 
     def test_create_learning_streaks(self):
         """Test creating a LearningStreaks instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_learning_streaks_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -180,12 +180,12 @@ class BookmarksModelTest(TestCase):
 
     def test_create_bookmarks(self):
         """Test creating a Bookmarks instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_bookmarks_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -194,12 +194,12 @@ class CourseReviewsModelTest(TestCase):
 
     def test_create_course_reviews(self):
         """Test creating a CourseReviews instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_course_reviews_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -208,10 +208,10 @@ class TestimonialsModelTest(TestCase):
 
     def test_create_testimonials(self):
         """Test creating a Testimonials instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_testimonials_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass

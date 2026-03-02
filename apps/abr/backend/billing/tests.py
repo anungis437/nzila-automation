@@ -12,12 +12,12 @@ class OrganizationSubscriptionsModelTest(TestCase):
 
     def test_create_organization_subscriptions(self):
         """Test creating a OrganizationSubscriptions instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_organization_subscriptions_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -26,12 +26,12 @@ class SeatAllocationsModelTest(TestCase):
 
     def test_create_seat_allocations(self):
         """Test creating a SeatAllocations instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_seat_allocations_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
 
 
@@ -40,10 +40,10 @@ class SubscriptionInvoicesModelTest(TestCase):
 
     def test_create_subscription_invoices(self):
         """Test creating a SubscriptionInvoices instance."""
-        # TODO: Add factory data and assertions
+        # TODO(NZ-301): Add factory data and assertions
         pass
 
     def test_subscription_invoices_str(self):
         """Test __str__ representation."""
-        # TODO: Create instance and verify str output
+        # TODO(NZ-301): Create instance and verify str output
         pass
