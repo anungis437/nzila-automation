@@ -221,3 +221,101 @@ export async function checkIdempotency(opts: IdempotencyCheckOptions): Promise<I
 export function isStrictEnvironment(): boolean {
   return process.env.NODE_ENV === 'production'
 }
+
+// ── Singleton Cache ───────────────────────────────────────────────────────
+
+let _globalCache: IdempotencyCache | null = null
+
+/** Return (or create) the module-level singleton idempotency cache. */
+export function getGlobalIdempotencyCache(): IdempotencyCache {
+  if (!_globalCache) _globalCache = new InMemoryIdempotencyCache()
+  return _globalCache
+}
+
+// ── High-Level Helpers ────────────────────────────────────────────────────
+
+/**
+ * Convenience wrapper around `checkIdempotency`.
+ * Extracts the key from request headers and runs the full check.
+ */
+export async function requireIdempotencyKey(
+  ctx: { orgId: string },
+  req: {
+    method: string
+    pathname: string
+    headers: Record<string, string | null | undefined>
+    body: string
+  },
+  cache?: IdempotencyCache,
+): Promise<IdempotencyResult> {
+  return checkIdempotency({
+    method: req.method,
+    pathname: req.pathname,
+    idempotencyKey:
+      req.headers[IDEMPOTENCY_HEADER] ??
+      req.headers['Idempotency-Key'] ??
+      undefined,
+    orgId: ctx.orgId,
+    body: req.body,
+    cache: cache ?? getGlobalIdempotencyCache(),
+    strict: isStrictEnvironment(),
+  })
+}
+
+/**
+ * Store a handler response in the idempotency cache for future replays.
+ * Call after successful handler execution.
+ */
+export async function recordIdempotentResponse(
+  cacheKey: string,
+  payloadHash: string,
+  status: number,
+  body: string,
+  headers: Record<string, string> = {},
+  cache?: IdempotencyCache,
+): Promise<void> {
+  const store = cache ?? getGlobalIdempotencyCache()
+  await store.set(cacheKey, {
+    payloadHash,
+    status,
+    body,
+    headers,
+    createdAt: Date.now(),
+  })
+}
+
+/**
+ * Attempt to resolve a cached idempotent replay.
+ * Alias for `requireIdempotencyKey` — provided for semantic clarity.
+ */
+export async function resolveIdempotentReplay(
+  ctx: { orgId: string },
+  req: {
+    method: string
+    pathname: string
+    headers: Record<string, string | null | undefined>
+    body: string
+  },
+  cache?: IdempotencyCache,
+): Promise<IdempotencyResult> {
+  return requireIdempotencyKey(ctx, req, cache)
+}
+
+// ── Edge-Compatible Helpers (for Next.js middleware) ──────────────────────
+
+/** Pathname patterns exempt from idempotency enforcement. */
+export const IDEMPOTENCY_EXEMPT_PATTERNS = [
+  /^\/api\/webhooks\b/,
+  /^\/api\/health\b/,
+  /^\/api\/cron\b/,
+]
+
+/** True when `method` is a mutation verb AND `pathname` starts with /api. */
+export function isMutationApiRoute(method: string, pathname: string): boolean {
+  return MUTATION_METHODS.has(method.toUpperCase()) && pathname.startsWith('/api')
+}
+
+/** True when `pathname` matches a known exempt pattern (webhooks, health, cron). */
+export function isIdempotencyExempt(pathname: string): boolean {
+  return IDEMPOTENCY_EXEMPT_PATTERNS.some((p) => p.test(pathname))
+}

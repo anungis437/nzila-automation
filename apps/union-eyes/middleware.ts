@@ -227,6 +227,32 @@ export default clerkMiddleware(async (auth, req) => {
     // auth.protect() in dev mode performs a "dev-browser rewrite" that renders
     // the homepage with locale="clerk_<handshake-token>", which 404s.
     // Using auth() directly lets us return a clean 401 JSON response.
+
+    // ── Idempotency-Key enforcement (fail-closed in pilot/prod) ──────────
+    if (process.env.NODE_ENV !== 'development') {
+      if (
+        ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) &&
+        !req.nextUrl.pathname.startsWith('/api/webhooks') &&
+        !req.nextUrl.pathname.startsWith('/api/health') &&
+        !req.nextUrl.pathname.startsWith('/api/cron')
+      ) {
+        if (!req.headers.get('idempotency-key')) {
+          return withRequestId(
+            NextResponse.json(
+              {
+                error: 'Missing Idempotency-Key header',
+                message:
+                  'All mutation requests (POST, PUT, PATCH, DELETE) must include an Idempotency-Key header.',
+                code: 'IDEMPOTENCY_KEY_REQUIRED',
+              },
+              { status: 400 },
+            ),
+            requestId,
+          )
+        }
+      }
+    }
+
     const { userId } = await auth();
     if (!userId) {
       return withRequestId(
