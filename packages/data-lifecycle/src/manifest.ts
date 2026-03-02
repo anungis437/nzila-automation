@@ -246,14 +246,17 @@ export const APP_MANIFESTS: DataLifecycleManifest[] = [
     lastUpdated: '2026-02-28',
     dataCategories: [
       { name: 'API Request Logs', description: 'Request/response metadata for orchestration', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Automation Commands', description: 'Automation command definitions, events, and execution records', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
       { name: 'Audit Logs', description: 'API operation audit trail', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
     ],
     retentionSchedules: [
       { category: 'API Request Logs', retentionClass: '90_DAYS', retentionPeriod: '90 days', legalBasis: 'Operational debugging' },
+      { category: 'Automation Commands', retentionClass: '3_YEARS', retentionPeriod: '3 years', legalBasis: 'Automation audit trail and operational compliance' },
       { category: 'Audit Logs', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Audit trail integrity' },
     ],
     deletionPolicies: [
       { category: 'API Request Logs', method: 'retention_expiry', verification: 'automated_scan', authorizedRoles: [], reversible: false },
+      { category: 'Automation Commands', method: 'hard_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: false },
       { category: 'Audit Logs', method: 'retention_expiry', verification: 'automated_scan', authorizedRoles: [], reversible: false },
     ],
     residency: { type: 'managed', regions: ['southafricanorth'], orgSelectable: false, description: 'Platform infrastructure' },
@@ -268,14 +271,17 @@ export const APP_MANIFESTS: DataLifecycleManifest[] = [
     lastUpdated: '2026-02-28',
     dataCategories: [
       { name: 'Financial Reports', description: 'Revenue, expense, and P&L reports', containsPii: false, containsFinancial: true, storageEngine: 'PostgreSQL' },
+      { name: 'Equity Records', description: 'Share classes, shareholders, share ledger entries, certificates, and cap table snapshots', containsPii: true, containsFinancial: true, storageEngine: 'PostgreSQL' },
       { name: 'Audit Logs', description: 'Finance operation audit trail', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
     ],
     retentionSchedules: [
       { category: 'Financial Reports', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Financial record keeping — tax and audit' },
+      { category: 'Equity Records', retentionClass: 'PERMANENT', retentionPeriod: 'Permanent', legalBasis: 'Corporate equity register — Companies Act permanent record' },
       { category: 'Audit Logs', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Audit trail integrity' },
     ],
     deletionPolicies: [
       { category: 'Financial Reports', method: 'retention_expiry', verification: 'deletion_certificate', authorizedRoles: [], reversible: false },
+      { category: 'Equity Records', method: 'retention_expiry', verification: 'deletion_certificate', authorizedRoles: [], reversible: false },
       { category: 'Audit Logs', method: 'retention_expiry', verification: 'automated_scan', authorizedRoles: [], reversible: false },
     ],
     residency: { type: 'sovereign', regions: ['southafricanorth'], orgSelectable: false, description: 'Financial data — sovereign residency' },
@@ -312,14 +318,17 @@ export const APP_MANIFESTS: DataLifecycleManifest[] = [
     lastUpdated: '2026-02-28',
     dataCategories: [
       { name: 'Quotes', description: 'Commerce quotes and pricing', containsPii: false, containsFinancial: true, storageEngine: 'PostgreSQL' },
+      { name: 'Stripe Payment Records', description: 'Stripe connections, webhook events, payments, refunds, disputes, payouts, reports, and subscriptions', containsPii: true, containsFinancial: true, storageEngine: 'PostgreSQL' },
       { name: 'Audit Logs', description: 'Commerce audit trail', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
     ],
     retentionSchedules: [
       { category: 'Quotes', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Financial record keeping' },
+      { category: 'Stripe Payment Records', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Financial transaction records — PCI DSS and tax audit' },
       { category: 'Audit Logs', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Audit trail integrity' },
     ],
     deletionPolicies: [
       { category: 'Quotes', method: 'soft_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: true },
+      { category: 'Stripe Payment Records', method: 'crypto_shred', verification: 'deletion_certificate', authorizedRoles: ['platform_admin'], reversible: false },
       { category: 'Audit Logs', method: 'retention_expiry', verification: 'automated_scan', authorizedRoles: [], reversible: false },
     ],
     residency: { type: 'managed', regions: ['southafricanorth'], orgSelectable: false, description: 'Managed hosting' },
