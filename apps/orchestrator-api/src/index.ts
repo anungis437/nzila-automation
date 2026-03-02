@@ -107,6 +107,24 @@ app.addHook('onRequest', async (req, reply) => {
   reply.header('x-request-id', requestId)
 })
 
+// ── Idempotency-Key enforcement (fail-closed in production) ─────────────────
+app.addHook('onRequest', async (req, reply) => {
+  if (req.url === '/health') return
+  const MUTATION = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+  if (!MUTATION.has(req.method)) return
+  const idempotencyKey = req.headers['idempotency-key'] as string | undefined
+  if (!idempotencyKey) {
+    if (process.env.NODE_ENV === 'production') {
+      return reply.status(400).send({
+        error: 'Missing Idempotency-Key header',
+        message:
+          'All mutation requests (POST, PUT, PATCH, DELETE) must include an Idempotency-Key header.',
+        code: 'IDEMPOTENCY_KEY_REQUIRED',
+      })
+    }
+  }
+})
+
 // ── Routes ──
 app.register(healthRoutes)
 app.register(commandRoutes, { prefix: '/commands' })

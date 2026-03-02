@@ -95,6 +95,29 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
+  // ── Idempotency-Key enforcement (fail-closed in pilot/prod) ──────────
+  if (process.env.NODE_ENV !== 'development') {
+    if (
+      ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) &&
+      req.nextUrl.pathname.startsWith('/api') &&
+      !req.nextUrl.pathname.startsWith('/api/webhooks') &&
+      !req.nextUrl.pathname.startsWith('/api/health') &&
+      !req.nextUrl.pathname.startsWith('/api/cron')
+    ) {
+      if (!req.headers.get('idempotency-key')) {
+        return NextResponse.json(
+          {
+            error: 'Missing Idempotency-Key header',
+            message:
+              'All mutation requests (POST, PUT, PATCH, DELETE) must include an Idempotency-Key header.',
+            code: 'IDEMPOTENCY_KEY_REQUIRED',
+          },
+          { status: 400 },
+        )
+      }
+    }
+  }
+
   // API routes — protect unless explicitly public
   if (req.nextUrl.pathname.startsWith('/api')) {
     if (!isPublicRoute(req)) {

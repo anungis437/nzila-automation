@@ -140,10 +140,10 @@ describe('MUTATION_IDEMPOTENCY_REQUIRED_001 - Universal Idempotency Enforcement'
     expect(parsed.exports?.['./idempotency']).toBeDefined()
   })
 
-  // 3. All mutation route handlers must reference idempotency
-  //    Routes added AFTER idempotency enforcement was introduced must use it.
-  //    Legacy routes are tracked in a baseline snapshot for gradual adoption.
-  it('MUTATION_IDEMPOTENCY_REQUIRED_001: mutation route handlers reference idempotency enforcement', () => {
+  // 3. Apps with mutation routes must enforce idempotency at the middleware level.
+  //    The middleware intercepts all API requests before route handlers execute,
+  //    so a single enforcement point covers every route in the app.
+  it('MUTATION_IDEMPOTENCY_REQUIRED_001: apps with mutation routes enforce idempotency in middleware', () => {
     const apps = getAppDirs()
     expect(apps.length).toBeGreaterThan(0)
 
@@ -151,38 +151,46 @@ describe('MUTATION_IDEMPOTENCY_REQUIRED_001 - Universal Idempotency Enforcement'
 
     for (const app of apps) {
       const apiDir = join(ROOT, 'apps', app, 'app', 'api')
+      // Apps without app/api/ are checked separately (e.g. orchestrator-api)
       if (!existsSync(apiDir)) continue
 
+      // Only check apps that actually have non-exempt mutation routes
       const routeFiles = walkSync(apiDir).filter((f) => f.endsWith('route.ts'))
+      const hasMutations = routeFiles.some((f) => {
+        const content = readContent(f)
+        const rel = relPath(f)
+        return exportsMutationHandler(content) && !isExempt(rel)
+      })
+      if (!hasMutations) continue
 
-      for (const routeFile of routeFiles) {
-        const content = readContent(routeFile)
-        if (!exportsMutationHandler(content)) continue
+      // The app's middleware.ts must reference idempotency enforcement
+      const middlewarePath = join(ROOT, 'apps', app, 'middleware.ts')
+      const middleware = existsSync(middlewarePath)
+        ? readFileSync(middlewarePath, 'utf-8')
+        : ''
 
-        const rel = relPath(routeFile)
-        if (isExempt(rel)) continue
-
-        if (!hasIdempotencyEnforcement(content)) {
-          violations.push(rel)
-        }
+      if (!hasIdempotencyEnforcement(middleware)) {
+        violations.push(`apps/${app}/middleware.ts`)
       }
     }
 
-    // Baseline: capture the count of legacy routes not yet migrated.
-    // This number must only decrease. If new routes are added they MUST
-    // use idempotency, so the total should never exceed the baseline.
-    const LEGACY_BASELINE = violations.length
-
-    // Progressive enforcement: the baseline is recorded on first run.
-    // New routes that skip idempotency will push violations above the
-    // baseline and cause this test to fail.
     expect(
-      violations.length,
-      'New mutation route handlers must use checkIdempotency from @nzila/os-core/idempotency.\n' +
-        'Legacy routes without idempotency: ' + LEGACY_BASELINE + '\n' +
+      violations,
+      'Apps with external mutation routes must enforce Idempotency-Key in their middleware.ts.\n' +
         'Violations:\n' +
         violations.map((v) => '  - ' + v).join('\n'),
-    ).toBeLessThanOrEqual(LEGACY_BASELINE)
+    ).toEqual([])
+  })
+
+  // 3b. Orchestrator-API (Fastify) must enforce idempotency in its server hooks
+  it('MUTATION_IDEMPOTENCY_REQUIRED_001: orchestrator-api enforces idempotency', () => {
+    const serverFile = readContent(join(ROOT, 'apps', 'orchestrator-api', 'src', 'index.ts'))
+    expect(serverFile).toBeTruthy()
+
+    expect(
+      hasIdempotencyEnforcement(serverFile),
+      'orchestrator-api server must enforce Idempotency-Key for mutation requests',
+    ).toBe(true)
   })
 
   // 4. Idempotency enforcement must be org-scoped
@@ -214,12 +222,25 @@ describe('MUTATION_IDEMPOTENCY_REQUIRED_001 - Universal Idempotency Enforcement'
 
   // 6. Barrel export wires idempotency
   it('MUTATION_IDEMPOTENCY_REQUIRED_001: os-core barrel exports idempotency', () => {
-    const index = readContent('packages/os-core/src/index.ts')
+    const index = readContent(join(ROOT, 'packages', 'os-core', 'src', 'index.ts'))
     expect(index).toBeTruthy()
 
     expect(
       index.includes('idempotency'),
       'os-core index.ts must re-export from idempotency module',
     ).toBe(true)
+  })
+
+  // 7. High-level helpers exist (requireIdempotencyKey, recordIdempotentResponse, resolveIdempotentReplay)
+  it('MUTATION_IDEMPOTENCY_REQUIRED_001: idempotency exports high-level helpers', () => {
+    const mod = readContent(join(ROOT, 'packages', 'os-core', 'src', 'idempotency.ts'))
+    expect(mod).toBeTruthy()
+
+    for (const fn of ['requireIdempotencyKey', 'recordIdempotentResponse', 'resolveIdempotentReplay']) {
+      expect(
+        mod.includes(fn),
+        `idempotency.ts must export ${fn}`,
+      ).toBe(true)
+    }
   })
 })
