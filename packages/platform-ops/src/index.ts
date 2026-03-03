@@ -96,6 +96,38 @@ export {
   type PilotExportPorts,
 } from './pilot-export'
 
+// Re-export digest trends module
+export {
+  fetchAndAnalyseTrends,
+  generateTrendEnrichedDigest,
+  createStubTrendSeriesPort,
+  DEFAULT_TRACKED_METRICS,
+  DEFAULT_DIGEST_TRENDS_CONFIG,
+  type TrendSeriesDataPoint,
+  type TrendSeriesPort,
+  type TrendEnrichedDigest,
+  type DigestTrendsConfig,
+} from './digest-trends'
+
+// Re-export trend alerts module
+export {
+  formatTrendWarningAlert,
+  formatTrendWarningSummary,
+  dispatchTrendAlerts,
+  DEFAULT_TREND_ALERT_CONFIG,
+  type TrendAlertSeverity,
+  type TrendAlertConfig,
+} from './trend-alerts'
+
+// Re-export pilot summary pack module
+export {
+  generatePilotPack,
+  verifyManifest,
+  type ManifestEntry,
+  type PackManifest,
+  type PilotSummaryPack,
+} from './pilot-pack'
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface OutboxBacklog {
