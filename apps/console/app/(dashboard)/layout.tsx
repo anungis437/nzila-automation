@@ -24,6 +24,10 @@ import {
   CloudIcon,
   CurrencyDollarIcon,
   LinkIcon,
+  ChartBarSquareIcon,
+  ShieldExclamationIcon,
+  BeakerIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline'
 import { ExecutiveModeWrapper } from './executive-mode'
 
@@ -42,6 +46,10 @@ const navItems = [
   { name: 'Deploy Profile', href: '/deployment-profile', icon: CloudIcon },
   { name: 'Economics', href: '/platform-economics', icon: CurrencyDollarIcon },
   { name: 'Audit Graph', href: '/audit-graph', icon: LinkIcon },
+  { name: 'Trend Detection', href: '/trend-detection', icon: ChartBarSquareIcon },
+  { name: 'Ops Score', href: '/ops-score', icon: ShieldExclamationIcon },
+  { name: 'Failure Sim', href: '/failure-simulation', icon: BeakerIcon },
+  { name: 'Pilot Export', href: '/pilot/export', icon: DocumentArrowDownIcon },
   { name: 'Docs', href: '/docs', icon: DocumentTextIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Automation', href: '/automation', icon: CogIcon },

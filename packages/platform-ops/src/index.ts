@@ -33,6 +33,69 @@ export {
   type ChatOpsAdapter,
 } from './health-alerts'
 
+// Re-export trend detection module
+export {
+  computeLinearRegression,
+  analyseTrend,
+  analyseTrends,
+  buildTrendWarningEvent,
+  DEFAULT_TREND_THRESHOLDS,
+  type TrendDataPoint,
+  type TrendInput,
+  type TrendDirection,
+  type TrendResult,
+  type TrendWarningAuditEvent,
+  type TrendThresholds,
+} from './trend-detection'
+
+// Re-export ops confidence score module
+export {
+  computeOpsScore,
+  computeOpsScoreDelta,
+  type OpsScoreInput,
+  type OpsScoreComponent,
+  type OpsScoreResult,
+  type OpsScoreHistoryEntry,
+  type OpsScoreDelta,
+} from './ops-score'
+
+// Re-export failure simulation module
+export {
+  startSimulation,
+  stopSimulation,
+  getSimulationState,
+  isSimulationActive,
+  clearAllSimulations,
+  canActivateSimulation,
+  isSimulationFlagEnabled,
+  isSimulationEnvironmentAllowed,
+  getSimulatedLatencyMs,
+  shouldSimulateIntegrationFailure,
+  getErrorRateMultiplier,
+  buildSimulationAuditEvent,
+  type SimulationType,
+  type SimulationConfig,
+  type SimulationState,
+  type ActiveSimulation,
+  type SimulationToggleResult,
+  type SimulationAuditEvent,
+} from './failure-simulation'
+
+// Re-export pilot export module
+export {
+  generatePilotSummary,
+  computeBundleHash,
+  createDefaultPilotPorts,
+  type PilotSloSummary,
+  type PilotReleaseSummary,
+  type PilotLifecycleSummary,
+  type PilotIntegritySummary,
+  type PilotOpsDigest,
+  type PilotIsolationProof,
+  type PilotSummaryBundle,
+  type PilotExportPorts,
+} from './pilot-export'
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface OutboxBacklog {
