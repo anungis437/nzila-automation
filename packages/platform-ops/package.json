@@ -8,7 +8,11 @@
   "exports": {
     ".": "./src/index.ts",
     "./health-digest": "./src/health-digest.ts",
-    "./health-alerts": "./src/health-alerts.ts"
+    "./health-alerts": "./src/health-alerts.ts",
+    "./trend-detection": "./src/trend-detection.ts",
+    "./ops-score": "./src/ops-score.ts",
+    "./failure-simulation": "./src/failure-simulation.ts",
+    "./pilot-export": "./src/pilot-export.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
