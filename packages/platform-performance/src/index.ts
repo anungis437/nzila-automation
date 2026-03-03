@@ -15,3 +15,22 @@ export {
   type PerformanceEnvelope,
   type AppThroughput,
 } from './metrics'
+
+export {
+  generateSyntheticLoad,
+  executeScalePhase,
+  runScaleEnvelope,
+  DEFAULT_SCALE_PROFILES,
+  DEFAULT_HARNESS_CONFIG,
+  type ScaleProfile,
+  type ScalePhaseResult,
+  type ScaleEnvelopeResult,
+  type ScaleHarnessConfig,
+} from './scale-harness'
+
+export {
+  generateScaleReport,
+  type ScaleReport,
+  type ScaleReportSummary,
+  type ScaleReportPhase,
+} from './scale-report'
