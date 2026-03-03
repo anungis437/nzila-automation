@@ -37,7 +37,13 @@
 # Audit & compliance
 /apps/console/lib/audit*.ts   @nzila/security @nzila/platform
 /ops/compliance/**             @nzila/security @nzila/platform
-/tooling/contract-tests/**     @nzila/platform
+/tooling/contract-tests/**     @nzila/platform @nzila/security
+
+# Defensibility-critical packages — require platform + security review
+/packages/commerce-audit/**       @nzila/platform @nzila/security
+/packages/commerce-evidence/**    @nzila/platform @nzila/security
+/packages/platform-proof/**       @nzila/platform @nzila/security
+/packages/os-core/src/idempotency* @nzila/platform @nzila/security
 
 # Governance — immutable controls, profiles, GA gate
 /governance/**                 @nzila/platform @nzila/security

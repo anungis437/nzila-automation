@@ -28,8 +28,8 @@ export const IDEMPOTENCY_HEADER = 'idempotency-key'
 /** HTTP methods that are considered mutations */
 export const MUTATION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
-/** Default TTL for cached idempotency entries (24 hours) */
-const DEFAULT_TTL_MS = 24 * 60 * 60 * 1_000
+/** Default TTL for cached idempotency entries (48 hours) */
+const DEFAULT_TTL_MS = 48 * 60 * 60 * 1_000
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -412,4 +412,25 @@ export function isMutationApiRoute(method: string, pathname: string): boolean {
 /** True when `pathname` matches a known exempt pattern (webhooks, health, cron). */
 export function isIdempotencyExempt(pathname: string): boolean {
   return IDEMPOTENCY_EXEMPT_PATTERNS.some((p) => p.test(pathname))
+}
+
+// ── Cleanup ───────────────────────────────────────────────────────────────
+
+/**
+ * Delete expired rows from the Postgres idempotency cache.
+ *
+ * Should be called from a scheduled cron job (e.g. daily).
+ * Returns the number of rows deleted.
+ */
+export async function cleanupExpiredIdempotencyEntries(): Promise<number> {
+  const { db } = await import('@nzila/db/client')
+  const { idempotencyCache } = await import('@nzila/db/schema')
+  const { lt, sql } = await import('drizzle-orm')
+
+  const result = await db
+    .delete(idempotencyCache)
+    .where(lt(idempotencyCache.expiresAt, new Date()))
+    .returning({ id: idempotencyCache.id })
+
+  return result.length
 }

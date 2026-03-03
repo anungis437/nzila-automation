@@ -302,4 +302,35 @@ describe('Idempotency enforcement', () => {
     expect(await small.get('k1')).toBeNull()
     expect(await small.get('k3')).not.toBeNull()
   })
+
+  // ── TTL enforcement (48h default) ───────────────────────────────────
+
+  it('returns null for entries older than 48h (TTL expired)', async () => {
+    const expired: CachedIdempotencyEntry = {
+      payloadHash: 'h-expired',
+      status: 200,
+      body: '{}',
+      headers: {},
+      createdAt: Date.now() - 49 * 60 * 60 * 1_000, // 49h ago
+    }
+
+    await cache.set('expired-key', expired)
+    const result = await cache.get('expired-key')
+    expect(result).toBeNull()
+  })
+
+  it('returns entry that is within the 48h TTL window', async () => {
+    const fresh: CachedIdempotencyEntry = {
+      payloadHash: 'h-fresh',
+      status: 200,
+      body: '{}',
+      headers: {},
+      createdAt: Date.now() - 47 * 60 * 60 * 1_000, // 47h ago
+    }
+
+    await cache.set('fresh-key', fresh)
+    const result = await cache.get('fresh-key')
+    expect(result).not.toBeNull()
+    expect(result?.payloadHash).toBe('h-fresh')
+  })
 })

@@ -27,6 +27,7 @@ export {
   resolveIdempotentReplay,
   isMutationApiRoute,
   isIdempotencyExempt,
+  cleanupExpiredIdempotencyEntries,
   IDEMPOTENCY_EXEMPT_PATTERNS,
   type IdempotencyCache,
   type CachedIdempotencyEntry,

@@ -121,4 +121,11 @@ export const DEFAULT_RETENTION_POLICIES: RetentionPolicy[] = [
     legalBasis: 'PIPEDA / data minimization',
     immutable: false,
   },
+  {
+    category: 'idempotency_cache',
+    retentionClass: '90_DAYS',
+    expiryAction: 'delete',
+    legalBasis: 'Operational — 48h TTL, cleanup via scheduled cron',
+    immutable: false,
+  },
 ]

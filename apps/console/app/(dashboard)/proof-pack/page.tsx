@@ -8,6 +8,7 @@
  */
 import { requireRole } from '@/lib/rbac'
 import { generateGovernanceProofPack } from '@nzila/platform-proof'
+import { TamperProofWidget } from '@/components/tamper-proof-widget'
 import {
   FingerPrintIcon,
   ShieldCheckIcon,
@@ -105,6 +106,11 @@ export default async function ProofPackPage({
           value={proof.redTeamSummary}
           icon={BeakerIcon}
         />
+      </div>
+
+      {/* Tamper verification widget */}
+      <div className="mb-6">
+        <TamperProofWidget />
       </div>
 
       {/* Signature block */}
