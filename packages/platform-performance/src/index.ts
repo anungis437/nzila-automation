@@ -13,4 +13,5 @@ export {
   getGlobalPerformanceEnvelope,
   type RequestMetric,
   type PerformanceEnvelope,
+  type AppThroughput,
 } from './metrics'

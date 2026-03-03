@@ -115,6 +115,7 @@ packages/packages/
 *.bak
 *.cache
 tmp-*
+.pilot-check/
 docker-build.log
 build-output.txt
 install-err.txt

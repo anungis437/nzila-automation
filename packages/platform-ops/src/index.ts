@@ -9,6 +9,30 @@
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 
+// Re-export health digest & alerting modules
+export {
+  computeDeltas,
+  detectAnomalies,
+  generateDigestSnapshot,
+  buildDigestAuditEvent,
+  type MetricDelta,
+  type MetricInput,
+  type Anomaly,
+  type AnomalySeverity,
+  type HealthDigestSnapshot,
+  type HealthDigestAuditEvent,
+} from './health-digest'
+
+export {
+  formatAnomalyAlert,
+  formatDigestSummary,
+  dispatchAlerts,
+  type AlertTarget,
+  type AlertPayload,
+  type AlertResult,
+  type ChatOpsAdapter,
+} from './health-alerts'
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface OutboxBacklog {
