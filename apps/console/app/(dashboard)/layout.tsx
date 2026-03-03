@@ -35,6 +35,7 @@ const navItems = [
   { name: 'System Health', href: '/system-health', icon: ServerIcon },
   { name: 'Governance', href: '/governance', icon: EyeIcon },
   { name: 'Performance', href: '/performance', icon: BoltIcon },
+  { name: 'Regressions', href: '/performance/regressions', icon: ArrowTrendingUpIcon },
   { name: 'Isolation', href: '/isolation-certification', icon: LockClosedIcon },
   { name: 'Proof Pack', href: '/proof-pack', icon: FingerPrintIcon },
   { name: 'Scale Sim', href: '/scale-simulation', icon: ArrowTrendingUpIcon },

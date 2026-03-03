@@ -39,6 +39,7 @@
     "redteam": "tsx security/redteam/profile-runner.ts",
     "redteam:core": "tsx security/redteam/profile-runner.ts --profile core",
     "redteam:abr": "tsx security/redteam/profile-runner.ts --profile abr-insights",
+    "pilot:check": "tsx scripts/pilot-check.ts",
     "prepare": "lefthook install"
   },
   "devDependencies": {

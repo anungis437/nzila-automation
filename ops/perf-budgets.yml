@@ -1,0 +1,66 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Performance Budgets
+#
+# Optional performance regression gate. Feature-flagged — only enforced
+# when `enabled: true` for the target environment.
+#
+# Usage:
+#   - CI reads this file and checks metrics against budgets.
+#   - Enable per-environment when ready (pilot first, then prod).
+#   - Does not block dev velocity until you opt in.
+#
+# @see tooling/contract-tests/perf-budget-gate.test.ts
+# ──────────────────────────────────────────────────────────────────────────────
+
+version: "1.0"
+lastUpdated: "2026-03-03"
+
+# ── Feature flag per environment ───────────────────────────────────────────
+
+environments:
+  dev:
+    enabled: false
+    mode: "warn"      # warn = log only, enforce = block
+  staging:
+    enabled: false
+    mode: "warn"
+  pilot:
+    enabled: false     # flip to true when ready for pilot gate
+    mode: "enforce"
+  prod:
+    enabled: false     # flip to true when ready for prod gate
+    mode: "enforce"
+
+# ── Global budgets ─────────────────────────────────────────────────────────
+
+budgets:
+  # Page load / route response time
+  route_p95_ms: 500
+  route_p99_ms: 2000
+
+  # Error budget: max error rate percentage
+  error_rate_max_pct: 2.0
+
+  # Bundle size budgets (KB, gzipped)
+  bundle_js_max_kb: 350
+  bundle_css_max_kb: 80
+
+  # Time to First Byte
+  ttfb_p95_ms: 800
+
+  # API response time
+  api_p95_ms: 300
+  api_p99_ms: 1000
+
+# ── Per-app overrides ──────────────────────────────────────────────────────
+
+apps:
+  console:
+    route_p95_ms: 600
+    bundle_js_max_kb: 500     # Console is larger (admin features)
+  web:
+    route_p95_ms: 400
+    bundle_js_max_kb: 250     # Public site should be lean
+  orchestrator-api:
+    api_p95_ms: 200
+    api_p99_ms: 800
