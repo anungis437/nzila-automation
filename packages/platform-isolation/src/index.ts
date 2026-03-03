@@ -16,3 +16,15 @@ export {
   type IsolationAuditResult,
   type IsolationViolation,
 } from './audit'
+
+export {
+  runMultiOrgStress,
+  computeStressIsolationScore,
+  generateOrgProfiles,
+  DEFAULT_STRESS_CONFIG,
+  type StressOrgProfile,
+  type StressConfig,
+  type OrgStressResult,
+  type CrossOrgLeakEvent,
+  type MultiOrgStressResult,
+} from './multi-org-stress'
