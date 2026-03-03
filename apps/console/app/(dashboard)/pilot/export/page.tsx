@@ -11,7 +11,9 @@ import { requireRole } from '@/lib/rbac'
 import {
   generatePilotSummary,
   createDefaultPilotPorts,
+  generatePilotPack,
   type PilotSummaryBundle,
+  type PilotSummaryPack,
 } from '@nzila/platform-ops'
 import {
   DocumentArrowDownIcon,
@@ -73,9 +75,10 @@ export default async function PilotExportPage() {
   await requireRole('platform_admin', 'studio_admin', 'ops')
 
   const ports = createDefaultPilotPorts()
-  const bundle: PilotSummaryBundle = await generatePilotSummary(ports)
+  const pack: PilotSummaryPack = await generatePilotPack(ports)
+  const bundle = pack.bundle
 
-  const bundleJson = JSON.stringify(bundle, null, 2)
+  const bundleJson = JSON.stringify(pack, null, 2)
   const downloadHref = `data:application/json;charset=utf-8,${encodeURIComponent(bundleJson)}`
 
   return (
@@ -83,14 +86,14 @@ export default async function PilotExportPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Pilot Summary Export</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Pilot Summary Pack</h1>
           <p className="text-gray-500 mt-1">
-            Procurement-ready platform attestation bundle
+            Procurement-ready platform attestation bundle with verifiable manifest
           </p>
         </div>
         <a
           href={downloadHref}
-          download={`nzila-pilot-summary-${bundle.release.version}.json`}
+          download={`nzila-pilot-pack-${bundle.release.version}.json`}
           className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
         >
           <DocumentArrowDownIcon className="h-5 w-5" />
@@ -105,8 +108,12 @@ export default async function PilotExportPage() {
           <span className="font-semibold">{bundle.platformName}</span>
         </div>
         <div>
-          <span className="text-gray-500">Export Version:</span>{' '}
-          <span className="font-mono">{bundle.exportVersion}</span>
+          <span className="text-gray-500">Pack Version:</span>{' '}
+          <span className="font-mono">{pack.metadata.formatVersion}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">Sections:</span>{' '}
+          <span className="font-mono">{pack.metadata.sectionCount}</span>
         </div>
         <div>
           <span className="text-gray-500">Exported At:</span>{' '}
@@ -183,6 +190,39 @@ export default async function PilotExportPage() {
           <InfoRow label="Tenants Checked" value={bundle.isolation.tenantsChecked} />
           <InfoRow label="Cross-Tenant Leaks" value={bundle.isolation.crossTenantLeaks} />
         </SectionCard>
+      </div>
+
+      {/* MANIFEST — verifiable per-section hashes */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mt-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="inline-flex p-2 bg-gray-50 rounded-lg">
+            <FingerPrintIcon className="h-5 w-5 text-gray-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">MANIFEST.json</h3>
+          <span className="ml-auto text-xs text-gray-400 font-mono">
+            {pack.manifest.totalSizeBytes} bytes total
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 text-gray-500 font-medium">Section</th>
+                <th className="text-left py-2 text-gray-500 font-medium">SHA-256 Hash</th>
+                <th className="text-right py-2 text-gray-500 font-medium">Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pack.manifest.sections.map((s) => (
+                <tr key={s.section} className="border-b border-gray-100">
+                  <td className="py-2 font-medium text-gray-900">{s.section}</td>
+                  <td className="py-2 font-mono text-xs text-gray-600">{s.hash.slice(0, 28)}…</td>
+                  <td className="py-2 text-right font-mono text-gray-500">{s.sizeBytes}B</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

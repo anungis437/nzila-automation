@@ -7,7 +7,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import {
-  generatePilotSummary,
+  generatePilotPack,
   createDefaultPilotPorts,
 } from '@nzila/platform-ops'
 import { createLogger } from '@nzila/os-core'
@@ -28,13 +28,13 @@ export async function GET() {
   }
 
   const ports = createDefaultPilotPorts()
-  const bundle = await generatePilotSummary(ports)
+  const pack = await generatePilotPack(ports)
 
-  logger.info('pilot-export generated', { version: bundle.release.version })
+  logger.info('pilot-pack generated', { version: pack.bundle.release.version })
 
-  return NextResponse.json(bundle, {
+  return NextResponse.json(pack, {
     headers: {
-      'Content-Disposition': `attachment; filename="nzila-pilot-summary-${bundle.release.version}.json"`,
+      'Content-Disposition': `attachment; filename="nzila-pilot-pack-${pack.bundle.release.version}.json"`,
     },
   })
 }
