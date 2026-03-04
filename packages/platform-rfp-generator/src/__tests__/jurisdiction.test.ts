@@ -142,29 +142,29 @@ describe('RFP jurisdiction — Canada (PIPEDA + Québec Law 25)', () => {
 })
 
 describe('RFP new sections', () => {
-  it('includes Hosting & Sovereignty Modes section', () => {
+  it('includes Hosting & Sovereignty section', () => {
     const response = generateCanadaRfp()
     const sections = response.sections.map((s) => s.section)
     expect(sections).toContain('hosting_sovereignty')
 
     const md = renderRfpMarkdown(response)
-    expect(md).toContain('Hosting & Sovereignty Modes')
+    expect(md).toContain('Hosting & Sovereignty')
   })
 
-  it('includes Verification Steps appendix', () => {
+  it('includes Verification Appendix', () => {
     const response = generateCanadaRfp()
     const sections = response.sections.map((s) => s.section)
     expect(sections).toContain('verification')
 
     const md = renderRfpMarkdown(response)
-    expect(md).toContain('Verification Steps')
+    expect(md).toContain('Verification Appendix')
     expect(md).toContain('Ed25519')
     expect(md).toContain('MANIFEST')
   })
 
-  it('generates 10 total sections', () => {
+  it('generates 8 total sections', () => {
     const response = generateCanadaRfp()
-    expect(response.sections).toHaveLength(10)
+    expect(response.sections).toHaveLength(8)
   })
 
   it('privacy section includes PIPEDA + Québec Law 25 question', () => {

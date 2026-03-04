@@ -42,6 +42,7 @@
     "pilot:check": "tsx scripts/pilot-check.ts",
     "rfp:generate": "tsx scripts/rfp-generate.ts --out docs/rfp/answers.md",
     "demo:golden": "tsx scripts/demo-golden-path.ts",
+    "validate:pack": "tsx scripts/validate-procurement-pack.ts",
     "prepare": "lefthook install"
   },
   "devDependencies": {

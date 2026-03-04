@@ -8,6 +8,7 @@
  */
 import { createHash } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type { ChainPorts, GeneratorPorts } from '@nzila/platform-compliance-snapshots'
 import { computeSnapshotHash } from '@nzila/platform-compliance-snapshots'
 import type {
@@ -30,7 +31,7 @@ export async function collectLatestComplianceSnapshots(
   orgId: string,
   ports: ComplianceSnapshotCollectorPorts,
 ): Promise<CollectorResult<ComplianceSnapshotCollectorData>> {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const source = '@nzila/platform-compliance-snapshots'
 
   try {

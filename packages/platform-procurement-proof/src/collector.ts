@@ -9,6 +9,7 @@
 import { randomUUID } from 'node:crypto'
 import { createHash } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type {
   ProcurementPack,
   ProcurementManifest,
@@ -50,7 +51,7 @@ export async function collectProcurementPack(
       .digest('hex')
   }
 
-  const now = new Date().toISOString()
+  const now = nowISO()
   const manifest: ProcurementManifest = {
     version: '1.0',
     sectionCount: 5,

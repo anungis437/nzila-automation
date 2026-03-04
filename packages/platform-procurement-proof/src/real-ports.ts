@@ -9,6 +9,7 @@
  */
 import { createHash, randomUUID } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import { getSigningKeyPair } from './zip-exporter'
 import type {
   ProcurementProofPorts,
@@ -56,7 +57,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
   return {
     async getSecurityPosture(orgId: string): Promise<SecurityPosture> {
       const depPosture = await collectDependencyPosture(orgId, deps.rootDir)
-      const now = new Date().toISOString()
+      const now = nowISO()
 
       if (depPosture.status === 'not_available' || !depPosture.data) {
         // Return posture with zeros and explicit "not available" markers
@@ -121,7 +122,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
     },
 
     async getDataLifecycle(_orgId: string): Promise<DataLifecycle> {
-      const now = new Date().toISOString()
+      const now = nowISO()
       // Data lifecycle is typically configuration-driven, not runtime-collected.
       // In production this reads from data manifest registry.
       return {
@@ -141,7 +142,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
 
     async getOperationalEvidence(orgId: string): Promise<OperationalEvidence> {
       const obsSummary = await collectObservabilitySummary(orgId, deps.observability)
-      const now = new Date().toISOString()
+      const now = nowISO()
 
       const p95 = obsSummary.data?.p95LatencyMs ?? null
       const errorRate = obsSummary.data?.errorCount24h != null
@@ -193,7 +194,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
     },
 
     async getSovereigntyProfile(_orgId: string): Promise<SovereigntyProfile> {
-      const now = new Date().toISOString()
+      const now = nowISO()
       const sov = deps.sovereignty ?? {
         deploymentRegion: 'Canada Central',
         dataResidency: 'Canada',
@@ -213,7 +214,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
 
     async signPack(digest: string): Promise<PackSignature> {
       const { keyId } = getSigningKeyPair()
-      const now = new Date().toISOString()
+      const now = nowISO()
 
       return {
         algorithm: 'Ed25519',

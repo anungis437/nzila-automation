@@ -8,6 +8,7 @@
  */
 import { createHash } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type { ProcurementPack } from './types'
 
 const logger = createLogger('procurement-proof-exporter')
@@ -40,7 +41,7 @@ export function exportAsJson(pack: ProcurementPack): ProcurementExportResult {
     packId: pack.packId,
     format: 'json',
     data,
-    exportedAt: new Date().toISOString(),
+    exportedAt: nowISO(),
     filename: `procurement-pack-${pack.packId}.json`,
   }
 }
@@ -85,7 +86,7 @@ export function exportAsBundle(pack: ProcurementPack): ProcurementExportResult {
     packId: pack.packId,
     format: 'zip',
     data,
-    exportedAt: new Date().toISOString(),
+    exportedAt: nowISO(),
     filename: `Procurement-Pack-${pack.packId}.zip`,
   }
 }

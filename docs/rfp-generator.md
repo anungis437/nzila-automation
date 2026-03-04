@@ -28,16 +28,25 @@ The generator produces a structured Markdown document with:
 
 ## Sections Covered
 
-| Section | Questions | Topics |
-|---------|-----------|--------|
-| Security | 2 | Controls, vulnerability management |
-| Privacy | 2 | PII protection, data residency |
-| Operations | 1 | SLA/SLO targets |
-| Disaster Recovery | 1 | DR procedures, testing |
-| Data Governance | 1 | Policy enforcement, evidence packs |
-| Compliance | 1 | Frameworks, scores |
-| Integration | 1 | Marketplace, webhook signing |
-| Cost Management | 1 | Budget gates, spend tracking |
+The RFP response is structured into 8 numbered sections:
+
+| # | Section | ID | Topics |
+|---|---------|-----|--------|
+| 1 | Security Controls | `security` | Vulnerability management, dependency posture, attestations |
+| 2 | Privacy & Data Protection | `privacy` | PII classification, encryption, retention, POPIA/GDPR |
+| 3 | Evidence & Auditability | `evidence_auditability` | Evidence packs, snapshot chain, audit trail |
+| 4 | Operational Resilience | `operations` | SLA/SLO targets, incident metrics, uptime |
+| 5 | Integrations & Data Flow | `integration` | Marketplace, webhook signing, health checks |
+| 6 | Hosting & Sovereignty | `hosting_sovereignty` | Deployment region, data residency, regulatory frameworks |
+| 7 | Disaster Recovery | `disaster_recovery` | DR procedures, RTO/RPO, testing cadence |
+| 8 | Verification Appendix | `verification` | How to verify pack integrity, signature, hash chain |
+
+### Language Guardrails
+
+- Avoid "certified compliant" — instead describe verifiable controls
+- Reference regulatory alignment (POPIA, GDPR, PIPEDA, Québec Law 25)
+  without claiming certification
+- All claims are backed by evidence references
 
 ## Evidence References
 

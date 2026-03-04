@@ -76,3 +76,11 @@ export type {
   IntegrationsHealthPorts,
   ObservabilityCollectorPorts,
 } from './collectors'
+
+// schemas
+export {
+  ProcurementSectionSchema,
+  validateSection,
+  safeValidateSection,
+} from './schemas/section.schema'
+export type { ProcurementSection } from './schemas/section.schema'

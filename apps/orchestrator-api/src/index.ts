@@ -3,6 +3,7 @@ import helmet from '@fastify/helmet'
 import rateLimit from '@fastify/rate-limit'
 import { commandRoutes } from './routes/commands.js'
 import { healthRoutes } from './routes/health.js'
+import { proofCenterRoutes } from './routes/proof-center.js'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('orchestrator-api')
@@ -128,6 +129,7 @@ app.addHook('onRequest', async (req, reply) => {
 // ── Routes ──
 app.register(healthRoutes)
 app.register(commandRoutes, { prefix: '/commands' })
+app.register(proofCenterRoutes, { prefix: '/api/proof-center' })
 
 // ── Start ──
 async function main() {

@@ -78,6 +78,7 @@ export default defineConfig({
       'packages/platform-marketplace',
       'packages/platform-assurance',
       'packages/platform-rfp-generator',
+      'packages/platform-utils',
       // Contract tests (architectural invariants)
       'tooling/contract-tests',
     ],

@@ -127,10 +127,65 @@ print("All verifications passed.")
 
 ## API
 
+### Export Pack
+
 ```
 POST /api/proof-center/export
   Body: { "format": "zip" | "json", "includeRfp": boolean }
   → application/zip (default) or application/json
+```
+
+### Latest Pack Metadata
+
+```
+GET /api/proof-center/latest-pack
+  → 200 OK
+```
+
+Response:
+
+```json
+{
+  "packId": "pack-abc123",
+  "orgId": "my-org",
+  "generatedAt": "2026-03-04T12:00:00Z",
+  "status": "signed",
+  "sectionCount": 5,
+  "sections": ["security", "dataLifecycle", "operational", "governance", "sovereignty"],
+  "manifestHash": "sha256:...",
+  "verificationStatus": "VALID",
+  "downloadUrl": "/api/proof-center/export",
+  "respondedAt": "2026-03-04T12:00:01Z"
+}
+```
+
+### Refresh Pack
+
+```
+POST /api/proof-center/refresh
+  → 200 OK  (re-collects and re-signs)
+```
+
+## Validation Script
+
+Run automated validation against a fresh procurement pack:
+
+```bash
+pnpm validate:pack
+```
+
+This checks:
+1. **Schema validation** — every section conforms to `ProcurementSectionSchema`
+2. **Timestamp consistency** — all timestamps are ISO 8601 UTC (no milliseconds)
+3. **Manifest integrity** — recalculates SHA-256 hashes and compares
+4. **Signature verification** — verifies Ed25519 signature on manifest
+
+## Demo
+
+Run the golden-path demo to see end-to-end pack generation:
+
+```bash
+pnpm demo:golden
 ```
 
 ## Response Headers (ZIP)

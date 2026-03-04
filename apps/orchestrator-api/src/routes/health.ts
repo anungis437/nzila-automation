@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { getDb } from '../db.js'
 import { sql } from 'drizzle-orm'
+import { nowISO } from '@nzila/platform-utils/time'
 
 export async function healthRoutes(app: FastifyInstance) {
   app.get('/health', async (_req, reply) => {
@@ -33,7 +34,7 @@ export async function healthRoutes(app: FastifyInstance) {
     return reply.status(allOk ? 200 : 503).send({
       status,
       app: 'orchestrator-api',
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       version: process.env.npm_package_version ?? '0.0.0',
       checks,
     })

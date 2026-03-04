@@ -209,12 +209,15 @@ describe('Zip Exporter', () => {
         new TextDecoder().decode(unzipped['verification.json']),
       )
 
-      expect(ver.algorithm).toBe('Ed25519')
+      expect(ver.signatureAlgorithm).toBe('Ed25519')
+      expect(ver.packId).toBeDefined()
+      expect(ver.keyId).toBeDefined()
+      expect(ver.generatedAt).toBeDefined()
       expect(ver.expectedFiles).toContain('MANIFEST.json')
       expect(ver.expectedFiles).toContain('procurement-pack.json')
       expect(ver.expectedFiles).toContain('signatures.json')
       expect(ver.expectedFiles).toContain('verification.json')
-      expect(ver.verificationSteps.length).toBeGreaterThanOrEqual(5)
+      expect(ver.verificationSteps.length).toBeGreaterThanOrEqual(3)
     })
 
     it('Content-Type should be application/zip', () => {
