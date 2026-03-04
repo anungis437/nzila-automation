@@ -16,6 +16,9 @@ const router = Router();
 // Initialize Stripe via platform wrapper
 const stripe = getStripeClient();
 
+/** Validates a route :param is a UUID before it reaches any query. */
+const uuidParam = z.string().uuid();
+
 // Validation schemas
 const createDonationSchema = z.object({
   fundId: z.string().uuid(),
@@ -194,7 +197,7 @@ router.post(
  */
 router.get('/campaigns/:fundId', async (req: Request, res: Response) => {
   try {
-    const { fundId } = req.params;
+    const fundId = uuidParam.parse(req.params.fundId);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fundResult: any = await db.execute(sql`
@@ -239,7 +242,7 @@ router.get('/campaigns/:fundId', async (req: Request, res: Response) => {
         message,
         created_at
       FROM public_donations
-      WHERE strike_fund_id = ${fundId}
+      WHERE strike_fund_id = ${fundId}  -- fundId validated as UUID above
         AND is_anonymous = false
         AND status = 'completed'
       ORDER BY created_at DESC
@@ -279,7 +282,7 @@ router.get('/campaigns/:fundId', async (req: Request, res: Response) => {
  */
 router.get('/:donationId', async (req: Request, res: Response) => {
   try {
-    const { donationId } = req.params;
+    const donationId = uuidParam.parse(req.params.donationId);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await db.execute(sql`

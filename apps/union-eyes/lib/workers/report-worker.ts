@@ -4,6 +4,9 @@
  * Generates various reports (PDF, Excel) and stores them for download
  */
 
+/** Actor ID used for system-initiated actions (not a credential). */
+const SYSTEM_USER_ID = "system";
+
 // Only import bullmq in runtime, not during build
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let Worker: any, _Job: any,IORedis: any;
@@ -491,7 +494,7 @@ await job.updateProgress(90);
           body: `Your ${reportType} report has been generated and is ready for download.\n\nClick the link below to download your report.`,
           actionUrl: `/api/reports/${filename}`,
           actionLabel: 'Download Report',
-          userId: 'system',
+          userId: SYSTEM_USER_ID,
         }).catch((_err) => {
 });
 }

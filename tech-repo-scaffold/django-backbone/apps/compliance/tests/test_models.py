@@ -33,9 +33,12 @@ User = get_user_model()
 
 ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
+# Test-only fixture password — never used outside this module.
+_TEST_PASSWORD = "testpass123!"  # noqa: S105
+
 
 def make_user(username: str):
-    return User.objects.create_user(username=username, password="testpass123!")
+    return User.objects.create_user(username=username, password=_TEST_PASSWORD)
 
 
 # ── ABR-MDL-01 / ABR-MDL-02 — tables exist + org_id present ─────────────────

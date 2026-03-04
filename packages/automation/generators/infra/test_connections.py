@@ -3,6 +3,7 @@
 import sys
 try:
     import psycopg2
+    from psycopg2 import sql as pgsql
 except ImportError:
     print("Installing psycopg2-binary...")
     import subprocess
@@ -59,7 +60,7 @@ def test_connection(label, params):
         total_rows = 0
         for t in tables[:3]:
             try:
-                cur.execute(f'SELECT COUNT(*) FROM "{t}";')
+                cur.execute(pgsql.SQL('SELECT COUNT(*) FROM {}').format(pgsql.Identifier(t)))
                 rows = cur.fetchone()[0]
                 total_rows += rows
                 print(f"    {t}: {rows:,} rows")

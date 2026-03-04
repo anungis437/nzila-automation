@@ -12,6 +12,9 @@ import {
   signatureAuditLog,
   signatureVerification,
 } from "@/db/schema/domains/documents";
+
+/** Actor ID used for system-initiated actions (not a credential). */
+const SYSTEM_USER_ID = "system";
 import {
   getSignatureProvider,
   SignatureProviderType,
@@ -361,7 +364,7 @@ export async function handleSignerCompleted(
         type: "signature_completed",
         workflowId,
       },
-      userId: "system",
+      userId: SYSTEM_USER_ID,
     });
 
     // Check if all signers have completed
@@ -514,7 +517,7 @@ async function completeWorkflow(workflowId: string): Promise<void> {
         type: "workflow_completed",
         workflowId,
       },
-      userId: "system",
+      userId: SYSTEM_USER_ID,
     });
 
     logger.info("Workflow completed successfully", { workflowId });
