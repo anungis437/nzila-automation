@@ -1,0 +1,14 @@
+{
+  "extends": "../config/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "@nzila/os-core/*": ["../os-core/src/*"],
+      "@nzila/platform-evidence-pack/*": ["../platform-evidence-pack/src/*"],
+      "@nzila/platform-compliance-snapshots/*": ["../platform-compliance-snapshots/src/*"],
+      "@nzila/platform-policy-engine/*": ["../platform-policy-engine/src/*"]
+    }
+  },
+  "include": ["src"]
+}

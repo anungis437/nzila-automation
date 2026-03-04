@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Voting Policies
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Governance controls for cooperative/union voting operations.
+# Prevents fraud, ensures quorum, and enforces cooling-off periods.
+#
+version: "1.0"
+lastUpdated: "2026-03-04"
+
+policies:
+  - id: voting-quorum
+    name: Voting quorum enforcement
+    version: "1.0"
+    type: voting
+    description: >
+      Vote resolutions require minimum quorum participation.
+      Results cannot be finalized below quorum threshold.
+    enabled: true
+    scope:
+      environments: [pilot, prod]
+      resources: ["/api/governance/votes"]
+    rules:
+      - id: require-quorum
+        description: Vote resolution requires quorum >= 50%
+        conditions:
+          - field: context.quorumPercent
+            operator: lt
+            value: 50
+        effect: deny
+        severity: critical
+
+      - id: block-self-vote-on-payout
+        description: Vote initiator cannot vote on their own payout motion
+        conditions:
+          - field: context.isInitiatorVoting
+            operator: eq
+            value: true
+          - field: context.motionType
+            operator: eq
+            value: payout
+        effect: deny
+        severity: critical

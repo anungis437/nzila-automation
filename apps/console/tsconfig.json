@@ -16,7 +16,12 @@
       "@nzila/platform-integrations-control-plane": ["../../packages/platform-integrations-control-plane/src/index.ts"],
       "@nzila/platform-evidence-pack": ["../../packages/platform-evidence-pack/src/index.ts"],
       "@nzila/platform-compliance-snapshots": ["../../packages/platform-compliance-snapshots/src/index.ts"],
-      "@nzila/platform-observability": ["../../packages/platform-observability/src/index.ts"]
+      "@nzila/platform-observability": ["../../packages/platform-observability/src/index.ts"],
+      "@nzila/platform-policy-engine": ["../../packages/platform-policy-engine/src/index.ts"],
+      "@nzila/platform-procurement-proof": ["../../packages/platform-procurement-proof/src/index.ts"],
+      "@nzila/platform-marketplace": ["../../packages/platform-marketplace/src/index.ts"],
+      "@nzila/platform-assurance": ["../../packages/platform-assurance/src/index.ts"],
+      "@nzila/platform-rfp-generator": ["../../packages/platform-rfp-generator/src/index.ts"]
     }
   },
   "include": [

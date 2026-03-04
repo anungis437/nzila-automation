@@ -60,6 +60,9 @@ const navItems = [
   { name: 'Control Plane', href: '/integrations-control-plane', icon: PuzzlePieceIcon },
   { name: 'Evidence Packs', href: '/evidence-packs', icon: DocumentArrowDownIcon },
   { name: 'Compliance', href: '/compliance-snapshots', icon: ShieldCheckIcon },
+  { name: 'Proof Center', href: '/proof-center', icon: FingerPrintIcon },
+  { name: 'Assurance', href: '/assurance', icon: ShieldCheckIcon },
+  { name: 'Marketplace', href: '/marketplace', icon: PuzzlePieceIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
 ]
 

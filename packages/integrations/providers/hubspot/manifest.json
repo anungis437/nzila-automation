@@ -1,0 +1,46 @@
+{
+  "providerKey": "hubspot",
+  "name": "HubSpot",
+  "version": "1.0.0",
+  "description": "HubSpot CRM integration for contact sync, deal tracking, and marketing automation",
+  "category": "crm",
+  "scopes": ["crm.objects.contacts.read", "crm.objects.contacts.write", "crm.objects.deals.read", "crm.objects.deals.write"],
+  "webhookSigning": {
+    "algorithm": "hmac-sha256",
+    "headerName": "X-HubSpot-Signature-v3",
+    "timestampHeaderName": "X-HubSpot-Request-Timestamp",
+    "toleranceSeconds": 300
+  },
+  "retryPolicy": {
+    "maxAttempts": 5,
+    "initialDelayMs": 2000,
+    "maxDelayMs": 60000,
+    "backoffMultiplier": 2
+  },
+  "requiredSecrets": [
+    {
+      "key": "HUBSPOT_ACCESS_TOKEN",
+      "description": "HubSpot private app access token",
+      "example": "pat-na1-xxxx",
+      "required": true
+    },
+    {
+      "key": "HUBSPOT_PORTAL_ID",
+      "description": "HubSpot portal (account) ID",
+      "example": "12345678",
+      "required": true
+    },
+    {
+      "key": "HUBSPOT_WEBHOOK_SECRET",
+      "description": "Client secret for webhook signature verification",
+      "required": false
+    }
+  ],
+  "healthCheckUrl": "https://api.hubapi.com/crm/v3/objects/contacts?limit=1",
+  "documentationUrl": "https://developers.hubspot.com/docs/api/overview",
+  "metadata": {
+    "vendor": "HubSpot",
+    "tier": "standard",
+    "rateLimit": "100 requests/10 seconds"
+  }
+}

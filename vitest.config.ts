@@ -72,6 +72,12 @@ export default defineConfig({
       // Platform hardening packages
       'packages/platform-cost',
       'packages/platform-deploy',
+      // Platform moat packages
+      'packages/platform-policy-engine',
+      'packages/platform-procurement-proof',
+      'packages/platform-marketplace',
+      'packages/platform-assurance',
+      'packages/platform-rfp-generator',
       // Contract tests (architectural invariants)
       'tooling/contract-tests',
     ],

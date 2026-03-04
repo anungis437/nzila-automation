@@ -43,7 +43,12 @@
     "@nzila/platform-integrations-control-plane": "workspace:*",
     "@nzila/platform-evidence-pack": "workspace:*",
     "@nzila/platform-compliance-snapshots": "workspace:*",
-    "@nzila/platform-observability": "workspace:*"
+    "@nzila/platform-observability": "workspace:*",
+    "@nzila/platform-policy-engine": "workspace:*",
+    "@nzila/platform-procurement-proof": "workspace:*",
+    "@nzila/platform-marketplace": "workspace:*",
+    "@nzila/platform-assurance": "workspace:*",
+    "@nzila/platform-rfp-generator": "workspace:*"
   },
   "devDependencies": {
     "@nzila/ai-sdk": "workspace:*",

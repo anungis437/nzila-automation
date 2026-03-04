@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Access Policies
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Role-based access controls for sensitive platform operations.
+# Evaluated at mutation boundaries by the policy engine.
+#
+version: "1.0"
+lastUpdated: "2026-03-04"
+
+policies:
+  - id: access-break-glass
+    name: Break-glass access control
+    version: "1.0"
+    type: access
+    description: >
+      Break-glass operations require platform_admin role and are restricted
+      to production environments. All break-glass uses are audited.
+    enabled: true
+    scope:
+      environments: [pilot, prod]
+      resources: ["/api/admin/break-glass"]
+    rules:
+      - id: require-platform-admin
+        description: Only platform_admin may invoke break-glass
+        conditions:
+          - field: actor.roles
+            operator: not_in
+            value: [platform_admin]
+        effect: deny
+        severity: critical
+
+  - id: access-export-pii
+    name: PII export access control
+    version: "1.0"
+    type: access
+    description: >
+      Exporting PII data requires platform_admin or compliance_officer role.
+    enabled: true
+    scope:
+      environments: [pilot, prod, staging]
+      resources: ["/api/export"]
+    rules:
+      - id: require-export-role
+        description: PII exports require elevated roles
+        conditions:
+          - field: context.containsPii
+            operator: eq
+            value: true
+        effect: require_approval
+        severity: warning
+        requireApprovers: 1
+        approverRoles: [platform_admin, compliance_officer]

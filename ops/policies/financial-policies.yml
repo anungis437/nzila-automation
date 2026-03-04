@@ -1,0 +1,65 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Financial Control Policies
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Guardrails for financial operations: budget enforcement, margin floors,
+# reconciliation gates. Evaluated before any financial mutation.
+#
+version: "1.0"
+lastUpdated: "2026-03-04"
+
+policies:
+  - id: financial-budget-gate
+    name: Budget enforcement gate
+    version: "1.0"
+    type: financial
+    description: >
+      Blocks financial operations that would exceed org budget limits.
+    enabled: true
+    scope:
+      environments: [pilot, prod]
+      resources: ["/api/finance"]
+    rules:
+      - id: block-over-budget
+        description: Deny transactions when org budget is exhausted
+        conditions:
+          - field: context.budgetUtilization
+            operator: gte
+            value: 1.0
+        effect: deny
+        severity: critical
+
+      - id: warn-near-budget
+        description: Require approval near budget threshold
+        conditions:
+          - field: context.budgetUtilization
+            operator: gte
+            value: 0.9
+          - field: context.budgetUtilization
+            operator: lt
+            value: 1.0
+        effect: require_approval
+        severity: warning
+        requireApprovers: 1
+        approverRoles: [finance_admin]
+
+  - id: financial-margin-floor
+    name: Margin floor enforcement
+    version: "1.0"
+    type: financial
+    description: >
+      Commerce transactions must maintain minimum margin to prevent
+      under-pricing. Sub-floor transactions require CFO approval.
+    enabled: true
+    scope:
+      environments: [pilot, prod]
+      resources: ["/api/commerce/transactions"]
+    rules:
+      - id: margin-floor
+        description: Block transactions below 5% margin
+        conditions:
+          - field: context.marginPercent
+            operator: lt
+            value: 5
+        effect: deny
+        severity: critical

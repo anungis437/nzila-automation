@@ -1,0 +1,46 @@
+{
+  "providerKey": "slack",
+  "name": "Slack",
+  "version": "1.0.0",
+  "description": "Slack integration for chatops notifications, alerts, and workflow automation",
+  "category": "chatops",
+  "scopes": ["chat:write", "channels:read", "users:read"],
+  "webhookSigning": {
+    "algorithm": "hmac-sha256",
+    "headerName": "X-Slack-Signature",
+    "timestampHeaderName": "X-Slack-Request-Timestamp",
+    "toleranceSeconds": 300
+  },
+  "retryPolicy": {
+    "maxAttempts": 3,
+    "initialDelayMs": 1000,
+    "maxDelayMs": 30000,
+    "backoffMultiplier": 2
+  },
+  "requiredSecrets": [
+    {
+      "key": "SLACK_BOT_TOKEN",
+      "description": "Slack Bot User OAuth Token (xoxb-...)",
+      "example": "xoxb-xxxx-xxxx-xxxx",
+      "required": true
+    },
+    {
+      "key": "SLACK_SIGNING_SECRET",
+      "description": "Slack app signing secret for webhook verification",
+      "required": true
+    },
+    {
+      "key": "SLACK_DEFAULT_CHANNEL",
+      "description": "Default channel ID for notifications",
+      "example": "C01ABCDEFGH",
+      "required": false
+    }
+  ],
+  "healthCheckUrl": "https://slack.com/api/api.test",
+  "documentationUrl": "https://api.slack.com/docs",
+  "metadata": {
+    "vendor": "Salesforce (Slack)",
+    "tier": "standard",
+    "rateLimit": "1 message/second per channel"
+  }
+}
