@@ -58,7 +58,25 @@ function assertBootInvariants(): void {
     )
   }
 
-  // 3. Print errors and fail fast
+  // 3. FIPS 140-3 crypto boundary check
+  try {
+    const { assertFipsMode } = await import('./crypto/fips')
+    const fipsStatus = assertFipsMode()
+    if (fipsStatus.fipsRequired && !fipsStatus.fipsEnabled) {
+      errors.push(
+        'BOOT ASSERTION WARNING: FIPS 140-3 mode is required but not enabled. ' +
+          `OpenSSL: ${fipsStatus.opensslVersion}, Node: ${fipsStatus.nodeVersion}. ` +
+          'Use a FIPS-enabled Node.js build for IL4/IL5 compliance.',
+      )
+    }
+  } catch {
+    // FIPS module not loadable — non-fatal in dev
+    if (process.env.NODE_ENV === 'production') {
+      errors.push('BOOT ASSERTION FAILED: FIPS crypto module (@nzila/os-core/crypto/fips) not loadable.')
+    }
+  }
+
+  // 4. Print errors and fail fast
   if (errors.length > 0) {
     console.error('\n' + '═'.repeat(72))
     console.error('NZILA OS — BOOT ASSERTION FAILURES')

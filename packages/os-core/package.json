@@ -39,7 +39,8 @@
     "./ue/case-evidence-export": "./src/ue/case-evidence-export.ts",
     "./fin/key-lifecycle": "./src/fin/key-lifecycle.ts",
     "./audit": "./src/audit/index.ts",
-    "./audit/abr": "./src/audit/abr.ts"
+    "./audit/abr": "./src/audit/abr.ts",
+    "./crypto/fips": "./src/crypto/fips.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
