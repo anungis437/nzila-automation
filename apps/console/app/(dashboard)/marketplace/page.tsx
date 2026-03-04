@@ -70,7 +70,7 @@ const providers: Provider[] = [
     name: 'Azure Blob Storage',
     category: 'storage',
     version: '1.0.0',
-    description: 'Sovereign data storage with POPIA-compliant residency.',
+    description: 'Sovereign data storage with PIPEDA-compliant residency.',
     installed: false,
     status: 'inactive',
     icon: GlobeAltIcon,

@@ -48,3 +48,31 @@ export type {
   ZipVerification,
   ZipExportResult,
 } from './zip-exporter'
+
+// real ports factory
+export { createRealPorts } from './real-ports'
+export type { RealPortsDeps } from './real-ports'
+
+// collectors
+export {
+  collectLatestEvidencePack,
+  collectLatestComplianceSnapshots,
+  collectDependencyPosture,
+  collectIntegrationsHealth,
+  collectObservabilitySummary,
+} from './collectors'
+export type {
+  CollectorStatus,
+  CollectorResult,
+  EvidencePackCollectorData,
+  ComplianceSnapshotCollectorData,
+  DependencyPostureCollectorData,
+  IntegrationsHealthCollectorData,
+  IntegrationProviderSummary,
+  ObservabilitySummaryCollectorData,
+  HealthCheckSummary,
+  EvidencePackCollectorPorts,
+  ComplianceSnapshotCollectorPorts,
+  IntegrationsHealthPorts,
+  ObservabilityCollectorPorts,
+} from './collectors'

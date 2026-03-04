@@ -20,6 +20,8 @@ export type RfpSection =
   | 'compliance'
   | 'integration'
   | 'cost_management'
+  | 'hosting_sovereignty'
+  | 'verification'
 
 export const RFP_SECTIONS: readonly RfpSection[] = [
   'security',
@@ -30,6 +32,8 @@ export const RFP_SECTIONS: readonly RfpSection[] = [
   'compliance',
   'integration',
   'cost_management',
+  'hosting_sovereignty',
+  'verification',
 ]
 
 // ── RFP Answer ──────────────────────────────────────────────────────────────
@@ -72,6 +76,7 @@ export const rfpAnswerSchema = z.object({
   section: z.enum([
     'security', 'privacy', 'operations', 'disaster_recovery',
     'data_governance', 'compliance', 'integration', 'cost_management',
+    'hosting_sovereignty', 'verification',
   ]),
   question: z.string(),
   answer: z.string(),

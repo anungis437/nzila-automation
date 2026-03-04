@@ -4,6 +4,8 @@
  * Auto-generates RFP responses from procurement proof packs and assurance
  * dashboards, mapping evidence to common RFP question sections.
  *
+ * Default jurisdiction: Canada (PIPEDA + Québec Law 25).
+ *
  * @module @nzila/platform-rfp-generator/generator
  */
 import { createLogger } from '@nzila/os-core/telemetry'
@@ -33,6 +35,8 @@ export function generateRfpResponse(input: RfpGeneratorInput): RfpResponse {
     generateComplianceSection(procurementPack, assuranceDashboard),
     generateIntegrationSection(assuranceDashboard),
     generateCostManagementSection(procurementPack, assuranceDashboard),
+    generateHostingSovereigntySection(procurementPack),
+    generateVerificationAppendix(procurementPack),
   ]
 
   const totalQuestions = sections.reduce((sum, s) => sum + s.answers.length, 0)
@@ -136,13 +140,15 @@ function generatePrivacySection(
 ): RfpSectionResponse {
   const dl = pack.sections.dataLifecycle
   const sov = pack.sections.sovereignty
+  const frameworks = sov.regulatoryFrameworks.join(', ')
   const answers: RfpAnswer[] = [
     {
       section: 'privacy',
       question: 'How do you handle data classification and protection?',
       answer: `We maintain ${dl.manifests.length} data manifests covering all data categories. ` +
         `All data classified as confidential or restricted uses encryption at rest and in transit. ` +
-        `Data classifications: ${dl.manifests.map((m) => `${m.dataCategory} (${m.classification})`).join(', ')}.`,
+        `Data classifications: ${dl.manifests.map((m) => `${m.dataCategory} (${m.classification})`).join(', ')}. ` +
+        `Privacy controls are aligned with ${frameworks}.`,
       evidenceRefs: ['dataLifecycle.manifests'],
       confidenceLevel: 'high',
     },
@@ -151,9 +157,22 @@ function generatePrivacySection(
       question: 'Where is data stored and do you support data sovereignty?',
       answer: `Data is stored in ${sov.deploymentRegion} with data residency in ${sov.dataResidency}. ` +
         `Cross-border transfer: ${sov.crossBorderTransfer ? 'enabled with safeguards' : 'disabled'}. ` +
-        `Regulatory frameworks: ${sov.regulatoryFrameworks.join(', ')}. ` +
+        `Regulatory frameworks: ${frameworks}. ` +
         `Sovereignty profile ${sov.validated ? 'validated' : 'pending validation'}.`,
       evidenceRefs: ['sovereignty', 'dataLifecycle.manifests'],
+      confidenceLevel: 'high',
+    },
+    {
+      section: 'privacy',
+      question: 'How do you comply with PIPEDA and Québec Law 25 (Bill 64)?',
+      answer: `The platform enforces data residency within ${sov.dataResidency} with no cross-border transfers ` +
+        `(unless explicitly enabled with documented safeguards). All personally identifiable information is ` +
+        `classified as confidential, subject to ${dl.retentionControls.policiesEnforced}/${dl.retentionControls.policiesTotal} ` +
+        `retention policies with auto-delete ${dl.retentionControls.autoDeleteEnabled ? 'enabled' : 'disabled'}. ` +
+        `Privacy impact assessments are part of the evidence-pack governance cycle. ` +
+        `Consent management and data subject access requests are supported through platform API endpoints. ` +
+        `All privacy controls are auditable via hash-chained compliance snapshots.`,
+      evidenceRefs: ['sovereignty', 'dataLifecycle.retentionControls', 'governance'],
       confidenceLevel: 'high',
     },
   ]
@@ -310,4 +329,65 @@ function generateCostManagementSection(
   ]
 
   return { section: 'cost_management', title: 'Cost Management', answers }
+}
+
+function generateHostingSovereigntySection(
+  pack: RfpGeneratorInput['procurementPack'],
+): RfpSectionResponse {
+  const sov = pack.sections.sovereignty
+  const frameworks = sov.regulatoryFrameworks.join(', ')
+  const answers: RfpAnswer[] = [
+    {
+      section: 'hosting_sovereignty' as RfpAnswer['section'],
+      question: 'What hosting modes are available and where is infrastructure deployed?',
+      answer: `The platform is deployed in ${sov.deploymentRegion} with data stored exclusively in ${sov.dataResidency}. ` +
+        `Cross-border data transfer is ${sov.crossBorderTransfer ? 'enabled with documented safeguards and consent' : 'disabled by default'}. ` +
+        `Supported sovereignty modes: single-region (default), multi-region with data-residency constraints, ` +
+        `and air-gapped (on-premise) for regulated workloads. ` +
+        `Regulatory alignment: ${frameworks}. ` +
+        `All sovereignty configuration is captured in the procurement pack and verifiable via the signed manifest.`,
+      evidenceRefs: ['sovereignty', 'procurement-pack:manifest'],
+      confidenceLevel: 'high',
+    },
+  ]
+
+  return { section: 'hosting_sovereignty' as RfpAnswer['section'], title: 'Hosting & Sovereignty Modes', answers }
+}
+
+function generateVerificationAppendix(
+  pack: RfpGeneratorInput['procurementPack'],
+): RfpSectionResponse {
+  const sig = pack.signature
+  const answers: RfpAnswer[] = [
+    {
+      section: 'verification' as RfpAnswer['section'],
+      question: 'How can we independently verify the evidence in this procurement pack?',
+      answer: `Every procurement pack is self-verifying. Verification steps:\n\n` +
+        `1. **Download** the signed ZIP from the Proof Center (or via API: POST /api/proof-center/export).\n` +
+        `2. **Extract** the ZIP. It contains: MANIFEST.json, procurement-pack.json, signatures.json, ` +
+        `verification.json, and per-section files under sections/.\n` +
+        `3. **Verify MANIFEST integrity**: for each file listed in MANIFEST.json, compute SHA-256 hash ` +
+        `and compare against the recorded checksum.\n` +
+        `4. **Verify Ed25519 signature**: use the public key from GET /api/proof-center/public-key ` +
+        `(keyId: ${sig?.keyId ?? 'N/A'}) to verify signatures.json against the MANIFEST hash.\n` +
+        `5. **Verify hash chain**: compliance snapshots reference previous hashes — walk the chain ` +
+        `and confirm each entry's hash matches the SHA-256 of its canonical JSON payload.\n\n` +
+        `CLI verification:\n` +
+        `\`\`\`bash\n` +
+        `# Extract and verify\n` +
+        `unzip Procurement-Pack-*.zip -d pack/\n` +
+        `# Check manifest hashes\n` +
+        `sha256sum -c pack/MANIFEST.json\n` +
+        `# Verify signature (requires Ed25519 public key)\n` +
+        `openssl pkeyutl -verify -pubin -inkey public.pem \\\\\n` +
+        `  -sigfile pack/signatures.json -in pack/MANIFEST.json\n` +
+        `\`\`\`\n\n` +
+        `Algorithm: ${sig?.algorithm ?? 'Ed25519'}. ` +
+        `All evidence is reproducible — re-running collectors produces the same output for the same state.`,
+      evidenceRefs: ['procurement-pack:manifest', 'procurement-pack:signature', 'api:/proof-center/public-key'],
+      confidenceLevel: 'high',
+    },
+  ]
+
+  return { section: 'verification' as RfpAnswer['section'], title: 'Appendix: Verification Steps', answers }
 }
