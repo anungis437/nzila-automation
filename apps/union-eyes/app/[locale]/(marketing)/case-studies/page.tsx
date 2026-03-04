@@ -57,9 +57,9 @@ export default function LocaleCaseStudiesPage() {
   }, [caseStudies, selectedCategory, selectedSector, selectedOrgType, selectedJurisdiction]);
 
   const categories = ['all', ...new Set(caseStudies.map((cs) => cs.category))];
-  const sectors = ['all', ...new Set(caseStudies.map((cs) => cs.sector).filter(Boolean))];
+  const sectors: string[] = ['all', ...new Set(caseStudies.map((cs) => cs.sector).filter((x): x is string => Boolean(x)))];
   const orgTypes = ['all', ...new Set(caseStudies.map((cs) => cs.organizationType))];
-  const jurisdictions = ['all', ...new Set(caseStudies.map((cs) => cs.jurisdiction).filter(Boolean))];
+  const jurisdictions: string[] = ['all', ...new Set(caseStudies.map((cs) => cs.jurisdiction).filter((x): x is string => Boolean(x)))];
 
   if (loading) {
     return (

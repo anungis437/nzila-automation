@@ -13,7 +13,8 @@
     "./metrics": "./src/metrics.ts",
     "./rateLimitParser": "./src/rateLimitParser.ts",
     "./chaos": "./src/chaos.ts",
-    "./slo": "./src/slo.ts"
+    "./slo": "./src/slo.ts",
+    "./policy": "./src/policy.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

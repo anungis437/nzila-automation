@@ -465,7 +465,7 @@ export default function CLCAnalyticsDashboard() {
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            label={({ name, percent }: { name?: string; percent?: number }) => `${name ?? ''}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                             outerRadius={80}
                             fill="#8884d8"
                             dataKey="value"
@@ -580,7 +580,7 @@ export default function CLCAnalyticsDashboard() {
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="year" />
                           <YAxis />
-                          <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
+                          <Tooltip formatter={(value: number | undefined) => `$${(value ?? 0).toLocaleString()}`} />
                           <Legend />
                           <Line type="monotone" dataKey="value" stroke="#82ca9d" name="Total Amount" />
                         </LineChart>
@@ -595,7 +595,7 @@ export default function CLCAnalyticsDashboard() {
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="year" />
                           <YAxis domain={[0, 100]} />
-                          <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
+                          <Tooltip formatter={(value: number | undefined) => `${(value ?? 0).toFixed(1)}%`} />
                           <Legend />
                           <Line type="monotone" dataKey="value" stroke="#ff7300" name="Compliance Rate %" />
                         </LineChart>
@@ -838,7 +838,7 @@ export default function CLCAnalyticsDashboard() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="year" />
                       <YAxis />
-                      <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
+                      <Tooltip formatter={(value: number | undefined) => `$${(value ?? 0).toLocaleString()}`} />
                       <Legend />
                       <Line 
                         type="monotone" 

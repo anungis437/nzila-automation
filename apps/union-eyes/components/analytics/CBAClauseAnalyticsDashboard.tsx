@@ -190,7 +190,7 @@ export function CBAClauseAnalyticsDashboard() {
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  label={({ type, percentage }) => `${type}: ${percentage.toFixed(1)}%`}
+                  label={({ name, percent }: { name?: string; percent?: number }) => `${name ?? ''}: ${((percent ?? 0) * 100).toFixed(1)}%`}
                 >
                   {clauseDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -229,7 +229,7 @@ export function CBAClauseAnalyticsDashboard() {
               <XAxis dataKey="date" />
               <YAxis domain={[0, 1]} tickFormatter={(value) => `${(value * 100).toFixed(0)}%`} />
               <Tooltip 
-                formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
+                formatter={(value: number | undefined) => `${((value ?? 0) * 100).toFixed(1)}%`}
               />
               <Legend />
               <Line 

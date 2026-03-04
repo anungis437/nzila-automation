@@ -90,3 +90,97 @@ export const idempotencyCache = pgTable(
     index('idempotency_cache_expires_idx').on(table.expiresAt),
   ],
 )
+
+// ── Cost Events (org-scoped) ────────────────────────────────────────────────
+
+export const platformCostEvents = pgTable(
+  'platform_cost_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id),
+    appId: varchar('app_id', { length: 128 }).notNull(),
+    category: varchar('category', { length: 64 }).notNull(),
+    units: real('units').notNull(),
+    estCostUsd: real('est_cost_usd').notNull(),
+    correlationId: uuid('correlation_id'),
+    route: varchar('route', { length: 512 }),
+    metadata: jsonb('metadata').default({}),
+    recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('cost_events_org_idx').on(table.orgId),
+    index('cost_events_org_date_idx').on(table.orgId, table.recordedAt),
+    index('cost_events_category_idx').on(table.orgId, table.category),
+  ],
+)
+
+// ── Cost Daily Rollups (org-scoped) ─────────────────────────────────────────
+
+export const platformCostRollups = pgTable(
+  'platform_cost_rollups',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id),
+    appId: varchar('app_id', { length: 128 }).notNull(),
+    category: varchar('category', { length: 64 }).notNull(),
+    day: varchar('day', { length: 10 }).notNull(),
+    totalUnits: real('total_units').notNull(),
+    totalEstCostUsd: real('total_est_cost_usd').notNull(),
+    eventCount: integer('event_count').notNull(),
+    rolledUpAt: timestamp('rolled_up_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('cost_rollup_org_app_cat_day_idx').on(table.orgId, table.appId, table.category, table.day),
+    index('cost_rollup_org_day_idx').on(table.orgId, table.day),
+  ],
+)
+
+// ── Cost Budget Breaches (audit trail) ──────────────────────────────────────
+
+export const platformCostBudgetBreaches = pgTable(
+  'platform_cost_budget_breaches',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id),
+    state: varchar('state', { length: 32 }).notNull(),
+    dailySpendUsd: real('daily_spend_usd').notNull(),
+    monthlySpendUsd: real('monthly_spend_usd').notNull(),
+    categoryBreaches: jsonb('category_breaches').notNull().default([]),
+    recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('cost_breach_org_idx').on(table.orgId),
+    index('cost_breach_org_date_idx').on(table.orgId, table.recordedAt),
+  ],
+)
+
+// ── Org Rate Limit Throttle Log ─────────────────────────────────────────────
+
+export const platformRateLimitThrottles = pgTable(
+  'platform_rate_limit_throttles',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id),
+    routeGroup: varchar('route_group', { length: 128 }).notNull(),
+    requestCount: integer('request_count').notNull(),
+    limitMax: integer('limit_max').notNull(),
+    windowMs: integer('window_ms').notNull(),
+    throttledAt: timestamp('throttled_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('rate_throttle_org_idx').on(table.orgId),
+    index('rate_throttle_org_date_idx').on(table.orgId, table.throttledAt),
+  ],
+)
+
+// ── Deployment Profile Records ──────────────────────────────────────────────
+
+export const platformDeploymentProfiles = pgTable('platform_deployment_profiles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  profile: varchar('profile', { length: 32 }).notNull(),
+  environment: varchar('environment', { length: 32 }).notNull(),
+  validations: jsonb('validations').notNull().default({}),
+  egressAllowlist: jsonb('egress_allowlist').notNull().default([]),
+  payload: jsonb('payload').notNull().default({}),
+  validatedAt: timestamp('validated_at', { withTimezone: true }).notNull().defaultNow(),
+})

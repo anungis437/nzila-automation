@@ -1,0 +1,77 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Dependency Policy
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Controls which dependencies are allowed in the project based on license
+# and vulnerability severity. CI job fails on violations in pilot/prod.
+#
+version: "1.0"
+lastUpdated: "2026-03-03"
+
+# ── License Policy ───────────────────────────────────────────────────────────
+
+licenses:
+  # Explicitly blocked licenses (SPDX identifiers)
+  blocklist:
+    - GPL-2.0-only
+    - GPL-3.0-only
+    - GPL-3.0-or-later
+    - AGPL-1.0-only
+    - AGPL-3.0-only
+    - AGPL-3.0-or-later
+    - SSPL-1.0
+    - EUPL-1.1
+    - EUPL-1.2
+    - CC-BY-NC-4.0
+    - CC-BY-NC-SA-4.0
+    - Unlicense          # ambiguous legal status in some jurisdictions
+
+  # Allowed licenses (if set, only these are permitted)
+  # Leave empty to only enforce blocklist
+  allowlist: []
+
+  # Packages exempt from license checks (e.g. internal forks)
+  exemptions:
+    - "@nzila/*"
+
+# ── Vulnerability Severity Thresholds ────────────────────────────────────────
+
+severity:
+  # Max allowed vulnerability severity by environment
+  # Options: none, low, medium, high, critical
+  dev:
+    maxSeverity: critical       # allow all in dev
+    failOnUnfixed: false
+  staging:
+    maxSeverity: high
+    failOnUnfixed: false
+  pilot:
+    maxSeverity: medium
+    failOnUnfixed: true
+  prod:
+    maxSeverity: low
+    failOnUnfixed: true
+
+# ── Additional Checks ───────────────────────────────────────────────────────
+
+checks:
+  # Fail if any dependency has no license specified
+  requireLicense: true
+  # Fail if lockfile has been modified without pnpm-lock.yaml update
+  lockfileIntegrity: true
+  # Maximum allowed total dependency count (including transitive)
+  maxDependencies: 5000
+  # Require SBOM generation for pilot/prod
+  requireSbom:
+    - pilot
+    - prod
+
+# ── Gating ───────────────────────────────────────────────────────────────────
+
+gating:
+  enforced_environments:
+    - pilot
+    - prod
+  warning_environments:
+    - dev
+    - staging

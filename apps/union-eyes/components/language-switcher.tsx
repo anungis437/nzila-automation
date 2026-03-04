@@ -31,7 +31,7 @@ export default function LanguageSwitcher() {
     // segments[1] is either a locale code (e.g. "fr-CA") or a root marketing
     // page segment (e.g. "story", "pricing").  Only replace it when it IS a
     // locale; otherwise prepend the new locale to the full path.
-    const knownLocaleCodes = locales.map((l) => l.code);
+    const knownLocaleCodes: string[] = locales.map((l) => l.code);
     const hasLocalePrefix = knownLocaleCodes.includes(segments[1]);
 
     let newPath: string;

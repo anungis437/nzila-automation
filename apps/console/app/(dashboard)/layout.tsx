@@ -45,6 +45,7 @@ const navItems = [
   { name: 'Scale Sim', href: '/scale-simulation', icon: ArrowTrendingUpIcon },
   { name: 'Deploy Profile', href: '/deployment-profile', icon: CloudIcon },
   { name: 'Economics', href: '/platform-economics', icon: CurrencyDollarIcon },
+  { name: 'Cost', href: '/cost', icon: CurrencyDollarIcon },
   { name: 'Audit Graph', href: '/audit-graph', icon: LinkIcon },
   { name: 'Ops', href: '/ops', icon: ShieldExclamationIcon },
   { name: 'Trend Detection', href: '/trend-detection', icon: ChartBarSquareIcon },

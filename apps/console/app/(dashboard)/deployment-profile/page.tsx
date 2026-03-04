@@ -3,6 +3,7 @@
  *
  * Displays deployment profile: Managed, Sovereign, or Hybrid.
  * Shows data residency, update model, patch cadence, responsibility matrix.
+ * Shows egress allowlist enforcement status for sovereign profiles.
  * Role-restricted. No deployment secrets exposed.
  */
 import { requireRole, getUserRole } from '@/lib/rbac'
@@ -14,6 +15,8 @@ import {
   ArrowPathIcon,
   ShieldCheckIcon,
   UserGroupIcon,
+  NoSymbolIcon,
+  CheckBadgeIcon,
 } from '@heroicons/react/24/outline'
 
 export const dynamic = 'force-dynamic'
@@ -112,6 +115,13 @@ export default async function DeploymentProfilePage({
   // Active profile from env (no secrets)
   const activeType = (process.env.DEPLOYMENT_PROFILE ?? 'managed') as DeploymentProfile['type']
 
+  // Sovereign egress controls
+  const egressEnforced = process.env.SOVEREIGN_EGRESS_ENFORCED === 'true'
+  const egressHosts = (process.env.SOVEREIGN_EGRESS_ALLOWLIST ?? '')
+    .split(',')
+    .map((h) => h.trim())
+    .filter(Boolean)
+
   return (
     <div className={isExecutive ? 'p-12 bg-gray-50 min-h-screen' : 'p-8'}>
       <div className="mb-8">
@@ -203,6 +213,60 @@ export default async function DeploymentProfilePage({
           )
         })}
       </div>
+
+      {/* ── Sovereign Egress Controls ────────────────────────────────────── */}
+      {activeType === 'sovereign' && (
+        <div className="border rounded-xl bg-white overflow-hidden">
+          <div className="px-6 py-5 flex items-center gap-4">
+            <div className="inline-flex p-3 rounded-lg bg-red-50 text-red-600">
+              <NoSymbolIcon className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Egress Allowlist Enforcement</h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Sovereign mode blocks all outbound connections not in the approved allowlist.
+              </p>
+            </div>
+            <div className="ml-auto">
+              {egressEnforced ? (
+                <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">
+                  <CheckBadgeIcon className="h-4 w-4" /> ENFORCED
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
+                  NOT ENFORCED
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="border-t border-gray-100 px-6 py-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-2">
+              Approved Egress Hosts ({egressHosts.length})
+            </p>
+            {egressHosts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {egressHosts.map((host) => (
+                  <div
+                    key={host}
+                    className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-50 rounded-lg border border-gray-100"
+                  >
+                    <CheckBadgeIcon className="h-4 w-4 text-green-500 shrink-0" />
+                    <span className="font-mono text-gray-700">{host}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">No egress hosts configured.</p>
+            )}
+          </div>
+
+          <div className="border-t border-gray-100 px-6 py-3 bg-gray-50 text-xs text-gray-400">
+            Enforcement is managed via <span className="font-mono">SOVEREIGN_EGRESS_ALLOWLIST</span>{' '}
+            and <span className="font-mono">SOVEREIGN_EGRESS_ENFORCED</span> environment variables.
+          </div>
+        </div>
+      )}
     </div>
   )
 }

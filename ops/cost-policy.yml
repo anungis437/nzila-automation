@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Cost Policy (Denial-of-Wallet Controls)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Per-org budget limits and per-category caps.
+# Enforcement mode: observe (log only) | enforce (block non-critical routes).
+#
+# Budget breaches are audited, visible in Console, and included in proof packs.
+# Exempt routes: admin, export, proof, health endpoints are never blocked.
+#
+version: "1.0"
+lastUpdated: "2026-03-03"
+
+defaults:
+  dailyBudgetUsd: 500
+  monthlyBudgetUsd: 15000
+  warningThreshold: 0.8        # trigger warning at 80% utilization
+  enforce: true                 # false = observe-only mode
+
+  categoryCaps:
+    - category: integration_call
+      dailyLimit: 10000
+    - category: egress_kb
+      dailyLimit: 5242880        # 5 GB/day
+    - category: ai_token
+      dailyLimit: 500000
+    - category: compute_ms
+      dailyLimit: 86400000       # 24h of compute/day
+    - category: db_query_ms
+      dailyLimit: 43200000       # 12h of DB time/day
+
+  exemptRoutes:
+    - "/api/admin/*"
+    - "/api/export/*"
+    - "/api/proof/*"
+    - "/api/health"
+
+# Per-org overrides (orgId → policy)
+orgOverrides: {}
+  # Example:
+  # "00000000-0000-0000-0000-000000000042":
+  #   dailyBudgetUsd: 1000
+  #   monthlyBudgetUsd: 30000
+  #   categoryCaps:
+  #     - category: ai_token
+  #       dailyLimit: 1000000
+
+gating:
+  enforced_environments:
+    - pilot
+    - prod
+  warning_environments:
+    - dev
+    - staging

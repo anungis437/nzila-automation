@@ -239,7 +239,7 @@ export function CBAPrecedentImpactAnalytics() {
                 tickFormatter={(value) => `${(value * 100).toFixed(0)}%`} 
               />
               <Tooltip 
-                formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
+                formatter={(value: number | undefined) => `${((value ?? 0) * 100).toFixed(1)}%`}
               />
               <Legend />
               <Area

@@ -54,7 +54,7 @@ export function TrendChart({
   }
 
   const commonProps = {
-    width: '100%',
+    width: '100%' as const,
     height,
     data: formattedData,
     margin: { top: 5, right: 30, left: 20, bottom: 5 }

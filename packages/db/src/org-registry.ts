@@ -166,6 +166,10 @@ export const ORG_SCOPED_TABLES = [
 
   // ── platform.ts ─────────────────────────────────────────
   'platformRequestMetrics',
+  'platformCostEvents',
+  'platformCostRollups',
+  'platformCostBudgetBreaches',
+  'platformRateLimitThrottles',
 
   // ── trade.ts ────────────────────────────────────────────
   'tradeParties',
@@ -231,6 +235,7 @@ export const NON_ORG_SCOPED_TABLES = [
   // Platform infrastructure — system-level, not Org-scoped
   { table: 'platformIsolationAudits', reason: 'System-level isolation audit results' },
   { table: 'platformProofPacks', reason: 'System-level governance proof packs' },
+  { table: 'platformDeploymentProfiles', reason: 'System-level deployment profile configurations (no Org context)' },
   { table: 'idempotencyCache', reason: 'System-level idempotency cache — keyed by composite key containing orgId' },
 ] as const
 

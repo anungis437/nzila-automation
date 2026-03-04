@@ -1,0 +1,113 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nzila OS — Integration Policy
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Per-provider circuit breaker thresholds, retry limits, and SLA targets.
+# Enforced by @nzila/integrations-runtime circuit breaker.
+#
+version: "1.0"
+lastUpdated: "2026-03-03"
+
+# ── Default Circuit Breaker Config ──────────────────────────────────────────
+
+defaults:
+  circuitBreaker:
+    failureThreshold: 5          # consecutive failures to trip
+    failureRateThreshold: 0.5    # failure rate to trip (over window)
+    cooldownMs: 60000            # 1 minute cooldown before half-open
+    halfOpenMaxAttempts: 3       # probes in half-open before closing
+    windowSizeMs: 300000         # 5 minute sliding window
+
+  retry:
+    maxAttempts: 3
+    baseDelayMs: 1000
+    maxDelayMs: 30000
+    jitter: true
+
+  sla:
+    availabilityTarget: 0.99     # 99% availability
+    p95LatencyMs: 5000
+    p99LatencyMs: 15000
+
+# ── Per-Provider Overrides ──────────────────────────────────────────────────
+
+providers:
+  slack:
+    circuitBreaker:
+      failureThreshold: 3        # Slack is critical for chatops, trip early
+      cooldownMs: 30000
+    retry:
+      maxAttempts: 5
+    sla:
+      availabilityTarget: 0.995
+
+  teams:
+    circuitBreaker:
+      failureThreshold: 3
+      cooldownMs: 30000
+    retry:
+      maxAttempts: 5
+    sla:
+      availabilityTarget: 0.995
+
+  hubspot:
+    circuitBreaker:
+      failureThreshold: 5
+      cooldownMs: 120000         # HubSpot rate limits are aggressive
+    retry:
+      maxAttempts: 4
+      baseDelayMs: 2000
+    sla:
+      availabilityTarget: 0.98
+
+  stripe:
+    circuitBreaker:
+      failureThreshold: 3        # Payment provider — trip conservative
+      cooldownMs: 45000
+    retry:
+      maxAttempts: 3
+    sla:
+      availabilityTarget: 0.999
+
+  quickbooks:
+    circuitBreaker:
+      failureThreshold: 5
+      cooldownMs: 120000
+    retry:
+      maxAttempts: 3
+    sla:
+      availabilityTarget: 0.98
+
+  sendgrid:
+    circuitBreaker:
+      failureThreshold: 5
+      cooldownMs: 60000
+    sla:
+      availabilityTarget: 0.99
+
+  twilio:
+    circuitBreaker:
+      failureThreshold: 5
+      cooldownMs: 60000
+    sla:
+      availabilityTarget: 0.99
+
+  generic_webhook:
+    circuitBreaker:
+      failureThreshold: 10       # Webhooks are less critical
+      cooldownMs: 180000
+    retry:
+      maxAttempts: 5
+      maxDelayMs: 60000
+    sla:
+      availabilityTarget: 0.95
+
+# ── Gating ───────────────────────────────────────────────────────────────────
+
+gating:
+  enforced_environments:
+    - pilot
+    - prod
+  warning_environments:
+    - dev
+    - staging

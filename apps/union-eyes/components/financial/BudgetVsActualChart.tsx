@@ -123,7 +123,7 @@ export default function BudgetVsActualChart({ lineItems }: BudgetVsActualChartPr
                 />
                 <YAxis />
                 <Tooltip 
-                  formatter={(value: number) => `$${value.toLocaleString()}`}
+                  formatter={(value: number | undefined) => `$${(value ?? 0).toLocaleString()}`}
                   contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
                 />
                 <Legend />

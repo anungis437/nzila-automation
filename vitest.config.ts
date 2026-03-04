@@ -69,6 +69,9 @@ export default defineConfig({
       'packages/agri-intelligence',
       'packages/agri-traceability',
       'packages/agri-adapters',
+      // Platform hardening packages
+      'packages/platform-cost',
+      'packages/platform-deploy',
       // Contract tests (architectural invariants)
       'tooling/contract-tests',
     ],

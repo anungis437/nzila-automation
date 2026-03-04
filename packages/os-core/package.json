@@ -31,6 +31,7 @@
     "./config": "./src/config/env.ts",
     "./secrets": "./src/secrets/keyvault.ts",
     "./rateLimit": "./src/rateLimit.ts",
+    "./orgRateLimit": "./src/orgRateLimit.ts",
     "./idempotency": "./src/idempotency.ts",
     "./ai-env": "./src/ai-env.ts",
     "./boot-assert": "./src/boot-assert.ts",

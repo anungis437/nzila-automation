@@ -12,6 +12,9 @@
  *   - SBOM digest (if available)
  *   - Trivy scan summary
  *   - Secret scan summary
+ *   - Artifact digests (built bundles: web, console, union-eyes)
+ *   - Dependency lockfile hash
+ *   - Ed25519 signature (when ATTESTATION_SIGNING_KEY is available)
  *   - Timestamp + attestation hash
  *
  * Usage:
@@ -19,15 +22,15 @@
  *
  * @module scripts/release-attestation
  */
-import { createHash } from 'node:crypto'
-import { writeFileSync, readFileSync, existsSync } from 'node:fs'
+import { createHash, sign, verify, generateKeyPairSync } from 'node:crypto'
+import { writeFileSync, readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
 export interface ReleaseAttestation {
   /** Schema version */
-  version: '1.0'
+  version: '2.0'
   /** Git commit SHA being deployed */
   commitSha: string
   /** Whether contract tests passed */
@@ -40,12 +43,27 @@ export interface ReleaseAttestation {
   trivySummary: TrivySummary
   /** Secret scan summary */
   secretScanSummary: SecretScanSummary
+  /** SHA-256 digests of built bundles (web, console, union-eyes, etc.) */
+  artifactDigests: ArtifactDigest[]
+  /** SHA-256 hash of the pnpm-lock.yaml lockfile */
+  lockfileHash: string | null
+  /** Ed25519 signature of the attestation (hex-encoded) */
+  signature: string | null
   /** ISO 8601 timestamp of attestation generation */
   timestamp: string
   /** Target environment */
   environment: string
-  /** SHA-256 digest of this attestation (excluding this field) */
+  /** SHA-256 digest of this attestation (excluding this field + signature) */
   attestationDigest: string
+}
+
+export interface ArtifactDigest {
+  /** App or bundle name (e.g. 'web', 'console', 'union-eyes') */
+  name: string
+  /** SHA-256 digest of the bundle directory */
+  digest: string
+  /** File count in the bundle */
+  fileCount: number
 }
 
 export interface TrivySummary {
@@ -140,9 +158,101 @@ function parseSecretScanResults(): SecretScanSummary {
   return { ran: false, findings: 0, clean: true }
 }
 
-function computeAttestationDigest(attestation: Omit<ReleaseAttestation, 'attestationDigest'>): string {
+function computeAttestationDigest(attestation: Omit<ReleaseAttestation, 'attestationDigest' | 'signature'>): string {
   const canonical = JSON.stringify(attestation, Object.keys(attestation).sort(), 0)
   return createHash('sha256').update(canonical).digest('hex')
+}
+
+/**
+ * Compute SHA-256 digests for built app bundles.
+ * Scans .next/ and dist/ directories in apps/.
+ */
+function computeArtifactDigests(): ArtifactDigest[] {
+  const appsDir = join(ROOT, 'apps')
+  const targetApps = ['web', 'console', 'union-eyes', 'partners', 'abr', 'cfo', 'trade', 'zonga', 'nacp-exams', 'shop-quoter']
+  const digests: ArtifactDigest[] = []
+
+  for (const app of targetApps) {
+    const buildDirs = [
+      join(appsDir, app, '.next'),
+      join(appsDir, app, 'dist'),
+    ]
+    for (const dir of buildDirs) {
+      if (existsSync(dir)) {
+        const { digest, fileCount } = hashDirectory(dir)
+        digests.push({ name: app, digest, fileCount })
+        break // use first found build dir
+      }
+    }
+  }
+
+  return digests
+}
+
+function hashDirectory(dir: string): { digest: string; fileCount: number } {
+  const hash = createHash('sha256')
+  let fileCount = 0
+
+  function walk(d: string) {
+    const entries = readdirSync(d, { withFileTypes: true })
+    for (const entry of entries) {
+      const full = join(d, entry.name)
+      if (entry.isDirectory()) {
+        if (!['node_modules', '.git', 'cache'].includes(entry.name)) {
+          walk(full)
+        }
+      } else if (entry.isFile()) {
+        const content = readFileSync(full)
+        hash.update(content)
+        fileCount++
+      }
+    }
+  }
+
+  walk(dir)
+  return { digest: hash.digest('hex'), fileCount }
+}
+
+/**
+ * Compute SHA-256 hash of the pnpm lockfile for supply-chain provenance.
+ */
+function computeLockfileHash(): string | null {
+  const lockfilePath = join(ROOT, 'pnpm-lock.yaml')
+  if (!existsSync(lockfilePath)) return null
+  const content = readFileSync(lockfilePath, 'utf-8')
+  return createHash('sha256').update(content).digest('hex')
+}
+
+/**
+ * Sign the attestation with an Ed25519 private key.
+ * Key must be PEM-encoded in the ATTESTATION_SIGNING_KEY env var.
+ */
+function signAttestation(digest: string): string | null {
+  const key = process.env.ATTESTATION_SIGNING_KEY
+  if (!key) return null
+
+  try {
+    const signature = sign(null, Buffer.from(digest, 'hex'), key)
+    return signature.toString('hex')
+  } catch {
+    console.warn('⚠ Failed to sign attestation — invalid ATTESTATION_SIGNING_KEY')
+    return null
+  }
+}
+
+/**
+ * Verify an attestation signature against its digest.
+ */
+export function verifyAttestationSignature(
+  digest: string,
+  signatureHex: string,
+  publicKeyPem: string,
+): boolean {
+  try {
+    return verify(null, Buffer.from(digest, 'hex'), publicKeyPem, Buffer.from(signatureHex, 'hex'))
+  } catch {
+    return false
+  }
 }
 
 // ── Generator ─────────────────────────────────────────────────────────────
@@ -155,21 +265,27 @@ export interface GenerateAttestationOptions {
 }
 
 export function generateReleaseAttestation(opts: GenerateAttestationOptions): ReleaseAttestation {
-  const base: Omit<ReleaseAttestation, 'attestationDigest'> = {
-    version: '1.0',
+  const base: Omit<ReleaseAttestation, 'attestationDigest' | 'signature'> = {
+    version: '2.0',
     commitSha: opts.commitSha,
     contractTestResult: opts.contractTestResult ?? 'skipped',
     sloGateResult: opts.sloGateResult ?? 'skipped',
     sbomDigest: computeSbomDigest(),
     trivySummary: parseTrivyResults(),
     secretScanSummary: parseSecretScanResults(),
+    artifactDigests: computeArtifactDigests(),
+    lockfileHash: computeLockfileHash(),
     timestamp: new Date().toISOString(),
     environment: opts.environment ?? 'unknown',
   }
 
+  const attestationDigest = computeAttestationDigest(base)
+  const signature = signAttestation(attestationDigest)
+
   return {
     ...base,
-    attestationDigest: computeAttestationDigest(base),
+    attestationDigest,
+    signature,
   }
 }
 
@@ -220,7 +336,13 @@ if (isDirectExecution) {
   console.log(`  Contract:  ${attestation.contractTestResult}`)
   console.log(`  SLO:       ${attestation.sloGateResult}`)
   console.log(`  SBOM:      ${attestation.sbomDigest ?? '(not found)'}`)
+  console.log(`  Lockfile:  ${attestation.lockfileHash ?? '(not found)'}`)
+  console.log(`  Artifacts: ${attestation.artifactDigests.length} bundle(s) hashed`)
+  for (const a of attestation.artifactDigests) {
+    console.log(`    ${a.name}: ${a.digest.slice(0, 16)}… (${a.fileCount} files)`)
+  }
   console.log(`  Trivy:     ${attestation.trivySummary.ran ? `C:${attestation.trivySummary.critical} H:${attestation.trivySummary.high} M:${attestation.trivySummary.medium} L:${attestation.trivySummary.low}` : '(not run)'}`)
   console.log(`  Secrets:   ${attestation.secretScanSummary.ran ? (attestation.secretScanSummary.clean ? 'clean' : `${attestation.secretScanSummary.findings} finding(s)`) : '(not run)'}`)
+  console.log(`  Signed:    ${attestation.signature ? 'yes' : 'no (ATTESTATION_SIGNING_KEY not set)'}`)
   console.log(`  Digest:    ${attestation.attestationDigest}`)
 }
