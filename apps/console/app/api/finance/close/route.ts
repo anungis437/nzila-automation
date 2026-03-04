@@ -9,6 +9,7 @@
  *  • Org-scoped auth via requireOrgAccess
  *  • Hash-chained audit events via recordFinanceAuditEvent
  *  • Close gate: all exceptions must be resolved before closing
+ *  • Policy engine gate: financial-budget-gate and financial-margin-floor
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -20,6 +21,10 @@ import {
   recordFinanceAuditEvent,
   FINANCE_AUDIT_ACTIONS,
 } from '@/lib/finance-audit'
+import { enforcePolicies } from '@/lib/policy-enforcement'
+import { createLogger } from '@nzila/os-core'
+
+const financeLogger = createLogger('api:finance:close')
 
 // ── Request schemas ──────────────────────────────────────────────────────────
 
@@ -63,6 +68,51 @@ export async function POST(req: NextRequest) {
 
   const access = await requireOrgAccess(orgId, { minRole: 'org_secretary' })
   if (!access.ok) return access.response
+
+  // ── Policy enforcement gate ──────────────────────────────────────────
+  const policyResult = await enforcePolicies({
+    action: 'finance.close_period.create',
+    resource: '/api/finance',
+    actor: {
+      userId: access.context.userId,
+      roles: [access.context.membership?.role ?? access.context.platformRole],
+    },
+    context: {
+      periodType,
+      budgetUtilization: 0, // TODO(prod): fetch real budget utilization
+    },
+    orgId,
+    environment: process.env.NODE_ENV ?? 'development',
+  })
+
+  if (policyResult.blocked) {
+    financeLogger.warn('Close period creation denied by policy', {
+      userId: access.context.userId,
+      orgId,
+      reason: policyResult.reason,
+    })
+    return NextResponse.json(
+      { error: 'Denied by financial policy', detail: policyResult.reason, policyEnforced: true },
+      { status: 403 },
+    )
+  }
+
+  if (policyResult.needsApproval) {
+    financeLogger.info('Close period creation requires approval', {
+      userId: access.context.userId,
+      orgId,
+      approverRoles: policyResult.approverRoles,
+    })
+    return NextResponse.json(
+      {
+        status: 'approval_required',
+        approverRoles: policyResult.approverRoles,
+        requiredApprovers: policyResult.requiredApprovers,
+        policyEnforced: true,
+      },
+      { status: 202 },
+    )
+  }
 
   const [row] = await platformDb
     .insert(closePeriods)
