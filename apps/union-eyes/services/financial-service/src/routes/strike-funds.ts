@@ -10,6 +10,9 @@ import { sql } from 'drizzle-orm';
 
 const router = Router();
 
+/** Validates a route :param is a UUID before it reaches any query. */
+const uuidParam = z.string().uuid();
+
 // Validation schemas
 const checkInSchema = z.object({
   picketLocationId: z.string().uuid(),
@@ -31,7 +34,7 @@ router.post('/:fundId/check-in', async (req: Request, res: Response) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { organizationId, userId } = (req as any).user;
-    const { fundId } = req.params;
+    const fundId = uuidParam.parse(req.params.fundId);
     const validatedData = checkInSchema.parse(req.body);
 
     // Check if already checked in
@@ -193,7 +196,7 @@ router.post('/:fundId/stipends/calculate', async (req: Request, res: Response) =
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { organizationId, userId, role } = (req as any).user;
-    const { fundId } = req.params;
+    const fundId = uuidParam.parse(req.params.fundId);
 
     if (!['admin', 'financial_admin'].includes(role)) {
       return res.status(403).json({

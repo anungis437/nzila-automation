@@ -9,6 +9,9 @@
 
 import { db } from "@/db/db";
 import { eq, and, or, desc, asc, isNull, lte, gte, sql } from "drizzle-orm";
+
+/** Actor ID used for system-initiated actions (not a credential). */
+const SYSTEM_USER_ID = "system";
 import { 
   validateClaimTransition, 
   type ClaimStatus,
@@ -1077,7 +1080,7 @@ async function sendActionNotification(
         type: 'grievance_action_notification',
         claimId,
       },
-      userId: config.userId || 'system',
+      userId: config.userId || SYSTEM_USER_ID,
     });
 
     logger.info(`Action notification sent for claim ${claimId}`);
@@ -1182,7 +1185,7 @@ async function sendActionEmail(
         type: 'grievance_action_email',
         claimId,
       },
-      userId: config.userId || 'system',
+      userId: config.userId || SYSTEM_USER_ID,
     });
 
     logger.info(`Action email sent for claim ${claimId}`);
@@ -1279,7 +1282,7 @@ async function sendTransitionRejectedNotification(
         claimId,
         reason,
       },
-      userId: 'system',
+      userId: SYSTEM_USER_ID,
     });
 
     logger.info(`Transition rejected notification sent for claim ${claimId}`);
@@ -1335,7 +1338,7 @@ export async function processOverdueDeadlines(): Promise<void> {
               deadlineId: deadline.id,
               claimId: deadline.claimId,
             },
-            userId: 'system',
+            userId: SYSTEM_USER_ID,
           });
           logger.info(`Escalation notification sent for overdue deadline ${deadline.id}`);
         } catch (error) {
@@ -1401,7 +1404,7 @@ export async function sendDeadlineReminders(): Promise<void> {
                   claimId: deadline.claimId,
                   daysRemaining: daysUntilDeadline,
                 },
-                userId: 'system',
+                userId: SYSTEM_USER_ID,
               });
             }
             logger.info(`Reminder sent for deadline ${deadline.id}, ${daysUntilDeadline} days remaining`);
