@@ -16,6 +16,7 @@
     "@nzila/os-core": "workspace:*",
     "@nzila/platform-procurement-proof": "workspace:*",
     "@nzila/platform-assurance": "workspace:*",
+    "@nzila/platform-utils": "workspace:*",
     "zod": "^3.25.0"
   },
   "devDependencies": {

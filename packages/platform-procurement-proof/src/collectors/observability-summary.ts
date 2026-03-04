@@ -8,6 +8,7 @@
  */
 import { createHash } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type { HealthReport } from '@nzila/platform-observability'
 import type {
   CollectorResult,
@@ -36,7 +37,7 @@ export async function collectObservabilitySummary(
   orgId: string,
   ports: ObservabilityCollectorPorts,
 ): Promise<CollectorResult<ObservabilitySummaryCollectorData>> {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const source = '@nzila/platform-observability'
 
   try {

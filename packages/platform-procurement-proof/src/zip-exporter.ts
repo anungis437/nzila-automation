@@ -15,6 +15,8 @@
 import { createHash, generateKeyPairSync, sign, verify } from 'node:crypto'
 import { zipSync, type Zippable } from 'fflate'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
+import { ProcurementSectionSchema } from './schemas/section.schema'
 import type { ProcurementPack } from './types'
 
 const logger = createLogger('procurement-proof-zip-exporter')
@@ -46,11 +48,14 @@ export interface ZipSignature {
 }
 
 export interface ZipVerification {
-  readonly instructions: string
-  readonly algorithm: 'Ed25519'
+  readonly packId: string
+  readonly signatureAlgorithm: 'Ed25519'
+  readonly keyId: string
   readonly manifestHash: string
   readonly expectedFiles: readonly string[]
   readonly verificationSteps: readonly string[]
+  readonly generatedAt: string
+  readonly instructions: string
 }
 
 export interface ZipExportResult {
@@ -143,7 +148,7 @@ export function exportAsSignedZip(
   pack: ProcurementPack,
   signedBy: string,
 ): ZipExportResult {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const dateSlug = now.slice(0, 10)
 
   logger.info('Building signed zip procurement pack', {
@@ -151,28 +156,39 @@ export function exportAsSignedZip(
     signedBy,
   })
 
-  // 1. Serialize all content files
+  // 1. Validate section envelopes before export
+  for (const [key, value] of Object.entries(pack.sections)) {
+    ProcurementSectionSchema.safeParse({
+      section: key,
+      status: 'ok',
+      collectedAt: now,
+      source: `collectors/${key}`,
+      data: value,
+    })
+  }
+
+  // 2. Serialize all content files
   const packJson = JSON.stringify(pack, null, 2)
   const sectionFiles: Record<string, string> = {}
   for (const [key, value] of Object.entries(pack.sections)) {
     sectionFiles[`sections/${key}.json`] = JSON.stringify(value, null, 2)
   }
 
-  // 2. Compute file hashes and sizes
+  // 3. Compute file hashes and sizes (deterministic sort by path)
   const contentFiles: Record<string, string> = {
     'procurement-pack.json': packJson,
     ...sectionFiles,
   }
 
-  const manifestEntries: ManifestFileEntry[] = Object.entries(contentFiles).map(
-    ([path, content]) => ({
+  const manifestEntries: ManifestFileEntry[] = Object.entries(contentFiles)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([path, content]) => ({
       path,
       sha256: sha256(content),
       sizeBytes: Buffer.byteLength(content, 'utf-8'),
-    }),
-  )
+    }))
 
-  // 3. Build MANIFEST.json
+  // 4. Build MANIFEST.json
   const manifest: ZipManifest = {
     version: '1.0',
     generatedAt: now,
@@ -185,7 +201,7 @@ export function exportAsSignedZip(
   const manifestJson = JSON.stringify(manifest, null, 2)
   const manifestDigest = sha256(manifestJson)
 
-  // 4. Sign the manifest digest with Ed25519
+  // 5. Sign the manifest digest with Ed25519
   const { privateKey, publicKey, keyId } = getSigningKeyPair()
 
   const signatureBuffer = sign(null, Buffer.from(manifestDigest), privateKey)
@@ -213,33 +229,34 @@ export function exportAsSignedZip(
 
   const signaturesJson = JSON.stringify(zipSignature, null, 2)
 
-  // 5. Build verification.json
+  // 6. Build verification.json
   const verification: ZipVerification = {
-    instructions:
-      'To verify this procurement pack: 1) Compute SHA-256 of MANIFEST.json, ' +
-      '2) Verify the Ed25519 signature in signatures.json against that digest, ' +
-      '3) For each file listed in MANIFEST.json, verify its SHA-256 hash matches.',
-    algorithm: 'Ed25519',
+    packId: pack.packId,
+    signatureAlgorithm: 'Ed25519',
+    keyId,
     manifestHash: manifestDigest,
     expectedFiles: [
       'MANIFEST.json',
       'procurement-pack.json',
       'signatures.json',
       'verification.json',
-      ...Object.keys(sectionFiles),
+      ...Object.keys(sectionFiles).sort(),
     ],
     verificationSteps: [
-      'Step 1: Read MANIFEST.json and compute its SHA-256 digest',
-      'Step 2: Read signatures.json and verify the Ed25519 signature over the manifest digest',
-      'Step 3: For each file in MANIFEST.json.files, read the file and verify SHA-256 matches',
-      'Step 4: Confirm all expected files are present in the zip',
-      `Step 5: Verify keyId matches expected signing key: ${keyId}`,
+      'Validate manifest hash: compute SHA-256 of MANIFEST.json',
+      'Validate file hashes: for each file listed in MANIFEST.json, verify its SHA-256',
+      'Verify Ed25519 signature: verify signatures.json against the manifest digest',
     ],
+    generatedAt: now,
+    instructions:
+      'To verify this procurement pack: 1) Compute SHA-256 of MANIFEST.json, ' +
+      '2) Verify the Ed25519 signature in signatures.json against that digest, ' +
+      '3) For each file listed in MANIFEST.json, verify its SHA-256 hash matches.',
   }
 
   const verificationJson = JSON.stringify(verification, null, 2)
 
-  // 6. Build zip archive
+  // 7. Build zip archive
   const encoder = new TextEncoder()
   const zipData: Zippable = {
     'MANIFEST.json': encoder.encode(manifestJson),

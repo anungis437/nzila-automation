@@ -11,6 +11,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import { z } from 'zod'
 import type {
   CollectorResult,
@@ -46,7 +47,7 @@ export async function collectDependencyPosture(
   orgId: string,
   rootDir?: string,
 ): Promise<CollectorResult<DependencyPostureCollectorData>> {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const source = 'ci:dependency-scan'
   const baseDir = rootDir ?? process.cwd()
 

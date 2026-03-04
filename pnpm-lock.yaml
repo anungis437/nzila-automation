@@ -635,6 +635,12 @@ importers:
       '@nzila/os-core':
         specifier: workspace:*
         version: link:../../packages/os-core
+      '@nzila/platform-procurement-proof':
+        specifier: workspace:*
+        version: link:../../packages/platform-procurement-proof
+      '@nzila/platform-utils':
+        specifier: workspace:*
+        version: link:../../packages/platform-utils
       drizzle-orm:
         specifier: ^0.39.0
         version: 0.39.3(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(pg@8.19.0)(postgres@3.4.8)
@@ -3152,6 +3158,9 @@ importers:
       '@nzila/platform-policy-engine':
         specifier: workspace:*
         version: link:../platform-policy-engine
+      '@nzila/platform-utils':
+        specifier: workspace:*
+        version: link:../platform-utils
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
@@ -3202,9 +3211,18 @@ importers:
       '@nzila/platform-procurement-proof':
         specifier: workspace:*
         version: link:../platform-procurement-proof
+      '@nzila/platform-utils':
+        specifier: workspace:*
+        version: link:../platform-utils
       zod:
         specifier: ^3.25.0
         version: 3.25.76
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-utils:
     devDependencies:
       vitest:
         specifier: ^4.0.0

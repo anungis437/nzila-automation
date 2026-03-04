@@ -9,6 +9,7 @@
  */
 import { createHash } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type { RegistryPorts } from '@nzila/platform-integrations-control-plane'
 import type {
   CollectorResult,
@@ -42,7 +43,7 @@ export async function collectIntegrationsHealth(
   orgId: string,
   ports: IntegrationsHealthPorts,
 ): Promise<CollectorResult<IntegrationsHealthCollectorData>> {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const source = '@nzila/platform-integrations-control-plane'
 
   try {
@@ -95,7 +96,7 @@ export async function collectIntegrationsHealth(
         }
 
         const lastSuccessAt =
-          dayStats.succeeded > 0 ? new Date().toISOString() : null
+          dayStats.succeeded > 0 ? nowISO() : null
 
         providerSummaries.push({
           provider,

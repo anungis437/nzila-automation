@@ -9,6 +9,7 @@
  * @module @nzila/platform-rfp-generator/generator
  */
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type {
   RfpAnswer,
   RfpGeneratorInput,
@@ -20,6 +21,16 @@ const logger = createLogger('rfp-generator')
 
 /**
  * Generate a complete RFP response from proof artifacts.
+ *
+ * Section order:
+ *   1. Security Controls
+ *   2. Privacy & Data Protection
+ *   3. Evidence & Auditability
+ *   4. Operational Resilience
+ *   5. Integrations & Data Flow
+ *   6. Hosting & Sovereignty
+ *   7. Disaster Recovery
+ *   8. Verification Appendix
  */
 export function generateRfpResponse(input: RfpGeneratorInput): RfpResponse {
   const { orgId, generatedBy, procurementPack, assuranceDashboard } = input
@@ -29,13 +40,11 @@ export function generateRfpResponse(input: RfpGeneratorInput): RfpResponse {
   const sections: RfpSectionResponse[] = [
     generateSecuritySection(procurementPack, assuranceDashboard),
     generatePrivacySection(procurementPack),
+    generateEvidenceAuditabilitySection(procurementPack, assuranceDashboard),
     generateOperationsSection(procurementPack, assuranceDashboard),
-    generateDisasterRecoverySection(procurementPack),
-    generateDataGovernanceSection(procurementPack),
-    generateComplianceSection(procurementPack, assuranceDashboard),
     generateIntegrationSection(assuranceDashboard),
-    generateCostManagementSection(procurementPack, assuranceDashboard),
     generateHostingSovereigntySection(procurementPack),
+    generateDisasterRecoverySection(procurementPack),
     generateVerificationAppendix(procurementPack),
   ]
 
@@ -45,7 +54,7 @@ export function generateRfpResponse(input: RfpGeneratorInput): RfpResponse {
 
   return {
     orgId,
-    generatedAt: new Date().toISOString(),
+    generatedAt: nowISO(),
     generatedBy,
     sections,
     totalQuestions,
@@ -132,7 +141,7 @@ function generateSecuritySection(
     },
   ]
 
-  return { section: 'security', title: 'Security', answers }
+  return { section: 'security', title: '1. Security Controls', answers }
 }
 
 function generatePrivacySection(
@@ -177,7 +186,7 @@ function generatePrivacySection(
     },
   ]
 
-  return { section: 'privacy', title: 'Privacy & Data Protection', answers }
+  return { section: 'privacy', title: '2. Privacy & Data Protection', answers }
 }
 
 function generateOperationsSection(
@@ -208,7 +217,7 @@ function generateOperationsSection(
     },
   ]
 
-  return { section: 'operations', title: 'Operations & Reliability', answers }
+  return { section: 'operations', title: '4. Operational Resilience', answers }
 }
 
 function generateDisasterRecoverySection(
@@ -229,27 +238,19 @@ function generateDisasterRecoverySection(
     },
   ]
 
-  return { section: 'disaster_recovery', title: 'Disaster Recovery', answers }
+  return { section: 'disaster_recovery', title: '7. Disaster Recovery', answers }
 }
 
-function generateDataGovernanceSection(
+function generateEvidenceAuditabilitySection(
   pack: RfpGeneratorInput['procurementPack'],
+  dashboard: RfpGeneratorInput['assuranceDashboard'],
 ): RfpSectionResponse {
   const dl = pack.sections.dataLifecycle
   const gov = pack.sections.governance
+  const sov = pack.sections.sovereignty
   const answers: RfpAnswer[] = [
     {
-      section: 'data_governance',
-      question: 'How do you manage data retention and deletion?',
-      answer: `${dl.retentionControls.policiesEnforced}/${dl.retentionControls.policiesTotal} retention policies are enforced. ` +
-        `Auto-delete: ${dl.retentionControls.autoDeleteEnabled ? 'enabled' : 'disabled'}. ` +
-        `Last purge: ${dl.retentionControls.lastPurgeAt ?? 'N/A'}. ` +
-        `Data manifests define per-category retention periods with deletion policies.`,
-      evidenceRefs: ['dataLifecycle.retentionControls', 'dataLifecycle.manifests'],
-      confidenceLevel: 'high',
-    },
-    {
-      section: 'data_governance',
+      section: 'evidence_auditability',
       question: 'Do you maintain an audit trail?',
       answer: `Yes. All actions produce sealed evidence packs with hash-chained audit trails. ` +
         `Evidence packs generated: ${gov.evidencePackCount}. ` +
@@ -259,22 +260,21 @@ function generateDataGovernanceSection(
       evidenceRefs: ['governance'],
       confidenceLevel: 'high',
     },
-  ]
-
-  return { section: 'data_governance', title: 'Data Governance', answers }
-}
-
-function generateComplianceSection(
-  pack: RfpGeneratorInput['procurementPack'],
-  dashboard: RfpGeneratorInput['assuranceDashboard'],
-): RfpSectionResponse {
-  const gov = pack.sections.governance
-  const sov = pack.sections.sovereignty
-  const answers: RfpAnswer[] = [
     {
-      section: 'compliance',
-      question: 'What compliance frameworks do you support?',
-      answer: `The platform is validated against: ${sov.regulatoryFrameworks.join(', ')}. ` +
+      section: 'evidence_auditability',
+      question: 'How do you manage data retention and deletion?',
+      answer: `${dl.retentionControls.policiesEnforced}/${dl.retentionControls.policiesTotal} retention policies are enforced. ` +
+        `Auto-delete: ${dl.retentionControls.autoDeleteEnabled ? 'enabled' : 'disabled'}. ` +
+        `Last purge: ${dl.retentionControls.lastPurgeAt ?? 'N/A'}. ` +
+        `Data manifests define per-category retention periods with deletion policies.`,
+      evidenceRefs: ['dataLifecycle.retentionControls', 'dataLifecycle.manifests'],
+      confidenceLevel: 'high',
+    },
+    {
+      section: 'evidence_auditability',
+      question: 'What compliance frameworks does your platform support?',
+      answer: `The platform is designed to support compliance requirements through verifiable controls and audit artifacts. ` +
+        `Regulatory alignment includes ${sov.regulatoryFrameworks.join(' and ')}. ` +
         `Policy compliance rate: ${gov.policyComplianceRate}%. ` +
         `Compliance score: ${dashboard.compliance.score}/100 (${dashboard.compliance.grade}). ` +
         `All compliance snapshots are hash-chained for tamper-evident verification.`,
@@ -283,7 +283,7 @@ function generateComplianceSection(
     },
   ]
 
-  return { section: 'compliance', title: 'Compliance', answers }
+  return { section: 'evidence_auditability', title: '3. Evidence & Auditability', answers }
 }
 
 function generateIntegrationSection(
@@ -305,30 +305,7 @@ function generateIntegrationSection(
     },
   ]
 
-  return { section: 'integration', title: 'Integration & Interoperability', answers }
-}
-
-function generateCostManagementSection(
-  pack: RfpGeneratorInput['procurementPack'],
-  dashboard: RfpGeneratorInput['assuranceDashboard'],
-): RfpSectionResponse {
-  const cost = dashboard.cost
-  const answers: RfpAnswer[] = [
-    {
-      section: 'cost_management',
-      question: 'How do you manage costs and prevent budget overruns?',
-      answer: `The platform enforces per-org budget limits with denial-of-wallet controls. ` +
-        `Current budget utilization: ${(cost.budgetUtilization * 100).toFixed(1)}% ` +
-        `($${cost.monthlySpendUsd.toLocaleString()}/$${cost.monthlyBudgetUsd.toLocaleString()} monthly). ` +
-        `Cost score: ${cost.score}/100 (${cost.grade}). ` +
-        `Categories over cap: ${cost.categoriesOverCap.length > 0 ? cost.categoriesOverCap.join(', ') : 'none'}. ` +
-        `Budget policies are enforced in pilot and production environments.`,
-      evidenceRefs: ['assurance.cost', 'ops/cost-policy.yml'],
-      confidenceLevel: 'high',
-    },
-  ]
-
-  return { section: 'cost_management', title: 'Cost Management', answers }
+  return { section: 'integration', title: '5. Integrations & Data Flow', answers }
 }
 
 function generateHostingSovereigntySection(
@@ -338,7 +315,7 @@ function generateHostingSovereigntySection(
   const frameworks = sov.regulatoryFrameworks.join(', ')
   const answers: RfpAnswer[] = [
     {
-      section: 'hosting_sovereignty' as RfpAnswer['section'],
+      section: 'hosting_sovereignty',
       question: 'What hosting modes are available and where is infrastructure deployed?',
       answer: `The platform is deployed in ${sov.deploymentRegion} with data stored exclusively in ${sov.dataResidency}. ` +
         `Cross-border data transfer is ${sov.crossBorderTransfer ? 'enabled with documented safeguards and consent' : 'disabled by default'}. ` +
@@ -351,7 +328,7 @@ function generateHostingSovereigntySection(
     },
   ]
 
-  return { section: 'hosting_sovereignty' as RfpAnswer['section'], title: 'Hosting & Sovereignty Modes', answers }
+  return { section: 'hosting_sovereignty', title: '6. Hosting & Sovereignty', answers }
 }
 
 function generateVerificationAppendix(
@@ -360,7 +337,7 @@ function generateVerificationAppendix(
   const sig = pack.signature
   const answers: RfpAnswer[] = [
     {
-      section: 'verification' as RfpAnswer['section'],
+      section: 'verification',
       question: 'How can we independently verify the evidence in this procurement pack?',
       answer: `Every procurement pack is self-verifying. Verification steps:\n\n` +
         `1. **Download** the signed ZIP from the Proof Center (or via API: POST /api/proof-center/export).\n` +
@@ -389,5 +366,5 @@ function generateVerificationAppendix(
     },
   ]
 
-  return { section: 'verification' as RfpAnswer['section'], title: 'Appendix: Verification Steps', answers }
+  return { section: 'verification', title: '8. Verification Appendix', answers }
 }

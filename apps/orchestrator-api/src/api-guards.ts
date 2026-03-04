@@ -6,6 +6,7 @@
  */
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { createLogger } from '@nzila/os-core'
+import { nowISO } from '@nzila/platform-utils/time'
 
 const logger = createLogger('orchestrator-api:guards')
 
@@ -21,7 +22,7 @@ export function getRequestContext(req: FastifyRequest): RequestContext {
   return {
     requestId: (req.headers['x-request-id'] as string) ?? crypto.randomUUID(),
     actor: (req.headers['x-actor'] as string) ?? 'system',
-    timestamp: new Date().toISOString(),
+    timestamp: nowISO(),
   }
 }
 

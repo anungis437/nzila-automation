@@ -14,25 +14,21 @@ import type { AssuranceDashboard } from '@nzila/platform-assurance/types'
 export type RfpSection =
   | 'security'
   | 'privacy'
+  | 'evidence_auditability'
   | 'operations'
-  | 'disaster_recovery'
-  | 'data_governance'
-  | 'compliance'
   | 'integration'
-  | 'cost_management'
   | 'hosting_sovereignty'
+  | 'disaster_recovery'
   | 'verification'
 
 export const RFP_SECTIONS: readonly RfpSection[] = [
   'security',
   'privacy',
+  'evidence_auditability',
   'operations',
-  'disaster_recovery',
-  'data_governance',
-  'compliance',
   'integration',
-  'cost_management',
   'hosting_sovereignty',
+  'disaster_recovery',
   'verification',
 ]
 
@@ -74,9 +70,9 @@ export interface RfpGeneratorInput {
 
 export const rfpAnswerSchema = z.object({
   section: z.enum([
-    'security', 'privacy', 'operations', 'disaster_recovery',
-    'data_governance', 'compliance', 'integration', 'cost_management',
-    'hosting_sovereignty', 'verification',
+    'security', 'privacy', 'evidence_auditability', 'operations',
+    'integration', 'hosting_sovereignty',
+    'disaster_recovery', 'verification',
   ]),
   question: z.string(),
   answer: z.string(),

@@ -147,22 +147,22 @@ describe('generateRfpResponse', () => {
     }
 
     const response = generateRfpResponse(input)
-    expect(response.sections).toHaveLength(10)
-    expect(response.totalQuestions).toBeGreaterThanOrEqual(10)
+    expect(response.sections).toHaveLength(8)
+    expect(response.totalQuestions).toBeGreaterThanOrEqual(8)
     expect(response.totalAnswered).toBe(response.totalQuestions)
 
-    // Check all sections present
+    // Check all 8 sections present in order
     const sectionNames = response.sections.map((s) => s.section)
-    expect(sectionNames).toContain('security')
-    expect(sectionNames).toContain('privacy')
-    expect(sectionNames).toContain('operations')
-    expect(sectionNames).toContain('disaster_recovery')
-    expect(sectionNames).toContain('data_governance')
-    expect(sectionNames).toContain('compliance')
-    expect(sectionNames).toContain('integration')
-    expect(sectionNames).toContain('cost_management')
-    expect(sectionNames).toContain('hosting_sovereignty')
-    expect(sectionNames).toContain('verification')
+    expect(sectionNames).toEqual([
+      'security',
+      'privacy',
+      'evidence_auditability',
+      'operations',
+      'integration',
+      'hosting_sovereignty',
+      'disaster_recovery',
+      'verification',
+    ])
   })
 
   it('includes evidence references in answers', () => {
@@ -195,16 +195,14 @@ describe('renderRfpMarkdown', () => {
     const md = renderRfpMarkdown(response)
 
     expect(md).toContain('# RFP Response')
-    expect(md).toContain('## Security')
-    expect(md).toContain('## Privacy')
-    expect(md).toContain('## Operations')
-    expect(md).toContain('## Disaster Recovery')
-    expect(md).toContain('## Data Governance')
-    expect(md).toContain('## Compliance')
-    expect(md).toContain('## Integration')
-    expect(md).toContain('## Cost Management')
-    expect(md).toContain('## Hosting & Sovereignty Modes')
-    expect(md).toContain('## Appendix: Verification Steps')
+    expect(md).toContain('## 1. Security Controls')
+    expect(md).toContain('## 2. Privacy & Data Protection')
+    expect(md).toContain('## 4. Operational Resilience')
+    expect(md).toContain('## 7. Disaster Recovery')
+    expect(md).toContain('## 3. Evidence & Auditability')
+    expect(md).toContain('## 5. Integrations & Data Flow')
+    expect(md).toContain('## 6. Hosting & Sovereignty')
+    expect(md).toContain('## 8. Verification Appendix')
     expect(md).toContain('**Evidence:**')
   })
 })

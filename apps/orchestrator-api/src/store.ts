@@ -2,6 +2,7 @@ import { eq, desc } from 'drizzle-orm'
 import { createHash } from 'node:crypto'
 import type { CommandRecord, CommandStatus } from './contract.js'
 import { getDb } from './db.js'
+import { nowISO } from '@nzila/platform-utils/time'
 
 /**
  * Drizzle-backed command store.
@@ -32,7 +33,7 @@ function useDb(): boolean {
 export async function createCommand(
   record: Omit<CommandRecord, 'created_at' | 'updated_at'>,
 ): Promise<CommandRecord> {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const full: CommandRecord = { ...record, created_at: now, updated_at: now }
 
   if (useDb()) {
@@ -125,7 +126,7 @@ export async function updateCommandStatus(
     status,
     run_id: extra?.run_id ?? existing.run_id,
     run_url: extra?.run_url ?? existing.run_url,
-    updated_at: new Date().toISOString(),
+    updated_at: nowISO(),
   }
   memStore.set(correlationId, updatedMem)
   return updatedMem

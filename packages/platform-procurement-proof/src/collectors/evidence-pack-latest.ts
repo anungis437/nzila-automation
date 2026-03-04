@@ -8,6 +8,7 @@
  */
 import { createHash } from 'node:crypto'
 import { createLogger } from '@nzila/os-core/telemetry'
+import { nowISO } from '@nzila/platform-utils/time'
 import type { OrchestratorPorts } from '@nzila/platform-evidence-pack'
 import type {
   CollectorResult,
@@ -29,7 +30,7 @@ export async function collectLatestEvidencePack(
   orgId: string,
   ports: EvidencePackCollectorPorts,
 ): Promise<CollectorResult<EvidencePackCollectorData>> {
-  const now = new Date().toISOString()
+  const now = nowISO()
   const source = '@nzila/platform-evidence-pack'
 
   try {
