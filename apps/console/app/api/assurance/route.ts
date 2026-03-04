@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateUser } from '@/lib/api-guards'
 import { createLogger } from '@nzila/os-core'
+import { gradeFromScore } from '@nzila/platform-assurance'
 
 const logger = createLogger('api:assurance')
 
@@ -13,7 +14,7 @@ export async function GET(_req: NextRequest) {
     const auth = await authenticateUser()
     if (!auth.ok) return auth.response
 
-    // In production: computeAssuranceDashboard(ports)
+    // TODO(prod): replace mock KPIs with computeAssuranceDashboard(ports)
     const kpis = {
       compliance: { value: 97, grade: 'A', weight: 25, trend: 'up' },
       security: { value: 92, grade: 'A', weight: 25, trend: 'up' },
@@ -29,10 +30,7 @@ export async function GET(_req: NextRequest) {
       ),
     )
 
-    const grade = overall >= 90 ? 'A' :
-      overall >= 80 ? 'B' :
-      overall >= 70 ? 'C' :
-      overall >= 60 ? 'D' : 'F'
+    const grade = gradeFromScore(overall)
 
     return NextResponse.json({
       orgId: auth.userId,

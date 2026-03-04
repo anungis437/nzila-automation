@@ -5,6 +5,7 @@
  * @see @nzila/platform-procurement-proof
  */
 import { requireRole } from '@/lib/rbac'
+import type { ProofSection } from '@nzila/platform-procurement-proof'
 import {
   ShieldCheckIcon,
   ServerIcon,

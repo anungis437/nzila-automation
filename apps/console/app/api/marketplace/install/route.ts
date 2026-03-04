@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { authenticateUser } from '@/lib/api-guards'
 import { recordAuditEvent } from '@/lib/audit-db'
 import { createLogger } from '@nzila/os-core'
+import type { InstallResult } from '@nzila/platform-marketplace'
 
 const logger = createLogger('api:marketplace:install')
 
@@ -29,15 +30,20 @@ export async function POST(req: NextRequest) {
 
     const { providerId, orgId, secrets } = parsed.data
 
-    // In production: installProvider(ports, registry, providerId, orgId, secrets)
-    const installation = {
-      id: `inst_${Date.now()}`,
-      providerId,
-      orgId,
-      status: 'active' as const,
-      installedAt: new Date().toISOString(),
-      installedBy: auth.userId,
-      secretsConfigured: Object.keys(secrets).length,
+    // TODO(prod): replace with installProvider(ports, registry, providerId, orgId, secrets)
+    const result: InstallResult = {
+      ok: true,
+      installation: {
+        installationId: `inst_${Date.now()}`,
+        orgId,
+        providerKey: providerId,
+        status: 'active',
+        installedBy: auth.userId,
+        installedAt: new Date().toISOString(),
+        secretsValidated: true,
+        testCallSucceeded: true,
+        configuration: {},
+      },
     }
 
     await recordAuditEvent({
@@ -50,7 +56,7 @@ export async function POST(req: NextRequest) {
     })
 
     logger.info('Provider installed', { providerId, orgId })
-    return NextResponse.json(installation, { status: 201 })
+    return NextResponse.json(result, { status: 201 })
   } catch (err) {
     logger.error('[Marketplace Install Error]', err instanceof Error ? err : { detail: err })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

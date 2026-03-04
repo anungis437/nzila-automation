@@ -5,6 +5,7 @@
  * @see @nzila/platform-marketplace
  */
 import { requireRole } from '@/lib/rbac'
+import type { ProviderManifest } from '@nzila/platform-marketplace'
 import {
   PuzzlePieceIcon,
   CheckCircleIcon,

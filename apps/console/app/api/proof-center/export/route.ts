@@ -3,18 +3,31 @@
  * POST /api/proof-center/export — export signed pack as downloadable JSON
  */
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { authenticateUser } from '@/lib/api-guards'
 import { recordAuditEvent } from '@/lib/audit-db'
 import { createLogger } from '@nzila/os-core'
+import { RFP_SECTIONS } from '@nzila/platform-rfp-generator'
 
 const logger = createLogger('api:proof-center:export')
 
-export async function POST(_req: NextRequest) {
+const ExportRequestSchema = z.object({
+  format: z.enum(['json', 'bundle']).default('json'),
+  includeRfp: z.boolean().default(false),
+})
+
+export async function POST(req: NextRequest) {
   try {
     const auth = await authenticateUser()
     if (!auth.ok) return auth.response
 
-    // In production: exportAsBundle(pack, signature)
+    const body = await req.json().catch(() => ({}))
+    const parsed = ExportRequestSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    }
+
+    // TODO(prod): replace with exportAsBundle(pack, signature)
     const bundle = {
       format: 'nzila-procurement-pack-v1',
       exportedAt: new Date().toISOString(),
@@ -27,6 +40,7 @@ export async function POST(_req: NextRequest) {
         { name: 'sovereignty', checksum: 'sha256:placeholder' },
       ],
       integrity: 'sha256:placeholder',
+      ...(parsed.data.includeRfp ? { rfpSections: RFP_SECTIONS } : {}),
     }
 
     await recordAuditEvent({

@@ -20,7 +20,7 @@ export type EvaluationResult = 'pass' | 'fail' | 'require_approval'
 export interface PolicyCondition {
   readonly field: string
   readonly operator: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'not_in' | 'matches'
-  readonly value: unknown
+  readonly value?: unknown
 }
 
 export interface PolicyRule {

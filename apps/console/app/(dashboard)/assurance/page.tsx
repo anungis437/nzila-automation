@@ -5,6 +5,8 @@
  * @see @nzila/platform-assurance
  */
 import { requireRole } from '@/lib/rbac'
+import { gradeFromScore } from '@nzila/platform-assurance'
+import type { PolicyEvaluationOutput } from '@nzila/platform-policy-engine'
 import {
   ShieldCheckIcon,
   CurrencyDollarIcon,
@@ -95,13 +97,11 @@ function gradeColor(grade: string): string {
   return 'bg-red-50 text-red-700 border-red-200'
 }
 
-function overallGrade(score: number): string {
-  if (score >= 90) return 'A'
-  if (score >= 80) return 'B'
-  if (score >= 70) return 'C'
-  if (score >= 60) return 'D'
-  return 'F'
-}
+// Use gradeFromScore from @nzila/platform-assurance for consistency
+const overallGrade = gradeFromScore
+
+// Type used by policy evaluation results rendered in the assurance dashboard
+export type { PolicyEvaluationOutput as AssurancePolicyOutput }
 
 function KpiCard({ kpi }: { kpi: KpiScore }) {
   const Icon = kpi.icon

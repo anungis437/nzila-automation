@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateUser } from '@/lib/api-guards'
 import { recordAuditEvent } from '@/lib/audit-db'
 import { createLogger } from '@nzila/os-core'
+import { procurementManifestSchema } from '@nzila/platform-procurement-proof'
 
 const logger = createLogger('api:proof-center')
 
@@ -42,14 +43,17 @@ export async function POST(_req: NextRequest) {
     const auth = await authenticateUser()
     if (!auth.ok) return auth.response
 
-    // In production: collectProcurementPack → signProcurementPack → exportAsJson
+    // TODO(prod): replace with collectProcurementPack → signProcurementPack → exportAsJson
+    const manifest = procurementManifestSchema.parse({
+      version: '1.0',
+      sectionCount: 5,
+      artifactCount: 0,
+      generatedAt: new Date().toISOString(),
+      checksums: {},
+    })
+
     const pack = {
-      MANIFEST: {
-        version: '1.0',
-        sectionCount: 5,
-        generatedAt: new Date().toISOString(),
-        algorithm: 'HMAC-SHA256',
-      },
+      MANIFEST: manifest,
       pack: {
         orgId: auth.userId,
         security: { score: 92 },
