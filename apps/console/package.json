@@ -38,7 +38,12 @@
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "zod": "^3.24.0",
-    "@nzila/commerce-observability": "workspace:*"
+    "@nzila/commerce-observability": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "@nzila/platform-integrations-control-plane": "workspace:*",
+    "@nzila/platform-evidence-pack": "workspace:*",
+    "@nzila/platform-compliance-snapshots": "workspace:*",
+    "@nzila/platform-observability": "workspace:*"
   },
   "devDependencies": {
     "@nzila/ai-sdk": "workspace:*",

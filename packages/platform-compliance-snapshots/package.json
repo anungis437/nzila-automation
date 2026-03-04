@@ -1,0 +1,26 @@
+{
+  "name": "@nzila/platform-compliance-snapshots",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./collector": "./src/collector.ts",
+    "./chain": "./src/chain.ts",
+    "./generator": "./src/generator.ts",
+    "./verifier": "./src/verifier.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

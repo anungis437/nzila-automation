@@ -1,0 +1,20 @@
+{
+  "extends": "../config/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    "paths": {
+      "@nzila/db": ["../db/src/index.ts"],
+      "@nzila/db/platform": ["../db/src/platform.ts"],
+      "@nzila/os-core": ["../os-core/src/index.ts"],
+      "@nzila/os-core/telemetry": ["../os-core/src/telemetry/index.ts"],
+      "@nzila/integrations-core": ["../integrations-core/src/index.ts"],
+      "@nzila/integrations-runtime": ["../integrations-runtime/src/index.ts"],
+      "@nzila/integrations-runtime/*": ["../integrations-runtime/src/*.ts"],
+      "@nzila/integrations-db": ["../integrations-db/src/index.ts"],
+      "@nzila/platform-events": ["../platform-events/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -11,7 +11,12 @@
       "@nzila/platform-performance": ["../../packages/platform-performance/src/index.ts"],
       "@nzila/platform-isolation": ["../../packages/platform-isolation/src/index.ts"],
       "@nzila/platform-proof": ["../../packages/platform-proof/src/index.ts"],
-      "@nzila/db/org-registry": ["../../packages/db/src/org-registry.ts"]
+      "@nzila/db/org-registry": ["../../packages/db/src/org-registry.ts"],
+      "@nzila/platform-events": ["../../packages/platform-events/src/index.ts"],
+      "@nzila/platform-integrations-control-plane": ["../../packages/platform-integrations-control-plane/src/index.ts"],
+      "@nzila/platform-evidence-pack": ["../../packages/platform-evidence-pack/src/index.ts"],
+      "@nzila/platform-compliance-snapshots": ["../../packages/platform-compliance-snapshots/src/index.ts"],
+      "@nzila/platform-observability": ["../../packages/platform-observability/src/index.ts"]
     }
   },
   "include": [
