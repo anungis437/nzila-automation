@@ -105,8 +105,8 @@ Nzila OS is a multi-Org SaaS platform comprising:
 
 | Risk Level | Count | IDs |
 |------------|-------|-----|
-| ✅ Fully Mitigated | 27 | S-01, S-02, S-04, S-05, T-01–T-06, R-01–R-05, I-01–I-06, D-02–D-05, E-01–E-05 |
-| ⚠️ Partially Mitigated | 2 | S-03 (mTLS pending), D-01 (rate limiting) |
+| ✅ Fully Mitigated | 28 | S-01, S-02, S-04, S-05, T-01–T-06, R-01–R-05, I-01–I-06, D-01, D-02–D-05, E-01–E-05 |
+| ⚠️ Partially Mitigated | 1 | S-03 (mTLS pending) |
 | ❌ Unmitigated | 0 | — |
 
 ---
@@ -120,10 +120,10 @@ Nzila OS is a multi-Org SaaS platform comprising:
 - **Target date:** Q3 2026
 
 ### D-01: API rate limiting
-- **Current state:** Clerk provides basic rate limiting; no custom per-endpoint throttling
-- **Planned mitigation:** Azure API Management or custom middleware rate limiter
-- **Risk acceptance:** Clerk's built-in protection sufficient for current scale
-- **Target date:** Q2 2026
+- **Current state:** IP-based rate limiting in all Next.js middleware + org-scoped rate limiting with per-route-group buckets (auth, mutations, exports, integrations, general)
+- **Mitigations:** `checkRateLimit` (IP-based) + `checkOrgRateLimit` (org + route group) in console and partners middleware; 429 response with standard `RateLimit-*` headers
+- **Status:** ✅ Mitigated
+- **Implemented:** 2026-03-04
 
 ---
 
