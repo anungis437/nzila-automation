@@ -94,5 +94,14 @@
   },
   // Disable MSSQL linting workspace-wide: this repo targets PostgreSQL only.
   "mssql.linting.enable": false,
-  "vitest.disableWorkspaceWarning": true
+  "vitest.disableWorkspaceWarning": true,
+
+  // ── YAML / Docker Compose ──────────────────────────────
+  // Pin the Compose schema to the correct URL (the extension's default
+  // uses a stale /master/ path that fails to resolve).
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/compose-spec/compose-go/main/schema/compose-spec.json": [
+      "docker-compose*.yml"
+    ]
+  }
 }
