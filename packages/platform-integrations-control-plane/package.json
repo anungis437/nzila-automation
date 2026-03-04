@@ -1,0 +1,38 @@
+{
+  "name": "@nzila/platform-integrations-control-plane",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./registry": "./src/registry.ts",
+    "./webhook-verify": "./src/webhook-verify.ts",
+    "./dlq": "./src/dlq.ts",
+    "./rate-limiter": "./src/rate-limiter.ts",
+    "./dashboard": "./src/dashboard.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@nzila/integrations-core": "workspace:*",
+    "@nzila/integrations-runtime": "workspace:*",
+    "@nzila/integrations-db": "workspace:*",
+    "@nzila/db": "workspace:*",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
+    "typescript": "^5",
+    "vitest": "^4.0.18",
+    "eslint": "^10"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@nzila/platform-evidence-pack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./orchestrator": "./src/orchestrator.ts",
+    "./exporter": "./src/exporter.ts",
+    "./verifier": "./src/verifier.ts",
+    "./retention": "./src/retention.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nzila/db": "workspace:*",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "drizzle-orm": "^0.39.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

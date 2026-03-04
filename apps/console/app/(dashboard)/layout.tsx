@@ -57,6 +57,9 @@ const navItems = [
   { name: 'Automation', href: '/automation', icon: CogIcon },
   { name: 'Standards', href: '/standards', icon: BookOpenIcon },
   { name: 'Integrations', href: '/integrations', icon: PuzzlePieceIcon },
+  { name: 'Control Plane', href: '/integrations-control-plane', icon: PuzzlePieceIcon },
+  { name: 'Evidence Packs', href: '/evidence-packs', icon: DocumentArrowDownIcon },
+  { name: 'Compliance', href: '/compliance-snapshots', icon: ShieldCheckIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
 ]
 
