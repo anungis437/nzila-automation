@@ -1,8 +1,8 @@
 {
   // ── TypeScript language server ───────────────────────────
-  // Large monorepo: 58 tsconfig files, 49 packages, 10 apps.
+  // Large monorepo: 85 tsconfig files, 70+ packages, 13 apps.
   // Raise the heap ceiling so tsserver stops crashing / OOM-ing.
-  "typescript.tsserver.maxTsServerMemory": 12288,
+  "typescript.tsserver.maxTsServerMemory": 16384,
   // Use the workspace's own TypeScript installation (keeps versions in sync).
   "typescript.tsdk": "node_modules/typescript/lib",
   // Exclude heavy generated artefacts from tsserver's watch list.

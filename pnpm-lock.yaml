@@ -93,6 +93,9 @@ importers:
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
+      drizzle-orm:
+        specifier: ^0.39.0
+        version: 0.39.3(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(pg@8.19.0)(postgres@3.4.8)
       framer-motion:
         specifier: ^11.3.30
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
