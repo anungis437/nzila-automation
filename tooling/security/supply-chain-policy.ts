@@ -174,6 +174,22 @@ export const ACTIVE_WAIVERS: VulnerabilityWaiver[] = [
     expiresAt: '2026-06-04',
     severity: 'high',
   },
+  {
+    // immutable Prototype Pollution — CVE-2026-29063 / GHSA-wf6x-7x77-mvgw / npm advisory 1113984
+    // Affected path: apps/union-eyes > swagger-ui-react > immutable@3.8.2
+    // immutable@3.x has no upstream fix — the fix requires upgrading to v4.3.8+ (breaking API change).
+    // swagger-ui-react@5.x is hard-coupled to immutable@3.x internals; forcing v4 via override breaks rendering.
+    // swagger-ui-react is used exclusively for internal API documentation (no public user access).
+    // No user-controlled data flows through immutable merge/toJS operations in our usage pattern.
+    // Remediation plan: track swagger-ui migration off immutable@3; re-evaluate when a compatible release is available.
+    id: '1113984',
+    package: 'immutable',
+    reason: 'Transitive dependency of swagger-ui-react (internal API docs only). immutable@3.x has no npm fix; v4 upgrade is a breaking API change that breaks swagger-ui-react rendering. No user-controlled data flows through affected APIs. Mitigated by internal-only access and no untrusted merge input.',
+    approvedBy: 'platform-lead',
+    approvedAt: '2026-03-04',
+    expiresAt: '2026-06-04',
+    severity: 'high',
+  },
 ]
 
 // ── SBOM Validation ───────────────────────────────────────────────────────
