@@ -38,3 +38,13 @@ export { collectProcurementPack, signProcurementPack } from './collector'
 // exporter
 export { exportAsJson, exportAsBundle } from './exporter'
 export type { ProcurementExportResult } from './exporter'
+
+// zip exporter (signed zip bundle)
+export { exportAsSignedZip, verifyZipSignature, getSigningKeyPair } from './zip-exporter'
+export type {
+  ZipManifest,
+  ManifestFileEntry,
+  ZipSignature,
+  ZipVerification,
+  ZipExportResult,
+} from './zip-exporter'
