@@ -114,7 +114,7 @@ export function isFipsEnabled(): boolean {
  */
 export function enableFips(): boolean {
   try {
-    crypto.setFips(1)
+    crypto.setFips(1 as unknown as boolean)
     return crypto.getFips() === 1
   } catch {
     return false
@@ -129,8 +129,8 @@ export function getFipsStatus(): FipsStatus {
     fipsEnabled: isFipsEnabled(),
     fipsRequired: isFipsRequired(),
     strictMode: isStrictMode(),
-    opensslVersion: crypto.constants?.OPENSSL_VERSION_TEXT
-      ?? (process as unknown as Record<string, string>).versions?.openssl
+    opensslVersion: (crypto.constants as Record<string, unknown>)?.OPENSSL_VERSION_TEXT as string
+      ?? (process as unknown as { versions?: { openssl?: string } }).versions?.openssl
       ?? 'unknown',
     nodeVersion: process.version,
   }

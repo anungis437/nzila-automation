@@ -47,8 +47,7 @@
     "@nzila/platform-policy-engine": "workspace:*",
     "@nzila/platform-procurement-proof": "workspace:*",
     "@nzila/platform-marketplace": "workspace:*",
-    "@nzila/platform-assurance": "workspace:*",
-    "@nzila/platform-rfp-generator": "workspace:*"
+    "@nzila/platform-assurance": "workspace:*"
   },
   "devDependencies": {
     "@nzila/ai-sdk": "workspace:*",

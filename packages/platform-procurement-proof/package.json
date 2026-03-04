@@ -19,6 +19,7 @@
     "@nzila/platform-evidence-pack": "workspace:*",
     "@nzila/platform-compliance-snapshots": "workspace:*",
     "@nzila/platform-policy-engine": "workspace:*",
+    "fflate": "^0.8.2",
     "zod": "^3.25.0"
   },
   "devDependencies": {

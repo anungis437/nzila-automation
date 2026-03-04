@@ -20,8 +20,7 @@
       "@nzila/platform-policy-engine": ["../../packages/platform-policy-engine/src/index.ts"],
       "@nzila/platform-procurement-proof": ["../../packages/platform-procurement-proof/src/index.ts"],
       "@nzila/platform-marketplace": ["../../packages/platform-marketplace/src/index.ts"],
-      "@nzila/platform-assurance": ["../../packages/platform-assurance/src/index.ts"],
-      "@nzila/platform-rfp-generator": ["../../packages/platform-rfp-generator/src/index.ts"]
+      "@nzila/platform-assurance": ["../../packages/platform-assurance/src/index.ts"]
     }
   },
   "include": [

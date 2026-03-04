@@ -17,7 +17,7 @@
  * Validates that the runtime environment meets Nzila OS structural requirements.
  * Called automatically on module import.
  */
-function assertBootInvariants(): void {
+async function assertBootInvariants(): Promise<void> {
   // Skip during Next.js build phases — assertions run at server startup, not build time.
   // Turbopack transpiles @nzila/os-core during build which would otherwise execute
   // import.meta.resolve() in a context where workspace package symlinks may differ.
@@ -98,6 +98,6 @@ function assertBootInvariants(): void {
 }
 
 // Run assertions on import
-assertBootInvariants()
+void assertBootInvariants()
 
 export { assertBootInvariants }

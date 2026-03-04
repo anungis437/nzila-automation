@@ -15,7 +15,6 @@ import { recordAuditEvent } from '@/lib/audit-db'
 import { createLogger } from '@nzila/os-core'
 import { exportAsSignedZip } from '@nzila/platform-procurement-proof/zip-exporter'
 import { exportAsJson } from '@nzila/platform-procurement-proof/exporter'
-import { RFP_SECTIONS } from '@nzila/platform-rfp-generator'
 import type {
   ProcurementPack,
   SecurityPosture,
@@ -24,7 +23,7 @@ import type {
   GovernanceEvidence,
   SovereigntyProfile,
 } from '@nzila/platform-procurement-proof'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, createHash } from 'node:crypto'
 
 const logger = createLogger('api:proof-center:export')
 
@@ -126,7 +125,6 @@ function buildProcurementPack(userId: string): ProcurementPack {
   }
 
   const sections = { security, dataLifecycle, operational, governance, sovereignty }
-  const { createHash } = require('node:crypto')
   const checksums: Record<string, string> = {}
   for (const [key, value] of Object.entries(sections)) {
     checksums[key] = createHash('sha256').update(JSON.stringify(value)).digest('hex')
@@ -210,7 +208,7 @@ export async function POST(req: NextRequest) {
       keyId: result.signature.keyId,
     })
 
-    return new NextResponse(result.zipBuffer, {
+    return new NextResponse(Buffer.from(result.zipBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
