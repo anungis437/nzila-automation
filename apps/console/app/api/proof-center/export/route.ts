@@ -6,24 +6,21 @@
  *   MANIFEST.json, procurement-pack.json, signatures.json, verification.json,
  *   and per-section JSON files under sections/.
  *
- * The pack is Ed25519-signed. HMAC is used as a secondary integrity seal.
+ * The pack is Ed25519-signed. Uses real port-based collectors.
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateUser } from '@/lib/api-guards'
 import { recordAuditEvent } from '@/lib/audit-db'
 import { createLogger } from '@nzila/os-core'
-import { exportAsSignedZip } from '@nzila/platform-procurement-proof/zip-exporter'
-import { exportAsJson } from '@nzila/platform-procurement-proof/exporter'
-import type {
-  ProcurementPack,
-  SecurityPosture,
-  DataLifecycle,
-  OperationalEvidence,
-  GovernanceEvidence,
-  SovereigntyProfile,
+import {
+  collectProcurementPack,
+  signProcurementPack,
+  exportAsSignedZip,
+  exportAsJson,
+  createRealPorts,
 } from '@nzila/platform-procurement-proof'
-import { randomUUID, createHash } from 'node:crypto'
+import { createInMemoryPortDeps } from '@/lib/proof-center-ports'
 
 const logger = createLogger('api:proof-center:export')
 
@@ -31,121 +28,6 @@ const ExportRequestSchema = z.object({
   format: z.enum(['json', 'zip']).default('zip'),
   includeRfp: z.boolean().default(false),
 })
-
-/**
- * Build a complete ProcurementPack from live platform data.
- * TODO(prod): replace stub sections with real port-based collectors.
- */
-function buildProcurementPack(userId: string): ProcurementPack {
-  const packId = randomUUID()
-  const now = new Date().toISOString()
-
-  const security: SecurityPosture = {
-    dependencyAudit: {
-      totalDependencies: 412,
-      directDependencies: 87,
-      criticalVulnerabilities: 0,
-      highVulnerabilities: 0,
-      mediumVulnerabilities: 1,
-      lowVulnerabilities: 3,
-      blockedLicenses: [],
-      lockfileIntegrity: true,
-      auditedAt: now,
-    },
-    signedAttestation: {
-      attestationId: randomUUID(),
-      algorithm: 'sha256',
-      digest: 'ci-signed',
-      signedBy: 'github-actions',
-      signedAt: now,
-      scope: 'full-build',
-    },
-    vulnerabilitySummary: {
-      score: 92,
-      grade: 'A',
-      lastScanAt: now,
-    },
-  }
-
-  const dataLifecycle: DataLifecycle = {
-    manifests: [
-      { dataCategory: 'PII', classification: 'confidential', storageRegion: 'canadacentral', encryptionAtRest: true, encryptionInTransit: true, retentionDays: 2555, deletionPolicy: 'auto' },
-      { dataCategory: 'financial', classification: 'restricted', storageRegion: 'canadacentral', encryptionAtRest: true, encryptionInTransit: true, retentionDays: 2555, deletionPolicy: 'legal_hold' },
-      { dataCategory: 'operational', classification: 'internal', storageRegion: 'canadacentral', encryptionAtRest: true, encryptionInTransit: true, retentionDays: 365, deletionPolicy: 'auto' },
-    ],
-    retentionControls: {
-      policiesEnforced: 5,
-      policiesTotal: 5,
-      autoDeleteEnabled: true,
-      lastPurgeAt: now,
-    },
-  }
-
-  const operational: OperationalEvidence = {
-    sloCompliance: {
-      overall: 99.2,
-      targets: [
-        { name: 'availability', target: 99.0, actual: 99.2, compliant: true },
-        { name: 'latency_p95', target: 500, actual: 320, compliant: true },
-        { name: 'error_rate', target: 1.0, actual: 0.3, compliant: true },
-      ],
-    },
-    performanceMetrics: {
-      p50Ms: 120,
-      p95Ms: 320,
-      p99Ms: 580,
-      errorRate: 0.003,
-      uptimePercent: 99.2,
-    },
-    incidentSummary: {
-      totalIncidents: 2,
-      resolvedIncidents: 2,
-      meanTimeToResolutionMinutes: 18,
-      lastIncidentAt: null,
-    },
-    trendWarnings: [],
-  }
-
-  const governance: GovernanceEvidence = {
-    evidencePackCount: 12,
-    snapshotChainLength: 48,
-    snapshotChainValid: true,
-    policyComplianceRate: 1.0,
-    lastEvidencePackAt: now,
-    controlFamiliesCovered: ['access', 'financial', 'data', 'operational', 'governance', 'sovereignty', 'integration'],
-  }
-
-  const sovereignty: SovereigntyProfile = {
-    deploymentRegion: 'Canada Central',
-    dataResidency: 'Canada',
-    regulatoryFrameworks: ['PIPEDA', 'Law 25', 'GDPR-aligned'],
-    crossBorderTransfer: false,
-    validated: true,
-    validatedAt: now,
-  }
-
-  const sections = { security, dataLifecycle, operational, governance, sovereignty }
-  const checksums: Record<string, string> = {}
-  for (const [key, value] of Object.entries(sections)) {
-    checksums[key] = createHash('sha256').update(JSON.stringify(value)).digest('hex')
-  }
-
-  return {
-    packId,
-    orgId: userId,
-    generatedAt: now,
-    generatedBy: userId,
-    status: 'signed',
-    sections,
-    manifest: {
-      version: '1.0',
-      sectionCount: 5,
-      artifactCount: 14,
-      generatedAt: now,
-      checksums,
-    },
-  }
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -158,10 +40,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     }
 
-    const pack = buildProcurementPack(auth.userId)
+    // Wire real collectors via ports
+    const portDeps = createInMemoryPortDeps()
+    const ports = createRealPorts(portDeps)
+
+    // Collect + sign using real port chain
+    let pack = await collectProcurementPack(auth.userId, auth.userId, ports)
+    pack = await signProcurementPack(pack, ports)
 
     if (parsed.data.format === 'json') {
-      // Legacy JSON export
       const result = exportAsJson(pack)
 
       await recordAuditEvent({

@@ -147,8 +147,8 @@ describe('generateRfpResponse', () => {
     }
 
     const response = generateRfpResponse(input)
-    expect(response.sections).toHaveLength(8)
-    expect(response.totalQuestions).toBeGreaterThanOrEqual(8)
+    expect(response.sections).toHaveLength(10)
+    expect(response.totalQuestions).toBeGreaterThanOrEqual(10)
     expect(response.totalAnswered).toBe(response.totalQuestions)
 
     // Check all sections present
@@ -161,6 +161,8 @@ describe('generateRfpResponse', () => {
     expect(sectionNames).toContain('compliance')
     expect(sectionNames).toContain('integration')
     expect(sectionNames).toContain('cost_management')
+    expect(sectionNames).toContain('hosting_sovereignty')
+    expect(sectionNames).toContain('verification')
   })
 
   it('includes evidence references in answers', () => {
@@ -201,6 +203,8 @@ describe('renderRfpMarkdown', () => {
     expect(md).toContain('## Compliance')
     expect(md).toContain('## Integration')
     expect(md).toContain('## Cost Management')
+    expect(md).toContain('## Hosting & Sovereignty Modes')
+    expect(md).toContain('## Appendix: Verification Steps')
     expect(md).toContain('**Evidence:**')
   })
 })

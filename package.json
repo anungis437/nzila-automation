@@ -41,6 +41,7 @@
     "redteam:abr": "tsx security/redteam/profile-runner.ts --profile abr-insights",
     "pilot:check": "tsx scripts/pilot-check.ts",
     "rfp:generate": "tsx scripts/rfp-generate.ts --out docs/rfp/answers.md",
+    "demo:golden": "tsx scripts/demo-golden-path.ts",
     "prepare": "lefthook install"
   },
   "devDependencies": {

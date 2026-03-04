@@ -8,7 +8,9 @@
     "./types": "./src/types.ts",
     "./collector": "./src/collector.ts",
     "./exporter": "./src/exporter.ts",
-    "./zip-exporter": "./src/zip-exporter.ts"
+    "./zip-exporter": "./src/zip-exporter.ts",
+    "./collectors": "./src/collectors/index.ts",
+    "./real-ports": "./src/real-ports.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -18,6 +20,8 @@
     "@nzila/os-core": "workspace:*",
     "@nzila/platform-evidence-pack": "workspace:*",
     "@nzila/platform-compliance-snapshots": "workspace:*",
+    "@nzila/platform-integrations-control-plane": "workspace:*",
+    "@nzila/platform-observability": "workspace:*",
     "@nzila/platform-policy-engine": "workspace:*",
     "fflate": "^0.8.2",
     "zod": "^3.25.0"
