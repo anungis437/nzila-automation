@@ -161,6 +161,19 @@ export const ACTIVE_WAIVERS: VulnerabilityWaiver[] = [
     expiresAt: '2026-05-28',
     severity: 'high',
   },
+  {
+    // minimatch ReDoS via multiple non-adjacent GLOBSTAR segments — npm advisory 1113686 / GHSA-7r86-cg39-jmmj
+    // Affected paths: apps/union-eyes > glob > minimatch (>=10.0.0 <10.2.3)
+    // Same root cause as other minimatch waivers: no user-controlled input reaches minimatch in production.
+    // The glob package is used only in build/script tooling, not in production runtime.
+    id: '1113686',
+    package: 'minimatch',
+    reason: 'Build/script tooling dependency (glob > minimatch). No user input reaches minimatch in production runtime. Upgrade to minimatch@10.2.3 pending upstream glob release. Risk confined to local/CI tooling DoS only.',
+    approvedBy: 'platform-lead',
+    approvedAt: '2026-03-04',
+    expiresAt: '2026-06-04',
+    severity: 'high',
+  },
 ]
 
 // ── SBOM Validation ───────────────────────────────────────────────────────
