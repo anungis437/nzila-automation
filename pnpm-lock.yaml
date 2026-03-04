@@ -3143,6 +3143,12 @@ importers:
       '@nzila/platform-evidence-pack':
         specifier: workspace:*
         version: link:../platform-evidence-pack
+      '@nzila/platform-integrations-control-plane':
+        specifier: workspace:*
+        version: link:../platform-integrations-control-plane
+      '@nzila/platform-observability':
+        specifier: workspace:*
+        version: link:../platform-observability
       '@nzila/platform-policy-engine':
         specifier: workspace:*
         version: link:../platform-policy-engine
