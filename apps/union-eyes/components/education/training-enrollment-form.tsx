@@ -145,8 +145,7 @@ export function TrainingEnrollmentForm({
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const isValid = await form.trigger(fieldsToValidate as any);
+    const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
       setCurrentStep((prev) => prev + 1);
     }

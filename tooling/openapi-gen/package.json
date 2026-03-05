@@ -1,0 +1,27 @@
+{
+  "name": "@nzila/openapi-gen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.4.0",
+    "glob": "^11.0.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25",
+    "tsx": "^4",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  }
+}

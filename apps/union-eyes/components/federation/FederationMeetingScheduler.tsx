@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { Calendar } from "@/components/ui/calendar";
@@ -192,7 +192,7 @@ export function FederationMeetingScheduler({
   };
 
   const getTypeBadge = (type: FederationMeeting["type"]) => {
-    const variants: Record<FederationMeeting["type"], { variant: string; label: string }> = {
+    const variants: Record<FederationMeeting["type"], { variant: BadgeProps["variant"]; label: string }> = {
       convention: { variant: "default", label: "Convention" },
       executive: { variant: "secondary", label: "Executive" },
       committee: { variant: "outline", label: "Committee" },
@@ -200,8 +200,7 @@ export function FederationMeetingScheduler({
       special: { variant: "default", label: "Special" }
     };
     const config = variants[type];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return <Badge variant={config.variant as any}>{config.label}</Badge>;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const _getStatusBadge = (status: FederationMeeting["status"]) => {
@@ -277,8 +276,7 @@ export function FederationMeetingScheduler({
                     <Label htmlFor="type">Meeting Type *</Label>
                     <Select
                       value={formData.type}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      onValueChange={(value) => setFormData({ ...formData, type: value as any })}
+                      onValueChange={(value) => setFormData({ ...formData, type: value as FederationMeeting["type"] })}
                     >
                       <SelectTrigger id="type">
                         <SelectValue />

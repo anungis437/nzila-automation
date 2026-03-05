@@ -522,20 +522,19 @@ export function DocumentApprovalWorkflow({
             <div>
               <div className="font-medium mb-3">Your Decision</div>
               <div className="space-y-2">
-                {[
-                  { value: "approved", label: "Approve", icon: CheckCircle2, color: "green" },
+                {([
+                  { value: "approved" as const, label: "Approve", icon: CheckCircle2, color: "green" },
                   {
-                    value: "changes_requested",
+                    value: "changes_requested" as const,
                     label: "Request Changes",
                     icon: MessageSquare,
                     color: "orange",
                   },
-                  { value: "rejected", label: "Reject", icon: XCircle, color: "red" },
-                ].map((option) => (
+                  { value: "rejected" as const, label: "Reject", icon: XCircle, color: "red" },
+                ]).map((option) => (
                   <button
                     key={option.value}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onClick={() => setReviewStatus(option.value as any)}
+                    onClick={() => setReviewStatus(option.value)}
                     className={cn(
                       "w-full flex items-center gap-3 p-3 border-2 rounded-lg transition-all",
                       reviewStatus === option.value

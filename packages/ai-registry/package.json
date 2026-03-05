@@ -1,0 +1,29 @@
+{
+  "name": "@nzila/ai-registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Unified AI/ML model registry with NIST AI RMF risk classification, model cards, and governance lifecycle",
+  "exports": {
+    ".": "./src/index.ts",
+    "./model-card": "./src/model-card.ts",
+    "./risk-classification": "./src/risk-classification.ts",
+    "./governance-lifecycle": "./src/governance-lifecycle.ts",
+    "./nist-rmf": "./src/nist-rmf.ts",
+    "./bias-detection": "./src/bias-detection.ts",
+    "./carbon-tracking": "./src/carbon-tracking.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@nzila/os-core": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  }
+}

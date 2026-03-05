@@ -1,0 +1,62 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: nzila-os
+  description: >
+    Nzila OS — Internal control backbone for the Nzila digital-venture platform.
+    13 apps, 58+ packages, evidence-first governance, contract-enforced invariants,
+    and org-scoped multi-tenancy.
+  annotations:
+    github.com/project-slug: anungis437/nzila-os
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - monorepo
+    - evidence-first
+    - multi-tenant
+    - polyglot
+  links:
+    - url: https://nzila.app
+      title: Nzila Platform
+    - url: https://console.nzila.app
+      title: Console
+spec:
+  owner: platform-team
+  domain: nzila-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: nzila-platform
+  description: Nzila digital-venture platform domain
+spec:
+  owner: platform-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: postgres-db
+  description: PostgreSQL 16 — primary relational data store
+spec:
+  type: database
+  owner: platform-team
+  system: nzila-os
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: azure-blob
+  description: Azure Blob Storage — evidence packs, documents, exports
+spec:
+  type: storage
+  owner: platform-team
+  system: nzila-os
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: redis-cache
+  description: Redis / Upstash — rate limiting, session caching
+spec:
+  type: cache
+  owner: platform-team
+  system: nzila-os

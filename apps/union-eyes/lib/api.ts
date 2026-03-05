@@ -5,14 +5,9 @@
 // Client-side auth relies on Clerk session cookies (withCredentials: true).
 
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { createClientLogger } from '@/lib/client-logger';
 
-// Use console for client-safe logging — os-core pulls in Node.js-only telemetry
-const logger = {
-  info: (msg: string, meta?: Record<string, unknown>) => console.info(`[api] ${msg}`, meta ?? ''),
-  error: (msg: string, meta?: Record<string, unknown>) => console.error(`[api] ${msg}`, meta ?? ''),
-  warn: (msg: string, meta?: Record<string, unknown>) => console.warn(`[api] ${msg}`, meta ?? ''),
-  debug: (msg: string, meta?: Record<string, unknown>) => console.debug(`[api] ${msg}`, meta ?? ''),
-}
+const logger = createClientLogger('api');
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 

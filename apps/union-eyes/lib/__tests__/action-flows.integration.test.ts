@@ -77,12 +77,12 @@ describe('Organization management contract', () => {
   it('create org → update role → query members', () => {
     // Create
     const org = CreateOrgInputSchema.parse({
-      tenantSlug: 'cape-acep-local-123',
-      tenantName: 'CAPE-ACEP Local 123',
-      contactEmail: 'local123@cape-acep.ca',
+      slug: 'cape-acep-local-123',
+      name: 'CAPE-ACEP Local 123',
+      email: 'local123@cape-acep.ca',
       subscriptionTier: 'pro',
     });
-    expect(org.tenantSlug).toBe('cape-acep-local-123');
+    expect(org.slug).toBe('cape-acep-local-123');
 
     // Update role
     const roleUpdate = UpdateRoleInputSchema.parse({

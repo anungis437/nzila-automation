@@ -5,13 +5,9 @@
  * Used by client components to communicate with backend
  */
 
-// Use console for client-side logging to avoid importing Node.js-only os-core telemetry
-const logger = {
-  info: (msg: string, meta?: Record<string, unknown>) => console.info(`[api] ${msg}`, meta ?? ''),
-  error: (msg: string, meta?: Record<string, unknown>) => console.error(`[api] ${msg}`, meta ?? ''),
-  warn: (msg: string, meta?: Record<string, unknown>) => console.warn(`[api] ${msg}`, meta ?? ''),
-  debug: (msg: string, meta?: Record<string, unknown>) => console.debug(`[api] ${msg}`, meta ?? ''),
-}
+import { createClientLogger } from '@/lib/client-logger';
+
+const logger = createClientLogger('api');
 
 interface _RequestOptions {
   params?: Record<string, string | number | boolean | undefined>;

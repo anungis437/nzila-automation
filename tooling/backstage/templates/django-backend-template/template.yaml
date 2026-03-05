@@ -1,0 +1,46 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: django-backend-template
+  title: Django Backend (Nzila Golden Path)
+  description: >
+    Scaffold a Django REST Framework backend with evidence-first audit,
+    OpenTelemetry instrumentation, and org-scoped multi-tenancy.
+  tags:
+    - django
+    - python
+    - backend
+spec:
+  owner: platform-team
+  type: service
+  parameters:
+    - title: Backend Configuration
+      required: [name, description, parentApp]
+      properties:
+        name:
+          title: Backend Name
+          type: string
+          pattern: "^[a-z][a-z0-9-]*$"
+        description:
+          title: Description
+          type: string
+        parentApp:
+          title: Parent App
+          type: string
+          description: The Next.js app this backend supports (e.g., union-eyes, abr)
+        owner:
+          title: Owner
+          type: string
+          default: platform-team
+
+  steps:
+    - id: fetch-skeleton
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          parentApp: ${{ parameters.parentApp }}
+          owner: ${{ parameters.owner }}

@@ -49,18 +49,11 @@ import { CRON_API_ROUTES, isPublicRoute as isPublicApiRoute } from './lib/public
 
 // Edge-safe logger — os-core's createLogger uses Node.js APIs (process.stdout,
 // node:crypto, node:async_hooks) that are unavailable on the Edge Runtime.
-// Use console.* directly for the few log calls in middleware.
-const logger = {
-  warn(msg: string, meta?: Record<string, unknown>) {
-    console.warn(`[middleware] ${msg}`, meta ?? '');
-  },
-  info(msg: string, meta?: Record<string, unknown>) {
-    console.info(`[middleware] ${msg}`, meta ?? '');
-  },
-  error(msg: string, meta?: Record<string, unknown>) {
-    console.error(`[middleware] ${msg}`, meta ?? '');
-  },
-};
+// Uses the shared client-logger which works in Edge/browser runtimes.
+// In production, console-wrapper.ts intercepts and routes to Sentry.
+import { createClientLogger } from '@/lib/client-logger';
+
+const logger = createClientLogger('middleware');
 
 // ---------------------------------------------------------------------------
 // os-core telemetry – request-id propagation  (Edge-safe)

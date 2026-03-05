@@ -60,6 +60,8 @@ const eslintConfig = defineConfig([
         ],
       }],
       'prefer-const': 'warn',
+      // Prevent raw console.* in production code — use lib/logger or lib/client-logger
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       '@next/next/no-assign-module-variable': 'warn',
       // React 19 compiler rules — downgraded until UE code is fully aligned
       'react-hooks/rules-of-hooks': 'warn',

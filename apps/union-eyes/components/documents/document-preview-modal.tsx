@@ -385,8 +385,7 @@ setVersionHistory([]);
 
           {/* Sidebar with Tabs */}
           <div className="w-80 border-l pl-4">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="preview">
                   <Eye className="h-4 w-4" />

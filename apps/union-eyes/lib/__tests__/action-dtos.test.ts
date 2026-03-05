@@ -30,22 +30,22 @@ describe('UserRoleSchema', () => {
 
 describe('CreateOrgInputSchema', () => {
   const valid = {
-    tenantSlug: 'cape-acep',
-    tenantName: 'CAPE-ACEP',
-    contactEmail: 'admin@cape-acep.ca',
+    slug: 'cape-acep',
+    name: 'CAPE-ACEP',
+    email: 'admin@cape-acep.ca',
   };
 
   it('accepts valid input', () => {
     expect(() => CreateOrgInputSchema.parse(valid)).not.toThrow();
   });
 
-  it('rejects missing contactEmail', () => {
-    expect(() => CreateOrgInputSchema.parse({ tenantSlug: 'x', tenantName: 'X' })).toThrow();
+  it('rejects missing email', () => {
+    expect(() => CreateOrgInputSchema.parse({ slug: 'x', name: 'X' })).toThrow();
   });
 
   it('rejects invalid email', () => {
     expect(() =>
-      CreateOrgInputSchema.parse({ ...valid, contactEmail: 'not-email' }),
+      CreateOrgInputSchema.parse({ ...valid, email: 'not-email' }),
     ).toThrow();
   });
 
@@ -57,7 +57,7 @@ describe('CreateOrgInputSchema', () => {
 
 describe('UpdateOrgInputSchema', () => {
   it('accepts partial updates', () => {
-    expect(() => UpdateOrgInputSchema.parse({ tenantName: 'New Name' })).not.toThrow();
+    expect(() => UpdateOrgInputSchema.parse({ name: 'New Name' })).not.toThrow();
   });
 
   it('accepts empty object (all fields optional)', () => {

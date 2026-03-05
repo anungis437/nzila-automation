@@ -84,30 +84,24 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
 
   const enableAnalytics = () => {
     // Initialize analytics (e.g., Google Analytics)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).gtag("consent", "update", {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
         analytics_storage: "granted",
       });
     }
   };
 
   const disableAnalytics = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).gtag("consent", "update", {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
         analytics_storage: "denied",
       });
     }
   };
 
   const enableMarketing = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).gtag("consent", "update", {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
         ad_storage: "granted",
         ad_user_data: "granted",
         ad_personalization: "granted",
@@ -116,10 +110,8 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
   };
 
   const disableMarketing = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).gtag("consent", "update", {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
         ad_storage: "denied",
         ad_user_data: "denied",
         ad_personalization: "denied",

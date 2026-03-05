@@ -93,11 +93,10 @@ export function DocumentBulkOperations({
 
   if (selectedCount === 0) return null;
 
-  const handleOperation = async (type: string, action: () => Promise<void>) => {
+  const handleOperation = async (type: BulkOperation["type"], action: () => Promise<void>) => {
     setOperation({
       id: Date.now().toString(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      type: type as any,
+      type: type,
       status: "running",
       progress: 0,
       total: selectedCount,

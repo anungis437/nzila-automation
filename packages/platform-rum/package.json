@@ -1,0 +1,27 @@
+{
+  "name": "@nzila/platform-rum",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Real User Monitoring — Web Vitals collection with OpenTelemetry export",
+  "exports": {
+    ".": "./src/index.ts",
+    "./web-vitals": "./src/web-vitals.ts",
+    "./reporter": "./src/reporter.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@nzila/platform-observability": "workspace:*",
+    "web-vitals": "^4.2.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  }
+}

@@ -18,7 +18,7 @@ import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -173,7 +173,7 @@ export function FederationResourceLibrary({
   }, [resources, categoryFilter, searchQuery, sortBy]);
 
   const getCategoryBadge = (category: Resource["category"]) => {
-    const variants: Record<Resource["category"], { variant: string; label: string }> = {
+    const variants: Record<Resource["category"], { variant: BadgeProps["variant"]; label: string }> = {
       forms: { variant: "default", label: "Forms" },
       guides: { variant: "secondary", label: "Guides" },
       templates: { variant: "outline", label: "Templates" },
@@ -182,8 +182,7 @@ export function FederationResourceLibrary({
       training: { variant: "outline", label: "Training" }
     };
     const config = variants[category];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return <Badge variant={config.variant as any}>{config.label}</Badge>;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const getFileIcon = (_fileType: Resource["fileType"]) => {

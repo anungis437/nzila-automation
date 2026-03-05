@@ -1,0 +1,89 @@
+# Staging Environment Configuration
+# Nzila OS — GitOps
+
+environment: staging
+region: canadacentral
+resource_group: rg-nzila-staging
+
+container_apps:
+  environment: cae-nzila-staging
+  revision_mode: Multiple
+  min_replicas: 2
+  max_replicas: 5
+
+apps:
+  web:
+    image_tag: "${VERSION}"
+    port: 3000
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+      - name: NEXT_PUBLIC_APP_ENV
+        value: staging
+
+  console:
+    image_tag: "${VERSION}"
+    port: 3001
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  partners:
+    image_tag: "${VERSION}"
+    port: 3002
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  union-eyes:
+    image_tag: "${VERSION}"
+    port: 3003
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  abr:
+    image_tag: "${VERSION}"
+    port: 3004
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  orchestrator-api:
+    image_tag: "${VERSION}"
+    port: 4000
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+database:
+  sku: GP_Standard_D2ds_v5
+  storage_gb: 128
+  backup_retention_days: 14
+  high_availability: false
+
+redis:
+  sku: Standard
+  capacity: 1
+
+monitoring:
+  sampling_percentage: 50
+  retention_days: 60
+
+quotas:
+  max_orgs: 200
+  max_ai_requests_per_day: 50000
+  max_storage_gb: 500
+  max_compute_hours_per_day: 120

@@ -1,0 +1,95 @@
+app:
+  title: Nzila OS Developer Portal
+  baseUrl: http://localhost:3000
+
+organization:
+  name: Nzila
+
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
+  database:
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Domain, Template]
+  locations:
+    # Root system definition
+    - type: file
+      target: ../../catalog-info.yaml
+      rules:
+        - allow: [System, Domain, Resource]
+
+    # All 13 app entities
+    - type: file
+      target: ../../apps/web/catalog-info.yaml
+    - type: file
+      target: ../../apps/console/catalog-info.yaml
+    - type: file
+      target: ../../apps/partners/catalog-info.yaml
+    - type: file
+      target: ../../apps/union-eyes/catalog-info.yaml
+    - type: file
+      target: ../../apps/abr/catalog-info.yaml
+    - type: file
+      target: ../../apps/nacp-exams/catalog-info.yaml
+    - type: file
+      target: ../../apps/cora/catalog-info.yaml
+    - type: file
+      target: ../../apps/shop-quoter/catalog-info.yaml
+    - type: file
+      target: ../../apps/cfo/catalog-info.yaml
+    - type: file
+      target: ../../apps/trade/catalog-info.yaml
+    - type: file
+      target: ../../apps/pondu/catalog-info.yaml
+    - type: file
+      target: ../../apps/zonga/catalog-info.yaml
+    - type: file
+      target: ../../apps/orchestrator-api/catalog-info.yaml
+
+    # Golden Path Templates
+    - type: file
+      target: ../templates/nextjs-app-template/template.yaml
+      rules:
+        - allow: [Template]
+    - type: file
+      target: ../templates/fastify-service-template/template.yaml
+      rules:
+        - allow: [Template]
+    - type: file
+      target: ../templates/django-backend-template/template.yaml
+      rules:
+        - allow: [Template]
+    - type: file
+      target: ../templates/integration-package-template/template.yaml
+      rules:
+        - allow: [Template]
+
+techdocs:
+  builder: local
+  generator:
+    runIn: local
+  publisher:
+    type: local
+
+scaffolder:
+  defaultAuthor:
+    name: Nzila Platform
+    email: platform@nzila.app
+  defaultCommitMessage: "feat: scaffold new component via Backstage"

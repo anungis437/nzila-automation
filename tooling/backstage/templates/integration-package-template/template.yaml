@@ -1,0 +1,48 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: integration-package-template
+  title: Shared Package (Nzila Golden Path)
+  description: >
+    Scaffold a new shared TypeScript package with contract tests,
+    proper exports, and CI/CD integration.
+  tags:
+    - package
+    - typescript
+    - library
+spec:
+  owner: platform-team
+  type: library
+  parameters:
+    - title: Package Configuration
+      required: [name, description]
+      properties:
+        name:
+          title: Package Name
+          type: string
+          description: Package name without @nzila/ prefix (e.g., my-package)
+          pattern: "^[a-z][a-z0-9-]*$"
+        description:
+          title: Description
+          type: string
+        owner:
+          title: Owner
+          type: string
+          default: platform-team
+        exports:
+          title: Subpath Exports
+          type: string
+          description: Comma-separated subpath exports (e.g., client,types,utils)
+          default: "index"
+
+  steps:
+    - id: fetch-skeleton
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          exports: ${{ parameters.exports }}

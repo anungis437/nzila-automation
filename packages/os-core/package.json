@@ -43,7 +43,8 @@
     "./fin/key-lifecycle": "./src/fin/key-lifecycle.ts",
     "./audit": "./src/audit/index.ts",
     "./audit/abr": "./src/audit/abr.ts",
-    "./crypto/fips": "./src/crypto/fips.ts"
+    "./crypto/fips": "./src/crypto/fips.ts",
+    "./resilience": "./src/resilience/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

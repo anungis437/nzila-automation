@@ -1,0 +1,33 @@
+{
+  "name": "@nzila/${{ values.name }}",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port ${{ values.port }} --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.0.0",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/ui": "workspace:*",
+    "@nzila/observability": "workspace:*",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@nzila/ai-sdk": "workspace:*",
+    "@nzila/ml-sdk": "workspace:*",
+    "@nzila/config": "workspace:*",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  }
+}

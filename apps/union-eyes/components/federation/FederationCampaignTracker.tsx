@@ -17,7 +17,7 @@
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
@@ -128,7 +128,7 @@ export function FederationCampaignTracker({
   }, [campaigns, statusFilter, typeFilter]);
 
   const getTypeBadge = (type: Campaign["type"]) => {
-    const variants: Record<Campaign["type"], { variant: string; label: string }> = {
+    const variants: Record<Campaign["type"], { variant: BadgeProps["variant"]; label: string }> = {
       organizing: { variant: "default", label: "Organizing" },
       political: { variant: "secondary", label: "Political" },
       bargaining: { variant: "outline", label: "Bargaining" },
@@ -136,8 +136,7 @@ export function FederationCampaignTracker({
       solidarity: { variant: "default", label: "Solidarity" }
     };
     const config = variants[type];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return <Badge variant={config.variant as any}>{config.label}</Badge>;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const getStatusBadge = (status: Campaign["status"]) => {

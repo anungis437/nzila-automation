@@ -50,6 +50,12 @@
     "attest:build": "tsx scripts/attest-build.ts",
     "reproduce:evidence": "tsx scripts/reproduce-evidence.ts",
     "health:report": "tsx scripts/platform-health-report.ts",
+    "create-app": "tsx scripts/create-nzila-app.ts",
+    "link-check": "tsx scripts/link-check.ts",
+    "openapi:gen": "tsx tooling/openapi-gen/src/cli.ts",
+    "openapi:gen:yaml": "tsx tooling/openapi-gen/src/cli.ts --format yaml",
+    "build:baseline": "tsx scripts/build-baseline.ts",
+    "build:baseline:save": "tsx scripts/build-baseline.ts --save",
     "prepare": "lefthook install"
   },
   "devDependencies": {

@@ -79,6 +79,11 @@ export default defineConfig({
       'packages/platform-assurance',
       'packages/platform-rfp-generator',
       'packages/platform-utils',
+      // New gap-fill packages
+      'packages/platform-rum',
+      'packages/ai-registry',
+      // Tooling
+      'tooling/openapi-gen',
       // Contract tests (architectural invariants)
       'tooling/contract-tests',
     ],
