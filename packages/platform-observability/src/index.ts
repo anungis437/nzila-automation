@@ -29,6 +29,8 @@ export {
   extractCorrelationContext,
   buildCorrelationHeaders,
   createChildContext,
+  withCorrelation,
+  withFreshCorrelation,
 } from './correlation'
 
 // metrics

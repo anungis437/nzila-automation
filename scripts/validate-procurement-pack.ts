@@ -26,6 +26,7 @@ import {
   verifyZipSignature,
   getSigningKeyPair,
   createRealPorts,
+  collectSBOMReference,
 } from '@nzila/platform-procurement-proof'
 import type { ZipManifest, ZipSignature } from '@nzila/platform-procurement-proof'
 import { safeValidateSection } from '@nzila/platform-procurement-proof'
@@ -150,6 +151,44 @@ async function main() {
     ok('Ed25519 signature VALID')
   } else {
     fail('Ed25519 signature INVALID')
+  }
+
+  // ── Step 5: SBOM reference integrity ──────────────────────────────────
+  console.log('\n[5/5] Validating SBOM reference…')
+  const sbomRef = collectSBOMReference()
+
+  if (sbomRef.status === 'ok') {
+    ok('SBOM reference section collected')
+
+    // Validate the section envelope
+    const refResult = safeValidateSection(sbomRef)
+    if (refResult.success) {
+      ok('SBOM reference section schema valid')
+    } else {
+      fail(`SBOM reference section schema invalid: ${refResult.error.message}`)
+    }
+
+    // Cross-check hash against actual SBOM file
+    const sbomData = sbomRef.data as { sha256?: string; sbomPath?: string }
+    if (sbomData.sha256) {
+      const { existsSync, readFileSync } = await import('node:fs')
+      const { resolve } = await import('node:path')
+      const sbomFile = resolve(process.cwd(), sbomData.sbomPath ?? 'ops/security/sbom.json')
+      if (existsSync(sbomFile)) {
+        const liveHash = sha256(readFileSync(sbomFile, 'utf-8'))
+        if (liveHash === sbomData.sha256) {
+          ok(`SBOM hash verified: ${liveHash.slice(0, 16)}…`)
+        } else {
+          fail(`SBOM hash mismatch: ref=${sbomData.sha256.slice(0, 16)}… live=${liveHash.slice(0, 16)}…`)
+        }
+      } else {
+        fail(`SBOM file not found at ${sbomFile}`)
+      }
+    } else {
+      fail('SBOM reference missing sha256 field')
+    }
+  } else {
+    fail(`SBOM reference not available: ${JSON.stringify(sbomRef.data)}`)
   }
 
   // ── Summary ───────────────────────────────────────────────────────────

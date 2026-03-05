@@ -10,6 +10,24 @@
 import { z } from 'zod'
 
 /**
+ * Known section identifiers used across the procurement pack system.
+ * New sections must be registered here for schema-level validation.
+ */
+export const KNOWN_SECTION_NAMES = [
+  'security',
+  'dataLifecycle',
+  'operational',
+  'governance',
+  'sovereignty',
+  'supply_chain_integrity',
+  'build_attestation',
+  'evidence_reproducibility',
+  'sbom_reference',
+] as const
+
+export type SectionName = (typeof KNOWN_SECTION_NAMES)[number]
+
+/**
  * Standard procurement section envelope.
  *
  * Every section in a procurement pack must include:

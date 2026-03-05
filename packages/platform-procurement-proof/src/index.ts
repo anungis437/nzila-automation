@@ -80,14 +80,16 @@ export type {
 // schemas
 export {
   ProcurementSectionSchema,
+  KNOWN_SECTION_NAMES,
   validateSection,
   safeValidateSection,
 } from './schemas/section.schema'
-export type { ProcurementSection } from './schemas/section.schema'
+export type { ProcurementSection, SectionName } from './schemas/section.schema'
 
 // sections (enterprise hardening)
 export {
   collectSupplyChainIntegrity,
   collectBuildAttestation,
   collectEvidenceReproducibility,
+  collectSBOMReference,
 } from './sections'

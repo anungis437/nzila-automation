@@ -132,3 +132,62 @@ export function createChildContext(
     parentSpanId: parent.spanId,
   }
 }
+
+// ── Correlation Propagation Wrappers ────────────────────────────────────────
+
+/**
+ * Minimal request-like object for header extraction.
+ */
+interface IncomingRequest {
+  readonly headers: Record<string, string | string[] | undefined>
+}
+
+/**
+ * Wraps an async handler (API route, job worker, event handler) so that
+ * correlation context is automatically extracted from incoming headers
+ * and injected as the first argument.
+ *
+ * @example
+ *   const handler = withCorrelation(async (ctx, req, res) => {
+ *     // ctx.traceId, ctx.requestId, ctx.spanId available
+ *     const childHeaders = buildCorrelationHeaders(createChildContext(ctx))
+ *     await fetch(downstream, { headers: childHeaders })
+ *   })
+ */
+export function withCorrelation<
+  TArgs extends [IncomingRequest, ...unknown[]],
+  TReturn,
+>(
+  handler: (ctx: CorrelationContext, ...args: TArgs) => Promise<TReturn>,
+): (...args: TArgs) => Promise<TReturn> {
+  return async (...args: TArgs): Promise<TReturn> => {
+    const [req] = args
+    const ctx = extractCorrelationContext(req.headers)
+    return handler(ctx, ...args)
+  }
+}
+
+/**
+ * Wraps an async job/event handler that does not have request headers.
+ * Creates a fresh root correlation context for the execution scope.
+ *
+ * @example
+ *   const process = withFreshCorrelation(async (ctx, event) => {
+ *     // ctx is a brand-new root context for this job
+ *   })
+ */
+export function withFreshCorrelation<
+  TArgs extends unknown[],
+  TReturn,
+>(
+  handler: (ctx: CorrelationContext, ...args: TArgs) => Promise<TReturn>,
+): (...args: TArgs) => Promise<TReturn> {
+  return async (...args: TArgs): Promise<TReturn> => {
+    const ctx: CorrelationContext = {
+      requestId: generateRequestId(),
+      traceId: generateTraceId(),
+      spanId: generateSpanId(),
+    }
+    return handler(ctx, ...args)
+  }
+}
