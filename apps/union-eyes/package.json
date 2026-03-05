@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:services": "vitest run services/",
     "e2e": "playwright test",
     "clean": "rm -rf .next .turbo node_modules",
     "db:generate": "drizzle-kit generate",

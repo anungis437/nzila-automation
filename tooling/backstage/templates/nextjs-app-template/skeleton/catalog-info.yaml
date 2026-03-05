@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: ${{ values.description }}
+  annotations:
+    github.com/project-slug: anungis437/nzila-os
+    backstage.io/techdocs-ref: dir:./docs
+    nzila.app/port: "${{ values.port }}"
+    nzila.app/stack: nextjs
+    nzila.app/tenant-scoped: "${{ values.tenantScoped }}"
+spec:
+  type: service
+  lifecycle: production
+  owner: ${{ values.owner }}
+  system: nzila-os
+  dependsOn:
+    - resource:default/postgres-db
+    - resource:default/azure-blob

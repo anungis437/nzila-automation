@@ -13,18 +13,8 @@ import { requireAdmin } from '@/lib/auth/rbac-server';
 import { db } from '@/db/db';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { organizationUsers } from "@/db/schema/domains/member";
-// TODO: org-management-schema does not exist; orgs/orgConfigurations/orgUsage tables
-// need migration to organizations schema. Importing from schema-organizations via barrel.
-import { organizations } from "@/db/schema";
-
-// Temporary aliases so the rest of the file compiles during migration
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const orgs = organizations as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const orgConfigurations = null as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const orgUsage = null as any;
-import { eq, and, desc, sql, count, like, or, isNull } from "drizzle-orm";
+import { organizations, orgConfigurations, orgUsage } from "@/db/schema";
+import { eq, and, desc, sql, count, like, or, ne, sum } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import type {
@@ -50,27 +40,26 @@ export async function getSystemStats(tx: NodePgDatabase<any>): Promise<SystemSta
       .from(organizationUsers)
       .where(eq(organizationUsers.isActive, true));
 
-    // Total orgs
+    // Total orgs (exclude archived)
     const totalOrgsResult = await tx
       .select({ count: count() })
-      .from(orgs)
-      .where(isNull(orgs.deletedAt));
+      .from(organizations)
+      .where(ne(organizations.status, 'archived'));
 
     // Active orgs
     const activeOrgsResult = await tx
       .select({ count: count() })
-      .from(orgs)
+      .from(organizations)
       .where(and(
-        eq(orgs.status, "active"),
-        isNull(orgs.deletedAt)
+        eq(organizations.status, "active"),
+        ne(organizations.status, 'archived')
       ));
 
-    // Total storage used (sum from org_usage)
+    // Aggregate storage across all org usage records
     const storageResult = await tx
-      .select({ 
-        total: sql<string>`COALESCE(SUM(${orgUsage.storageUsedGb}), 0)` 
-      })
+      .select({ total: sql<number>`COALESCE(SUM(${orgUsage.storageUsedBytes}), 0)` })
       .from(orgUsage);
+    const totalStorage = storageResult[0]?.total || 0;
 
     // Users active in last 24 hours
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -86,7 +75,7 @@ export async function getSystemStats(tx: NodePgDatabase<any>): Promise<SystemSta
       totalMembers: totalMembersResult[0]?.count || 0,
       totalOrgs: totalOrgsResult[0]?.count || 0,
       activeOrgs: activeOrgsResult[0]?.count || 0,
-      totalStorage: parseFloat(storageResult[0]?.total || "0"),
+      totalStorage: totalStorage,
       activeToday: activeTodayResult[0]?.count || 0,
     };
   } catch (error) {
@@ -108,7 +97,7 @@ export async function getAdminUsers(
 ): Promise<AdminUser[]> {
   try {
     // Build filter conditions
-    const conditions = [isNull(orgs.deletedAt)];
+    const conditions = [ne(organizations.status, 'archived')];
     
     if (organizationId) {
       conditions.push(eq(organizationUsers.organizationId, organizationId));
@@ -122,7 +111,7 @@ export async function getAdminUsers(
       conditions.push(
         or(
           like(organizationUsers.userId, `%${searchQuery}%`),
-          like(orgs.tenantName, `%${searchQuery}%`)
+          like(organizations.name, `%${searchQuery}%`)
         )!
       );
     }
@@ -132,13 +121,13 @@ export async function getAdminUsers(
         userId: organizationUsers.userId,
         role: organizationUsers.role,
         organizationId: organizationUsers.organizationId,
-        orgName: orgs.tenantName,
+        orgName: organizations.name,
         isActive: organizationUsers.isActive,
         lastAccessAt: organizationUsers.lastAccessAt,
         joinedAt: organizationUsers.joinedAt,
       })
       .from(organizationUsers)
-      .innerJoin(orgs, eq(orgs.tenantId, organizationUsers.organizationId))
+      .innerJoin(organizations, eq(organizations.id, organizationUsers.organizationId))
       .where(and(...conditions))
       .orderBy(desc(organizationUsers.lastAccessAt));
 
@@ -169,28 +158,28 @@ export async function getAdminOrgs(searchQuery?: string): Promise<OrgWithStats[]
     // Build where conditions
     const whereConditions = searchQuery
       ? and(
-          isNull(orgs.deletedAt),
+          ne(organizations.status, 'archived'),
           or(
-            like(orgs.tenantName, `%${searchQuery}%`),
-            like(orgs.tenantSlug, `%${searchQuery}%`)
+            like(organizations.name, `%${searchQuery}%`),
+            like(organizations.slug, `%${searchQuery}%`)
           )!
         )
-      : isNull(orgs.deletedAt);
+      : ne(organizations.status, 'archived');
 
     const orgList = await db
       .select({
-        orgId: orgs.tenantId,
-        orgSlug: orgs.tenantSlug,
-        orgName: orgs.tenantName,
-        status: orgs.status,
-        subscriptionTier: orgs.subscriptionTier,
-        contactEmail: orgs.contactEmail,
-        phone: orgs.phone,
-        createdAt: orgs.createdAt,
+        orgId: organizations.id,
+        orgSlug: organizations.slug,
+        orgName: organizations.name,
+        status: organizations.status,
+        subscriptionTier: organizations.subscriptionTier,
+        contactEmail: organizations.email,
+        phone: organizations.phone,
+        createdAt: organizations.createdAt,
       })
-      .from(orgs)
+      .from(organizations)
       .where(whereConditions)
-      .orderBy(desc(orgs.createdAt));
+      .orderBy(desc(organizations.createdAt));
 
     // Get user counts for each org
     const orgsWithStats = await Promise.all(
@@ -203,22 +192,24 @@ export async function getAdminOrgs(searchQuery?: string): Promise<OrgWithStats[]
           .from(organizationUsers)
           .where(eq(organizationUsers.organizationId, org.orgId));
 
+        // Get latest storage usage for this org
         const [usage] = await db
-          .select({ storageUsed: orgUsage.storageUsedGb })
+          .select({ bytes: orgUsage.storageUsedBytes })
           .from(orgUsage)
-          .where(eq(orgUsage.tenantId, org.orgId))
+          .where(eq(orgUsage.organizationId, org.orgId))
           .orderBy(desc(orgUsage.periodEnd))
           .limit(1);
+        const storageUsed = String(usage?.bytes ?? 0);
 
         return {
           id: org.orgId,
           slug: org.orgSlug,
           name: org.orgName,
-          status: org.status,
-          subscriptionTier: org.subscriptionTier,
+          status: org.status ?? 'active',
+          subscriptionTier: org.subscriptionTier ?? 'free',
           totalUsers: userCount?.total || 0,
           activeUsers: userCount?.active || 0,
-          storageUsed: usage?.storageUsed || "0",
+          storageUsed: storageUsed,
           createdAt: org.createdAt?.toISOString() || "",
           contactEmail: org.contactEmail,
           phone: org.phone,
@@ -353,8 +344,8 @@ export async function deleteUserFromOrg(
 export async function updateOrg(
   organizationId: string,
   data: {
-    tenantName?: string;
-    contactEmail?: string;
+    name?: string;
+    email?: string;
     phone?: string;
     status?: string;
     subscriptionTier?: string;
@@ -364,12 +355,12 @@ export async function updateOrg(
     await requireAdmin();
 
     await db
-      .update(orgs)
+      .update(organizations)
       .set({
         ...data,
         updatedAt: new Date()
       })
-      .where(eq(orgs.tenantId, organizationId));
+      .where(eq(organizations.id, organizationId));
 
     logger.info("Org updated", { organizationId, data });
 
@@ -384,9 +375,9 @@ export async function updateOrg(
  * Create new org
  */
 export async function createOrg(data: {
-  tenantSlug: string;
-  tenantName: string;
-  contactEmail: string;
+  slug: string;
+  name: string;
+  email: string;
   phone?: string;
   subscriptionTier?: string;
 }): Promise<string> {
@@ -394,22 +385,25 @@ export async function createOrg(data: {
     await requireAdmin();
 
     const [org] = await db
-      .insert(orgs)
+      .insert(organizations)
       .values({
-        tenantSlug: data.tenantSlug,
-        tenantName: data.tenantName,
-        contactEmail: data.contactEmail,
+        slug: data.slug,
+        name: data.name,
+        email: data.email,
         phone: data.phone,
         subscriptionTier: data.subscriptionTier || "free",
         status: "active",
+        organizationType: "union",
+        hierarchyPath: [],
+        hierarchyLevel: 0,
       })
-      .returning({ tenantId: orgs.tenantId });
+      .returning({ id: organizations.id });
 
-    logger.info("Org created", { orgId: org.tenantId, data });
+    logger.info("Org created", { orgId: org.id, data });
 
     revalidatePath("/[locale]/dashboard/admin");
 
-    return org.tenantId;
+    return org.id;
   } catch (error) {
     logger.error("Failed to create org", error);
     throw new Error("Failed to create organization");
@@ -423,15 +417,11 @@ export async function createOrg(data: {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getSystemConfigs(tx: NodePgDatabase<any>, category?: string): Promise<SystemConfig[]> {
   try {
-    // Build where conditions
-    const whereConditions = category
-      ? and(
-          eq(orgConfigurations.isEncrypted, false),
-          eq(orgConfigurations.category, category)
-        )
-      : eq(orgConfigurations.isEncrypted, false);
+    const conditions = category
+      ? eq(orgConfigurations.category, category)
+      : undefined;
 
-    const configs = await tx
+    const rows = await tx
       .select({
         category: orgConfigurations.category,
         key: orgConfigurations.key,
@@ -439,17 +429,18 @@ export async function getSystemConfigs(tx: NodePgDatabase<any>, category?: strin
         description: orgConfigurations.description,
       })
       .from(orgConfigurations)
-      .where(whereConditions);
+      .where(conditions)
+      .orderBy(orgConfigurations.category, orgConfigurations.key);
 
-    return configs.map(c => ({
-      category: c.category,
-      key: c.key,
-      value: c.value,
-      description: c.description,
+    return rows.map((r) => ({
+      category: r.category,
+      key: r.key,
+      value: r.value,
+      description: r.description,
     }));
   } catch (error) {
-    logger.error("Failed to fetch system configs", error);
-    throw new Error("Failed to fetch configurations");
+    logger.error('Failed to fetch system configs', error);
+    throw new Error('Failed to fetch system configurations');
   }
 }
 
@@ -463,52 +454,41 @@ export async function updateSystemConfig(
   organizationId: string,
   category: string,
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any
+  value: unknown
 ): Promise<void> {
   try {
-    // Check if config exists
-    const [existing] = await tx
-      .select()
+    // Upsert: update existing or insert new config
+    const existing = await tx
+      .select({ id: orgConfigurations.id })
       .from(orgConfigurations)
-      .where(and(
-        eq(orgConfigurations.tenantId, organizationId),
-        eq(orgConfigurations.category, category),
-        eq(orgConfigurations.key, key)
-      ))
+      .where(
+        and(
+          eq(orgConfigurations.organizationId, organizationId),
+          eq(orgConfigurations.category, category),
+          eq(orgConfigurations.key, key),
+        ),
+      )
       .limit(1);
 
-    if (existing) {
-      // Update existing
+    if (existing.length > 0) {
       await tx
         .update(orgConfigurations)
-        .set({ 
-          value,
-          updatedAt: new Date()
-        })
-        .where(eq(orgConfigurations.configId, existing.configId));
+        .set({ value, updatedAt: new Date() })
+        .where(eq(orgConfigurations.id, existing[0].id));
     } else {
-      // Create new
-      await tx
-        .insert(orgConfigurations)
-        .values({
-          tenantId: organizationId,
-          category,
-          key,
-          value,
-        });
+      await tx.insert(orgConfigurations).values({
+        organizationId,
+        category,
+        key,
+        value,
+      });
     }
 
-    logger.info("System config updated", {
-      organizationId,
-      category,
-      key,
-    });
-
-    revalidatePath("/[locale]/dashboard/admin");
+    logger.info('System config updated', { organizationId, category, key });
+    revalidatePath('/[locale]/dashboard/admin');
   } catch (error) {
-    logger.error("Failed to update system config", error);
-    throw new Error("Failed to update configuration");
+    logger.error('Failed to update system config', error);
+    throw new Error('Failed to update system configuration');
   }
 }
 
@@ -523,13 +503,13 @@ export async function getRecentActivity(tx: NodePgDatabase<any>, limit: number =
     const recentUsers = await tx
       .select({
         userId: organizationUsers.userId,
-        orgName: orgs.tenantName,
+        orgName: organizations.name,
         role: organizationUsers.role,
         joinedAt: organizationUsers.joinedAt,
       })
       .from(organizationUsers)
-      .innerJoin(orgs, eq(orgs.tenantId, organizationUsers.organizationId))
-      .where(isNull(orgs.deletedAt))
+      .innerJoin(organizations, eq(organizations.id, organizationUsers.organizationId))
+      .where(ne(organizations.status, 'archived'))
       .orderBy(desc(organizationUsers.joinedAt))
       .limit(limit);
 

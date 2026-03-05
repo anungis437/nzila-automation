@@ -1,0 +1,93 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nextjs-app-template
+  title: Next.js App (Nzila Golden Path)
+  description: >
+    Scaffold a new Next.js application with Clerk auth, Tailwind v4,
+    OpenTelemetry instrumentation, and evidence-first governance.
+  tags:
+    - nextjs
+    - typescript
+    - recommended
+spec:
+  owner: platform-team
+  type: service
+  parameters:
+    - title: App Configuration
+      required: [name, description, port]
+      properties:
+        name:
+          title: App Name
+          type: string
+          description: Kebab-case name (e.g., my-app)
+          pattern: "^[a-z][a-z0-9-]*$"
+          ui:autofocus: true
+        description:
+          title: Description
+          type: string
+          description: Brief description of the app's purpose
+        port:
+          title: Dev Port
+          type: number
+          description: Local development port (3000-3099)
+          minimum: 3000
+          maximum: 3099
+        owner:
+          title: Owner
+          type: string
+          description: Team that owns this app
+          default: platform-team
+        tenantScoped:
+          title: Tenant-Scoped
+          type: boolean
+          description: Whether the app requires orgId scoping
+          default: true
+
+    - title: Dependencies
+      properties:
+        needsDatabase:
+          title: Needs Database
+          type: boolean
+          default: true
+        needsBlobStorage:
+          title: Needs Azure Blob Storage
+          type: boolean
+          default: false
+        needsAiSdk:
+          title: Needs AI SDK
+          type: boolean
+          default: false
+        needsPayments:
+          title: Needs Stripe Payments
+          type: boolean
+          default: false
+
+  steps:
+    - id: fetch-skeleton
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          port: ${{ parameters.port }}
+          owner: ${{ parameters.owner }}
+          tenantScoped: ${{ parameters.tenantScoped }}
+          needsDatabase: ${{ parameters.needsDatabase }}
+          needsBlobStorage: ${{ parameters.needsBlobStorage }}
+          needsAiSdk: ${{ parameters.needsAiSdk }}
+          needsPayments: ${{ parameters.needsPayments }}
+
+    - id: publish
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        catalogInfoUrl: apps/${{ parameters.name }}/catalog-info.yaml
+
+  output:
+    links:
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['publish'].output.entityRef }}

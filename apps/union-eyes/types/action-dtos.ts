@@ -69,17 +69,17 @@ export interface ActivityLogEntry {
 }
 
 export const CreateOrgInputSchema = z.object({
-  tenantSlug: z.string().min(1).max(100),
-  tenantName: z.string().min(1).max(255),
-  contactEmail: z.string().email(),
+  slug: z.string().min(1).max(100),
+  name: z.string().min(1).max(255),
+  email: z.string().email(),
   phone: z.string().optional(),
   subscriptionTier: z.string().optional(),
 });
 export type CreateOrgInput = z.infer<typeof CreateOrgInputSchema>;
 
 export const UpdateOrgInputSchema = z.object({
-  tenantName: z.string().min(1).max(255).optional(),
-  contactEmail: z.string().email().optional(),
+  name: z.string().min(1).max(255).optional(),
+  email: z.string().email().optional(),
   phone: z.string().optional(),
   status: z.string().optional(),
   subscriptionTier: z.string().optional(),

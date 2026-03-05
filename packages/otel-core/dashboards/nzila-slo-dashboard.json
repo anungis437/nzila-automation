@@ -1,0 +1,184 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "name": "Deployments",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Nzila OS — SLO dashboard with burn-rate alerts",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "SLO Overview — All Services",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "1 - (sum(rate(http_requests_total{status=~\"5..\"}[30d])) by (service) / sum(rate(http_requests_total[30d])) by (service))",
+          "legendFormat": "{{service}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Error Budget Remaining — Console",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "1 - ((1 - (sum(rate(http_requests_total{service=\"console\",status!~\"5..\"}[30d])) / sum(rate(http_requests_total{service=\"console\"}[30d])))) / 0.001)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "orange", "value": 0.25 },
+              { "color": "green", "value": 0.5 }
+            ]
+          },
+          "unit": "percentunit",
+          "max": 1,
+          "min": 0
+        }
+      }
+    },
+    {
+      "title": "Error Budget Remaining — Orchestrator API",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 8 },
+      "targets": [
+        {
+          "expr": "1 - ((1 - (sum(rate(http_requests_total{service=\"orchestrator-api\",status!~\"5..\"}[30d])) / sum(rate(http_requests_total{service=\"orchestrator-api\"}[30d])))) / 0.0001)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "orange", "value": 0.25 },
+              { "color": "green", "value": 0.5 }
+            ]
+          },
+          "unit": "percentunit",
+          "max": 1,
+          "min": 0
+        }
+      }
+    },
+    {
+      "title": "Burn Rate — 6h Window (Fast Burn)",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "(sum(rate(http_requests_total{status=~\"5..\"}[6h])) by (service) / sum(rate(http_requests_total[6h])) by (service)) / 0.001",
+          "legendFormat": "{{service}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "orange", "value": 6 },
+              { "color": "red", "value": 14.4 }
+            ]
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
+        }
+      }
+    },
+    {
+      "title": "P99 Latency by Service",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))",
+          "legendFormat": "{{service}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "orange", "value": 0.2 },
+              { "color": "red", "value": 0.5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Cost Attribution by Tenant",
+      "type": "piechart",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 26 },
+      "targets": [
+        {
+          "expr": "sum(nzila_cost_usd_total) by (tenant_id)",
+          "legendFormat": "{{tenant_id}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "AI Model Invocations by Risk Tier",
+      "type": "barchart",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 26 },
+      "targets": [
+        {
+          "expr": "sum(rate(nzila_ai_invocations_total[1h])) by (model_id, risk_tier)",
+          "legendFormat": "{{model_id}} ({{risk_tier}})",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["nzila", "slo", "observability"],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "query": "label_values(http_requests_total, service)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "environment",
+        "type": "query",
+        "query": "label_values(http_requests_total, environment)",
+        "multi": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "title": "Nzila OS — SLO & Observability",
+  "uid": "nzila-slo-dashboard",
+  "version": 1
+}

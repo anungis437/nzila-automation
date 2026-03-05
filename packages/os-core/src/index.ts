@@ -13,6 +13,7 @@ export * from './retention/index'
 // Disambiguate: retention/policies has the authoritative RetentionClass (superset of evidence's version)
 export { RetentionClass } from './retention/policies'
 export { assertBootInvariants } from './boot-assert'
+export * from './resilience/index'
 export {
   checkIdempotency,
   InMemoryIdempotencyCache,

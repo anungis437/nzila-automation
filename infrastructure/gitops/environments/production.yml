@@ -1,0 +1,119 @@
+# Production Environment Configuration
+# Nzila OS — GitOps
+
+environment: production
+region: canadacentral
+resource_group: rg-nzila-prod
+
+container_apps:
+  environment: cae-nzila-prod
+  revision_mode: Multiple
+  min_replicas: 3
+  max_replicas: 20
+
+apps:
+  web:
+    image_tag: "${VERSION}"
+    port: 3000
+    cpu: 1.0
+    memory: 2Gi
+    scale_rules:
+      - name: http-requests
+        type: http
+        metadata:
+          concurrentRequests: "50"
+    env:
+      - name: NODE_ENV
+        value: production
+      - name: NEXT_PUBLIC_APP_ENV
+        value: production
+
+  console:
+    image_tag: "${VERSION}"
+    port: 3001
+    cpu: 1.0
+    memory: 2Gi
+    scale_rules:
+      - name: http-requests
+        type: http
+        metadata:
+          concurrentRequests: "30"
+    env:
+      - name: NODE_ENV
+        value: production
+
+  partners:
+    image_tag: "${VERSION}"
+    port: 3002
+    cpu: 0.5
+    memory: 1Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  union-eyes:
+    image_tag: "${VERSION}"
+    port: 3003
+    cpu: 1.0
+    memory: 2Gi
+    scale_rules:
+      - name: http-requests
+        type: http
+        metadata:
+          concurrentRequests: "40"
+    env:
+      - name: NODE_ENV
+        value: production
+
+  abr:
+    image_tag: "${VERSION}"
+    port: 3004
+    cpu: 1.0
+    memory: 2Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  cfo:
+    image_tag: "${VERSION}"
+    port: 3008
+    cpu: 1.0
+    memory: 2Gi
+    env:
+      - name: NODE_ENV
+        value: production
+
+  orchestrator-api:
+    image_tag: "${VERSION}"
+    port: 4000
+    cpu: 1.0
+    memory: 2Gi
+    scale_rules:
+      - name: http-requests
+        type: http
+        metadata:
+          concurrentRequests: "100"
+    env:
+      - name: NODE_ENV
+        value: production
+
+database:
+  sku: GP_Standard_D4ds_v5
+  storage_gb: 512
+  backup_retention_days: 35
+  high_availability: true
+  geo_redundant_backup: true
+
+redis:
+  sku: Premium
+  capacity: 1
+
+monitoring:
+  sampling_percentage: 25
+  retention_days: 90
+
+quotas:
+  max_orgs: 10000
+  max_ai_requests_per_day: 1000000
+  max_storage_gb: 10000
+  max_compute_hours_per_day: 5000

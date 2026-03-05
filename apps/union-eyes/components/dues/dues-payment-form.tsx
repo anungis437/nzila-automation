@@ -122,8 +122,7 @@ setError('An unexpected error occurred');
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <Label>Payment Amount</Label>
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <RadioGroup value={paymentType} onValueChange={(val) => setPaymentType(val as any)}>
+            <RadioGroup value={paymentType} onValueChange={(val) => setPaymentType(val as typeof paymentType)}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="current" id="current" />
                 <Label htmlFor="current" className="font-normal">

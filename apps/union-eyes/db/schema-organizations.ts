@@ -366,6 +366,80 @@ export const documentsOrganizationMigration = {
 };
 
 // =====================================================
+// ORGANIZATION CONFIGURATIONS TABLE
+// Per-org key/value settings grouped by category
+// =====================================================
+
+export const orgConfigurations = pgTable(
+  'org_configurations',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id, { onDelete: 'cascade' }),
+    category: text('category').notNull(),
+    key: text('key').notNull(),
+    value: jsonb('value'),
+    description: text('description'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+    updatedBy: uuid('updated_by'),
+  },
+  (table) => ({
+    orgCategoryKeyIdx: uniqueIndex('idx_org_configurations_org_cat_key').on(
+      table.organizationId,
+      table.category,
+      table.key,
+    ),
+    orgIdx: index('idx_org_configurations_org').on(table.organizationId),
+  }),
+);
+
+export const orgConfigurationsRelations = relations(orgConfigurations, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [orgConfigurations.organizationId],
+    references: [organizations.id],
+  }),
+}));
+
+// =====================================================
+// ORGANIZATION USAGE TABLE
+// Tracks per-org resource consumption (storage, API calls, etc.)
+// =====================================================
+
+export const orgUsage = pgTable(
+  'org_usage',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id, { onDelete: 'cascade' }),
+    storageUsedBytes: integer('storage_used_bytes').notNull().default(0),
+    documentCount: integer('document_count').notNull().default(0),
+    apiCallCount: integer('api_call_count').notNull().default(0),
+    lastCalculatedAt: timestamp('last_calculated_at', { withTimezone: true }).defaultNow(),
+    periodStart: timestamp('period_start', { withTimezone: true }).notNull(),
+    periodEnd: timestamp('period_end', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    orgPeriodIdx: uniqueIndex('idx_org_usage_org_period').on(
+      table.organizationId,
+      table.periodStart,
+      table.periodEnd,
+    ),
+    orgIdx: index('idx_org_usage_org').on(table.organizationId),
+  }),
+);
+
+export const orgUsageRelations = relations(orgUsage, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [orgUsage.organizationId],
+    references: [organizations.id],
+  }),
+}));
+
+// =====================================================
 // TYPE EXPORTS
 // =====================================================
 
@@ -375,6 +449,10 @@ export type OrganizationRelationship = typeof organizationRelationships.$inferSe
 export type NewOrganizationRelationship = typeof organizationRelationships.$inferInsert;
 export type OrganizationMember = typeof organizationMembers.$inferSelect;
 export type NewOrganizationMember = typeof organizationMembers.$inferInsert;
+export type OrgConfiguration = typeof orgConfigurations.$inferSelect;
+export type NewOrgConfiguration = typeof orgConfigurations.$inferInsert;
+export type OrgUsage = typeof orgUsage.$inferSelect;
+export type NewOrgUsage = typeof orgUsage.$inferInsert;
 
 // =====================================================
 // HELPER TYPE GUARDS

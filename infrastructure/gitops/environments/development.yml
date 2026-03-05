@@ -1,0 +1,61 @@
+# Development Environment Configuration
+# Nzila OS — GitOps
+
+environment: development
+region: canadacentral
+resource_group: rg-nzila-dev
+
+container_apps:
+  environment: cae-nzila-dev
+  revision_mode: Single
+  min_replicas: 1
+  max_replicas: 2
+
+apps:
+  web:
+    image_tag: latest
+    port: 3000
+    cpu: 0.25
+    memory: 0.5Gi
+    env:
+      - name: NODE_ENV
+        value: development
+      - name: NEXT_PUBLIC_APP_ENV
+        value: development
+
+  console:
+    image_tag: latest
+    port: 3001
+    cpu: 0.25
+    memory: 0.5Gi
+    env:
+      - name: NODE_ENV
+        value: development
+
+  orchestrator-api:
+    image_tag: latest
+    port: 4000
+    cpu: 0.25
+    memory: 0.5Gi
+    env:
+      - name: NODE_ENV
+        value: development
+
+database:
+  sku: B_Standard_B1ms
+  storage_gb: 32
+  backup_retention_days: 7
+
+redis:
+  sku: Basic
+  capacity: 0
+
+monitoring:
+  sampling_percentage: 100
+  retention_days: 30
+
+quotas:
+  max_orgs: 50
+  max_ai_requests_per_day: 10000
+  max_storage_gb: 100
+  max_compute_hours_per_day: 24

@@ -1,0 +1,59 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: fastify-service-template
+  title: Fastify API Service (Nzila Golden Path)
+  description: >
+    Scaffold a new Fastify API service with OpenTelemetry, helmet security,
+    rate limiting, and evidence-first governance.
+  tags:
+    - fastify
+    - api
+    - typescript
+spec:
+  owner: platform-team
+  type: service
+  parameters:
+    - title: Service Configuration
+      required: [name, description, port]
+      properties:
+        name:
+          title: Service Name
+          type: string
+          pattern: "^[a-z][a-z0-9-]*$"
+        description:
+          title: Description
+          type: string
+        port:
+          title: Dev Port
+          type: number
+          minimum: 3100
+          maximum: 3199
+        owner:
+          title: Owner
+          type: string
+          default: platform-team
+
+  steps:
+    - id: fetch-skeleton
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          port: ${{ parameters.port }}
+          owner: ${{ parameters.owner }}
+
+    - id: publish
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        catalogInfoUrl: apps/${{ parameters.name }}/catalog-info.yaml
+
+  output:
+    links:
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['publish'].output.entityRef }}

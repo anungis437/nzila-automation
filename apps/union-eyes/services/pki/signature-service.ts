@@ -359,8 +359,7 @@ export async function createSignatureRequest(
     const _newWorkflow = await db.insert(signatureWorkflows).values({
       id: workflowId,
       organizationId,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      documentId: documentId as any,
+      documentId,
       name: `Signature Request - ${documentType}`,
       description: `Multi-party signature workflow for ${documentType} document`,
       status: 'draft',
@@ -369,14 +368,12 @@ export async function createSignatureRequest(
       totalSigners: sortedSigners.length,
       completedSignatures: 0,
       expiresAt: dueDate,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      createdBy: requesterId as any,
+      createdBy: requesterId,
       workflowData: {
         requesterName,
         signings: sortedSigners,
         documentType,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
+      },
     }).returning();
 
     // Create signer records with email lookup

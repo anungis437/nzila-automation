@@ -1,0 +1,36 @@
+{
+  "name": "@nzila/otel-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Base OpenTelemetry SDK configuration with evidence correlation and cost attribution",
+  "exports": {
+    ".": "./src/index.ts",
+    "./spans": "./src/spans.ts",
+    "./cost": "./src/cost-attribution.ts",
+    "./evidence": "./src/evidence-correlation.ts",
+    "./slo": "./src/slo.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-observability": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "optionalDependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-node": "^0.57.0",
+    "@opentelemetry/sdk-trace-base": "^1.30.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+    "@opentelemetry/resources": "^1.30.0",
+    "@opentelemetry/semantic-conventions": "^1.30.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  }
+}

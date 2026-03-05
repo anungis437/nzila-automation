@@ -10,6 +10,12 @@
       "expiresOn": "2026-09-01"
     },
     {
+      "path": "apps/union-eyes/lib/client-logger.ts",
+      "owner": "platform-team",
+      "justification": "Client-safe logger wraps console.* as the browser output sink — console calls here ARE the structured output.",
+      "expiresOn": "2026-09-01"
+    },
+    {
       "path": "apps/union-eyes/lib/console-wrapper.ts",
       "owner": "platform-team",
       "justification": "Console-wrapper intentionally stores and overrides console methods to route them to structured logger in production.",
