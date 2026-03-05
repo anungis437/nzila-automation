@@ -21,12 +21,33 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.0
         version: 2.29.8(@types/node@25.3.3)
+      '@nzila/platform-assurance':
+        specifier: workspace:*
+        version: link:packages/platform-assurance
+      '@nzila/platform-compliance-snapshots':
+        specifier: workspace:*
+        version: link:packages/platform-compliance-snapshots
+      '@nzila/platform-evidence-pack':
+        specifier: workspace:*
+        version: link:packages/platform-evidence-pack
+      '@nzila/platform-observability':
+        specifier: workspace:*
+        version: link:packages/platform-observability
       '@nzila/platform-ops':
         specifier: workspace:*
         version: link:packages/platform-ops
       '@nzila/platform-performance':
         specifier: workspace:*
         version: link:packages/platform-performance
+      '@nzila/platform-procurement-proof':
+        specifier: workspace:*
+        version: link:packages/platform-procurement-proof
+      '@nzila/platform-rfp-generator':
+        specifier: workspace:*
+        version: link:packages/platform-rfp-generator
+      '@nzila/platform-utils':
+        specifier: workspace:*
+        version: link:packages/platform-utils
       '@tailwindcss/oxide':
         specifier: ^4.2.0
         version: 4.2.1
@@ -21295,7 +21316,7 @@ snapshots:
 
   '@types/mysql@2.15.26':
     dependencies:
-      '@types/node': 22.19.13
+      '@types/node': 25.3.3
     optional: true
 
   '@types/mysql@2.15.27':

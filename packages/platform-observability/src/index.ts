@@ -48,3 +48,15 @@ export {
   HealthChecker,
 } from './health'
 export type { HealthCheckFn, HealthCheckConfig } from './health'
+
+// structured logger
+export {
+  StructuredLogger,
+  createLogger,
+} from './logger'
+export type {
+  Severity,
+  StructuredLogEntry,
+  LoggerContext,
+  LogSink,
+} from './logger'

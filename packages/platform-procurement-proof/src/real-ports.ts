@@ -8,6 +8,7 @@
  * @module @nzila/platform-procurement-proof/real-ports
  */
 import { createHash, randomUUID } from 'node:crypto'
+import { resolve } from 'node:path'
 import { createLogger } from '@nzila/os-core/telemetry'
 import { nowISO } from '@nzila/platform-utils/time'
 import { getSigningKeyPair } from './zip-exporter'
@@ -35,10 +36,10 @@ const logger = createLogger('procurement-real-ports')
 // ── Port Dependencies ───────────────────────────────────────────────────────
 
 export interface RealPortsDeps {
-  readonly evidencePack: EvidencePackCollectorPorts
-  readonly complianceSnapshots: ComplianceSnapshotCollectorPorts
-  readonly integrations: IntegrationsHealthPorts
-  readonly observability: ObservabilityCollectorPorts
+  readonly evidencePack?: EvidencePackCollectorPorts
+  readonly complianceSnapshots?: ComplianceSnapshotCollectorPorts
+  readonly integrations?: IntegrationsHealthPorts
+  readonly observability?: ObservabilityCollectorPorts
   readonly rootDir?: string
   readonly sovereignty?: {
     readonly deploymentRegion: string
@@ -52,11 +53,15 @@ export interface RealPortsDeps {
 
 /**
  * Create ProcurementProofPorts backed by real platform collectors.
+ * When called without deps (or with partial deps), provides safe stubs
+ * suitable for validation/CI contexts.
  */
-export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
+export function createRealPorts(deps?: Partial<RealPortsDeps>): ProcurementProofPorts {
+  const resolved = deps ?? {}
+  const rootDir = resolved.rootDir ?? resolve(import.meta.dirname ?? __dirname, '..')
   return {
     async getSecurityPosture(orgId: string): Promise<SecurityPosture> {
-      const depPosture = await collectDependencyPosture(orgId, deps.rootDir)
+      const depPosture = await collectDependencyPosture(orgId, rootDir)
       const now = nowISO()
 
       if (depPosture.status === 'not_available' || !depPosture.data) {
@@ -141,7 +146,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
     },
 
     async getOperationalEvidence(orgId: string): Promise<OperationalEvidence> {
-      const obsSummary = await collectObservabilitySummary(orgId, deps.observability)
+      const obsSummary = await collectObservabilitySummary(orgId, resolved.observability as ObservabilityCollectorPorts)
       const now = nowISO()
 
       const p95 = obsSummary.data?.p95LatencyMs ?? null
@@ -177,8 +182,8 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
 
     async getGovernanceEvidence(orgId: string): Promise<GovernanceEvidence> {
       const [evidenceResult, complianceResult] = await Promise.all([
-        collectLatestEvidencePack(orgId, deps.evidencePack),
-        collectLatestComplianceSnapshots(orgId, deps.complianceSnapshots),
+        collectLatestEvidencePack(orgId, resolved.evidencePack as EvidencePackCollectorPorts),
+        collectLatestComplianceSnapshots(orgId, resolved.complianceSnapshots as ComplianceSnapshotCollectorPorts),
       ])
 
       return {
@@ -195,7 +200,7 @@ export function createRealPorts(deps: RealPortsDeps): ProcurementProofPorts {
 
     async getSovereigntyProfile(_orgId: string): Promise<SovereigntyProfile> {
       const now = nowISO()
-      const sov = deps.sovereignty ?? {
+      const sov = resolved.sovereignty ?? {
         deploymentRegion: 'Canada Central',
         dataResidency: 'Canada',
         regulatoryFrameworks: ['PIPEDA', 'Québec Law 25'],

@@ -1,0 +1,159 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-03-05T01:27:57Z",
+  "commitHash": "071d667a504b2fd295f4cf6794e8b5a05fa63220",
+  "overallStatus": "degraded",
+  "subsystems": [
+    {
+      "name": "audit",
+      "status": "degraded",
+      "checks": [
+        {
+          "check": "compliance-snapshot-module",
+          "passed": true,
+          "detail": "Compliance snapshots package exists"
+        },
+        {
+          "check": "evidence-pack-module",
+          "passed": true,
+          "detail": "Evidence pack package exists"
+        },
+        {
+          "check": "hash-chain-module",
+          "passed": false,
+          "detail": "Hash chain integrity module exists"
+        },
+        {
+          "check": "audit-log-schema",
+          "passed": false,
+          "detail": "Audit log database schema present"
+        }
+      ],
+      "timestamp": "2026-03-05T01:27:57Z"
+    },
+    {
+      "name": "policy-engine",
+      "status": "healthy",
+      "checks": [
+        {
+          "check": "policy-engine-module",
+          "passed": true,
+          "detail": "Policy engine package exists"
+        },
+        {
+          "check": "slo-policy",
+          "passed": true,
+          "detail": "SLO policy definition present"
+        },
+        {
+          "check": "cost-policy",
+          "passed": true,
+          "detail": "Cost policy definition present"
+        },
+        {
+          "check": "dependency-policy",
+          "passed": true,
+          "detail": "Dependency policy definition present"
+        }
+      ],
+      "timestamp": "2026-03-05T01:27:57Z"
+    },
+    {
+      "name": "integrations",
+      "status": "healthy",
+      "checks": [
+        {
+          "check": "integrations-core",
+          "passed": true,
+          "detail": "Integration core package present"
+        },
+        {
+          "check": "integrations-runtime",
+          "passed": true,
+          "detail": "Integration runtime package present"
+        },
+        {
+          "check": "integration-policy",
+          "passed": true,
+          "detail": "Integration policy definition present"
+        },
+        {
+          "check": "contract-tests",
+          "passed": true,
+          "detail": "Contract test configuration present"
+        }
+      ],
+      "timestamp": "2026-03-05T01:27:57Z"
+    },
+    {
+      "name": "evidence-system",
+      "status": "healthy",
+      "checks": [
+        {
+          "check": "evidence-pack-module",
+          "passed": true,
+          "detail": "Evidence pack generator present"
+        },
+        {
+          "check": "procurement-proof-module",
+          "passed": true,
+          "detail": "Procurement proof package present"
+        },
+        {
+          "check": "sbom-script",
+          "passed": true,
+          "detail": "SBOM generation script present"
+        },
+        {
+          "check": "attest-build-script",
+          "passed": true,
+          "detail": "Build attestation script present"
+        },
+        {
+          "check": "reproduce-evidence-script",
+          "passed": true,
+          "detail": "Evidence reproducibility script present"
+        }
+      ],
+      "timestamp": "2026-03-05T01:27:57Z"
+    },
+    {
+      "name": "procurement-pack",
+      "status": "healthy",
+      "checks": [
+        {
+          "check": "validate-pack-script",
+          "passed": true,
+          "detail": "Procurement pack validation script present"
+        },
+        {
+          "check": "supply-chain-section",
+          "passed": true,
+          "detail": "Supply chain integrity section present"
+        },
+        {
+          "check": "build-attestation-section",
+          "passed": true,
+          "detail": "Build attestation section present"
+        },
+        {
+          "check": "evidence-reproducibility-section",
+          "passed": true,
+          "detail": "Evidence reproducibility section present"
+        },
+        {
+          "check": "build-attestation-artifact",
+          "passed": true,
+          "detail": "Build attestation artifact present"
+        },
+        {
+          "check": "sbom-artifact",
+          "passed": true,
+          "detail": "SBOM artifact present"
+        }
+      ],
+      "timestamp": "2026-03-05T01:27:57Z"
+    }
+  ],
+  "digest": "30a2db196a207438ac5c361c887080fb9d9362eadc4cd1e35cafd0ff35077a8a"
+}
