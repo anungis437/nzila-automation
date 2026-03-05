@@ -379,6 +379,9 @@ jobs:
       - name: Generate platform health report
         run: pnpm health:report
 
+      - name: Generate build attestation
+        run: pnpm attest:build
+
       - name: Upload attestation artifacts
         if: always()
         uses: actions/upload-artifact@v7
@@ -386,6 +389,8 @@ jobs:
           name: enterprise-hardening-artifacts
           path: |
             ops/security/sbom.json
+            ops/security/build-attestation.json
             ops/outputs/platform-health.json
+            ops/outputs/procurement-pack-*.zip
           retention-days: 90
 

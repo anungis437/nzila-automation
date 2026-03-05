@@ -6,3 +6,4 @@
 export { collectSupplyChainIntegrity } from './supply-chain-integrity'
 export { collectBuildAttestation } from './build-attestation'
 export { collectEvidenceReproducibility } from './evidence-reproducibility'
+export { collectSBOMReference } from './sbom-reference'
