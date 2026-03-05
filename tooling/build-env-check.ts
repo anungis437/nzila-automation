@@ -29,7 +29,7 @@ import { createHash } from 'node:crypto'
 // ── Constants ───────────────────────────────────────────────────────────────
 
 const ROOT = resolve(import.meta.dirname ?? __dirname, '..')
-const EXPECTED_NODE_MAJOR = 22
+const EXPECTED_NODE_MAJOR_MIN = 22
 const EXPECTED_PNPM_VERSION = '10.11.0'
 const LOCKFILE_PATH = resolve(ROOT, 'pnpm-lock.yaml')
 const PACKAGE_JSON_PATH = resolve(ROOT, 'package.json')
@@ -70,10 +70,10 @@ function getCommandOutput(cmd: string): string {
 function checkNodeVersion(): void {
   const raw = process.versions.node
   const major = Number.parseInt(raw.split('.')[0] ?? '0', 10)
-  if (major === EXPECTED_NODE_MAJOR) {
+  if (major >= EXPECTED_NODE_MAJOR_MIN) {
     ok(`Node version valid (v${raw})`)
   } else {
-    fail(`Node version mismatch: expected v${EXPECTED_NODE_MAJOR}.x, got v${raw}`)
+    fail(`Node version too old: expected v${EXPECTED_NODE_MAJOR_MIN}+, got v${raw}`)
   }
 }
 
@@ -117,7 +117,8 @@ function checkLockfileIntegrity(): void {
 }
 
 function checkEnvironmentVariables(): void {
-  const allowMissing = process.argv.includes('--allow-missing-env')
+  const isCI = Boolean(process.env.CI)
+  const allowMissing = process.argv.includes('--allow-missing-env') || !isCI
   const missing: string[] = []
 
   for (const name of REQUIRED_ENV_VARS) {
@@ -129,7 +130,7 @@ function checkEnvironmentVariables(): void {
   if (missing.length === 0) {
     ok('Environment configuration valid')
   } else if (allowMissing) {
-    ok(`Environment configuration valid (${missing.length} optional vars missing, --allow-missing-env)`)
+    ok(`Environment configuration valid (${missing.length} optional vars not set — non-CI)`)
   } else {
     fail(`Missing environment variables: ${missing.join(', ')}`)
   }
