@@ -11,7 +11,8 @@
     "./correlation": "./src/correlation.ts",
     "./metrics": "./src/metrics.ts",
     "./span": "./src/span.ts",
-    "./health": "./src/health.ts"
+    "./health": "./src/health.ts",
+    "./logger": "./src/logger.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

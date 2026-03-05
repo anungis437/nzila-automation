@@ -62,7 +62,7 @@ async function main() {
   console.log('[1/4] Generating procurement pack…')
   const ports = createRealPorts()
   const unsigned = await collectProcurementPack('validation-org', 'validate-script', ports)
-  const pack = signProcurementPack(unsigned)
+  const pack = await signProcurementPack(unsigned, ports)
 
   if (pack.packId) {
     ok(`Pack generated: ${pack.packId}`)

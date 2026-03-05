@@ -11,7 +11,8 @@
     "./zip-exporter": "./src/zip-exporter.ts",
     "./collectors": "./src/collectors/index.ts",
     "./real-ports": "./src/real-ports.ts",
-    "./schemas": "./src/schemas/section.schema.ts"
+    "./schemas": "./src/schemas/section.schema.ts",
+    "./sections": "./src/sections/index.ts"
   },
   "scripts": {
     "test": "vitest run",
