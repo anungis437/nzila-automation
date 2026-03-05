@@ -70,7 +70,7 @@ class Event(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event_type = models.CharField(max_length=64, choices=EVENT_TYPES, db_index=True)
-    org_id = models.UUIDField(db_index=True, help_text="Tenant organization ID")
+    org_id = models.UUIDField(db_index=True, help_text="Organization ID")
     actor_id = models.CharField(
         max_length=255,
         help_text="User ID or 'system' for automated events",

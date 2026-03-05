@@ -112,7 +112,7 @@ export async function calculateMetrics(params: {
         break;
         
       case 'member_growth':
-        // SECURITY FIX: Wrap with RLS context for tenant isolation
+        // SECURITY FIX: Wrap with RLS context for org isolation
         const membersCount = await withRLSContext({ organizationId: orgId }, async (db) =>
           db.query.organizationMembers.findMany({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,7 +136,7 @@ export async function calculateMetrics(params: {
     const previousPeriodEnd = new Date(params.periodStart);
     const previousPeriodStart = new Date(params.periodStart.getTime() - periodDuration);
     
-    // SECURITY FIX: Wrap with RLS context for tenant isolation
+    // SECURITY FIX: Wrap with RLS context for org isolation
     const previousMetric = await withRLSContext({ organizationId: orgId }, async (db) =>
       db.query.analyticsMetrics.findFirst({
         where: (metrics, { and, eq, gte, lte }) => and(

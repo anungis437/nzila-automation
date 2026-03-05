@@ -182,7 +182,7 @@ export async function evaluateFeature(
         return evaluatePercentageFlag(flag, context);
       
       case 'tenant':
-        return evaluateTenantFlag(flag, context);
+        return evaluateOrgFlag(flag, context);
       
       case 'user':
         return evaluateUserFlag(flag, context);
@@ -252,29 +252,29 @@ function evaluatePercentageFlag(
 }
 
 /**
- * Evaluate tenant/organization-specific flag
+ * Evaluate org/organization-specific flag
  */
-function evaluateTenantFlag(
+function evaluateOrgFlag(
   flag: FeatureFlag,
   context: FeatureFlagContext
 ): FeatureFlagResult {
-  const allowedTenants = flag.allowedOrganizations as string[] | null;
+  const allowedOrgs = flag.allowedOrganizations as string[] | null;
   
-  if (!allowedTenants || allowedTenants.length === 0) {
+  if (!allowedOrgs || allowedOrgs.length === 0) {
     return {
       enabled: false,
-      reason: 'No tenants configured',
+      reason: 'No organizations configured',
     };
   }
   
   if (!context.organizationId) {
     return {
       enabled: false,
-      reason: 'OrganizationId required for tenant flag',
+      reason: 'OrganizationId required for org flag',
     };
   }
   
-  const enabled = allowedTenants.includes(context.organizationId);
+  const enabled = allowedOrgs.includes(context.organizationId);
   
   return {
     enabled,
@@ -382,7 +382,7 @@ export async function upsertFeatureFlag(
     enabled: boolean;
     description?: string;
     percentage?: number;
-    allowedTenants?: string[];
+    allowedOrgs?: string[];
     allowedUsers?: string[];
     tags?: string[];
   },

@@ -1,7 +1,7 @@
 """
 Integration Control Plane — DRF viewsets.
 
-All endpoints enforce tenant isolation via ``request.organization_id``.
+All endpoints enforce org isolation via ``request.organization_id``.
 """
 
 from rest_framework import permissions, status, viewsets

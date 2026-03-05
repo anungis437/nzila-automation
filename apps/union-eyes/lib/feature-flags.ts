@@ -7,7 +7,7 @@
  * Usage:
  * - Boolean: if (features.newClaimFlow.enabled) { ... }
  * - Percentage: if (features.mlPredictions.isEnabled(userId)) { ... }
- * - Tenant: if (features.smsNotifications.isEnabledForTenant(orgId)) { ... }
+ * - Org: if (features.smsNotifications.isEnabledForOrg(orgId)) { ... }
  */
 
 import { cache } from 'react';
@@ -16,14 +16,14 @@ import { featureFlags } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
-export type FlagType = 'boolean' | 'percentage' | 'tenant' | 'user';
+export type FlagType = 'boolean' | 'percentage' | 'tenant' /* DB-stored value */ | 'user';
 
 export interface FeatureFlag {
   name: string;
   type: FlagType;
   enabled: boolean;
   percentage?: number;
-  allowedTenants?: string[];
+  allowedOrgs?: string[];
   allowedUsers?: string[];
   description?: string;
   tags?: string[];
@@ -86,44 +86,44 @@ export class PercentageFlag {
 }
 
 /**
- * Tenant flag - enable for specific organizations
+ * Org flag - enable for specific organizations
  */
-export class TenantFlag {
+export class OrgFlag {
   constructor(
     private name: string,
     private defaultEnabled: boolean = false
   ) {}
 
-  isEnabledForTenant(organizationId: string): boolean {
+  isEnabledForOrg(organizationId: string): boolean {
     const config = getFeatureConfig(this.name);
     if (!config?.enabled) return false;
     
-    if (!config.allowedTenants || config.allowedTenants.length === 0) {
+    if (!config.allowedOrgs || config.allowedOrgs.length === 0) {
       return this.defaultEnabled;
     }
     
-    return config.allowedTenants.includes(organizationId);
+    return config.allowedOrgs.includes(organizationId);
   }
 
-  async enableForTenant(organizationId: string): Promise<void> {
-    const config = getFeatureConfig(this.name) || { allowedTenants: [] };
-    const tenants = config.allowedTenants || [];
+  async enableForOrg(organizationId: string): Promise<void> {
+    const config = getFeatureConfig(this.name) || { allowedOrgs: [] };
+    const orgs = config.allowedOrgs || [];
     
-    if (!tenants.includes(organizationId)) {
+    if (!orgs.includes(organizationId)) {
       await updateFeatureFlag(this.name, {
         enabled: true,
-        allowedTenants: [...tenants, organizationId]
+        allowedOrgs: [...orgs, organizationId]
       });
     }
   }
 
-  async disableForTenant(organizationId: string): Promise<void> {
+  async disableForOrg(organizationId: string): Promise<void> {
     const config = getFeatureConfig(this.name);
-    if (!config?.allowedTenants) return;
+    if (!config?.allowedOrgs) return;
 
     await updateFeatureFlag(this.name, {
       enabled: true,
-      allowedTenants: config.allowedTenants.filter(id => id !== organizationId)
+      allowedOrgs: config.allowedOrgs.filter(id => id !== organizationId)
     });
   }
 }
@@ -164,7 +164,7 @@ export const refreshFeatureFlags = cache(async () => {
         type: flag.type as FlagType,
         enabled: flag.enabled,
         percentage: flag.percentage || undefined,
-        allowedTenants: flag.allowedOrganizations as string[] | undefined,
+        allowedOrgs: flag.allowedOrganizations as string[] | undefined,
         allowedUsers: flag.allowedUsers as string[] | undefined,
         description: flag.description || undefined,
       });
@@ -239,11 +239,11 @@ export const features = {
   
   // Member Features
   selfServeOnboarding: new BooleanFlag('self-serve-onboarding', false),
-  memberPortalV2: new TenantFlag('member-portal-v2', false),
+  memberPortalV2: new OrgFlag('member-portal-v2', false),
   mobileApp: new BooleanFlag('mobile-app', false),
   
   // Analytics
-  realTimeAnalytics: new TenantFlag('realtime-analytics', true),
+  realTimeAnalytics: new OrgFlag('realtime-analytics', true),
   advancedReporting: new BooleanFlag('advanced-reporting', true),
   
   // Integrations

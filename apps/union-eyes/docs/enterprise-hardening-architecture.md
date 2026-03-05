@@ -217,7 +217,7 @@ GET        /api/compliance/snapshots/{id}/verify/  (single snapshot integrity)
 ### Rate Limiting (`middleware/rate_limiter.py`)
 Three-tier sliding-window throttling:
 - **IP-based:** 120 req/min (burst protection)
-- **Organization-based:** 1,000 req/min (tenant fairness)
+- **Organization-based:** 1,000 req/min (org fairness)
 - **API-key-based:** 300 req/min (per-key limits)
 
 Uses Redis sorted sets for accurate sliding windows (fallback to Django cache

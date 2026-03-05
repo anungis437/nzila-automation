@@ -271,7 +271,7 @@ return {
     // Build WHERE clause (filters)
     const whereConditions: SQL[] = [];
     
-    // Add tenant/organization filter
+    // Add organization filter
     whereConditions.push(sql`${safeTableName(baseTable)}.organization_id = ${this.organizationId}`);
 
     if (config.filters && config.filters.length > 0) {

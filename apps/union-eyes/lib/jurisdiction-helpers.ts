@@ -47,11 +47,11 @@ return null;
 }
 
 /**
- * Get tenant's jurisdiction (via organization lookup)
+ * Get org's jurisdiction (via organization lookup)
  */
-export async function getTenantJurisdiction(organizationId: string): Promise<CAJurisdiction | null> {
+export async function getOrgJurisdiction(organizationId: string): Promise<CAJurisdiction | null> {
   try {
-    // First try to get from organizations table directly if tenant_id matches org_id
+    // Look up from organizations table
     const result = await db.execute(sql`
       SELECT jurisdiction 
       FROM organizations 

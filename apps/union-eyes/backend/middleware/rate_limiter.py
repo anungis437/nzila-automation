@@ -3,7 +3,7 @@ Rate-Limiting Middleware.
 
 Provides configurable throttling at three levels:
   1. **IP-based** — global burst protection
-  2. **Organization-based** — fair-use across tenants
+  2. **Organization-based** — fair-use across organizations
   3. **API-key-based** — per-key limits
 
 Uses Django's cache framework (Redis-backed) with a sliding-window counter.

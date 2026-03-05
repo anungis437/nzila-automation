@@ -50,7 +50,7 @@ def emit_event(
     event_type : str
         One of the ``Event.EVENT_TYPES`` values.
     org_id : str
-        Organization UUID (tenant scoping).
+        Organization UUID (org scoping).
     actor_id : str
         User UUID or ``"system"`` for automated events.
     payload : dict, optional

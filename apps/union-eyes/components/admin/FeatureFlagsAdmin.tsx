@@ -228,8 +228,8 @@ function FlagCard({
         </div>
       </CardHeader>
       
-      {/* allowedOrgs mapped from legacy allowedTenants column */}
-      {(flag.percentage !== null || flag.allowedTenants || flag.tags) && (
+      {/* allowedOrgs mapped from DB allowedOrganizations column */}
+      {(flag.percentage !== null || flag.allowedOrgs || flag.tags) && (
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             {flag.percentage !== null && flag.percentage !== undefined && (
@@ -241,10 +241,10 @@ function FlagCard({
               </div>
             )}
             
-            {flag.allowedTenants && flag.allowedTenants.length > 0 && (
+            {flag.allowedOrgs && flag.allowedOrgs.length > 0 && (
               <div>
                 <dt className="font-medium text-muted-foreground">Allowed Organizations</dt>
-                <dd className="mt-1">{flag.allowedTenants.length} organizations</dd>
+                <dd className="mt-1">{flag.allowedOrgs.length} organizations</dd>
               </div>
             )}
             

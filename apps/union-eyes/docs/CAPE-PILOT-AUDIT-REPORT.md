@@ -185,7 +185,7 @@ The UnionEyes API surface contains **~120 route groups** across the following do
 | `/api/cases/evidence` | GET, POST | Clerk JWT | Proxied to Django | Yes | Evidence pack creation |
 | `/api/cases/outcomes` | GET, POST | Clerk JWT | Proxied to Django | Yes | Settlement records |
 | `/api/cases/timeline` | GET, POST | Clerk JWT | Proxied to Django | Yes | Timeline entries |
-| `/api/workflow/overdue` | GET | `requireApiAuth` + roles: admin/steward | `tenant: true` | No (read) | None |
+| `/api/workflow/overdue` | GET | `requireApiAuth` + roles: admin/steward | `org: true` | No (read) | None |
 
 #### Member Management
 
@@ -249,7 +249,7 @@ UnionEyes uses a **dual ORM architecture**:
 
 ### Core Entities
 
-| Entity | Django Model | Drizzle Schema | Tenant Isolation | Indexes |
+| Entity | Django Model | Drizzle Schema | Org Isolation | Indexes |
 |--------|-------------|---------------|------------------|---------|
 | **Organizations** | `auth_core.Organizations` | `schema-organizations.ts` | Self (root entity) | 7 indexes; `clerk_organization_id` unique |
 | **Users/Profiles** | `auth_core.Profiles`, `Users` | `profiles-schema.ts` | `user_id` via RLS policy | RLS SELECT/UPDATE/DELETE policies |
@@ -264,7 +264,7 @@ UnionEyes uses a **dual ORM architecture**:
 | **Settlements** | `grievances.Settlements` | `grievance-schema.ts` | Via grievance FK | 7 settlement types |
 | **Arbitrations** | `grievances.Arbitrations` | `grievance-schema.ts` | Via grievance FK | 8 arbitration statuses |
 
-### Multi-Tenant Isolation Design
+### Multi-Org Isolation Design
 
 **Three-layer enforcement:**
 
@@ -339,7 +339,7 @@ Members (10):
 | Layer | Mechanism | Evidence |
 |-------|-----------|----------|
 | **Edge** | `clerkMiddleware` + route matchers | `middleware.ts` — public/protected routes |
-| **API routes** | `requireApiAuth({roles, tenant})` | `/api/workflow/overdue/route.ts` |
+| **API routes** | `requireApiAuth({roles, org})` | `/api/workflow/overdue/route.ts` |
 | **Server Actions** | `"use server"` + `auth()` | `actions/*.ts` |
 | **Django API** | `permissions.IsAuthenticated` + `OrgScopedMixin` | All DRF ViewSets |
 | **Database** | RLS policies: `current_setting('app.current_user_id')` | `profiles-schema.ts` |
@@ -601,7 +601,7 @@ All three Next.js webhook routes proxy to Django's health-check endpoint:
 
 | Control | Status | Evidence |
 |---------|--------|----------|
-| Tenant isolation | ✅ Three-layer | Edge middleware → Django OrgScopedMixin → PostgreSQL RLS |
+| Org isolation | ✅ Three-layer | Edge middleware → Django OrgScopedMixin → PostgreSQL RLS |
 | Row-level security | ✅ Implemented | `withRLSContext()` sets `SET LOCAL` session vars |
 | Mutation logging | ✅ Implemented | `AuditLogMiddleware` auto-logs + hash chain |
 | Delete protection | ✅ Implemented | RLS DELETE policy `USING (false)` on profiles |
@@ -663,7 +663,7 @@ All three Next.js webhook routes proxy to Django's health-check endpoint:
 | **Permission bypass attempts** | 3-layer auth + contract tests | ✅ Prevented | `privilege-escalation.test.ts`; `cross-org-auth.test.ts` |
 | **Data corruption** | Hash-chained audit logs + evidence sealing | ✅ Detected | `verifyChain()` + `verifySeal()` |
 | **Duplicate mutations** | Idempotency-Key + DB constraints | ✅ Prevented | Unique constraints on case numbers, grievance numbers |
-| **Cross-tenant access** | Edge + Django + RLS isolation | ✅ Prevented | 3-layer isolation; `org-isolation.test.ts` + `org-isolation-stress.test.ts` |
+| **Cross-org access** | Edge + Django + RLS isolation | ✅ Prevented | 3-layer isolation; `org-isolation.test.ts` + `org-isolation-stress.test.ts` |
 
 ---
 
@@ -739,7 +739,7 @@ Comparison against [UnionOS](https://union.dev/union-os) feature set:
 | **Training** | ✅ Listed | ✅ `education-training-schema.ts`, education routes | **Parity** |
 | **Events** | ✅ Listed | ✅ `calendar-schema.ts`, events routes, calendar sync integration | **Parity** |
 | **Governance** | — | ✅ Evidence packs, hash-chained audit, golden share governance, SBOM, compliance | **Ahead** — enterprise-grade governance |
-| **Multi-tenant hierarchy** | — | ✅ CLC → Federation → Union → Local with materialized paths | **Ahead** — Canadian union hierarchy |
+| **Multi-org hierarchy** | — | ✅ CLC → Federation → Union → Local with materialized paths | **Ahead** — Canadian union hierarchy |
 | **AI/ML capabilities** | — | ✅ AI triage (`ai_score`, `merit_confidence`), ML predictions, precedent analysis | **Ahead** — no equivalent in UnionOS |
 | **Break-glass recovery** | — | ✅ Shamir's Secret Sharing, Swiss cold storage, quarterly DR drills | **Ahead** — enterprise continuity |
 
@@ -753,7 +753,7 @@ UnionEyes significantly exceeds UnionOS in governance, AI/ML capabilities, audit
 
 ### Architecture
 
-**Q: How is tenant isolation enforced?**
+**Q: How is org isolation enforced?**
 
 Three-layer enforcement verified by contract tests:
 
@@ -765,7 +765,7 @@ Three-layer enforcement verified by contract tests:
    - *Evidence:* `lib/db/with-rls-context.ts` — `withRLSContext()`
    - Contract test: `org-isolation.test.ts`, `org-isolation-stress.test.ts`
 
-**Q: What prevents cross-tenant access?**
+**Q: What prevents cross-org access?**
 
 - RLS policies filter queries at database level → no application-layer bypass possible
 - `withRLSContext()` requires both `userId` AND `orgId`; fails if either is missing
@@ -777,7 +777,7 @@ Three-layer enforcement verified by contract tests:
 
 At every layer:
 - Edge: `clerkMiddleware()` + public/protected route matchers
-- API: `requireApiAuth({roles, tenant})` with role-based guards
+- API: `requireApiAuth({roles, org})` with role-based guards
 - Server Actions: `auth()` check in every action file
 - Django: `permissions.IsAuthenticated` on all ViewSets
 - os-core: `authorize()` function with scope checking
@@ -889,7 +889,7 @@ At every layer:
 | Category | Score (0–10) | Justification |
 |----------|:----:|---------------|
 | **Technical Capability** | **8** | Dual FSM workflow engine, 18 claim types, 13 grievance statuses, AI triage, CBA management, Canadian union hierarchy. Minor: two overlapping FSMs create complexity. |
-| **Security & Compliance** | **9** | 3-layer tenant isolation, hash-chained audit, evidence sealing, RLS, SBOM, dependency scanning, secret scanning, CodeQL, container scanning. Minor: debug route in production, serializer field exposure. |
+| **Security & Compliance** | **9** | 3-layer org isolation, hash-chained audit, evidence sealing, RLS, SBOM, dependency scanning, secret scanning, CodeQL, container scanning. Minor: debug route in production, serializer field exposure. |
 | **Governance & Transparency** | **9** | Evidence pack pipeline with Merkle trees, HMAC sealing, lifecycle FSM, 3-tier redaction, 7 evidence collectors, hash chain integrity verification. Industry-leading. |
 | **Operational Maturity** | **7** | SLO policies defined, 15 CI/CD workflows, incident response playbooks, Celery-backed background processing. Gaps: 100% server trace sampling, perf budgets disabled, alert dispatch not wired. |
 | **Vendor Risk** | **7** | Strong architecture but: dual ORM complexity, Clerk vendor dependency, Django migration artifacts. Mitigated by comprehensive contract tests. |
@@ -957,7 +957,7 @@ At every layer:
 
 ### **Pilot Ready with Minor Fixes**
 
-UnionEyes demonstrates **exceptional architectural maturity** that exceeds most enterprise SaaS platforms. The evidence-first governance model, three-layer tenant isolation, hash-chained audit trail, and 120+ contract test suite provide a level of assurance rarely seen even in established enterprise vendors.
+UnionEyes demonstrates **exceptional architectural maturity** that exceeds most enterprise SaaS platforms. The evidence-first governance model, three-layer org isolation, hash-chained audit trail, and 120+ contract test suite provide a level of assurance rarely seen even in established enterprise vendors.
 
 The platform successfully implements **all 8 CAPE pilot workflow steps** and matches or exceeds UnionOS on 9 of 10 competitive dimensions.
 
@@ -982,7 +982,7 @@ The platform successfully implements **all 8 CAPE pilot workflow steps** and mat
 | P0 | Remove `/api/auth/debug-role` from public routes | 1 hour | Security hole closed |
 | P0 | Set Sentry `tracesSampleRate` to 0.1 in production | 1 hour | Performance + PII risk reduction |
 | P0 | Disable `sendDefaultPii` or configure PII scrubbing | 2 hours | Privacy compliance |
-| P1 | Change `OrgScopedMixin` default to `require_org_scope = True` | 1 day | Fail-closed tenant isolation |
+| P1 | Change `OrgScopedMixin` default to `require_org_scope = True` | 1 day | Fail-closed org isolation |
 | P1 | Add explicit field lists to all DRF serializers | 2 days | Prevent sensitive field exposure |
 | P1 | Fix settlement type typo (`' reinstatement'` → `'reinstatement'`) | 1 hour | Data integrity |
 
