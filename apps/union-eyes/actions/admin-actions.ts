@@ -27,51 +27,15 @@ const orgUsage = null as any;
 import { eq, and, desc, sql, count, like, or, isNull } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import type {
+  UserRole,
+  AdminUser,
+  OrgWithStats,
+  SystemStats,
+  SystemConfig,
+} from '@/types/action-dtos';
 
-// Type definitions
-export type UserRole = "member" | "steward" | "officer" | "admin";
-
-interface AdminUser {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  organizationId: string;
-  orgName: string;
-  status: "active" | "inactive";
-  lastLogin: string | null;
-  joinedAt: string | null;
-}
-
-interface OrgWithStats {
-  id: string;
-  slug: string;
-  name: string;
-  status: string;
-  subscriptionTier: string;
-  totalUsers: number;
-  activeUsers: number;
-  storageUsed: string;
-  createdAt: string;
-  contactEmail: string | null;
-  phone: string | null;
-}
-
-interface SystemStats {
-  totalMembers: number;
-  totalOrgs: number;
-  activeOrgs: number;
-  totalStorage: number;
-  activeToday: number;
-}
-
-interface SystemConfig {
-  category: string;
-  key: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any;
-  description: string | null;
-}
+export type { UserRole } from '@/types/action-dtos';
 
 /**
  * Get system-wide statistics

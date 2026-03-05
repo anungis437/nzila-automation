@@ -68,8 +68,7 @@ export async function calculateMetrics(params: {
     // Calculate metric value based on type
     let metricValue: number;
     let metricUnit: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let metadata: any = {};
+    let metadata: Record<string, unknown> = {};
     
     switch (params.metricType) {
       case 'claims_volume':
@@ -217,8 +216,7 @@ export async function generatePredictions(params: {
     const timeSeriesData: TimeSeriesData[] = historicalMetrics.reverse().map((m: any) => ({
       date: m.periodStart,
       value: Number(m.metricValue),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      metadata: m.metadata as Record<string, any>
+      metadata: m.metadata as Record<string, unknown>
     }));
     
     // Generate predictions
@@ -235,8 +233,7 @@ export async function generatePredictions(params: {
     
     // Store predictions in database
     const lastDate = timeSeriesData[timeSeriesData.length - 1].date;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const storedPredictions: any[] = [];
+    const storedPredictions: unknown[] = [];
     
     for (let i = 0; i < predictions.length; i++) {
       const pred = predictions[i];
@@ -351,8 +348,7 @@ export async function createKPI(params: {
   description?: string;
   metricType: string;
   dataSource: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  calculation: any;
+  calculation: Record<string, unknown>;
   visualizationType: 'line' | 'bar' | 'pie' | 'gauge' | 'number';
   targetValue?: number;
   warningThreshold?: number;
@@ -461,10 +457,14 @@ function generateTrendInsights(trend: TrendAnalysisResult): string {
   return insights.join(' ');
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function generateTrendRecommendations(trend: TrendAnalysisResult): any {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recommendations: any[] = [];
+interface TrendRecommendation {
+  action: string;
+  priority: 'high' | 'medium' | 'low';
+  description: string;
+}
+
+function generateTrendRecommendations(trend: TrendAnalysisResult): TrendRecommendation[] {
+  const recommendations: TrendRecommendation[] = [];
   
   if (trend.detectedTrend === 'increasing' && trend.trendStrength > 0.7) {
     recommendations.push({

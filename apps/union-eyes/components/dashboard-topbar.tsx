@@ -14,7 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { SelectProfile } from "@/db/schema/domains/member";
+import type { SelectProfile } from "@/db/schema/domains/member";
 
 interface DashboardTopbarProps {
   profile: SelectProfile | null;

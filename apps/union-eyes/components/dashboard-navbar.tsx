@@ -7,7 +7,7 @@ import { Menu, X, Bell, Settings, LayoutDashboard, FileText, Vote, BarChart3, Us
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { SelectProfile } from "@/db/schema/domains/member";
+import type { SelectProfile } from "@/db/schema/domains/member";
  
 import { useLocale } from "next-intl";
 

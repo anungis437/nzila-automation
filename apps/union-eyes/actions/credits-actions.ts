@@ -4,6 +4,7 @@ import { getProfileByUserId, updateProfile } from "@/db/queries/profiles-queries
 import { auth } from '@/lib/api-auth-guard';
 import { logger } from '@/lib/logger';
 import { revalidatePath } from "next/cache";
+import type { CreditCheckResult, CreditUseResult } from '@/types/action-dtos';
 
 // Constants
 const _DEFAULT_USAGE_CREDITS = 1000; // Pro users get 1000 credits per cycle
@@ -56,8 +57,7 @@ const CREDIT_RENEWAL_DAYS = 28; // Credits renew every 4 weeks (28 days)
  * This resets the usedCredits counter to 0 every 4 weeks
  * The total allowance (usageCredits) stays the same
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function checkAndRenewCredits(profile: any): Promise<any> {
+async function checkAndRenewCredits<T extends { userId: string; nextCreditRenewal: Date | null; membership: string }>(profile: T) {
   // If there's no nextCreditRenewal date, do nothing
   if (!profile || !profile.nextCreditRenewal) {
     return profile;
@@ -73,8 +73,7 @@ async function checkAndRenewCredits(profile: any): Promise<any> {
     nextRenewal.setDate(nextRenewal.getDate() + CREDIT_RENEWAL_DAYS);
     
     // Default values for update - only reset used credits, not total allowance
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateData: any = {
+    const updateData = {
       usedCredits: 0, // Reset used credits to 0
       nextCreditRenewal: nextRenewal // Update the next renewal date
     };
@@ -162,8 +161,7 @@ return {
  */
 export async function checkCredits(
   requiredCredits: number = 1
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<{ hasCredits: boolean; profile: any | null; error?: string }> {
+): Promise<CreditCheckResult> {
   try {
     const { userId } = await auth();
     
@@ -273,8 +271,7 @@ return { hasCredits: false, profile: null, error: "Server error checking credits
 export async function useCredits(
   creditsToUse: number = 1,
   _description: string = "Used feature"
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<{ success: boolean; profile?: any; error?: string }> {
+): Promise<CreditUseResult> {
   try {
     const { userId } = await auth();
     
