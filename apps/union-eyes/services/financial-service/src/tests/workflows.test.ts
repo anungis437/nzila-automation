@@ -9,22 +9,28 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import { db } from '../db';
-import { 
-  members, 
-  duesAssignments, 
-  duesRules, 
-  duesTransactions,
-  arrears,
-  picketAttendance,
-  stipendDisbursements,
-  strikeFunds
-} from '../db/schema';
-import { eq } from 'drizzle-orm';
-import { processMonthlyDuesCalculation } from '../jobs/dues-calculation-workflow';
-import { processArrearsManagement } from '../jobs/arrears-management-workflow';
-import { processPaymentCollection } from '../jobs/payment-collection-workflow';
-import { processWeeklyStipends } from '../jobs/stipend-processing-workflow';
+
+const HAS_DB = Boolean(process.env.DATABASE_URL);
+
+// Dynamically import DB-dependent modules only when DATABASE_URL is available
+const dbImports = HAS_DB
+  ? await import('../db')
+  : { db: null as any };
+const schemaImports = HAS_DB
+  ? await import('../db/schema')
+  : { members: null, duesAssignments: null, duesRules: null, duesTransactions: null, arrears: null, picketAttendance: null, stipendDisbursements: null, strikeFunds: null } as any;
+const duesCalcImport = HAS_DB ? await import('../jobs/dues-calculation-workflow') : { processMonthlyDuesCalculation: null as any };
+const arrearsImport = HAS_DB ? await import('../jobs/arrears-management-workflow') : { processArrearsManagement: null as any };
+const paymentImport = HAS_DB ? await import('../jobs/payment-collection-workflow') : { processPaymentCollection: null as any };
+const stipendImport = HAS_DB ? await import('../jobs/stipend-processing-workflow') : { processWeeklyStipends: null as any };
+
+const { db } = dbImports;
+const { members, duesAssignments, duesRules, duesTransactions, arrears, picketAttendance, stipendDisbursements, strikeFunds } = schemaImports;
+const { processMonthlyDuesCalculation } = duesCalcImport;
+const { processArrearsManagement } = arrearsImport;
+const { processPaymentCollection } = paymentImport;
+const { processWeeklyStipends } = stipendImport;
+const { eq } = await import('drizzle-orm');
 
 // Generate valid UUIDs for test identifiers
 import { randomUUID } from 'crypto';
@@ -38,7 +44,7 @@ let _testMemberId3: string;
 let testDuesRuleId: string;
 let testStrikeFundId: string;
 
-describe('Financial Workflows - End-to-End Tests', () => {
+describe.skipIf(!HAS_DB)('Financial Workflows - End-to-End Tests (requires DATABASE_URL)', () => {
   
   beforeAll(async () => {
     // Create test tenant and base data

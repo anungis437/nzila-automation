@@ -1,7 +1,6 @@
 /**
  * GET POST /api/analytics/cross-org
  * -> Django analytics: /api/analytics/analytics-metrics/
- * NOTE: auto-resolved from analytics/cross-org
  * Auto-migrated by scripts/migrate_routes.py
  * Hardened: wrapped in withApi() with platform-only auth gate
  * SECURITY: cross-org routes require platform_lead or above (not org-level admin)

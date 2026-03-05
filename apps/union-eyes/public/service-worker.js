@@ -10,12 +10,28 @@
  * - Network-first for authentication
  * - Background sync for offline actions
  * - Push notification handling
+ *
+ * Logging: All log output is sent to connected clients via postMessage
+ * instead of console.* to satisfy the zero-console production constraint.
  */
 
 const _CACHE_NAME = 'union-eyes-v1';
 const STATIC_CACHE = 'static-v1';
 const DYNAMIC_CACHE = 'dynamic-v1';
 const API_CACHE = 'api-v1';
+
+/**
+ * Service-worker log helper — sends structured messages to all clients.
+ * Silent when no clients are connected (production cold-start).
+ */
+function _swLog(level, ...args) {
+  const message = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+  self.clients.matchAll().then(clients => {
+    for (const client of clients) {
+      client.postMessage({ type: 'SW_LOG', level, message });
+    }
+  });
+}
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [
@@ -34,11 +50,11 @@ const _API_PATTERNS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+  _swLog('info', '[SW] Installing service worker...');
   
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
-      console.log('[SW] Caching static assets');
+      _swLog('info', '[SW] Caching static assets');
       return cache.addAll(STATIC_ASSETS);
     })
   );
@@ -49,7 +65,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
+  _swLog('info', '[SW] Activating service worker...');
   
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -57,7 +73,7 @@ self.addEventListener('activate', (event) => {
         cacheNames
           .filter((name) => name !== STATIC_CACHE && name !== DYNAMIC_CACHE && name !== API_CACHE)
           .map((name) => {
-            console.log('[SW] Deleting old cache:', name);
+            _swLog('info', '[SW] Deleting old cache:', name);
             return caches.delete(name);
           })
       );
@@ -123,7 +139,7 @@ async function cacheFirstStrategy(request) {
     
     return networkResponse;
   } catch (error) {
-    console.log('[SW] Cache first failed:', error);
+    _swLog('warn', '[SW] Cache first failed:', error);
     return new Response('Offline', { status: 503 });
   }
 }
@@ -140,7 +156,7 @@ async function networkFirstStrategy(request) {
     
     return networkResponse;
   } catch (_error) {
-    console.log('[SW] Network first - falling back to cache:', request.url);
+    _swLog('warn', '[SW] Network first - falling back to cache:', request.url);
     
     const cachedResponse = await caches.match(request);
     
@@ -193,7 +209,7 @@ function isStaticAsset(pathname) {
 
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
-  console.log('[SW] Background sync:', event.tag);
+  _swLog('info', '[SW] Background sync:', event.tag);
   
   if (event.tag.startsWith('sync-')) {
     event.waitUntil(handleBackgroundSync(event.tag));
@@ -215,14 +231,14 @@ async function handleBackgroundSync(syncTag) {
       await syncOfflineMessages();
       break;
     default:
-      console.log('[SW] Unknown sync action:', action);
+      _swLog('warn', '[SW] Unknown sync action:', action);
   }
 }
 
 // Sync claim drafts from IndexedDB
 async function syncClaimDrafts() {
   // Would open IndexedDB and sync pending claims
-  console.log('[SW] Syncing claim drafts...');
+  _swLog('info', '[SW] Syncing claim drafts...');
   
   // Get pending operations from cache
   const cache = await caches.open(API_CACHE);
@@ -233,25 +249,25 @@ async function syncClaimDrafts() {
       // Re-try the request
       try {
         // In production, would reconstruct and retry
-        console.log('[SW] Would retry:', request.url);
+        _swLog('info', '[SW] Would retry:', request.url);
       } catch (error) {
-        console.log('[SW] Sync failed:', error);
+        _swLog('error', '[SW] Sync failed:', error);
       }
     }
   }
 }
 
 async function syncMemberUpdates() {
-  console.log('[SW] Syncing member updates...');
+  _swLog('info', '[SW] Syncing member updates...');
 }
 
 async function syncOfflineMessages() {
-  console.log('[SW] Syncing offline messages...');
+  _swLog('info', '[SW] Syncing offline messages...');
 }
 
 // Push notification handling
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push notification received');
+  _swLog('info', '[SW] Push notification received');
   
   let data = {};
   
@@ -287,7 +303,7 @@ self.addEventListener('push', (event) => {
 
 // Notification click handling
 self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked:', event.action);
+  _swLog('info', '[SW] Notification clicked:', event.action);
   
   event.notification.close();
 
@@ -316,7 +332,7 @@ self.addEventListener('notificationclick', (event) => {
 
 // Message handling from main app
 self.addEventListener('message', (event) => {
-  console.log('[SW] Message received:', event.data);
+  _swLog('info', '[SW] Message received:', event.data);
   
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

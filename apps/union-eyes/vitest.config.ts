@@ -12,10 +12,6 @@ export default defineProject({
     exclude: [
       "**/node_modules/**",
       "**/.git/**",
-      // Services tests are integration tests requiring a running database and
-      // service-level dependencies (express, supertest).  They run via:
-      //   pnpm -C apps/union-eyes test:services
-      "services/**",
       "e2e/**",
     ],
   },

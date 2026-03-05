@@ -4,6 +4,12 @@
 
 UnionEyes uses a **Drizzle-first** database architecture with PostgreSQL/Azure SQL backend.
 
+> **Legacy note – "tenant" in DB artefacts**
+> Migration snapshots and some column names (e.g. `tenant_id`, `tenantId`) still use
+> the word *tenant* because renaming columns would require a data migration.
+> All new code should use *organization* / *org* terminology.
+> See `lib/migrations/tenant-to-org-mapper.ts` for the mapping utility.
+
 ## Directory Structure
 
 ```

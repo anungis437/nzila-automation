@@ -14,17 +14,23 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import request from 'supertest';
 import { randomUUID } from 'crypto';
-import app from '../index';
-import { db } from '../db';
-import { 
-  strikeFunds, 
-  donations,
-  stipendDisbursements,
-  members
-} from '../db/schema';
-import { eq } from 'drizzle-orm';
+
+const HAS_DB = Boolean(process.env.DATABASE_URL);
+
+// Dynamically import DB-dependent modules only when DATABASE_URL is available
+const requestMod = HAS_DB ? await import('supertest') : { default: null as any };
+const appMod = HAS_DB ? await import('../index') : { default: null as any };
+const dbMod = HAS_DB ? await import('../db') : { db: null as any };
+const schemaMod = HAS_DB
+  ? await import('../db/schema')
+  : { strikeFunds: null, donations: null, stipendDisbursements: null, members: null } as any;
+const { eq } = await import('drizzle-orm');
+
+const request = requestMod.default;
+const app = appMod.default;
+const { db } = dbMod;
+const { strikeFunds, donations, stipendDisbursements, members } = schemaMod;
 
 // Generate valid UUIDs for test identifiers
 const TEST_TENANT_ID = randomUUID();
@@ -34,7 +40,7 @@ let testFundId1: string;
 let _testFundId2: string;
 let testMemberId: string;
 
-describe('Analytics Endpoints - Comprehensive Tests', () => {
+describe.skipIf(!HAS_DB)('Analytics Endpoints - Comprehensive Tests (requires DATABASE_URL)', () => {
   
   beforeAll(async () => {
 // Create test member

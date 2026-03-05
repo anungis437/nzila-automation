@@ -14,7 +14,7 @@ import { OrganizationSelector } from "@/components/organization/organization-sel
 /**
  * @deprecated Use OrganizationSelector instead
  */
-export function TenantSelector() {
+export function OrgSelector() {
   // Redirect to new OrganizationSelector
   return <OrganizationSelector />;
 }

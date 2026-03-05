@@ -153,15 +153,12 @@ class Logger {
 
     const formatted = this.formatLogEntry(entry);
 
-    // Console output in development only
+    // Structured output — use process.stdout/stderr (never console.*)
     if (process.env.NODE_ENV !== 'production') {
-      const consoleFn = {
-        debug: console.debug,
-        info: console.info,
-        warn: console.warn,
-        error: console.error,
-      }[level];
-      consoleFn(formatted);
+      const stream = level === 'error' || level === 'warn'
+        ? process.stderr
+        : process.stdout;
+      stream.write(formatted + '\n');
     }
 
     // Send to Sentry based on level (async, fire-and-forget)

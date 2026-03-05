@@ -68,7 +68,7 @@ export function FeatureFlagsAdmin() {
     all: filteredFlags,
     boolean: filteredFlags.filter(f => f.type === 'boolean'),
     percentage: filteredFlags.filter(f => f.type === 'percentage'),
-    tenant: filteredFlags.filter(f => f.type === 'tenant'),
+    org: filteredFlags.filter(f => f.type === 'tenant'), // DB flag-type value (legacy column)
     user: filteredFlags.filter(f => f.type === 'user'),
   };
 
@@ -159,8 +159,8 @@ export function FeatureFlagsAdmin() {
           <TabsTrigger value="percentage">
             Percentage ({groupedFlags.percentage.length})
           </TabsTrigger>
-          <TabsTrigger value="tenant">
-            Organization ({groupedFlags.tenant.length})
+          <TabsTrigger value="org">
+            Organization ({groupedFlags.org.length})
           </TabsTrigger>
         </TabsList>
 
@@ -228,6 +228,7 @@ function FlagCard({
         </div>
       </CardHeader>
       
+      {/* allowedOrgs mapped from legacy allowedTenants column */}
       {(flag.percentage !== null || flag.allowedTenants || flag.tags) && (
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
