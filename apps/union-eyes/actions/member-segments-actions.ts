@@ -231,8 +231,7 @@ export async function searchMembersAdvancedAction(
     sortBy?: "name" | "joinDate" | "seniority" | "relevance";
     sortOrder?: "asc" | "desc";
   }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<ActionResult<{ members: any[]; total: number }>> {
+): Promise<ActionResult<{ members: unknown[]; total: number }>> {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -268,8 +267,7 @@ export async function executeSegmentAction(
     page?: number;
     limit?: number;
   }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<ActionResult<{ members: any[]; total: number }>> {
+): Promise<ActionResult<{ members: unknown[]; total: number }>> {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -350,8 +348,7 @@ export async function exportMembersAction(
     }
 
     // Get members data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let members: any[];
+    let members: unknown[];
     let totalCount: number;
 
     if (segmentId) {

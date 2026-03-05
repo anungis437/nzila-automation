@@ -11,7 +11,7 @@ import { X, PartyPopper, Check, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { SelectProfile } from "@/db/schema/domains/member";
+import type { SelectProfile } from "@/db/schema/domains/member";
 import Link from "next/link";
 import confetti from 'canvas-confetti';
 

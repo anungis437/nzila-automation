@@ -44,7 +44,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
-import { SelectProfile } from "@/db/schema/domains/member";
+import type { SelectProfile } from "@/db/schema/domains/member";
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect, useCallback } from "react";
  

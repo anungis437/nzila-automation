@@ -11,7 +11,7 @@ import { X, Check, Gift, Sparkles, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { SelectProfile } from "@/db/schema/domains/member";
+import type { SelectProfile } from "@/db/schema/domains/member";
 import { useRouter, useSearchParams } from "next/navigation";
 import confetti from 'canvas-confetti';
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";

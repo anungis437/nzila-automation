@@ -176,10 +176,10 @@ export async function claimPendingProfile(
     if (existingUserProfile) {
       // Copy all pro-related data from pending profile to existing profile
       const updateData = {
-        membership: pendingProfile.membership || "pro",
+        membership: (pendingProfile.membership === 'free' ? 'free' : 'pro') as 'free' | 'pro',
         whopUserId: pendingProfile.whopUserId,
         whopMembershipId: pendingProfile.whopMembershipId,
-        paymentProvider: pendingProfile.paymentProvider || "whop",
+        paymentProvider: (pendingProfile.paymentProvider === 'stripe' ? 'stripe' : 'whop') as 'stripe' | 'whop',
         billingCycleStart: pendingProfile.billingCycleStart,
         billingCycleEnd: pendingProfile.billingCycleEnd,
         planDuration: pendingProfile.planDuration,
@@ -197,8 +197,8 @@ export async function claimPendingProfile(
       const profileData = {
         userId: userId,
         email: email,
-        membership: pendingProfile.membership,
-        paymentProvider: pendingProfile.paymentProvider,
+        membership: (pendingProfile.membership === 'free' ? 'free' : 'pro') as 'free' | 'pro',
+        paymentProvider: (pendingProfile.paymentProvider === 'stripe' ? 'stripe' : 'whop') as 'stripe' | 'whop',
         whopUserId: pendingProfile.whopUserId,
         whopMembershipId: pendingProfile.whopMembershipId,
         planDuration: pendingProfile.planDuration,
@@ -237,11 +237,24 @@ export async function claimPendingProfile(
  * Legacy function to claim profiles using the old method (temporary profiles in profiles table)
  * This is for backward compatibility during migration
  */
+interface LegacyPendingProfile {
+  userId: string;
+  membership?: string;
+  whopUserId?: string | null;
+  whopMembershipId?: string | null;
+  paymentProvider?: string | null;
+  billingCycleStart?: Date | null;
+  billingCycleEnd?: Date | null;
+  planDuration?: string | null;
+  nextCreditRenewal?: Date | null;
+  usageCredits?: number | null;
+  usedCredits?: number | null;
+}
+
 async function claimOldPendingProfile(
   userId: string, 
   email: string, 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pendingProfile: any
+  pendingProfile: LegacyPendingProfile
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (pendingProfile.userId && pendingProfile.userId !== userId && !pendingProfile.userId.startsWith('temp_')) {
@@ -254,10 +267,10 @@ async function claimOldPendingProfile(
     
     if (existingUserProfile) {
       const updateData = {
-        membership: pendingProfile.membership || "pro",
+        membership: (pendingProfile.membership === 'free' ? 'free' : 'pro') as 'free' | 'pro',
         whopUserId: pendingProfile.whopUserId,
         whopMembershipId: pendingProfile.whopMembershipId,
-        paymentProvider: pendingProfile.paymentProvider || "whop",
+        paymentProvider: (pendingProfile.paymentProvider === 'stripe' ? 'stripe' : 'whop') as 'stripe' | 'whop',
         billingCycleStart: pendingProfile.billingCycleStart,
         billingCycleEnd: pendingProfile.billingCycleEnd,
         planDuration: pendingProfile.planDuration,
@@ -284,8 +297,8 @@ async function claimOldPendingProfile(
       const profileData = {
         userId: userId,
         email: email,
-        membership: pendingProfile.membership,
-        paymentProvider: pendingProfile.paymentProvider,
+        membership: (pendingProfile.membership === 'free' ? 'free' : 'pro') as 'free' | 'pro',
+        paymentProvider: (pendingProfile.paymentProvider === 'stripe' ? 'stripe' : 'whop') as 'stripe' | 'whop',
         whopUserId: pendingProfile.whopUserId,
         whopMembershipId: pendingProfile.whopMembershipId,
         planDuration: pendingProfile.planDuration,
