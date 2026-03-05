@@ -38,7 +38,7 @@ from .models import (
 
 
 class OrganizationsModelTest(TestCase):
-    """Test Organizations model — the central multi-tenant model."""
+    """Test Organizations model — the central multi-org model."""
 
     def test_create(self):
         obj = Organizations.objects.create(

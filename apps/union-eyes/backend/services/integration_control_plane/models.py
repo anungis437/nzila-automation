@@ -51,7 +51,7 @@ class IntegrationRegistry(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    org_id = models.UUIDField(db_index=True, help_text="Tenant organization ID")
+    org_id = models.UUIDField(db_index=True, help_text="Organization ID")
     integration_type = models.CharField(max_length=32, choices=INTEGRATION_TYPES)
     name = models.CharField(max_length=255, help_text="Human-readable label")
     endpoint_url = models.URLField(

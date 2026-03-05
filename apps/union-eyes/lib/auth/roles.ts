@@ -107,7 +107,7 @@ export enum Permission {
   ESCALATE_TICKETS = "escalate_tickets",
   
   // Data & Analytics (Platform-wide)
-  VIEW_CROSS_TENANT_ANALYTICS = "view_cross_tenant_analytics",
+  VIEW_CROSS_ORG_ANALYTICS = "VIEW_CROSS_ORG_ANALYTICS",
   MANAGE_PLATFORM_ANALYTICS = "manage_platform_analytics",
   CREATE_CUSTOM_REPORTS = "create_custom_reports",
   EXPORT_PLATFORM_DATA = "export_platform_data",
@@ -273,7 +273,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_SYSTEM_METRICS,
     Permission.VIEW_CUSTOMER_HEALTH,
     Permission.VIEW_REVENUE_DASHBOARD,
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
     Permission.VIEW_USAGE_TRENDS,
     Permission.VIEW_ALL_SUBSCRIPTIONS,
     Permission.VIEW_FINANCIAL_REPORTS,
@@ -293,7 +293,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_CAPACITY_PLANNING,
     Permission.VIEW_CUSTOMER_HEALTH,
     Permission.VIEW_SUPPORT_METRICS,
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
     Permission.VIEW_USAGE_TRENDS,
     Permission.VIEW_STRATEGIC_DASHBOARD,
     Permission.VIEW_PLATFORM_KPIS,
@@ -315,7 +315,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_API_INTEGRATIONS,
     Permission.VIEW_INTEGRATION_HEALTH,
     Permission.VIEW_AUDIT_LOGS,
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
   ],
   
   [UserRole.PLATFORM_LEAD]: [
@@ -330,7 +330,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_SUPPORT_METRICS,
     Permission.VIEW_CUSTOMER_HEALTH,
     Permission.VIEW_SECURITY_ALERTS,
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
     Permission.VIEW_USAGE_TRENDS,
   ],
   
@@ -345,7 +345,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_SUPPORT_TICKETS,
     Permission.VIEW_SUPPORT_METRICS,
     Permission.VIEW_ALL_SUBSCRIPTIONS,
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
     Permission.VIEW_USAGE_TRENDS,
   ],
   
@@ -363,7 +363,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   
   [UserRole.DATA_ANALYTICS_MANAGER]: [
     // Analytics Manager - Platform-wide analytics and BI
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
     Permission.MANAGE_PLATFORM_ANALYTICS,
     Permission.CREATE_CUSTOM_REPORTS,
     Permission.EXPORT_PLATFORM_DATA,
@@ -405,7 +405,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.MANAGE_RISK_ASSESSMENTS,
     Permission.GENERATE_REGULATORY_REPORTS,
     Permission.VIEW_SECURITY_ALERTS,
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
   ],
   
   [UserRole.SECURITY_MANAGER]: [
@@ -430,7 +430,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   
   [UserRole.DATA_ANALYST]: [
     // Data Analyst - Analytics and reporting
-    Permission.VIEW_CROSS_TENANT_ANALYTICS,
+    Permission.VIEW_CROSS_ORG_ANALYTICS,
     Permission.CREATE_CUSTOM_REPORTS,
     Permission.EXPORT_PLATFORM_DATA,
     Permission.VIEW_USAGE_TRENDS,

@@ -40,17 +40,20 @@ type ApiHandlerWithAuth = (
 
 function resolveOrganizationIdFromRequest(request: NextRequest): string | null {
   const { searchParams } = new URL(request.url);
+  const cookieOrgId = request.cookies.get('selected_org_id')?.value;
   const cookieOrganizationId = request.cookies.get('selected_organization_id')?.value;
-  const cookieTenantId = request.cookies.get('selected_tenant_id')?.value;
+  // Legacy fallback cookies/headers (deprecated — read-only)
+  const legacyCookieTenantId = request.cookies.get('selected_tenant_id')?.value;
   return (
     searchParams.get('organizationId') ||
     searchParams.get('orgId') ||
-    request.headers.get('x-organization-id') ||
     request.headers.get('x-org-id') ||
+    request.headers.get('x-organization-id') ||
+    cookieOrgId ||
     cookieOrganizationId ||
-    cookieTenantId ||
-    request.headers.get('x-tenant-id') ||
-    searchParams.get('tenantId') ||
+    legacyCookieTenantId ||
+    request.headers.get('x-tenant-id') || // legacy header fallback
+    searchParams.get('tenantId') || // legacy query param fallback
     null
   );
 }

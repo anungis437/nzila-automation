@@ -279,7 +279,7 @@ type ApiRouteHandler<TContext extends Record<string, unknown> = BaseAuthContext>
  */
 export interface RequireApiAuthOptions {
   /** Require organization context */
-  tenant?: boolean;
+  orgScoped?: boolean;
   /** Require specific roles (any match) */
   roles?: string[];
   /** Allow public (unauthenticated) access */
@@ -638,7 +638,7 @@ export async function requireApiAuth(options: RequireApiAuthOptions = {}) {
   
   const context = {
     userId: userId || null,
-    organizationId: options.tenant ? (orgId || null) : null,
+    organizationId: options.orgScoped ? (orgId || null) : null,
     role: null as string | null,
   };
   

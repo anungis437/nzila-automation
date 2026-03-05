@@ -341,13 +341,13 @@ async function calculatePreviousScore(
 }
 
 /**
- * Calculate engagement scores for all profiles in a tenant
+ * Calculate engagement scores for all profiles in an organization
  */
 export async function calculateAllEngagementScores(
   organizationId: string,
   lookbackDays = 90
 ): Promise<EngagementScore[]> {
-  // Get all members for tenant (organization)
+  // Get all members for organization
   const allProfiles = await db
     .select({ id: organizationMembers.userId })
     .from(organizationMembers)

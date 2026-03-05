@@ -2,12 +2,12 @@
  * Feature Flags Service
  * 
  * Centralized feature flag management for gradual rollout and A/B testing.
- * Supports environment-based flags, tenant/user overrides, and percentage rollouts.
+ * Supports environment-based flags, org/user overrides, and percentage rollouts.
  * 
  * Features:
  * - Boolean flags (simple on/off)
  * - Percentage-based rollouts (gradual activation)
- * - Tenant-specific overrides
+ * - Organization-specific overrides
  * - User-specific overrides
  * - Environment variable defaults
  * - Fallback to defaults when service unavailable
@@ -38,7 +38,7 @@ export interface FeatureFlagContext {
  * 
  * Priority order:
  * 1. User-specific allow list
- * 2. Tenant/organization-specific allow list
+ * 2. Organization-specific allow list
  * 3. Percentage-based rollout (deterministic hash of userId/organizationId)
  * 4. Global enabled flag
  * 5. Environment variable default
@@ -75,7 +75,7 @@ export async function isFeatureEnabled(
       return true;
     }
 
-    // Check tenant/organization-specific override
+    // Check organization-specific override
     if (context.organizationId && flag.allowedOrganizations?.includes(context.organizationId)) {
       await cacheSet(cacheKey, true, { namespace: 'feature-flags', ttl: 300 });
       return true;
@@ -348,7 +348,7 @@ export async function getAllFeatureFlags(): Promise<
     percentage: number | null;
     description: string | null;
     environmentDefault: boolean;
-    allowedTenants: string[];
+    allowedOrgs: string[];
     allowedUsers: string[];
   }>
 > {
@@ -364,7 +364,7 @@ export async function getAllFeatureFlags(): Promise<
       percentage: flag.percentage,
       description: flag.description,
       environmentDefault: getEnvironmentFlag(flag.name),
-      allowedTenants: flag.allowedOrganizations || [],
+      allowedOrgs: flag.allowedOrganizations || [],
       allowedUsers: flag.allowedUsers || [],
     }));
   } catch (error) {

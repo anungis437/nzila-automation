@@ -55,16 +55,16 @@ const cacheWarmingJob: JobConfig = {
   handler: async () => {
     logger.info('CRON: Starting cache warming job');
     try {
-      // Get all active tenants
-      const tenants = await db
+      // Get all active organizations
+      const orgs = await db
         .selectDistinct({ organizationId: claims.organizationId })
         .from(claims);
 
-      for (const { organizationId } of tenants) {
+      for (const { organizationId } of orgs) {
         await warmAnalyticsCache(organizationId);
       }
 
-      logger.info('CRON: Cache warming completed', { tenantCount: tenants.length });
+      logger.info('CRON: Cache warming completed', { orgCount: orgs.length });
     } catch (error) {
       logger.error('CRON: Cache warming failed', error);
     }

@@ -160,7 +160,7 @@ export const policyPatterns = {
     tables: ['in_app_notifications', 'member_documents (own docs)', 'calendars', 'event_attendees']
   },
 
-  tenantIsolation: {
+  orgIsolation: {
     description: 'Organization-level data isolation',
     example: 'WHERE organization_id IN (SELECT ... WHERE user_id = auth.uid())',
     implementation: 10,

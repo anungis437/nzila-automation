@@ -6,7 +6,7 @@
  * 
  * Security Context: This module operates at SYSTEM level (allowlisted in RLS scanner)
  * as it needs to validate access across organizational boundaries. All queries here
- * are for hierarchy validation only and do not access tenant-scoped data.
+ * are for hierarchy validation only and do not access org-scoped data.
  * 
  * Security Model:
  * - Federation admins can access child union resources

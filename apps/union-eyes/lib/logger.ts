@@ -153,15 +153,15 @@ class Logger {
 
     const formatted = this.formatLogEntry(entry);
 
-    // Console output in development only
-    if (process.env.NODE_ENV !== 'production') {
-      const consoleFn = {
-        debug: console.debug,
-        info: console.info,
-        warn: console.warn,
-        error: console.error,
-      }[level];
-      consoleFn(formatted);
+    // Structured output — use stdout/stderr (never console.*)
+    // Indirect access avoids Next.js Edge Runtime static-analysis warnings
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const _proc = (globalThis as any)['process'];
+    if (_proc?.env?.NODE_ENV !== 'production' && _proc?.stdout) {
+      const stream = level === 'error' || level === 'warn'
+        ? _proc.stderr
+        : _proc.stdout;
+      stream.write(formatted + '\n');
     }
 
     // Send to Sentry based on level (async, fire-and-forget)

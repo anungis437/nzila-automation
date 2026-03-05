@@ -19,7 +19,7 @@ export interface UserContext {
 }
 
 /**
- * Organization context for multi-tenant operations
+ * Organization context for multi-org operations
  */
 export interface OrganizationContext extends UserContext {
   organizationId: string;

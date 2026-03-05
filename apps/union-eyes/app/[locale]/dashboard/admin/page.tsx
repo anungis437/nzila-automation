@@ -397,7 +397,7 @@ toast.error("Failed to optimize database");
                       {t('admin.overview.localSections')}
                     </p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {systemStats ? (systemStats.activeOrganizations ?? systemStats.activeTenants) : "..."}
+                      {systemStats ? systemStats.activeOrganizations : "..."}
                     </p>
                   </div>
                   <div className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
@@ -405,7 +405,7 @@ toast.error("Failed to optimize database");
                   </div>
                 </div>
                 <p className="text-xs text-gray-600 font-medium">
-                  {systemStats && `${systemStats.totalOrganizations ?? systemStats.totalTenants} total organizations`}
+                  {systemStats && `${systemStats.totalOrganizations} total organizations`}
                 </p>
               </Card>
 

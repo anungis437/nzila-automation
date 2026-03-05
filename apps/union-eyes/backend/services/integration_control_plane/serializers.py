@@ -40,7 +40,7 @@ class IntegrationRegistrySerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        # Inject org_id from request context (tenant isolation)
+        # Inject org_id from request context (org isolation)
         request = self.context.get("request")
         if request and hasattr(request, "organization_id"):
             validated_data["org_id"] = request.organization_id

@@ -116,33 +116,67 @@ return false;
 
 /**
  * Extract organization ID from request headers or cookies
- * 
- * Checks in order:
- * 1. X-Organization-ID header
- * 2. selected_organization_id cookie
- * 3. User's default organization
+ *
+ * Primary (new):
+ * 1. X-Org-ID header
+ * 2. selected_org_id cookie
+ *
+ * Existing:
+ * 3. X-Organization-ID header
+ * 4. selected_organization_id cookie
+ *
+ * Legacy fallback (deprecated):
+ * 5. X-Tenant-ID header
+ * 6. selected_tenant_id cookie
+ *
+ * 7. User's default organization
  */
 export async function getOrganizationIdFromRequest(
   request: NextRequest,
   userId: string
 ): Promise<string> {
-  // Check header first
+  // --- primary: X-Org-ID ---
+  const shortHeader = request.headers.get("X-Org-ID");
+  if (shortHeader) {
+    const isValid = await validateOrganizationExists(shortHeader);
+    if (isValid) return shortHeader;
+  }
+
+  // --- existing: X-Organization-ID ---
   const headerOrgId = request.headers.get("X-Organization-ID");
   if (headerOrgId) {
     const isValid = await validateOrganizationExists(headerOrgId);
-    if (isValid) {
-      return headerOrgId;
-    }
+    if (isValid) return headerOrgId;
   }
 
-  // Check cookie
   const cookieStore = await cookies();
+
+  // --- primary cookie: selected_org_id ---
+  const orgCookie = cookieStore.get("selected_org_id")?.value;
+  if (orgCookie) {
+    const isValid = await validateOrganizationExists(orgCookie);
+    if (isValid) return orgCookie;
+  }
+
+  // --- existing cookie: selected_organization_id ---
   const cookieOrgId = cookieStore.get("selected_organization_id")?.value;
   if (cookieOrgId) {
     const isValid = await validateOrganizationExists(cookieOrgId);
-    if (isValid) {
-      return cookieOrgId;
-    }
+    if (isValid) return cookieOrgId;
+  }
+
+  // --- legacy fallback: X-Tenant-ID header (deprecated) ---
+  const legacyHeader = request.headers.get("X-Tenant-ID");
+  if (legacyHeader) {
+    const isValid = await validateOrganizationExists(legacyHeader);
+    if (isValid) return legacyHeader;
+  }
+
+  // --- legacy fallback: selected_tenant_id cookie (deprecated) ---
+  const legacyCookie = cookieStore.get("selected_tenant_id")?.value;
+  if (legacyCookie) {
+    const isValid = await validateOrganizationExists(legacyCookie);
+    if (isValid) return legacyCookie;
   }
 
   // Fall back to user's default organization

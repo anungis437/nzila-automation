@@ -400,7 +400,7 @@ return {
 // ============================================================================
 
 /**
- * Get upcoming deadlines for a tenant
+ * Get upcoming deadlines for an organization
  */
 export async function getUpcomingDeadlines(
   organizationId: string,
@@ -425,7 +425,7 @@ return [];
 }
 
 /**
- * Get overdue deadlines for a tenant
+ * Get overdue deadlines for an organization
  */
 export async function getOverdueDeadlines(_organizationId: string): Promise<DeadlineAlert[]> {
   try {

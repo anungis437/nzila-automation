@@ -122,7 +122,7 @@ export function withEnhancedRoleAuth<T = any>(
     const { organizationId, userId } = orgContext as any;
     
     try {
-      // Get member from context (requires tenant middleware to populate this)
+      // Get member from context (requires org middleware to populate this)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const memberId = (orgContext as any).memberId;
       if (!memberId) {
