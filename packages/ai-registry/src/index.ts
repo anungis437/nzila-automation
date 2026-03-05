@@ -41,3 +41,28 @@ export {
   type NistRmfFunction,
   type NistRmfCategory,
 } from './nist-rmf.js';
+
+export {
+  assessBias,
+  buildBiasEvidenceArtifact,
+  BiasAssessmentInputSchema,
+  DemographicGroupSchema,
+  type BiasAssessmentInput,
+  type BiasAssessmentResult,
+  type DemographicGroup,
+  type FairnessMetric,
+  type GroupFairnessResult,
+} from './bias-detection.js';
+
+export {
+  estimateCarbon,
+  aggregateCarbonEstimates,
+  CarbonEstimateInputSchema,
+  CarbonEstimateResultSchema,
+  CARBON_INTENSITY_FACTORS,
+  MODEL_ENERGY_FACTORS,
+  type CarbonEstimateInput,
+  type CarbonEstimateResult,
+  type CarbonSummary,
+  type CarbonRegion,
+} from './carbon-tracking.js';

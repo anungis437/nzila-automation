@@ -9,7 +9,9 @@
     "./model-card": "./src/model-card.ts",
     "./risk-classification": "./src/risk-classification.ts",
     "./governance-lifecycle": "./src/governance-lifecycle.ts",
-    "./nist-rmf": "./src/nist-rmf.ts"
+    "./nist-rmf": "./src/nist-rmf.ts",
+    "./bias-detection": "./src/bias-detection.ts",
+    "./carbon-tracking": "./src/carbon-tracking.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

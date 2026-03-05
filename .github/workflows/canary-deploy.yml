@@ -1,0 +1,275 @@
+# ─────────────────────────────────────────────────────────
+# Canary Deployment — Progressive rollout with automated rollback
+#
+# Applies to: any Container App via workflow_dispatch
+# Strategy:
+#   1. Deploy canary revision (10% traffic)
+#   2. Bake period: monitor error rate + latency via Application Insights
+#   3. Promote to 50% → 100%  OR  auto-rollback on SLO breach
+# ─────────────────────────────────────────────────────────
+
+name: Canary Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Container App name (e.g. nzila-os-web)'
+        required: true
+        type: choice
+        options:
+          - nzila-os-web
+          - nzila-os-console
+          - nzila-os-partners
+          - nzila-os-union-eyes
+      image_tag:
+        description: 'Image tag to deploy (SHA or "latest")'
+        required: true
+        default: 'latest'
+      canary_percent:
+        description: 'Initial canary traffic percentage'
+        required: false
+        default: '10'
+      bake_minutes:
+        description: 'Minutes to wait before promotion/rollback'
+        required: false
+        default: '5'
+      error_threshold:
+        description: 'Max error rate (%) before auto-rollback'
+        required: false
+        default: '5'
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: nzilastagingacr.azurecr.io
+  IMAGE_BASE: nzilastagingacr.azurecr.io/${{ inputs.app }}
+
+jobs:
+  # ── Gate: pre-deploy checks ────────────────────────────
+  pre-canary-gates:
+    runs-on: ubuntu-latest
+    name: Pre-Canary Gates
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+        with:
+          version: 10.11.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+
+      - name: Contract tests
+        run: pnpm contract:test
+
+      - name: SLO gate (current baseline)
+        run: node --import tsx scripts/slo-gate.ts --env=prod
+
+  # ── Deploy canary revision ─────────────────────────────
+  deploy-canary:
+    runs-on: ubuntu-latest
+    needs: pre-canary-gates
+    name: Deploy Canary (${{ inputs.canary_percent }}%)
+    outputs:
+      canary_revision: ${{ steps.deploy.outputs.revision }}
+      stable_revision: ${{ steps.baseline.outputs.revision }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR login
+        run: az acr login --name nzilastagingacr
+
+      - name: Get current stable revision
+        id: baseline
+        run: |
+          REVISION=$(az containerapp revision list \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --query "[?properties.trafficWeight==\`100\`].name | [0]" -o tsv)
+
+          if [ -z "$REVISION" ]; then
+            REVISION=$(az containerapp revision list \
+              --name ${{ inputs.app }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --query "sort_by([?properties.active], &properties.createdTime) | [-1].name" -o tsv)
+          fi
+          echo "revision=$REVISION" >> "$GITHUB_OUTPUT"
+          echo "Stable revision: $REVISION"
+
+      - name: Deploy canary revision
+        id: deploy
+        run: |
+          # Create new revision with canary traffic
+          az containerapp update \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.IMAGE_BASE }}:${{ inputs.image_tag }} \
+            --revision-suffix canary-$(date +%s)
+
+          # Get the new revision name
+          CANARY=$(az containerapp revision list \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --query "sort_by([], &properties.createdTime) | [-1].name" -o tsv)
+          echo "revision=$CANARY" >> "$GITHUB_OUTPUT"
+          echo "Canary revision: $CANARY"
+
+      - name: Split traffic
+        run: |
+          STABLE=${{ steps.baseline.outputs.revision }}
+          CANARY=${{ steps.deploy.outputs.revision }}
+          CANARY_PCT=${{ inputs.canary_percent }}
+          STABLE_PCT=$((100 - CANARY_PCT))
+
+          az containerapp ingress traffic set \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --revision-weight \
+              "${STABLE}=${STABLE_PCT}" \
+              "${CANARY}=${CANARY_PCT}"
+
+          echo "Traffic split: ${STABLE}=${STABLE_PCT}% / ${CANARY}=${CANARY_PCT}%"
+
+  # ── Bake period: monitor health ────────────────────────
+  bake-and-observe:
+    runs-on: ubuntu-latest
+    needs: deploy-canary
+    name: Bake (${{ inputs.bake_minutes }}m)
+    outputs:
+      healthy: ${{ steps.health.outputs.healthy }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Wait for bake period
+        run: |
+          echo "Baking for ${{ inputs.bake_minutes }} minutes..."
+          sleep $(( ${{ inputs.bake_minutes }} * 60 ))
+
+      - name: Check canary health
+        id: health
+        run: |
+          # Query Application Insights for error rate during bake period
+          BAKE_MINS=${{ inputs.bake_minutes }}
+          THRESHOLD=${{ inputs.error_threshold }}
+
+          # Get error rate from App Insights (if configured)
+          if [ -n "${{ secrets.APPINSIGHTS_APP_ID }}" ]; then
+            ERROR_RATE=$(az monitor app-insights query \
+              --app ${{ secrets.APPINSIGHTS_APP_ID }} \
+              --analytics-query "
+                requests
+                | where timestamp > ago(${BAKE_MINS}m)
+                | where cloud_RoleName == '${{ inputs.app }}'
+                | summarize errorRate = round(100.0 * countif(success == false) / count(), 2)
+              " \
+              --query "tables[0].rows[0][0]" -o tsv 2>/dev/null || echo "0")
+          else
+            # Fallback: use container app logs
+            ERROR_RATE=$(az containerapp logs show \
+              --name ${{ inputs.app }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --revision ${{ needs.deploy-canary.outputs.canary_revision }} \
+              --tail 100 2>/dev/null | grep -c "ERROR\|error\|500" || echo "0")
+
+            # Simple heuristic: if more than threshold errors in 100 log lines
+            if [ "$ERROR_RATE" -gt "$THRESHOLD" ]; then
+              ERROR_RATE=$(( THRESHOLD + 1 ))
+            else
+              ERROR_RATE="0"
+            fi
+          fi
+
+          echo "Error rate: ${ERROR_RATE}%  (threshold: ${THRESHOLD}%)"
+
+          if (( $(echo "$ERROR_RATE > $THRESHOLD" | bc -l 2>/dev/null || echo "0") )); then
+            echo "healthy=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Canary error rate ${ERROR_RATE}% exceeds threshold ${THRESHOLD}%"
+          else
+            echo "healthy=true" >> "$GITHUB_OUTPUT"
+            echo "Canary is healthy"
+          fi
+
+  # ── Promote: shift all traffic to canary ───────────────
+  promote:
+    runs-on: ubuntu-latest
+    needs: [deploy-canary, bake-and-observe]
+    if: needs.bake-and-observe.outputs.healthy == 'true'
+    name: Promote to 100%
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Promote canary to production
+        run: |
+          CANARY=${{ needs.deploy-canary.outputs.canary_revision }}
+
+          # Phase 1: 50%
+          az containerapp ingress traffic set \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --revision-weight "${CANARY}=50"
+          echo "Promoted to 50%"
+          sleep 30
+
+          # Phase 2: 100%
+          az containerapp ingress traffic set \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --revision-weight "${CANARY}=100"
+          echo "Promoted to 100%"
+
+      - name: Deactivate old revision
+        run: |
+          STABLE=${{ needs.deploy-canary.outputs.stable_revision }}
+          if [ -n "$STABLE" ]; then
+            az containerapp revision deactivate \
+              --name ${{ inputs.app }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --revision "$STABLE" || true
+          fi
+
+  # ── Rollback: revert traffic on SLO breach ────────────
+  rollback:
+    runs-on: ubuntu-latest
+    needs: [deploy-canary, bake-and-observe]
+    if: needs.bake-and-observe.outputs.healthy == 'false'
+    name: Rollback (SLO breach)
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Rollback to stable
+        run: |
+          STABLE=${{ needs.deploy-canary.outputs.stable_revision }}
+          CANARY=${{ needs.deploy-canary.outputs.canary_revision }}
+
+          echo "::error::Rolling back — canary failed health check"
+
+          az containerapp ingress traffic set \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --revision-weight "${STABLE}=100"
+
+          az containerapp revision deactivate \
+            --name ${{ inputs.app }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --revision "$CANARY" || true
+
+          echo "Rolled back to ${STABLE}"

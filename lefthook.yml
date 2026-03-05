@@ -29,6 +29,11 @@ pre-commit:
       run: pnpm typecheck --filter "...[HEAD]" --output-logs errors-only
       fail_text: "Type errors found. Run `pnpm typecheck` to see details."
 
+    link-check:
+      glob: "*.md"
+      run: tsx scripts/link-check.ts docs/ content/ README.md
+      fail_text: "Broken markdown links detected. Run `pnpm link-check` to see details."
+
 pre-push:
   commands:
     contract-tests:

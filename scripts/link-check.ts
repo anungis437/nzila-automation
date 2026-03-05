@@ -1,0 +1,147 @@
+#!/usr/bin/env tsx
+/**
+ * link-check.ts — Validate internal links across Markdown docs
+ *
+ * Usage:
+ *   pnpm link-check              # check all docs
+ *   pnpm link-check docs/        # check specific directory
+ *
+ * Checks:
+ *   - Relative markdown links ([text](relative/path.md))
+ *   - Anchor links ([text](#heading))
+ *   - Image references (![alt](path/to/image.png))
+ *
+ * Returns non-zero exit code if broken links found.
+ */
+
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { join, dirname, resolve, extname } from 'node:path';
+
+const ROOT = resolve(import.meta.dirname ?? __dirname, '..');
+const DIRS = process.argv.slice(2).length > 0
+  ? process.argv.slice(2).map(d => resolve(d))
+  : [join(ROOT, 'docs'), join(ROOT, 'content'), ROOT]; // root for README.md etc.
+
+interface BrokenLink {
+  file: string;
+  line: number;
+  link: string;
+  reason: string;
+}
+
+function findMarkdownFiles(dir: string): string[] {
+  const files: string[] = [];
+  if (!existsSync(dir)) return files;
+
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (['node_modules', '.next', '.turbo', 'coverage', '.git', '.vale'].includes(entry.name)) continue;
+      files.push(...findMarkdownFiles(full));
+    } else if (extname(entry.name) === '.md') {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
+function extractHeadings(content: string): Set<string> {
+  const headings = new Set<string>();
+  for (const match of content.matchAll(/^#{1,6}\s+(.+)$/gm)) {
+    const slug = match[1]!
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+    headings.add(slug);
+  }
+  return headings;
+}
+
+function checkFile(filePath: string): BrokenLink[] {
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const headings = extractHeadings(content);
+  const broken: BrokenLink[] = [];
+
+  // Match markdown links: [text](url) — skip http/https/mailto
+  const linkRegex = /\[([^\]]*)\]\(([^)]+)\)/g;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!;
+    let match: RegExpExecArray | null;
+    linkRegex.lastIndex = 0;
+
+    while ((match = linkRegex.exec(line)) !== null) {
+      const rawLink = match[2]!.trim();
+
+      // Skip external links
+      if (/^https?:\/\/|^mailto:|^#\s*$/.test(rawLink)) continue;
+
+      // Anchor-only link
+      if (rawLink.startsWith('#')) {
+        const anchor = rawLink.slice(1);
+        if (!headings.has(anchor)) {
+          broken.push({ file: filePath, line: i + 1, link: rawLink, reason: 'anchor not found' });
+        }
+        continue;
+      }
+
+      // Split path and anchor
+      const [pathPart, anchorPart] = rawLink.split('#');
+      if (!pathPart) continue;
+
+      const target = resolve(dirname(filePath), pathPart);
+
+      if (!existsSync(target)) {
+        broken.push({ file: filePath, line: i + 1, link: rawLink, reason: 'file not found' });
+        continue;
+      }
+
+      // Check anchor in target file if provided
+      if (anchorPart && extname(target) === '.md') {
+        const targetContent = readFileSync(target, 'utf-8');
+        const targetHeadings = extractHeadings(targetContent);
+        if (!targetHeadings.has(anchorPart)) {
+          broken.push({ file: filePath, line: i + 1, link: rawLink, reason: `anchor #${anchorPart} not found in target` });
+        }
+      }
+    }
+  }
+
+  return broken;
+}
+
+// ── Main ────────────────────────────────────────────────
+
+const allFiles: string[] = [];
+for (const dir of DIRS) {
+  if (statSync(dir).isDirectory()) {
+    allFiles.push(...findMarkdownFiles(dir));
+  } else if (extname(dir) === '.md') {
+    allFiles.push(dir);
+  }
+}
+
+// Deduplicate
+const uniqueFiles = [...new Set(allFiles)];
+console.log(`\n  Checking ${uniqueFiles.length} markdown files...\n`);
+
+const allBroken: BrokenLink[] = [];
+for (const file of uniqueFiles) {
+  allBroken.push(...checkFile(file));
+}
+
+if (allBroken.length === 0) {
+  console.log('  ✓ All links valid.\n');
+  process.exit(0);
+} else {
+  console.log(`  ✗ Found ${allBroken.length} broken link(s):\n`);
+  for (const b of allBroken) {
+    const rel = b.file.replace(ROOT + '\\', '').replace(ROOT + '/', '');
+    console.log(`    ${rel}:${b.line} → ${b.link}`);
+    console.log(`      ${b.reason}\n`);
+  }
+  process.exit(1);
+}
