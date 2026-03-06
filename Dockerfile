@@ -5,6 +5,10 @@
 # Pin to Alpine 3.22 for OpenSSL 3.3.6+ (CVE-2025-15467 fix)
 # ============================================
 FROM node:22-alpine AS base
+
+# Patch CVE-2026-22184 (zlib buffer overflow) — upgrade ahead of base image rebuild
+RUN apk update && apk upgrade --no-cache zlib && rm -rf /var/cache/apk/*
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g pnpm@10.11.0 --ignore-scripts
