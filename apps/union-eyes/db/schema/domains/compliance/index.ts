@@ -29,3 +29,4 @@ export * from './employer-interference';
 export * from './whiplash';
 export * from './certifications';
 export * from './pci-dss';
+export * from './employer-compliance';

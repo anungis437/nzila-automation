@@ -1,121 +1,273 @@
-export const dynamic = 'force-dynamic';
+"use client";
 
-import { FileBarChart, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  FileBarChart,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Shield,
+  RefreshCw,
+  Building2,
+} from "lucide-react";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface ComplianceAlert {
+  id: string;
+  employerId: string;
+  alertType: string;
+  severity: string;
+  message: string;
+  resolvedAt: string | null;
+  createdAt: string;
+}
+
+interface ComplianceReport {
+  id: string;
+  employerId: string;
+  reportType: string;
+  dataJson: Record<string, unknown>;
+  createdAt: string;
+}
+
+const SEVERITY_COLORS: Record<string, string> = {
+  critical: "bg-red-100 text-red-800",
+  high: "bg-orange-100 text-orange-800",
+  medium: "bg-yellow-100 text-yellow-800",
+  low: "bg-blue-100 text-blue-800",
+  info: "bg-gray-100 text-gray-600",
+};
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function CompliancePage() {
+  const [alerts, setAlerts] = useState<ComplianceAlert[]>([]);
+  const [reports, setReports] = useState<ComplianceReport[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [alertsRes, reportsRes] = await Promise.all([
+        fetch("/api/compliance/alerts"),
+        fetch("/api/compliance/reports"),
+      ]);
+      const alertsJson = await alertsRes.json();
+      const reportsJson = await reportsRes.json();
+      if (alertsJson.data) setAlerts(alertsJson.data);
+      if (reportsJson.data) setReports(reportsJson.data);
+    } catch {
+      // handle error
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const unresolvedAlerts = alerts.filter((a) => !a.resolvedAt);
+  const criticalCount = unresolvedAlerts.filter((a) => a.severity === "critical").length;
+  const highCount = unresolvedAlerts.filter((a) => a.severity === "high").length;
+  const resolvedCount = alerts.filter((a) => a.resolvedAt).length;
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <FileBarChart className="w-8 h-8" />
-            Compliance Reports
+          <h1 className="flex items-center gap-2 text-3xl font-bold">
+            <Shield className="h-8 w-8" />
+            Employer Compliance Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Charter, constitution, and bylaw compliance tracking across affiliates
+          <p className="mt-1 text-muted-foreground">
+            Contract violations, compliance alerts, and employer reporting
           </p>
         </div>
+        <button
+          onClick={fetchData}
+          className="flex items-center gap-1 rounded border px-3 py-2 text-sm hover:bg-gray-50"
+        >
+          <RefreshCw className="h-4 w-4" /> Refresh
+        </button>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="border rounded-lg p-4 bg-card">
-          <div className="flex items-center justify-between">
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <Card>
+          <CardContent className="flex items-center justify-between pt-6">
             <div>
-              <p className="text-sm text-muted-foreground">Total Affiliates</p>
-              <p className="text-2xl font-bold">--</p>
+              <p className="text-sm text-muted-foreground">Active Alerts</p>
+              <p className="text-2xl font-bold">{unresolvedAlerts.length}</p>
             </div>
-            <FileBarChart className="w-8 h-8 text-muted-foreground" />
-          </div>
-        </div>
-
-        <div className="border rounded-lg p-4 bg-card">
-          <div className="flex items-center justify-between">
+            <AlertCircle className="h-8 w-8 text-red-600" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between pt-6">
             <div>
-              <p className="text-sm text-muted-foreground">Compliant</p>
-              <p className="text-2xl font-bold text-green-600">--</p>
+              <p className="text-sm text-muted-foreground">Critical</p>
+              <p className="text-2xl font-bold text-red-600">{criticalCount}</p>
             </div>
-            <CheckCircle2 className="w-8 h-8 text-green-600" />
-          </div>
-        </div>
-
-        <div className="border rounded-lg p-4 bg-card">
-          <div className="flex items-center justify-between">
+            <AlertCircle className="h-8 w-8 text-red-600" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between pt-6">
             <div>
-              <p className="text-sm text-muted-foreground">Needs Attention</p>
-              <p className="text-2xl font-bold text-yellow-600">--</p>
+              <p className="text-sm text-muted-foreground">High Priority</p>
+              <p className="text-2xl font-bold text-orange-600">{highCount}</p>
             </div>
-            <Clock className="w-8 h-8 text-yellow-600" />
-          </div>
-        </div>
-
-        <div className="border rounded-lg p-4 bg-card">
-          <div className="flex items-center justify-between">
+            <Clock className="h-8 w-8 text-orange-600" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between pt-6">
             <div>
-              <p className="text-sm text-muted-foreground">Non-Compliant</p>
-              <p className="text-2xl font-bold text-red-600">--</p>
+              <p className="text-sm text-muted-foreground">Resolved</p>
+              <p className="text-2xl font-bold text-green-600">{resolvedCount}</p>
             </div>
-            <AlertCircle className="w-8 h-8 text-red-600" />
-          </div>
-        </div>
+            <CheckCircle2 className="h-8 w-8 text-green-600" />
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Compliance Areas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border rounded-lg p-6 bg-card">
-          <h2 className="text-xl font-semibold mb-4">Charter Compliance</h2>
+      {/* Alerts + Reports Grid */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Active Alerts */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <AlertCircle className="h-4 w-4" /> Active Compliance Alerts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex h-32 items-center justify-center">
+                <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600" />
+              </div>
+            ) : unresolvedAlerts.length === 0 ? (
+              <div className="py-8 text-center">
+                <CheckCircle2 className="mx-auto mb-2 h-10 w-10 text-green-500" />
+                <p className="text-sm text-gray-500">All clear — no active alerts</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {unresolvedAlerts.slice(0, 10).map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="flex items-start gap-3 rounded border p-3"
+                  >
+                    <span
+                      className={`mt-0.5 rounded-full px-2 py-0.5 text-xs font-medium ${SEVERITY_COLORS[alert.severity]}`}
+                    >
+                      {alert.severity}
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        {alert.alertType.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-gray-500">{alert.message}</p>
+                      <p className="mt-1 text-xs text-gray-400">
+                        {new Date(alert.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Reports */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <FileBarChart className="h-4 w-4" /> Recent Compliance Reports
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex h-32 items-center justify-center">
+                <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600" />
+              </div>
+            ) : reports.length === 0 ? (
+              <p className="py-8 text-center text-sm text-gray-400">No reports yet</p>
+            ) : (
+              <div className="space-y-3">
+                {reports.slice(0, 10).map((report) => (
+                  <div
+                    key={report.id}
+                    className="flex items-center justify-between rounded border p-3"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">
+                        {report.reportType.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Employer: {report.employerId}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      {new Date(report.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charter Compliance (preserved from original) */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="rounded-lg border bg-card p-6">
+          <h2 className="mb-4 text-xl font-semibold">Charter Compliance</h2>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between rounded bg-muted p-3">
               <span>Elections & Democracy</span>
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between rounded bg-muted p-3">
               <span>Financial Reporting</span>
-              <Clock className="w-5 h-5 text-yellow-600" />
+              <Clock className="h-5 w-5 text-yellow-600" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between rounded bg-muted p-3">
               <span>Member Rights</span>
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="border rounded-lg p-6 bg-card">
-          <h2 className="text-xl font-semibold mb-4">Reporting Deadlines</h2>
+        <div className="rounded-lg border bg-card p-6">
+          <h2 className="mb-4 text-xl font-semibold">Reporting Deadlines</h2>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between rounded bg-muted p-3">
               <div>
                 <p className="font-medium">Annual Financial Report</p>
                 <p className="text-sm text-muted-foreground">Due: March 31</p>
               </div>
-              <Clock className="w-5 h-5 text-yellow-600" />
+              <Clock className="h-5 w-5 text-yellow-600" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between rounded bg-muted p-3">
               <div>
                 <p className="font-medium">Election Results</p>
                 <p className="text-sm text-muted-foreground">Due: Within 30 days</p>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between rounded bg-muted p-3">
               <div>
                 <p className="font-medium">Constitution Updates</p>
                 <p className="text-sm text-muted-foreground">As needed</p>
               </div>
-              <AlertCircle className="w-5 h-5 text-muted-foreground" />
+              <AlertCircle className="h-5 w-5 text-muted-foreground" />
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Compliance Tracking */}
-      <div className="rounded-lg p-8 text-center bg-muted/50">
-        <FileBarChart className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="text-xl font-semibold mb-2">Compliance Tracking Dashboard</h3>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Automated reporting, deadline notifications, document management, and detailed
-          compliance audit trails for all affiliate organizations.
-        </p>
       </div>
     </div>
   );

@@ -1,0 +1,87 @@
+/**
+ * Grievance Assignment API
+ *
+ * POST /api/grievances/[id]/assign — Assign a steward to a grievance
+ */
+
+import { z } from "zod";
+import { db } from "@/db/db";
+import { grievances } from "@/db/schema/domains/claims/grievances";
+import { grievanceEvents } from "@/db/schema/domains/claims/grievance-lifecycle";
+import { withOrganizationAuth } from "@/lib/organization-middleware";
+import { hasMinRole } from "@/lib/api-auth-guard";
+import { auditDataMutation } from "@/lib/audit-logger";
+import { assignSteward } from "@/lib/services/steward-assignment";
+import {
+  ErrorCode,
+  standardErrorResponse,
+  standardSuccessResponse,
+} from "@/lib/api/standardized-responses";
+import { eq, and } from "drizzle-orm";
+
+const assignSchema = z.object({
+  stewardId: z.string().uuid(),
+});
+
+export const PATCH = withOrganizationAuth(async (request, context, params?: { id: string }) => {
+  const { organizationId, userId } = context;
+
+  try {
+    if (!params?.id) return standardErrorResponse(ErrorCode.VALIDATION_ERROR, "Missing ID");
+    const canAssign = await hasMinRole("officer");
+    if (!canAssign) {
+      return standardErrorResponse(ErrorCode.FORBIDDEN, "Requires officer role or above");
+    }
+
+    const body = await request.json();
+    const parsed = assignSchema.safeParse(body);
+    if (!parsed.success) {
+      return standardErrorResponse(ErrorCode.VALIDATION_ERROR, "Invalid input", parsed.error.flatten());
+    }
+
+    // Verify grievance belongs to org
+    const [grievance] = await db
+      .select()
+      .from(grievances)
+      .where(
+        and(
+          eq(grievances.id, params.id),
+          eq(grievances.organizationId, organizationId),
+        ),
+      );
+
+    if (!grievance) {
+      return standardErrorResponse(ErrorCode.NOT_FOUND, "Grievance not found");
+    }
+
+    const assignment = await assignSteward(params.id, parsed.data.stewardId);
+
+    // Update grievance assigned rep
+    await db
+      .update(grievances)
+      .set({ unionRepId: parsed.data.stewardId, updatedAt: new Date() })
+      .where(eq(grievances.id, params.id));
+
+    // Emit event
+    await db.insert(grievanceEvents).values({
+      grievanceId: params.id,
+      eventType: "assigned",
+      actorUserId: userId,
+      notes: `Steward ${parsed.data.stewardId} assigned`,
+    });
+
+    // Audit
+    await auditDataMutation({
+      userId,
+      organizationId,
+      resource: "grievances",
+      action: "update",
+      resourceId: params.id,
+      newState: { assignedStewardId: parsed.data.stewardId },
+    });
+
+    return standardSuccessResponse(assignment);
+  } catch (error) {
+    return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to assign steward");
+  }
+});

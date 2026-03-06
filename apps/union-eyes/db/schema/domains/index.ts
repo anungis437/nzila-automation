@@ -30,6 +30,12 @@ export * from './compliance';       // Priority 9: Regulatory compliance and pri
 export * from './data';             // Priority 10: External data integration
 export * from './health-safety';   // Priority 10b: Workplace health & safety management
 
+// Operations Domains
+export * from './dispatch';         // Dispatch hall automation
+
+// Pilot Domains
+export * from './pilot';            // CAPE-CLC pilot onboarding and demo data
+
 // Advanced Feature Domains
 export * from './ml';               // Priority 11: Machine learning and AI
 export * from './analytics';        // Priority 12: Reporting and analytics

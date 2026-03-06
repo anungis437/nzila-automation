@@ -31,6 +31,24 @@
       "owner": "@nzila/union-eyes",
       "justification": "Direct db.insert(profiles) in dashboard layout — profile auto-creation. Migrate to djangoProxy() in Phase 3.",
       "expiresOn": "2026-09-30"
+    },
+    {
+      "path": "apps/union-eyes/app/api/grievances/**/route.ts",
+      "owner": "@nzila/union-eyes",
+      "justification": "CAPE grievance-event inserts — TS-only lifecycle table. withOrganizationAuth enforces auth. Migrate to djangoProxy() in Phase 3.",
+      "expiresOn": "2026-09-30"
+    },
+    {
+      "path": "apps/union-eyes/app/api/pilot/onboarding/route.ts",
+      "owner": "@nzila/union-eyes",
+      "justification": "Pilot checklist — TS-only tables (no Django model). RLS policies applied. Scoped to CAPE pilot lifecycle.",
+      "expiresOn": "2026-12-31"
+    },
+    {
+      "path": "apps/union-eyes/app/api/pilot/demo-data/route.ts",
+      "owner": "@nzila/union-eyes",
+      "justification": "Pilot demo-data seeding — TS-only tables (no Django model). RLS policies applied. Scoped to CAPE pilot lifecycle.",
+      "expiresOn": "2026-12-31"
     }
   ]
 }

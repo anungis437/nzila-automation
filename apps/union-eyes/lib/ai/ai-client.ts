@@ -57,4 +57,10 @@ export const UE_PROFILES = {
   LEGAL_MEMORANDUM: 'ue-legal-memorandum',
   CHATBOT: 'ue-chatbot',
   EMBEDDINGS: 'ue-embeddings',
+  // AI Intelligence Layer profiles
+  GRIEVANCE_TRIAGE: 'ue-grievance-triage',
+  CLAUSE_REASONING: 'ue-clause-reasoning',
+  EMPLOYER_RISK: 'ue-employer-risk',
+  STEWARD_COPILOT: 'ue-steward-copilot',
+  EXECUTIVE_INSIGHTS: 'ue-executive-insights',
 } as const

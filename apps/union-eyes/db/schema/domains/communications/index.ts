@@ -35,5 +35,12 @@ export * from './public-content';
 export * from './campaigns';
 export * from './organizer-workflows';
 
+// Employer communication workflow
+export * from './employer-communications';
+
 // Explicit re-exports to resolve ambiguities
 export { campaignStatusEnum } from './campaigns';
+
+// templateCategoryEnum exists in both newsletters.ts and employer-communications.ts
+// Use the newsletters definition (original); employer-communications uses a different DB enum name
+export { templateCategoryEnum } from './newsletters';
