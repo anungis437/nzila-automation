@@ -104,6 +104,8 @@ secrets/
 # Allow @nzila/secrets package (TypeScript source, NOT actual credentials)
 !packages/secrets/
 !packages/secrets/**
+packages/secrets/node_modules/
+packages/secrets/.turbo/
 *.pem
 *.key
 
@@ -112,6 +114,16 @@ CAPPSnzila-automation.pnpm-store/
 
 # ----- Nested package duplication (generated data in wrong path) ------
 packages/packages/
+
+# ----- Playwright ------
+**/playwright-report/
+**/test-results/
+
+# ----- Security scan artifacts ------
+audit-report.json
+snyk-report.*
+snyk-results.*
+snyk-*.txt
 
 # ----- Temporary files ------
 *.tmp
