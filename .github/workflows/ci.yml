@@ -366,6 +366,8 @@ jobs:
 
       - name: Verify build environment
         run: pnpm verify:env
+        env:
+          NODE_ENV: production
 
       - name: Generate SBOM
         run: pnpm generate:sbom
