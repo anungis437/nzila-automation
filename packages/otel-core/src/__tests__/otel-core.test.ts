@@ -3,9 +3,9 @@ import {
   EvidenceSpanProcessor,
   verifyEvidenceTrace,
   type EvidenceTraceContext,
-} from '../src/evidence-correlation.js';
-import { evaluateBurnRate, SLOMonitor } from '../src/slo.js';
-import { attributeCost, type ResourceMetrics } from '../src/cost-attribution.js';
+} from '../evidence-correlation.js';
+import { evaluateBurnRate, SLOMonitor } from '../slo.js';
+import { attributeCost, type ResourceMetrics } from '../cost-attribution.js';
 
 // ── Evidence Correlation ─────────────────────────────────────────────────────
 
@@ -35,6 +35,8 @@ describe('EvidenceSpanProcessor', () => {
 });
 
 describe('verifyEvidenceTrace', () => {
+  const packId = '01234567-89ab-4cde-8f01-234567890abc';
+
   it('should verify valid trace context', async () => {
     const traceId = 'a'.repeat(32);
     const spanId = 'b'.repeat(16);
@@ -43,24 +45,26 @@ describe('verifyEvidenceTrace', () => {
       spanId,
       traceFlags: 1,
       traceparent: `00-${traceId}-${spanId}-01`,
-      evidencePackId: 'pack-123',
+      evidencePackId: packId,
     };
 
-    const result = await verifyEvidenceTrace('pack-123', ctx);
+    const result = await verifyEvidenceTrace(packId, ctx);
     expect(result.verified).toBe(true);
     expect(result.confidence).toBe('high');
   });
 
   it('should reject tampered traceparent', async () => {
+    const traceId = 'a'.repeat(32);
+    const spanId = 'b'.repeat(16);
     const ctx: EvidenceTraceContext = {
-      traceId: 'a'.repeat(32),
-      spanId: 'b'.repeat(16),
+      traceId,
+      spanId,
       traceFlags: 1,
-      traceparent: '00-tampered-value-01',
-      evidencePackId: 'pack-123',
+      traceparent: `00-${'c'.repeat(32)}-${spanId}-01`,
+      evidencePackId: packId,
     };
 
-    const result = await verifyEvidenceTrace('pack-123', ctx);
+    const result = await verifyEvidenceTrace(packId, ctx);
     expect(result.verified).toBe(false);
     expect(result.confidence).toBe('low');
     expect(result.details).toContain('tampering');
@@ -76,7 +80,7 @@ describe('verifyEvidenceTrace', () => {
       traceparent: `00-${traceId}-${spanId}-00`,
     };
 
-    const result = await verifyEvidenceTrace('pack-456', ctx);
+    const result = await verifyEvidenceTrace('01234567-89ab-4cde-8f01-234567890def', ctx);
     expect(result.verified).toBe(false);
     expect(result.details).toContain('all zeros');
   });
