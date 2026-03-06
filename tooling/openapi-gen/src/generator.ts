@@ -244,7 +244,7 @@ export function generate(config: GeneratorConfig): GenerationResult {
 }
 
 /** Simple YAML serializer for OpenAPI specs (avoids heavy deps) */
-function toYaml(obj: unknown, indent = 0): string {
+function toYaml(obj: unknown, _indent = 0): string {
   // Lazy import yaml if available, otherwise JSON fallback
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
