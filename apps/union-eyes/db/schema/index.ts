@@ -38,6 +38,9 @@ export * from "./domains/ml";               // Priority 11: Machine learning and
 export * from "./domains/analytics";        // Priority 12: Reporting and analytics
 export * from "./domains/infrastructure";   // Priority 13: System infrastructure and integrations
 
+// Pilot Domains
+export * from "./domains/pilot";            // CAPE-CLC pilot onboarding and demo data
+
 // ============================================================================
 // EXTERNAL EXPORTS (Outside Domain Structure)
 // ============================================================================
@@ -72,6 +75,9 @@ export { accountTypeEnum, chartOfAccounts, chartOfAccountsRelations, glAccountMa
 
 // syncStatusEnum - infrastructure is the canonical source
 export { syncStatusEnum } from "./domains/infrastructure";
+
+// Employer / employers - compliance is the canonical source
+export { employers, type Employer } from "./domains/compliance";
 
 // Steward assignments - union-structure-schema is the canonical source
 export { stewardAssignments, stewardAssignmentsRelations, type StewardAssignment } from "./union-structure-schema";

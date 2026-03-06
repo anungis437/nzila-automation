@@ -137,6 +137,7 @@ describe('INV-11 — Every API route has authorization', () => {
     'requireApiAuth(',           // API auth requirement check
     'requireUser(',              // Requires authenticated user
     'getAuth(',                  // Clerk getAuth() direct call
+    'withOrganizationAuth(',      // Organization-scoped auth wrapper (union-eyes)
   ]
 
   // Routes that are explicitly public

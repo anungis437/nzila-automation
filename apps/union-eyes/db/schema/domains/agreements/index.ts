@@ -24,6 +24,7 @@ export * from './clauses';
 export * from './intelligence';
 export * from './shared-library';
 export * from './negotiations'; // Active bargaining negotiations
+export * from './clause-embeddings';
 
 // Explicit re-export to resolve ambiguity
 // ClauseType exists in both clauses.ts and shared-library.ts

@@ -77,6 +77,25 @@ export const LRO_FEATURES = {
 } as const;
 
 /**
+ * AI Intelligence Feature Flags
+ *
+ * Each AI capability is independently gated.
+ * All default to disabled — enable per-org via DB or admin API.
+ */
+export const AI_FEATURES = {
+  /** Grievance triage: priority/category/complexity scoring */
+  GRIEVANCE_TRIAGE: 'ai_grievance_triage',
+  /** Clause reasoning: suggest & explain relevant CBA clauses */
+  CLAUSE_REASONING: 'ai_clause_reasoning',
+  /** Employer risk scoring: aggregate risk signals */
+  EMPLOYER_RISK: 'ai_employer_risk',
+  /** Steward copilot: timeline summary, suggested actions, draft responses */
+  STEWARD_COPILOT: 'ai_steward_copilot',
+  /** Executive insights: trend forecasts, hotspot predictions */
+  EXECUTIVE_INSIGHTS: 'ai_executive_insights',
+} as const;
+
+/**
  * Default configurations for LRO features
  */
 const FEATURE_DEFAULTS: Record<string, Record<string, unknown>> = {
