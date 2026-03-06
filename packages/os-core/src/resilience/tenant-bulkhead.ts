@@ -22,7 +22,7 @@
  * ```
  */
 
-import { Bulkhead, type BulkheadOptions } from './bulkhead.js';
+import { Bulkhead, type BulkheadOptions } from './bulkhead';
 
 export interface TenantBulkheadPoolOptions {
   /** Pool name for telemetry */
