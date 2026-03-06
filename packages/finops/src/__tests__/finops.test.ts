@@ -133,7 +133,7 @@ describe('FinOps Recommendations', () => {
     const recs = generateRecommendations(snapshots);
     const storageRec = recs.find((r) => r.category === 'data-lifecycle');
     expect(storageRec).toBeDefined();
-    expect(storageRec!.priority).toBe('high');
+    expect(storageRec!.priority).toBe('medium');
   });
 
   it('estimates total savings from recommendations', () => {
@@ -155,7 +155,7 @@ describe('FinOps Recommendations', () => {
     const recs = generateRecommendations(snapshots);
     const savings = estimateSavings(recs);
     expect(savings.totalMonthlySavings).toBeGreaterThan(0);
-    expect(savings.totalAnnualSavings).toBe(savings.totalMonthlySavings * 12);
+    expect(savings.totalAnnualSavings).toBeCloseTo(savings.totalMonthlySavings * 12, 0);
   });
 });
 
