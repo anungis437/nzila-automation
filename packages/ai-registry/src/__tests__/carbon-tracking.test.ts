@@ -8,7 +8,6 @@ import {
   aggregateCarbonEstimates,
   CARBON_INTENSITY_FACTORS,
   MODEL_ENERGY_FACTORS,
-  type CarbonEstimateInput,
 } from '../carbon-tracking.js';
 
 describe('estimateCarbon', () => {
