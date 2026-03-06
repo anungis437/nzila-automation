@@ -136,7 +136,7 @@ ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 
 # Build only apps that have deps installed in the Docker image (turbo filters)
 # Default: all apps. Override via --build-arg TURBO_FILTER for single-app builds.
-ARG TURBO_FILTER="--filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --filter=@nzila/orchestrator-api"
+ARG TURBO_FILTER="--filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --filter=@nzila/orchestrator-api --filter=@nzila/cfo"
 RUN pnpm turbo build ${TURBO_FILTER}
 # ============================================
 # Web production stage
@@ -285,6 +285,66 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 EXPOSE 3004
 
 CMD ["node", "apps/abr/server.js"]
+
+# ============================================
+# Orchestrator API production stage
+# ============================================
+FROM base AS orchestrator-api
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=4000
+
+# Copy workspace root + orchestrator source from builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=builder /app/apps/orchestrator-api ./apps/orchestrator-api
+COPY --from=builder /app/packages/db ./packages/db
+COPY --from=builder /app/packages/config ./packages/config
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nzila && \
+    adduser --system --uid 1001 orchestrator && \
+    chown -R orchestrator:nzila /app
+
+USER orchestrator
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
+
+EXPOSE 4000
+
+CMD ["pnpm", "--filter", "@nzila/orchestrator-api", "start"]
+
+# ============================================
+# CFO production stage
+# ============================================
+FROM base AS cfo
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3005
+
+# Copy necessary files
+COPY --from=builder /app/apps/cfo/.next/standalone ./
+COPY --from=builder /app/apps/cfo/.next/static ./apps/cfo/.next/static
+COPY --from=builder /app/content ./content
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3005/ || exit 1
+
+EXPOSE 3005
+
+CMD ["node", "apps/cfo/server.js"]
 
 # ============================================
 # Dev stage - for development with hot reload
