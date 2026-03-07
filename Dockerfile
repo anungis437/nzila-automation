@@ -110,14 +110,12 @@ COPY packages/ui/package.json ./packages/ui/
 COPY packages/webhooks/package.json ./packages/webhooks/
 COPY packages/zonga-core/package.json ./packages/zonga-core/
 
-# Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
-RUN echo '' > .npmrc
+# Override .npmrc — keep node-linker=hoisted (required for module resolution)
+# but remove exFAT workarounds that are unnecessary on ext4
+RUN echo 'node-linker=hoisted' > .npmrc
 
 # Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
-
-# Re-run Next.js postinstall so `next/server` types are available at build time
-RUN pnpm rebuild next
 
 # ============================================
 # Builder stage
@@ -454,14 +452,12 @@ COPY packages/ui/package.json ./packages/ui/
 COPY packages/webhooks/package.json ./packages/webhooks/
 COPY packages/zonga-core/package.json ./packages/zonga-core/
 
-# Override .npmrc — remove exFAT workarounds that are unnecessary on ext4
-RUN echo '' > .npmrc
+# Override .npmrc — keep node-linker=hoisted (required for module resolution)
+# but remove exFAT workarounds that are unnecessary on ext4
+RUN echo 'node-linker=hoisted' > .npmrc
 
 # Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
-
-# Re-run Next.js postinstall so `next/server` types are available
-RUN pnpm rebuild next
 
 COPY . .
 
