@@ -25,6 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  type RepresentationProtocol,
+  PROTOCOL_STEWARD_LED,
+  getAssignActionLabel,
+  getAssignActionDescription,
+} from "@/lib/representation/protocol-types";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -43,6 +49,8 @@ export interface NextActionsPanelProps {
   hasEmployerResponse: boolean;
   isOverdue: boolean;
   onAction: (actionId: string) => void;
+  /** Per-org representation protocol — controls labels and available actions */
+  protocol?: RepresentationProtocol;
   className?: string;
 }
 
@@ -53,14 +61,15 @@ function deriveActions({
   hasSteward,
   hasEmployerResponse,
   isOverdue,
+  protocol = PROTOCOL_STEWARD_LED,
 }: Omit<NextActionsPanelProps, "onAction" | "className">): NextAction[] {
   const actions: NextAction[] = [];
 
   if (!hasSteward) {
     actions.push({
       id: "assign_steward",
-      label: "Assign Steward",
-      description: "A steward has not been assigned to this case yet.",
+      label: getAssignActionLabel(protocol),
+      description: getAssignActionDescription(protocol),
       icon: UserPlus,
       priority: "primary",
     });
@@ -150,6 +159,7 @@ export function NextActionsPanel({
   hasEmployerResponse,
   isOverdue,
   onAction,
+  protocol,
   className,
 }: NextActionsPanelProps) {
   const actions = deriveActions({
@@ -157,6 +167,7 @@ export function NextActionsPanel({
     hasSteward,
     hasEmployerResponse,
     isOverdue,
+    protocol,
   });
 
   if (actions.length === 0) return null;

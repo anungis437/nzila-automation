@@ -15,6 +15,11 @@ import {
   type GrievanceAssignment,
 } from "@/db/schema";
 import { withRLSContext } from "@/lib/db/with-rls-context";
+import {
+  type RepresentationProtocol,
+  getRepresentationProtocol,
+  getPrimaryAssignmentRole,
+} from "@/lib/representation";
 
 // ============================================================================
 // TYPES
@@ -82,7 +87,8 @@ export type WorkloadStats = {
 // ============================================================================
 
 /**
- * Automatically assign grievance to best-fit officer based on multiple factors
+ * Automatically assign grievance to best-fit officer based on multiple factors.
+ * Consults the org's representation protocol to determine the default assignment role.
  */
 export async function autoAssignGrievance(
   claimId: string,
@@ -90,12 +96,15 @@ export async function autoAssignGrievance(
   criteria: AssignmentCriteria,
   assignedBy: string,
   options: {
-    role?: "primary_officer" | "secondary_officer" | "legal_counsel";
+    role?: string;
     forceAssignment?: boolean;
     minScore?: number;
   } = {}
 ): Promise<AssignmentResult> {
   try {
+    // Resolve protocol for this org
+    const protocol = await getRepresentationProtocol(organizationId);
+
     // Get claim details (wrapped with RLS for org isolation)
     const claim = await withRLSContext({ organizationId }, async (db) =>
       db.query.claims.findFirst({
@@ -107,8 +116,8 @@ export async function autoAssignGrievance(
       return { success: false, error: "Claim not found" };
     }
 
-    // Get all eligible officers
-    const officers = await getEligibleOfficers(organizationId, criteria);
+    // Get all eligible officers (protocol-aware)
+    const officers = await getEligibleOfficers(organizationId, criteria, protocol);
 
     if (officers.length === 0) {
       return { success: false, error: "No eligible officers found" };
@@ -148,8 +157,8 @@ export async function autoAssignGrievance(
       };
     }
 
-    // Create assignment
-    const role = options.role || "primary_officer";
+    // Create assignment — use protocol-derived role when none is explicitly set
+    const role = options.role || getPrimaryAssignmentRole(protocol);
     const [assignment] = await db
       .insert(grievanceAssignments)
       .values({
@@ -198,7 +207,7 @@ export async function manuallyAssignGrievance(
   assignedTo: string,
   assignedBy: string,
   options: {
-    role?: "primary_officer" | "secondary_officer" | "legal_counsel" | "external_arbitrator";
+    role?: string;
     reason?: string;
     estimatedHours?: number;
     bypassWorkloadCheck?: boolean;
@@ -323,7 +332,7 @@ export async function reassignGrievance(
       newAssignedTo,
       reassignedBy,
       {
-        role: currentAssignment.role as "primary_officer" | "secondary_officer" | "legal_counsel" | "external_arbitrator" | undefined,
+        role: currentAssignment.role as string | undefined,
         reason: `Reassignment: ${reason}`,
         estimatedHours: currentAssignment.estimatedHours
           ? Number(currentAssignment.estimatedHours)
@@ -372,23 +381,33 @@ return [];
 // ============================================================================
 
 /**
- * Get eligible officers based on basic criteria
+ * Get eligible officers based on basic criteria and representation protocol.
+ * The protocol's minimumRepresentationRole determines which org roles qualify.
  */
 async function getEligibleOfficers(
   organizationId: string,
-  _criteria: AssignmentCriteria
+  _criteria: AssignmentCriteria,
+  protocol?: RepresentationProtocol
 ): Promise<OfficerProfile[]> {
   try {
+    // Build role filter based on protocol — default includes officer + steward + admin
+    const roleConditions = protocol?.stewardPermissions.canBeAssigned
+      ? or(
+          eq(organizationMembers.role, "union_officer"),
+          eq(organizationMembers.role, "union_steward"),
+          eq(organizationMembers.role, "admin")
+        )
+      : or(
+          eq(organizationMembers.role, "union_officer"),
+          eq(organizationMembers.role, "admin")
+        );
+
     // Get active officers (wrapped with RLS for org isolation)
     const officers = await withRLSContext({ organizationId }, async (db) =>
       db.query.organizationMembers.findMany({
         where: and(
           eq(organizationMembers.organizationId, organizationId),
-          or(
-            eq(organizationMembers.role, "union_officer"),
-            eq(organizationMembers.role, "union_steward"),
-            eq(organizationMembers.role, "admin")
-          ),
+          roleConditions,
           eq(organizationMembers.status, "active")
         ),
       })

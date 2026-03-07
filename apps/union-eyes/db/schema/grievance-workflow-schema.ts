@@ -91,7 +91,10 @@ export const assignmentRoleEnum = pgEnum("assignment_role", [
   "external_arbitrator",
   "management_rep",
   "witness",
-  "observer"
+  "observer",
+  "steward",
+  "labor_relations_officer",
+  "national_representative"
 ]);
 
 // ============================================================================
