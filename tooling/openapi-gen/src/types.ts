@@ -2,8 +2,6 @@
  * @nzila/openapi-gen — Types for the OpenAPI generation pipeline
  */
 
-import type { z } from 'zod';
-
 /** HTTP methods we care about */
 export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 

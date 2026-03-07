@@ -10,7 +10,6 @@
  * Reference: NIST AI 100-1 (AI Risk Management Framework 1.0)
  */
 
-import { z } from 'zod';
 import type { ModelCard } from './model-card.js';
 
 // ── Types ────────────────────────────────────────────────────────────────────

@@ -77,7 +77,7 @@ export class EvidenceSpanProcessor {
       const existing = this.evidenceSpans.get(packId);
       if (existing) {
         // Duration is in [seconds, nanoseconds] format
-        const durationMs = span.duration[0] * 1000 + span.duration[1] / 1_000_000;
+        const _durationMs = span.duration[0] * 1000 + span.duration[1] / 1_000_000;
         // Store for later retrieval
         this.evidenceSpans.set(packId, {
           ...existing,

@@ -25,10 +25,10 @@ export async function proofCenterRoutes(app: FastifyInstance) {
       if (!cachedPack) {
         const ports = createRealPorts()
         const unsigned = await collectProcurementPack('default-org', 'api', ports)
-        cachedPack = signProcurementPack(unsigned)
+        cachedPack = await signProcurementPack(unsigned, ports)
       }
 
-      const pack = cachedPack
+      const pack = cachedPack!
       const sectionNames = Object.keys(pack.sections)
       const manifestHash = pack.signature?.digest ?? null
 
@@ -58,7 +58,7 @@ export async function proofCenterRoutes(app: FastifyInstance) {
     try {
       const ports = createRealPorts()
       const unsigned = await collectProcurementPack('default-org', 'api', ports)
-      cachedPack = signProcurementPack(unsigned)
+      cachedPack = await signProcurementPack(unsigned, ports)
 
       return reply.status(200).send({
         packId: cachedPack.packId,

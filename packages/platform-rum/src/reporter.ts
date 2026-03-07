@@ -16,7 +16,7 @@
  */
 
 import { z } from 'zod';
-import { RUMEventSchema, WEB_VITAL_THRESHOLDS, type RUMEvent, type WebVitalName } from './types.js';
+import { RUMEventSchema, type RUMEvent } from './types.js';
 
 const RUMBatchSchema = z.array(
   RUMEventSchema.extend({ timestamp: z.coerce.date() }),

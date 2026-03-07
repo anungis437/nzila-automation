@@ -5,7 +5,7 @@
  * Supports Next.js App Router and Fastify patterns.
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import type { DiscoveredRoute, HttpMethod, AppConfig } from './types.js';
 
