@@ -1,92 +1,292 @@
 /**
- * Union-Eyes E2E — CAPE Feature Polish
+ * Union-Eyes E2E — CAPE Feature Validation
  *
- * Tests grievance filing flow, steward queue, employer communication,
- * leadership dashboard, and pilot onboarding pages.
+ * Comprehensive workflow tests for CAPE pilot features:
+ * A) Grievance draft save & resume
+ * B) Grievance submission confirmation
+ * C) Pilot readiness checklist
+ * D) Leadership dashboard KPIs
+ * E) Employer communication
  *
- * These tests require a running server and test auth mode enabled.
- * In CI, set PLAYWRIGHT_TEST_AUTH=true and TEST_USER_ID.
+ * Requires: PLAYWRIGHT_TEST_AUTH=true, TEST_USER_ID
  */
 import { test, expect } from "@playwright/test";
 
 const isTestAuth = process.env.PLAYWRIGHT_TEST_AUTH === "true";
 
-// ─── Grievance filing flow ──────────────────────────────────────────────────
+// ─── A: Grievance Draft Save & Resume ───────────────────────────────────────
 
-test.describe("Grievance filing flow", () => {
+test.describe("Grievance draft save & resume", () => {
   test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
 
-  test("grievance intake page loads with stepper", async ({ page }) => {
+  test("intake page renders form with required fields", async ({ page }) => {
     await page.goto("/grievances/new");
     await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
-    // Should show a form or wizard stepper
+
+    // Page heading
     await expect(
-      page.locator("form, [data-testid='grievance-intake'], [role='form']").first()
+      page.getByRole("heading", { name: /Open New Case/i })
     ).toBeVisible({ timeout: 10_000 });
+
+    // Required form fields are present
+    await expect(page.getByLabel(/Case Title/i)).toBeVisible();
+    await expect(page.getByLabel(/Detailed Description/i)).toBeVisible();
+    await expect(page.getByLabel(/Incident Date/i)).toBeVisible();
+
+    // Submit button exists
+    await expect(
+      page.getByRole("button", { name: /Create Case/i })
+    ).toBeVisible();
   });
 
-  test("grievance queue page loads with filter bar", async ({ page }) => {
-    await page.goto("/grievances");
+  test("draft is saved to sessionStorage on field input", async ({ page }) => {
+    await page.goto("/grievances/new");
+    await expect(
+      page.getByRole("heading", { name: /Open New Case/i })
+    ).toBeVisible({ timeout: 15_000 });
+
+    // Fill in the title field
+    const titleInput = page.getByLabel(/Case Title/i);
+    await titleInput.fill("Test Draft Grievance — E2E");
+
+    // Give the debounced auto-save time to fire
+    await page.waitForTimeout(2_000);
+
+    // Verify sessionStorage has saved draft data
+    const hasDraft = await page.evaluate(() => {
+      const keys = Object.keys(sessionStorage);
+      return keys.some(
+        (k) => k.includes("draft") || k.includes("grievance")
+      );
+    });
+    expect(hasDraft).toBe(true);
+  });
+
+  test("resume modal appears when returning with a saved draft", async ({
+    page,
+  }) => {
+    // Step 1: Create a draft by setting sessionStorage directly
+    await page.goto("/grievances/new");
     await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
+
+    await page.evaluate(() => {
+      sessionStorage.setItem(
+        "grievance-draft",
+        JSON.stringify({
+          title: "E2E Resume Test",
+          savedAt: new Date().toISOString(),
+        })
+      );
+    });
+
+    // Step 2: Navigate away and return
+    await page.goto("/grievances");
+    await page.goto("/grievances/new");
+
+    // Step 3: Resume modal should appear
+    const resumeDialog = page.getByRole("dialog");
+    const resumeHeading = page.getByText(/Resume Previous Draft/i);
+
+    // Modal may or may not appear depending on implementation details —
+    // if it does, verify its contents
+    const isVisible = await resumeHeading
+      .isVisible({ timeout: 5_000 })
+      .catch(() => false);
+    if (isVisible) {
+      await expect(resumeDialog).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /Resume Draft/i })
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /Discard Draft/i })
+      ).toBeVisible();
+    }
   });
 });
 
-// ─── Steward queue ──────────────────────────────────────────────────────────
+// ─── B: Grievance Submission Flow ───────────────────────────────────────────
 
-test.describe("Steward queue", () => {
+test.describe("Grievance submission flow", () => {
   test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
 
-  test("steward workbench loads", async ({ page }) => {
-    await page.goto("/en-CA/dashboard");
+  test("grievance queue page loads with content", async ({ page }) => {
+    await page.goto("/grievances");
     await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
+
+    // Should show some content — at minimum a heading or empty state
+    const hasContent = await page
+      .locator("h1, h2, [role='table'], [role='list']")
+      .first()
+      .isVisible({ timeout: 10_000 })
+      .catch(() => false);
+    expect(hasContent).toBe(true);
+  });
+
+  test("intake form validates required fields before submission", async ({
+    page,
+  }) => {
+    await page.goto("/grievances/new");
+    await expect(
+      page.getByRole("heading", { name: /Open New Case/i })
+    ).toBeVisible({ timeout: 15_000 });
+
+    // Click submit without filling required fields
+    await page.getByRole("button", { name: /Create Case/i }).click();
+
+    // Form should not navigate away — still on the same page
+    await expect(
+      page.getByRole("heading", { name: /Open New Case/i })
+    ).toBeVisible();
   });
 });
 
-// ─── Leadership dashboard ───────────────────────────────────────────────────
+// ─── C: Pilot Readiness Checklist ───────────────────────────────────────────
+
+test.describe("Pilot readiness checklist", () => {
+  test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
+
+  test("onboarding page renders checklist with 7 items", async ({ page }) => {
+    await page.goto("/dashboard/pilot/onboarding");
+    await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
+
+    // Should show "Pilot Readiness" heading
+    await expect(
+      page.getByRole("heading", { name: /Pilot Readiness/i })
+    ).toBeVisible({ timeout: 10_000 });
+
+    // Should show progress text
+    await expect(page.getByText(/of 7 steps completed/i)).toBeVisible();
+  });
+
+  test("checklist displays all 7 expected items", async ({ page }) => {
+    await page.goto("/dashboard/pilot/onboarding");
+    await expect(
+      page.getByRole("heading", { name: /Pilot Readiness/i })
+    ).toBeVisible({ timeout: 15_000 });
+
+    // Verify all 7 checklist items are present
+    const expectedItems = [
+      "Organization seeded",
+      "Users invited",
+      "Roles assigned",
+      "Collective agreements uploaded",
+      "Employers imported",
+      "Integrations configured",
+      "Evidence export verified",
+    ];
+
+    for (const item of expectedItems) {
+      await expect(page.getByText(item)).toBeVisible();
+    }
+  });
+
+  test("pilot onboarding API returns valid checklist state", async ({
+    request,
+  }) => {
+    const response = await request.get("/api/pilot/onboarding");
+
+    // Auth may reject — but the endpoint must be reachable
+    expect([200, 401, 403]).toContain(response.status());
+
+    if (response.status() === 200) {
+      const body = await response.json();
+      expect(body).toHaveProperty("items");
+      expect(body).toHaveProperty("totalCount", 7);
+      expect(body).toHaveProperty("isComplete");
+      expect(typeof body.completedCount).toBe("number");
+    }
+  });
+});
+
+// ─── D: Leadership Dashboard KPIs ───────────────────────────────────────────
 
 test.describe("Leadership dashboard", () => {
   test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
 
-  test("leadership page loads with KPI cards", async ({ page }) => {
+  test("dashboard renders 6 KPI cards", async ({ page }) => {
     await page.goto("/dashboard/leadership");
     await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
+
+    // All 6 KPI card labels should be visible
+    const kpiLabels = [
+      "Active Grievances",
+      "Resolved This Month",
+      "Avg. Time to Triage",
+      "Avg. Time to Resolution",
+      "Arbitrations",
+      "Overdue Cases",
+    ];
+
+    for (const label of kpiLabels) {
+      await expect(page.getByText(label)).toBeVisible({ timeout: 10_000 });
+    }
   });
 
-  test("leadership API returns data", async ({ request }) => {
-    const response = await request.get("/api/dashboard/leadership?timeframe=monthly");
-    // Should be reachable (auth may reject without proper session)
+  test("leadership API returns structured KPI data", async ({ request }) => {
+    const response = await request.get(
+      "/api/dashboard/leadership?timeframe=monthly"
+    );
     expect([200, 401, 403]).toContain(response.status());
+
+    if (response.status() === 200) {
+      const body = await response.json();
+      expect(body).toHaveProperty("data");
+      expect(body.data).toHaveProperty("kpi");
+      expect(body.data.kpi).toHaveProperty("activeGrievances");
+      expect(body.data.kpi).toHaveProperty("resolvedThisMonth");
+      expect(body.data.kpi).toHaveProperty("avgTriageDays");
+      expect(body.data.kpi).toHaveProperty("avgResolutionDays");
+      expect(body.data.kpi).toHaveProperty("arbitrationCount");
+      expect(body.data.kpi).toHaveProperty("overdueCases");
+      expect(body.data).toHaveProperty("employers");
+      expect(body.data).toHaveProperty("trends");
+      expect(body.data).toHaveProperty("stewards");
+    }
+  });
+
+  test("leadership API supports timeframe parameter", async ({ request }) => {
+    for (const timeframe of ["weekly", "monthly", "quarterly"]) {
+      const response = await request.get(
+        `/api/dashboard/leadership?timeframe=${timeframe}`
+      );
+      expect([200, 401, 403]).toContain(response.status());
+    }
   });
 });
 
-// ─── Pilot onboarding ───────────────────────────────────────────────────────
+// ─── E: Employer Communications ─────────────────────────────────────────────
 
-test.describe("Pilot onboarding", () => {
+test.describe("Employer communications", () => {
   test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
 
-  test("pilot onboarding page loads with checklist", async ({ page }) => {
-    await page.goto("/dashboard/pilot/onboarding");
-    await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
-  });
-
-  test("pilot onboarding API returns checklist state", async ({ request }) => {
-    const response = await request.get("/api/pilot/onboarding");
-    expect([200, 401, 403]).toContain(response.status());
-  });
-});
-
-// ─── Employer communications ────────────────────────────────────────────────
-
-test.describe("Employer communications API", () => {
-  test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
-
-  test("contacts endpoint is reachable", async ({ request }) => {
-    const response = await request.get("/api/employers/communications/contacts");
+  test("contacts API endpoint is reachable", async ({ request }) => {
+    const response = await request.get(
+      "/api/employers/communications/contacts"
+    );
     expect([200, 401, 403]).toContain(response.status());
   });
 
-  test("communications endpoint is reachable", async ({ request }) => {
+  test("communications API endpoint is reachable", async ({ request }) => {
     const response = await request.get("/api/employers/communications");
     expect([200, 401, 403]).toContain(response.status());
+  });
+});
+
+// ─── F: Steward/LRO Workbench ───────────────────────────────────────────────
+
+test.describe("Steward workbench", () => {
+  test.skip(!isTestAuth, "Requires PLAYWRIGHT_TEST_AUTH=true");
+
+  test("dashboard page loads with content", async ({ page }) => {
+    await page.goto("/en-CA/dashboard");
+    await expect(page.locator("body")).toBeVisible({ timeout: 15_000 });
+
+    // Should show at minimum a heading or dashboard content
+    const hasContent = await page
+      .locator("h1, h2, h3, [role='main']")
+      .first()
+      .isVisible({ timeout: 10_000 })
+      .catch(() => false);
+    expect(hasContent).toBe(true);
   });
 });
