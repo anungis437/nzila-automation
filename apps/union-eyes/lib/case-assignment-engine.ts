@@ -165,7 +165,7 @@ export async function autoAssignGrievance(
         organizationId,
         claimId,
         assignedTo: bestMatch.userId,
-        role,
+        role: role as typeof grievanceAssignments.$inferInsert.role,
         status: "assigned",
         assignedBy,
         assignedAt: new Date(),

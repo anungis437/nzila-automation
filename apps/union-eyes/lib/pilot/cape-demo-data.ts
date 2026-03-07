@@ -128,3 +128,84 @@ export function getDemoDatasetSummary(organizationId: string): {
     resolutions: 1,
   };
 }
+
+// ─── E2E / Test Fixture Helpers ───────────────────────────────
+
+/**
+ * Create a deterministic demo organization for test fixtures.
+ * Uses a fixed UUID so tests can reference the same org across runs.
+ */
+export function createCapeDemoOrg() {
+  const orgId = '00000000-0000-4000-a000-000000000001';
+  return {
+    id: orgId,
+    name: 'CAPE-ACEP Test Organization',
+    slug: 'cape-acep-test',
+    representationPreset: 'lro-led' as const,
+    employers: generateDemoEmployers(orgId),
+    grievances: generateDemoGrievances(orgId),
+    summary: getDemoDatasetSummary(orgId),
+  };
+}
+
+/**
+ * Generate leadership metrics seed data for test fixtures.
+ * Returns values matching the leadership dashboard API shape.
+ */
+export function seedCapeLeadershipMetrics() {
+  const org = createCapeDemoOrg();
+  const grievances = org.grievances;
+
+  return {
+    kpi: {
+      activeGrievances: grievances.filter(g => !['settled', 'withdrawn'].includes(g.status)).length,
+      resolvedThisMonth: grievances.filter(g => g.status === 'settled').length,
+      avgTriageDays: 3.2,
+      avgResolutionDays: 45.6,
+      arbitrationCount: grievances.filter(g => g.status === 'arbitration').length,
+      overdueCases: 1,
+      previousPeriod: {
+        activeGrievances: 5,
+        resolvedThisMonth: 0,
+        avgTriageDays: 4.1,
+        avgResolutionDays: 52.0,
+        arbitrationCount: 0,
+        overdueCases: 2,
+      },
+    },
+    employers: org.employers.map(e => ({
+      employerName: e.name,
+      activeGrievances: grievances.filter(g => g.employerName === e.name && g.status !== 'settled').length,
+      overdueCases: 0,
+      resolvedThisQuarter: grievances.filter(g => g.employerName === e.name && g.status === 'settled').length,
+      topCategory: 'contract',
+      avgResolutionDays: 45,
+      trend: 'stable' as const,
+    })),
+  };
+}
+
+/**
+ * Generate a pilot checklist state for test fixtures.
+ * Returns a shape matching the pilot onboarding API response.
+ */
+export function seedCapePilotChecklistState(overrides?: Partial<Record<string, boolean>>) {
+  const defaults: Record<string, boolean> = {
+    'org-seeded': false,
+    'users-invited': false,
+    'roles-assigned': false,
+    'contracts-uploaded': false,
+    'employers-imported': false,
+    'integrations-configured': false,
+    'export-verified': false,
+  };
+  const items = { ...defaults, ...overrides };
+  const completedCount = Object.values(items).filter(Boolean).length;
+
+  return {
+    items,
+    completedCount,
+    totalCount: 7,
+    isComplete: completedCount === 7,
+  };
+}

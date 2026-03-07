@@ -27,8 +27,8 @@ type ProtocolState = {
  * Fetch & cache the representation protocol for the current org.
  */
 export function useRepresentationProtocol(): ProtocolState {
-  const { org } = useOrg();
-  const organizationId = org?.id;
+  const { currentOrg } = useOrg();
+  const organizationId = currentOrg?.organizationId;
 
   const [protocol, setProtocol] = useState<RepresentationProtocol>(PROTOCOL_STEWARD_LED);
   const [isLoading, setIsLoading] = useState(true);

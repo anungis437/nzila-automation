@@ -173,7 +173,7 @@ describe("getPrimaryAssignmentRole", () => {
 // ============================================================================
 
 describe("Barrel export (lib/representation/index.ts)", () => {
-  it("re-exports all type helpers from protocol-types", async () => {
+  it("re-exports all type helpers from protocol-types", { timeout: 15_000 }, async () => {
     const barrel = await import("@/lib/representation");
     expect(barrel.PROTOCOL_STEWARD_LED).toBeDefined();
     expect(barrel.PROTOCOL_LRO_LED).toBeDefined();

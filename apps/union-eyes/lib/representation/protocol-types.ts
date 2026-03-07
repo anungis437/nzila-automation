@@ -203,9 +203,15 @@ export function getAssignActionDescription(protocol: RepresentationProtocol): st
  * Returns the assignment engine role string that maps to the protocol's
  * primary representative. This bridges the protocol to the DB assignment_role.
  */
+export type AssignmentRole =
+  | "steward"
+  | "labor_relations_officer"
+  | "national_representative"
+  | "primary_officer";
+
 export function getPrimaryAssignmentRole(
   protocol: RepresentationProtocol
-): string {
+): AssignmentRole {
   switch (protocol.primaryRepresentative) {
     case "steward":
       return "steward";
