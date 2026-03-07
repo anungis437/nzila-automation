@@ -1,8 +1,77 @@
 # Nzila OS
 
-> Monorepo for the Nzila digital-venture platform — 13 apps, 58+ packages, polyglot (TypeScript + Python/Django), with evidence-first governance, contract-enforced invariants, and org-scoped multi-tenancy.
+> The operating system for Nzila Digital Ventures — 13 apps, 58+ packages, polyglot (TypeScript + Python/Django), with evidence-first governance, contract-enforced invariants, and org-scoped multi-tenancy.
 
-For a non-technical overview, see [README.business.md](README.business.md).
+[![CI](https://github.com/anungis437/nzila-os/actions/workflows/ci.yml/badge.svg)](https://github.com/anungis437/nzila-os/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-7%2C669%20passing-brightgreen)](#testing)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](#)
+[![pnpm](https://img.shields.io/badge/pnpm-10-F69220)](#quick-start)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](#license)
+
+---
+
+## What Is Nzila OS?
+
+Nzila OS is the digital backbone that powers every Nzila venture. It is not a standalone product — it is the internal platform that all Nzila applications run on. Every business action that matters — a payment, a trade, a harvest record, a grievance filing, a compliance attestation — flows through Nzila OS with a tamper-evident audit trail, role-based access control, and automated compliance.
+
+### Business Domains
+
+| Domain | Apps | What It Does |
+|--------|------|-------------|
+| **Agriculture** | Pondu, Cora | Smallholder supply chains — producer profiles, harvest tracking, warehouse ops, payment disbursement, yield intelligence, traceability |
+| **Commerce** | Shop Quoter | Multi-vertical quoting engine, order lifecycle, pricing rules |
+| **Trade** | Trade | Cross-border trade management, vehicle commerce |
+| **Finance** | CFO | Stripe payments, QuickBooks sync, tax calendar, FX, financial reporting |
+| **Union Management** | Union-Eyes | Grievance lifecycle, collective bargaining, elections, strike funds, evidence packs, federation management |
+| **Compliance & Exams** | NACP Exams | Examination administration, integrity proofs |
+| **Operations** | Console | Governance, finance oversight, ML/AI management, NACP integrity |
+| **Public** | Web | Marketing site, resource library |
+| **Partners** | Partners | Entitlement-gated partner portal |
+
+For a full non-technical overview, see [README.business.md](README.business.md).
+
+---
+
+## Platform Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                          13 APPS (Next.js + Django)                      │
+│  web │ console │ partners │ union-eyes │ abr │ cora │ pondu │ trade │…  │
+└───────┬──────────────────────┬───────────────────────┬───────────────────┘
+        │                      │                       │
+        ▼                      ▼                       ▼
+┌───────────────┐  ┌───────────────────────┐  ┌───────────────────────────┐
+│  @nzila/ui    │  │  @nzila/os-core       │  │  @nzila/ai-sdk + ml-sdk  │
+│  Components   │  │  Policy · Evidence ·  │  │  Governed AI/ML access   │
+│  Tailwind 4   │  │  Telemetry · Config   │  │  Budget caps · Registry  │
+└───────────────┘  └───────────┬───────────┘  └───────────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        ▼                      ▼                      ▼
+┌───────────────┐  ┌───────────────────────┐  ┌───────────────────────────┐
+│  @nzila/db    │  │  @nzila/evidence      │  │  @nzila/blob              │
+│  Drizzle ORM  │  │  Seal · Verify ·      │  │  Azure Blob Storage      │
+│  90+ tables   │  │  Hash-chain audit     │  │  Immutable evidence      │
+└───────┬───────┘  └───────────────────────┘  └───────────────────────────┘
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                     PostgreSQL 15 + Redis 7                              │
+│              Org-scoped RLS · Append-only audit · BullMQ                │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+### Invariants (enforced by 5,000+ contract tests)
+
+| Invariant | Enforcement |
+|-----------|-------------|
+| **Org-scoped everything** | All data queries, mutations, and API routes are scoped to `orgId` |
+| **Evidence-first** | Material actions produce tamper-evident audit trails with hash chaining |
+| **Content boundary** | Apps read from `content/` — NEVER from `governance/` |
+| **SDK-only AI/ML** | Apps consume `@nzila/ai-sdk` and `@nzila/ml-sdk` — never provider SDKs directly |
+| **Auth on all routes** | Every API route calls `authorize()` from `@nzila/os-core/policy` |
+| **Stack authority** | Django-authoritative apps (ABR, UE) must not mutate domain data via Drizzle |
 
 ---
 
@@ -48,19 +117,16 @@ security/                  Red-team profiles, security tooling
 .github/workflows/         15 CI/CD pipelines (see CI section)
 ```
 
-### Key Rules
+### Toolchain
 
-| Rule | Detail |
-|------|--------|
-| **Org-scoped everything** | All data queries, mutations, and API routes are scoped to `orgId` |
-| **Evidence-first** | Material actions produce tamper-evident audit trails with hash chaining |
-| **Content boundary** | Apps read from `content/` — NEVER from `governance/` |
-| **SDK-only AI/ML** | Apps consume `@nzila/ai-sdk` and `@nzila/ml-sdk` — never provider SDKs directly |
-| **Auth on all routes** | Every API route calls `authorize()` from `@nzila/os-core/policy` |
-| **Stack authority** | Django-authoritative apps (ABR, UE) must not mutate domain data via Drizzle |
+| Tool | Version |
+|------|---------|
 | **Package manager** | pnpm 10 with workspaces |
 | **Build orchestration** | Turborepo |
 | **Styling** | Tailwind CSS v4 |
+| **Auth** | Clerk |
+| **Database** | PostgreSQL 15 + Drizzle ORM |
+| **CI** | GitHub Actions (15 workflows) |
 
 ---
 
@@ -257,14 +323,39 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architectural overview.
 
 ### Key Decisions
 
-- **Evidence-first**: All material actions produce evidence artifacts via `buildEvidencePackFromAction()` → Azure Blob + hash-chained `audit_events`
-- **Ports-and-adapters**: Domain logic depends on port interfaces, not concrete implementations
-- **Polyglot persistence**: TypeScript/Drizzle for platform core, Python/Django for domain verticals (ABR, UE)
-- **Stack authority**: Each app has a formally designated authoritative data layer — enforced by contract tests
-- **RBAC**: Clerk session claims (`publicMetadata.nzilaRole`) — five roles: `platform_admin`, `studio_admin`, `ops`, `analyst`, `viewer`
-- **Governance separation**: Raw strategy docs in `governance/` are never imported by app code; curated versions go to `content/`
-- **Contract-enforced invariants**: `tooling/contract-tests/` runs 5000+ tests verifying architectural rules at CI time
-- **SLO gating**: Deploy to pilot/prod blocked if real SLO metrics fail thresholds
+| Decision | Detail |
+|----------|--------|
+| **Evidence-first** | Material actions → `buildEvidencePackFromAction()` → Azure Blob + hash-chained `audit_events` |
+| **Ports-and-adapters** | Domain logic depends on port interfaces, not concrete implementations |
+| **Polyglot persistence** | TypeScript/Drizzle for platform core, Python/Django for domain verticals (ABR, UE) |
+| **Stack authority** | Each app has a formally designated authoritative data layer — enforced by contract tests |
+| **RBAC** | Clerk session claims (`publicMetadata.nzilaRole`) — `platform_admin`, `studio_admin`, `ops`, `analyst`, `viewer` |
+| **Governance separation** | Raw strategy docs in `governance/` are never imported by app code; curated → `content/` |
+| **Contract-enforced invariants** | `tooling/contract-tests/` runs 5,000+ tests verifying architectural rules at CI time |
+| **SLO gating** | Deploy to pilot/prod blocked if real SLO metrics fail thresholds |
+
+---
+
+## Testing
+
+```bash
+pnpm test              # 7,669 unit tests (Vitest) across 304 files
+pnpm contract-tests    # 5,000+ architectural invariant checks
+pnpm lint              # ESLint across all workspaces
+pnpm typecheck         # tsc --noEmit across all workspaces
+```
+
+### Test Pyramid
+
+| Layer | Framework | Count | What It Checks |
+|-------|-----------|-------|----------------|
+| **Unit** | Vitest | 7,669 | Component logic, services, utilities, schemas |
+| **Contract** | Custom | 5,000+ | Org scoping, stack authority, SDK boundaries, governance rules |
+| **E2E** | Playwright | Per-app | User workflows (auth-gated) |
+| **Security** | Gitleaks, CodeQL, Trivy | CI | Secrets, static analysis, container vulnerabilities |
+| **Load** | Planned | — | Rate limiting validation |
+
+All tests run on every PR via `ci.yml`. Contract tests also run on a nightly schedule.
 
 ---
 
@@ -333,9 +424,34 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Key points:
 - Conventional commits (`feat:`, `fix:`, `chore:`, `docs:`)
 - New apps must pass the App Alignment Checklist
 
+---
+
 ## Security
 
 See [SECURITY.md](SECURITY.md). Report vulnerabilities to security@nzila.app (not public issues).
+
+### Security Posture
+
+| Layer | Tooling | Trigger |
+|-------|---------|---------|
+| **Secret scanning** | Gitleaks + TruffleHog | Every PR + pre-commit |
+| **Static analysis** | CodeQL (TS + Python) | Every PR + weekly |
+| **Container scanning** | Trivy | Dockerfile changes + weekly |
+| **Dependency audit** | `pnpm audit` | Every PR + weekly (blocks on CRITICAL) |
+| **SBOM** | CycloneDX | Release tags |
+| **Red-team** | Manual workflow | On demand |
+
+---
+
+## App READMEs
+
+Each app has its own detailed README:
+
+| App | README |
+|-----|--------|
+| **Union-Eyes** | [apps/union-eyes/README.md](apps/union-eyes/README.md) |
+
+---
 
 ## License
 
