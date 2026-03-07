@@ -131,7 +131,8 @@ COPY --from=deps /app/packages ./packages
 COPY . .
 
 # Build args for Clerk (with defaults for builds without actual keys)
-ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_build_placeholder
+# Placeholder must be valid base64 format or Clerk SDK rejects it at SSG prerender time
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cGxhY2Vob2xkZXIuY2xlcmsuYWNjb3VudHMuZGV2JA
 ARG CLERK_SECRET_KEY=sk_test_build_placeholder
 
 # Set as env vars for build
