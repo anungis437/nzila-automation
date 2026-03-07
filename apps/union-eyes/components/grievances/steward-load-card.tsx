@@ -27,6 +27,10 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  type RepresentationProtocol,
+  PROTOCOL_STEWARD_LED,
+} from "@/lib/representation/protocol-types";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -40,6 +44,8 @@ export interface StewardWorkload {
 export interface StewardLoadCardProps {
   stewardName: string;
   workload: StewardWorkload;
+  /** Per-org representation protocol — controls header label */
+  protocol?: RepresentationProtocol;
   className?: string;
 }
 
@@ -53,6 +59,8 @@ export interface StewardSummary {
 export interface StewardWorkloadListProps {
   stewards: StewardSummary[];
   organizationId: string;
+  /** Per-org representation protocol — controls header label */
+  protocol?: RepresentationProtocol;
   className?: string;
   onSelectSteward?: (stewardId: string) => void;
 }
@@ -76,15 +84,17 @@ const LOAD_COLORS = {
 export function StewardLoadCard({
   stewardName,
   workload,
+  protocol = PROTOCOL_STEWARD_LED,
   className,
 }: StewardLoadCardProps) {
   const loadLevel = computeLoadLevel(workload.activeCases);
+  const workloadLabel = `${protocol.representativeLabel} Workload`;
 
   return (
     <Card className={cn("p-4 space-y-4", className)}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Steward Workload</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{workloadLabel}</p>
           <p className="text-sm font-semibold mt-0.5">{stewardName}</p>
         </div>
         <span
@@ -112,18 +122,20 @@ export function StewardLoadCard({
 export function StewardWorkloadList({
   stewards,
   organizationId: _organizationId,
+  protocol = PROTOCOL_STEWARD_LED,
   className,
   onSelectSteward,
 }: StewardWorkloadListProps) {
   const totalActive = stewards.reduce((sum, s) => sum + s.activeCases, 0);
   const totalOverdue = stewards.reduce((sum, s) => sum + s.overdueCases, 0);
+  const workloadLabel = `${protocol.representativeLabel} Workload`;
 
   return (
     <Card className={cn("p-4 space-y-4", className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold">Steward Workload</h3>
+          <h3 className="text-sm font-semibold">{workloadLabel}</h3>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>{totalActive} active</span>
@@ -137,7 +149,7 @@ export function StewardWorkloadList({
 
       {stewards.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-4">
-          No active steward assignments.
+          No active {protocol.representativeLabel.toLowerCase()} assignments.
         </p>
       ) : (
         <div className="space-y-1" role="list">
