@@ -1,8 +1,15 @@
 /**
- * Steward Load Card
+ * Steward Load Card & Workload List
  *
- * Shows workload visibility for the current steward:
- * active cases, overdue count, average days in current state.
+ * Shows workload visibility for stewards:
+ * - StewardLoadCard: single-steward detail view
+ * - StewardWorkloadList: multi-steward summary with overdue indicators
+ *
+ * Query model:
+ *   SELECT steward_id, COUNT(*)
+ *   FROM grievances
+ *   WHERE status NOT IN ('RESOLVED','CLOSED')
+ *   GROUP BY steward_id
  *
  * @module components/grievances/steward-load-card
  */
@@ -15,8 +22,10 @@ import {
   Clock,
   TrendingUp,
   AlertTriangle,
+  Users,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────
@@ -34,25 +43,42 @@ export interface StewardLoadCardProps {
   className?: string;
 }
 
-// ─── Component ────────────────────────────────────────────────
+export interface StewardSummary {
+  stewardId: string;
+  stewardName: string;
+  activeCases: number;
+  overdueCases: number;
+}
+
+export interface StewardWorkloadListProps {
+  stewards: StewardSummary[];
+  organizationId: string;
+  className?: string;
+  onSelectSteward?: (stewardId: string) => void;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────
+
+export function computeLoadLevel(activeCases: number): "light" | "moderate" | "heavy" {
+  if (activeCases >= 20) return "heavy";
+  if (activeCases >= 10) return "moderate";
+  return "light";
+}
+
+const LOAD_COLORS = {
+  light: "text-green-600 bg-green-50 dark:bg-green-950/20",
+  moderate: "text-amber-600 bg-amber-50 dark:bg-amber-950/20",
+  heavy: "text-red-600 bg-red-50 dark:bg-red-950/20",
+} as const;
+
+// ─── Single Steward Card ──────────────────────────────────────
 
 export function StewardLoadCard({
   stewardName,
   workload,
   className,
 }: StewardLoadCardProps) {
-  const loadLevel =
-    workload.activeCases >= 20
-      ? "heavy"
-      : workload.activeCases >= 10
-        ? "moderate"
-        : "light";
-
-  const loadColors = {
-    light: "text-green-600 bg-green-50 dark:bg-green-950/20",
-    moderate: "text-amber-600 bg-amber-50 dark:bg-amber-950/20",
-    heavy: "text-red-600 bg-red-50 dark:bg-red-950/20",
-  };
+  const loadLevel = computeLoadLevel(workload.activeCases);
 
   return (
     <Card className={cn("p-4 space-y-4", className)}>
@@ -64,7 +90,7 @@ export function StewardLoadCard({
         <span
           className={cn(
             "text-xs font-medium px-2 py-0.5 rounded-full capitalize",
-            loadColors[loadLevel]
+            LOAD_COLORS[loadLevel]
           )}
         >
           {loadLevel}
@@ -72,29 +98,88 @@ export function StewardLoadCard({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Metric
-          icon={Briefcase}
-          label="Active Cases"
-          value={workload.activeCases}
-        />
-        <Metric
-          icon={AlertTriangle}
-          label="Overdue"
-          value={workload.overdueCases}
-          alert={workload.overdueCases > 0}
-        />
-        <Metric
-          icon={Clock}
-          label="Avg. Days in State"
-          value={workload.avgDaysInState}
-          suffix="d"
-        />
-        <Metric
-          icon={TrendingUp}
-          label="Assigned This Week"
-          value={workload.casesThisWeek}
-        />
+        <Metric icon={Briefcase} label="Active Cases" value={workload.activeCases} />
+        <Metric icon={AlertTriangle} label="Overdue" value={workload.overdueCases} alert={workload.overdueCases > 0} />
+        <Metric icon={Clock} label="Avg. Days in State" value={workload.avgDaysInState} suffix="d" />
+        <Metric icon={TrendingUp} label="Assigned This Week" value={workload.casesThisWeek} />
       </div>
+    </Card>
+  );
+}
+
+// ─── Multi-Steward Workload List ──────────────────────────────
+
+export function StewardWorkloadList({
+  stewards,
+  organizationId: _organizationId,
+  className,
+  onSelectSteward,
+}: StewardWorkloadListProps) {
+  const totalActive = stewards.reduce((sum, s) => sum + s.activeCases, 0);
+  const totalOverdue = stewards.reduce((sum, s) => sum + s.overdueCases, 0);
+
+  return (
+    <Card className={cn("p-4 space-y-4", className)}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold">Steward Workload</h3>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{totalActive} active</span>
+          {totalOverdue > 0 && (
+            <Badge variant="destructive" className="text-[10px] h-5">
+              {totalOverdue} overdue
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {stewards.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-4">
+          No active steward assignments.
+        </p>
+      ) : (
+        <div className="space-y-1" role="list">
+          {stewards.map((steward) => {
+            const level = computeLoadLevel(steward.activeCases);
+            return (
+              <button
+                key={steward.stewardId}
+                type="button"
+                className={cn(
+                  "w-full flex items-center gap-3 p-2.5 rounded-md text-left transition-colors",
+                  "hover:bg-muted/50",
+                  onSelectSteward && "cursor-pointer"
+                )}
+                onClick={() => onSelectSteward?.(steward.stewardId)}
+                role="listitem"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{steward.stewardName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {steward.activeCases} active case{steward.activeCases !== 1 ? "s" : ""}
+                  </p>
+                </div>
+                {steward.overdueCases > 0 && (
+                  <div className="flex items-center gap-1 text-red-600">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <span className="text-xs font-medium">{steward.overdueCases}</span>
+                  </div>
+                )}
+                <span
+                  className={cn(
+                    "text-[10px] font-medium px-1.5 py-0.5 rounded-full capitalize",
+                    LOAD_COLORS[level]
+                  )}
+                >
+                  {level}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </Card>
   );
 }

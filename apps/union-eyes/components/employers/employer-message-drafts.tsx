@@ -15,7 +15,6 @@ import {
   FileEdit,
   Send,
   Save,
-  Copy,
   Trash2,
   FileText,
   Check,
@@ -24,7 +23,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
+import { EMPLOYER_TEMPLATES } from "@/lib/employers/communication-templates";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -92,7 +91,7 @@ export interface GrievanceContext {
 
 export interface EmployerMessageDraftsProps {
   drafts: DraftMessage[];
-  templates: MessageTemplate[];
+  templates?: MessageTemplate[];
   grievanceContext?: GrievanceContext;
   recipientName?: string;
   recipientEmail?: string;
@@ -142,7 +141,7 @@ function formatDate(iso: string): string {
 
 export function EmployerMessageDrafts({
   drafts,
-  templates,
+  templates = EMPLOYER_TEMPLATES,
   grievanceContext,
   recipientName,
   recipientEmail,

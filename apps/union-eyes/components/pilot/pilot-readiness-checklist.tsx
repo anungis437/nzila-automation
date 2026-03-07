@@ -44,8 +44,20 @@ export interface ChecklistItem {
 
 export interface PilotReadinessChecklistProps {
   items?: ChecklistItem[];
+  readinessData?: PilotReadinessData;
   onItemComplete?: (id: string) => void;
   className?: string;
+}
+
+// ─── Readiness data from API ──────────────────────────────────
+
+export interface PilotReadinessData {
+  users: number;
+  contracts: number;
+  employers: number;
+  grievances: number;
+  roles: number;
+  evidenceExport: boolean;
 }
 
 // ─── Default items ────────────────────────────────────────────
@@ -109,14 +121,89 @@ const DEFAULT_CHECKLIST: Omit<ChecklistItem, "completed">[] = [
   },
 ];
 
+// ─── Dynamic checklist builder ────────────────────────────────
+
+export function buildReadinessChecklist(data: PilotReadinessData): ChecklistItem[] {
+  return [
+    {
+      id: "users",
+      label: "Users invited",
+      description: data.users > 0
+        ? `${data.users} user${data.users !== 1 ? "s" : ""} registered.`
+        : "Invite stewards, staff, and administrators to join the platform.",
+      icon: Users,
+      completed: data.users > 0,
+      actionLabel: "Invite users",
+      actionHref: "/dashboard/admin/users",
+    },
+    {
+      id: "roles",
+      label: "Roles assigned",
+      description: data.roles > 0
+        ? `${data.roles} role assignment${data.roles !== 1 ? "s" : ""} configured.`
+        : "Assign appropriate roles (admin, officer, steward, member) to each user.",
+      icon: Shield,
+      completed: data.roles > 0,
+      actionLabel: "Manage roles",
+      actionHref: "/dashboard/admin/users",
+    },
+    {
+      id: "contracts",
+      label: "Collective agreements uploaded",
+      description: data.contracts > 0
+        ? `${data.contracts} agreement${data.contracts !== 1 ? "s" : ""} on file.`
+        : "Upload your collective bargaining agreements for clause lookup and reference.",
+      icon: FileText,
+      completed: data.contracts > 0,
+      actionLabel: "Upload agreements",
+      actionHref: "/dashboard/bargaining",
+    },
+    {
+      id: "employers",
+      label: "Employers imported",
+      description: data.employers > 0
+        ? `${data.employers} employer${data.employers !== 1 ? "s" : ""} imported.`
+        : "Import or create employer records and their contact information.",
+      icon: Briefcase,
+      completed: data.employers > 0,
+      actionLabel: "Manage employers",
+      actionHref: "/employers",
+    },
+    {
+      id: "grievances",
+      label: "Grievance workflow tested",
+      description: data.grievances > 0
+        ? `${data.grievances} grievance${data.grievances !== 1 ? "s" : ""} filed.`
+        : "File a test grievance to verify the intake and assignment workflow.",
+      icon: Building2,
+      completed: data.grievances > 0,
+      actionLabel: "File test grievance",
+      actionHref: "/grievances/new",
+    },
+    {
+      id: "evidence_export",
+      label: "Evidence export verified",
+      description: data.evidenceExport
+        ? "Evidence export is working correctly."
+        : "Test that grievance evidence packs export correctly for arbitration use.",
+      icon: Download,
+      completed: data.evidenceExport,
+      actionLabel: "Test export",
+      actionHref: "/grievances",
+    },
+  ];
+}
+
 // ─── Component ────────────────────────────────────────────────
 
 export function PilotReadinessChecklist({
   items,
+  readinessData,
   onItemComplete,
   className,
 }: PilotReadinessChecklistProps) {
-  const checklist = items ?? DEFAULT_CHECKLIST.map((item) => ({ ...item, completed: false }));
+  const checklist = items
+    ?? (readinessData ? buildReadinessChecklist(readinessData) : DEFAULT_CHECKLIST.map((item) => ({ ...item, completed: false })));
   const completedCount = checklist.filter((i) => i.completed).length;
   const totalCount = checklist.length;
   const progressPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;

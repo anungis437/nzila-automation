@@ -60,6 +60,7 @@ import {
   IntakeStep,
 } from "@/components/grievances/grievance-intake-stepper";
 import { GrievanceIntakeReview } from "@/components/grievances/grievance-intake-review";
+import { ResumeDraftModal } from "@/components/grievances/resume-draft-modal";
 
 // ─── Zod Schemas per Step ─────────────────────────────────────
 
@@ -163,11 +164,30 @@ export function GrievanceIntakeForm({
       const parsed = JSON.parse(raw);
       // Rehydrate date
       if (parsed.issueDate) parsed.issueDate = new Date(parsed.issueDate);
-      return parsed as Partial<GrievanceFormData>;
+      return parsed as Partial<GrievanceFormData> & { _savedAt?: string };
     } catch {
       return null;
     }
   }, []);
+
+  // Draft recovery modal state
+  const [showDraftModal, setShowDraftModal] = React.useState(() => !!savedDraft);
+  const [draftDecision, setDraftDecision] = React.useState<"resume" | "discard" | null>(
+    savedDraft ? null : "discard"
+  );
+
+  const handleResumeDraft = () => {
+    setDraftDecision("resume");
+    setShowDraftModal(false);
+  };
+
+  const handleDiscardDraft = () => {
+    setDraftDecision("discard");
+    setShowDraftModal(false);
+    sessionStorage.removeItem(DRAFT_KEY);
+  };
+
+  const resolvedDraft = draftDecision === "resume" ? savedDraft : null;
 
   const defaults: GrievanceFormData = {
     memberName: "",
@@ -193,7 +213,7 @@ export function GrievanceIntakeForm({
     desiredResolution: "",
     attachments: [],
     ...prefill,
-    ...savedDraft,
+    ...resolvedDraft,
   };
 
   const form = useForm<GrievanceFormData>({
@@ -207,7 +227,10 @@ export function GrievanceIntakeForm({
   React.useEffect(() => {
     const sub = form.watch((values) => {
       try {
-        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+        sessionStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({ ...values, _savedAt: new Date().toISOString() }),
+        );
       } catch { /* quota exceeded — ignore */ }
     });
     return () => sub.unsubscribe();
@@ -293,6 +316,16 @@ export function GrievanceIntakeForm({
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      {/* Draft recovery modal */}
+      <ResumeDraftModal
+        open={showDraftModal}
+        draftSavedAt={savedDraft?._savedAt
+          ? new Date(savedDraft._savedAt).toLocaleString()
+          : undefined}
+        onResume={handleResumeDraft}
+        onDiscard={handleDiscardDraft}
+      />
+
       <GrievanceIntakeStepper
         steps={INTAKE_STEPS}
         currentStep={currentStep}
