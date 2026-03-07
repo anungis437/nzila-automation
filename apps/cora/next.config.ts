@@ -16,7 +16,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactCompiler: true,
   turbopack: {},
-  transpilePackages: ['@nzila/ui'],
+  transpilePackages: ['@nzila/ui', '@nzila/os-core'],
   output: process.platform === 'win32' ? undefined : 'standalone',
   images: {
     remotePatterns: [
