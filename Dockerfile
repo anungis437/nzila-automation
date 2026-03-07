@@ -116,6 +116,9 @@ RUN echo '' > .npmrc
 # Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
+# Re-run Next.js postinstall so `next/server` types are available at build time
+RUN pnpm rebuild next
+
 # ============================================
 # Builder stage
 # ============================================
@@ -456,6 +459,10 @@ RUN echo '' > .npmrc
 
 # Install dependencies — --ignore-scripts skips prepare/lefthook (no git in build env)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
+
+# Re-run Next.js postinstall so `next/server` types are available
+RUN pnpm rebuild next
+
 COPY . .
 
 EXPOSE 3000 3001 3002 3003 3004
