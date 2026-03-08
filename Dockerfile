@@ -2,13 +2,12 @@
 
 # ============================================
 # Base stage - pnpm setup
-# Pin to Alpine 3.22 for OpenSSL 3.3.6+ (CVE-2025-15467 fix)
+# Use Debian slim for glibc-based OpenSSL 3 (Clerk middleware WebCrypto requires working legacy provider)
 # ============================================
-FROM node:22-alpine AS base
+FROM node:22-slim AS base
 
-# Patch CVE-2026-22184 (zlib buffer overflow) — upgrade ahead of base image rebuild
-# Install openssl to get legacy provider module (needed for Clerk SDK crypto on OpenSSL 3)
-RUN apk update && apk upgrade --no-cache zlib && apk add --no-cache openssl && rm -rf /var/cache/apk/*
+# Install wget for healthchecks (not included in slim by default)
+RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -162,8 +161,8 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 COPY --from=builder /app/content ./content
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-create-home nextjs && \
     chown -R nextjs:nodejs /app
 
 USER nextjs
@@ -191,8 +190,8 @@ COPY --from=builder /app/apps/console/.next/static ./apps/console/.next/static
 COPY --from=builder /app/content ./content
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-create-home nextjs && \
     chown -R nextjs:nodejs /app
 
 USER nextjs
@@ -220,8 +219,8 @@ COPY --from=builder /app/apps/partners/.next/static ./apps/partners/.next/static
 COPY --from=builder /app/content ./content
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-create-home nextjs && \
     chown -R nextjs:nodejs /app
 
 USER nextjs
@@ -250,8 +249,8 @@ COPY --from=builder /app/apps/union-eyes/public ./apps/union-eyes/public
 COPY --from=builder /app/content ./content
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-create-home nextjs && \
     chown -R nextjs:nodejs /app
 
 USER nextjs
@@ -279,8 +278,8 @@ COPY --from=builder /app/apps/abr/.next/static ./apps/abr/.next/static
 COPY --from=builder /app/content ./content
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-create-home nextjs && \
     chown -R nextjs:nodejs /app
 
 USER nextjs
@@ -310,8 +309,8 @@ COPY --from=builder /app/packages/db ./packages/db
 COPY --from=builder /app/packages/config ./packages/config
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nzila && \
-    adduser --system --uid 1001 orchestrator && \
+RUN groupadd --system --gid 1001 nzila && \
+    useradd --system --uid 1001 --no-create-home orchestrator && \
     chown -R orchestrator:nzila /app
 
 USER orchestrator
@@ -339,8 +338,8 @@ COPY --from=builder /app/apps/cfo/.next/static ./apps/cfo/.next/static
 COPY --from=builder /app/content ./content
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-create-home nextjs && \
     chown -R nextjs:nodejs /app
 
 USER nextjs
