@@ -1,0 +1,46 @@
+# .linkcheckignore — Directories/files excluded from link-check
+# Lines are matched as path prefixes against workspace-relative paths.
+
+# Notion export artifacts — contain UUID-based links that will never resolve
+governance/corporate/governance/strategy-operating-model-dashboard.md
+
+# Planning docs — aspirational links to files not yet written
+plans/
+
+# Aspirational tutorial/guide/reference links (targets not yet authored)
+docs/tutorials/
+docs/how-to/
+docs/README.md
+docs/reference/
+docs/explanation/
+docs/runbooks/
+
+# Commerce MEIE docs — reference packages not yet built
+docs/commerce/meie/
+
+# Governance Notion-export files with unresolvable cross-references
+governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md
+governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md
+governance/corporate/governance/governance-docs.md
+governance/corporate/compliance/security-oversight-compliance-integration
+
+# Business investor materials — generated Notion exports
+governance/business/investor-materials/
+
+# Legacy automation session logs — stale path references to deleted scripts
+packages/automation/SESSION_SUMMARY.md
+packages/automation/PROGRESS_UPDATE_FEB17_EVENING.md
+packages/automation/data/SCHEMA_EXTRACTION_REPORT.md
+
+# Legacy setup docs — reference external repos or deleted files
+apps/union-eyes/backend/CLERK_SETUP_COMPLETE.md
+
+# Governance docs with aspirational/legacy references to nonexistent content
+governance/docs/
+governance/business/README.md
+
+# Content — aspirational links
+content/public/welcome.md
+
+# Analytics README — aspirational package references
+packages/analytics/README.md

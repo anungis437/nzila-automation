@@ -12,7 +12,7 @@ Complete Clerk authentication system for Django REST Framework with:
 
 ### ✅ Core Components
 
-1. **ClerkAuthentication Backend** ([authentication.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\authentication.py))
+1. **ClerkAuthentication Backend** ([authentication.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\authentication.py))
    - JWT signature verification using Clerk JWKS
    - JWKS caching for performance (auto-refreshes on key rotation)
    - User auto-creation from JWT payload
@@ -20,23 +20,23 @@ Complete Clerk authentication system for Django REST Framework with:
    - Profile synchronization
    - Service account authentication (ClerkAPIKeyAuthentication)
 
-2. **Middleware Stack** ([middleware.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\middleware.py))
+2. **Middleware Stack** ([middleware.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\middleware.py))
    - **ClerkJWTMiddleware**: Attaches Clerk user/org context to requests
    - **OrganizationIsolationMiddleware**: Multi-tenant data scoping
    - **AuditLogMiddleware**: Security audit logging for all authenticated requests
 
-3. **Webhook Handler** ([views.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\views.py))
+3. **Webhook Handler** ([views.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\views.py))
    - `clerk_webhook()`: Processes Clerk events (user.created, user.updated, user.deleted, etc.)
    - HMAC signature verification
    - Auto-syncs users between Clerk ↔ Django
    - Organization membership management
 
-4. **API Endpoints** ([urls.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\urls.py))
+4. **API Endpoints** ([urls.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\urls.py))
    - `GET /api/auth/me/` — Current user profile
    - `GET /api/auth/health/` — Health check
    - `POST /api/auth/webhooks/clerk/` — Webhook receiver
 
-5. **Complete Setup Guide** ([DJANGO_SETTINGS_GUIDE.md](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md))
+5. **Complete Setup Guide** ([DJANGO_SETTINGS_GUIDE.md](../../../tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md))
    - Django settings configuration (copy-paste ready)
    - Environment variables (.env template)
    - Dependencies (requirements.txt)
@@ -51,11 +51,11 @@ Complete Clerk authentication system for Django REST Framework with:
 
 | File | Lines | Purpose |
 |------|-------|---------|
-| [authentication.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\authentication.py) | ~220 | JWT authentication backends (Clerk JWT + API key) |
-| [middleware.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\middleware.py) | ~180 | Context attachment, multi-tenant isolation, audit logging |
-| [views.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\views.py) | ~280 | Webhook handlers + user profile API |
-| [urls.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\urls.py) | ~15 | URL routing for auth endpoints |
-| [DJANGO_SETTINGS_GUIDE.md](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md) | ~300 | Complete setup instructions |
+| [authentication.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\authentication.py) | ~220 | JWT authentication backends (Clerk JWT + API key) |
+| [middleware.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\middleware.py) | ~180 | Context attachment, multi-tenant isolation, audit logging |
+| [views.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\views.py) | ~280 | Webhook handlers + user profile API |
+| [urls.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\urls.py) | ~15 | URL routing for auth endpoints |
+| [DJANGO_SETTINGS_GUIDE.md](../../../tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md) | ~300 | Complete setup instructions |
 
 **Total:** ~1,000 lines of production code + comprehensive documentation
 
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 ```
 
 ### Step 3: Configure Django Settings
-Open UE `settings.py` and copy from [DJANGO_SETTINGS_GUIDE.md](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md):
+Open UE `settings.py` and copy from [DJANGO_SETTINGS_GUIDE.md](../../../tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md):
 
 1. **Clerk settings** (lines 8-15 in guide)
 2. **REST_FRAMEWORK** (lines 23-38)
@@ -219,7 +219,7 @@ Copy auth_core files, configure settings, test
 3. Existing users → re-authenticate (migrates to Clerk)
 4. After 2 weeks, disable Supabase Auth
 
-**See full plan:** [AUTH_MIGRATION_PLAN.md](D:\APPS\nzila-automation\packages\automation\data\AUTH_MIGRATION_PLAN.md)
+**See full plan:** [AUTH_MIGRATION_PLAN.md](../../../packages\automation\data\AUTH_MIGRATION_PLAN.md)
 
 ---
 
@@ -328,13 +328,13 @@ sentry-sdk>=1.40,<2.0
 ## 📚 Documentation
 
 ### For Frontend Developers
-- [DJANGO_SETTINGS_GUIDE.md](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md) — Section "Testing Authentication Locally" (line 90)
+- [DJANGO_SETTINGS_GUIDE.md](../../../tech-repo-scaffold\django-backbone\apps\auth_core\DJANGO_SETTINGS_GUIDE.md) — Section "Testing Authentication Locally" (line 90)
 - API endpoints: `/api/auth/me/`, `/api/auth/health/`
 - How to send JWT: `Authorization: Bearer <token>`
 
 ### For Backend Developers
-- [authentication.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\authentication.py) — ClerkAuthentication class (docstrings)
-- [middleware.py](d:\APPS\nzila-automation\tech-repo-scaffold\django-backbone\apps\auth_core\middleware.py) — Middleware classes (docstrings)
+- [authentication.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\authentication.py) — ClerkAuthentication class (docstrings)
+- [middleware.py](../../../tech-repo-scaffold\django-backbone\apps\auth_core\middleware.py) — Middleware classes (docstrings)
 - Request context: `request.clerk_user_id`, `request.clerk_org_id`, `request.organization`
 
 ### For DevOps
@@ -362,7 +362,7 @@ sentry-sdk>=1.40,<2.0
 - [ ] Create Clerk account
 - [ ] Configure SSO (SAML, Azure AD)
 - [ ] Export users from Supabase
-- [ ] Plan migration strategy (see [AUTH_MIGRATION_PLAN.md](D:\APPS\nzila-automation\packages\automation\data\AUTH_MIGRATION_PLAN.md))
+- [ ] Plan migration strategy (see [AUTH_MIGRATION_PLAN.md](../../../packages\automation\data\AUTH_MIGRATION_PLAN.md))
 - [ ] Migrate frontend to Clerk
 - [ ] Copy auth_core files to ABR backend
 - [ ] Run parallel auth (Supabase + Clerk)

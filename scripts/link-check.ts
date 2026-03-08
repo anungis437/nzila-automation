@@ -15,12 +15,29 @@
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, dirname, resolve, extname } from 'node:path';
+import { join, dirname, resolve, extname, relative } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname ?? __dirname, '..');
 const DIRS = process.argv.slice(2).length > 0
   ? process.argv.slice(2).map(d => resolve(d))
   : [join(ROOT, 'docs'), join(ROOT, 'content'), ROOT]; // root for README.md etc.
+
+// ── .linkcheckignore ────────────────────────────────────
+function loadIgnorePatterns(): string[] {
+  const ignorePath = join(ROOT, '.linkcheckignore');
+  if (!existsSync(ignorePath)) return [];
+  return readFileSync(ignorePath, 'utf-8')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#'));
+}
+
+const IGNORE_PATTERNS = loadIgnorePatterns();
+
+function isIgnored(filePath: string): boolean {
+  const rel = relative(ROOT, filePath).replace(/\\/g, '/');
+  return IGNORE_PATTERNS.some(p => rel.startsWith(p) || rel === p);
+}
 
 interface BrokenLink {
   file: string;
@@ -36,10 +53,11 @@ function findMarkdownFiles(dir: string): string[] {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (['node_modules', '.next', '.turbo', 'coverage', '.git', '.vale'].includes(entry.name)) continue;
+      if (['node_modules', '.next', '.turbo', 'coverage', '.git', '.vale', '.venv', '__pycache__'].includes(entry.name)) continue;
+      if (isIgnored(full)) continue;
       files.push(...findMarkdownFiles(full));
     } else if (extname(entry.name) === '.md') {
-      files.push(full);
+      if (!isIgnored(full)) files.push(full);
     }
   }
   return files;
@@ -120,7 +138,7 @@ for (const dir of DIRS) {
   if (statSync(dir).isDirectory()) {
     allFiles.push(...findMarkdownFiles(dir));
   } else if (extname(dir) === '.md') {
-    allFiles.push(dir);
+    if (!isIgnored(resolve(dir))) allFiles.push(dir);
   }
 }
 

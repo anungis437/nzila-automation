@@ -60,8 +60,9 @@ function captureSnapshot(): SchemaSnapshot {
   const schemaFiles = getSchemaFiles()
 
   for (const f of schemaFiles) {
-    const rel = relative(REPO_ROOT, f)
-    const content = readFileSync(f)
+    const rel = relative(REPO_ROOT, f).replace(/\\/g, '/')
+    // Normalize line endings to LF for cross-platform consistency
+    const content = readFileSync(f, 'utf-8').replace(/\r\n/g, '\n')
     files[rel] = {
       hash: createHash('sha256').update(content).digest('hex'),
       size: content.length,
@@ -74,7 +75,7 @@ function captureSnapshot(): SchemaSnapshot {
 
   return {
     capturedAt: new Date().toISOString(),
-    schemaDir: relative(REPO_ROOT, SCHEMA_DIR),
+    schemaDir: relative(REPO_ROOT, SCHEMA_DIR).replace(/\\/g, '/'),
     files,
     compositeHash,
   }

@@ -9,7 +9,7 @@
 ## ✅ What Was Completed
 
 ### 1. Django Settings Configuration
-**File**: [`config/settings.py`](d:/APPS/nzila-union-eyes/backend/config/settings.py)
+**File**: [`config/settings.py`](backend/config/settings.py)
 
 **Changes**:
 - ✅ Added `ClerkAuthentication` and `ClerkAPIKeyAuthentication` to `REST_FRAMEWORK.DEFAULT_AUTHENTICATION_CLASSES`
@@ -29,7 +29,7 @@
   - Key prefix: `union_eyes`
 
 ### 2. Authentication Backend
-**File**: [`auth_core/authentication.py`](d:/APPS/nzila-union-eyes/backend/auth_core/authentication.py)
+**File**: [`auth_core/authentication.py`](backend/auth_core/authentication.py)
 
 **Features**:
 - ✅ JWT verification with PyJWT
@@ -40,7 +40,7 @@
 - ✅ API key authentication for service accounts
 
 ### 3. Middleware Stack
-**File**: [`auth_core/middleware.py`](d:/APPS/nzila-union-eyes/backend/auth_core/middleware.py)
+**File**: [`auth_core/middleware.py`](backend/auth_core/middleware.py)
 
 **Components**:
 - ✅ **ClerkJWTMiddleware**: Attaches `request.clerk_user_id`, `request.clerk_org_id`, `request.clerk_org_role`
@@ -48,7 +48,7 @@
 - ✅ **AuditLogMiddleware**: Logs user, organization, method, path, status, duration, IP address
 
 ### 4. Webhook Handlers
-**File**: [`auth_core/views.py`](d:/APPS/nzila-union-eyes/backend/auth_core/views.py)
+**File**: [`auth_core/views.py`](backend/auth_core/views.py)
 
 **Endpoints Added**:
 - ✅ `POST /api/auth_core/webhooks/clerk/` - Clerk webhook handler with HMAC signature verification
@@ -64,7 +64,7 @@
 - ✅ `organizationMembership.deleted` - Logging (TODO: cleanup membership)
 
 ### 5. URL Routing
-**File**: [`auth_core/urls.py`](d:/APPS/nzila-union-eyes/backend/auth_core/urls.py)
+**File**: [`auth_core/urls.py`](backend/auth_core/urls.py)
 
 **Routes**:
 ```python
@@ -82,7 +82,7 @@ urlpatterns = [
 - `GET /api/auth_core/health/` → Health check
 
 ### 6. Environment Configuration
-**File**: [`.env`](d:/APPS/nzila-union-eyes/backend/.env) (created from template)
+**File**: [`.env`](backend/.env) (created from template)
 
 **Required Variables**:
 ```bash
@@ -112,7 +112,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
 ```
 
 ### 7. Dependencies
-**File**: [`requirements.txt`](d:/APPS/nzila-union-eyes/backend/requirements.txt)
+**File**: [`requirements.txt`](backend/requirements.txt)
 
 **Added**:
 - ✅ `django-redis>=5.4.0` (for caching)
@@ -339,8 +339,8 @@ INFO Created user user_2... from Clerk webhook
 - [Clerk Webhooks](https://clerk.com/docs/webhooks/overview)
 - [PyJWT Documentation](https://pyjwt.readthedocs.io/)
 - [Django REST Framework Authentication](https://www.django-rest-framework.org/api-guide/authentication/)
-- [AUTH_MIGRATION_PLAN.md](d:/APPS/nzila-automation/packages/automation/data/AUTH_MIGRATION_PLAN.md)
-- [AUTH_IMPLEMENTATION_SUMMARY.md](d:/APPS/nzila-automation/packages/automation/data/AUTH_IMPLEMENTATION_SUMMARY.md)
+- [AUTH_MIGRATION_PLAN.md](../../../packages/automation/data/AUTH_MIGRATION_PLAN.md)
+- [AUTH_IMPLEMENTATION_SUMMARY.md](../../../packages/automation/data/AUTH_IMPLEMENTATION_SUMMARY.md)
 
 ---
 
