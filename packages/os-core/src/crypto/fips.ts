@@ -128,7 +128,7 @@ export function enableFips(): boolean {
     // OpenSSL provider in a broken state — so we must not call it.
     // Check for FIPS provider availability via environment or build flag.
     const hasFipsProvider =
-      process.config?.variables?.openssl_fips !== undefined ||
+      (process.config?.variables as Record<string, unknown> | undefined)?.openssl_fips !== undefined ||
       process.env.OPENSSL_CONF !== undefined ||
       process.env.OPENSSL_MODULES !== undefined
 
