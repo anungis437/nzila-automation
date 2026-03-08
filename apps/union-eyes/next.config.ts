@@ -249,6 +249,7 @@ const nextConfig: NextConfig = {
   ],
 
   experimental: {
+    nodeMiddleware: true,
     // Optimize package imports
     optimizePackageImports: [
       '@radix-ui/react-accordion',
