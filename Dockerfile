@@ -3,8 +3,9 @@
 # ============================================
 # Base stage - pnpm setup
 # Use Debian slim for glibc-based OpenSSL 3 (Clerk middleware WebCrypto requires working legacy provider)
+# Node.js 20 LTS — OpenSSL 3.0 WebCrypto is stable with Clerk JWT verification
 # ============================================
-FROM node:22-slim AS base
+FROM node:20-slim AS base
 
 # Install wget for healthchecks (not included in slim by default)
 RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
