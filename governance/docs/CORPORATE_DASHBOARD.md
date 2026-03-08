@@ -46,88 +46,88 @@
 
 ## 🗂️ Corporate Functions
 
-### [Governance & Strategy](corporate/governance/)
+### [Governance & Strategy](../corporate/governance/)
 **Status**: ✅ Documented (96 docs organized)
 
 Key documents:
-- [Mission, Vision, Values](corporate/governance/nzila-mission-vision-values.md)
-- [Operating Principles](corporate/governance/nzila-ventures-operating-principles.md)
-- [Strategic Roadmap 2025-2028](business/reports/strategy-nzila-strategic-roadmap-20252028.md)
-- [Corporate Strategy Overview](corporate/governance/guide-corporate-strategy-overview.md)
+- [Mission, Vision, Values](../corporate/governance/nzila-mission-vision-values.md)
+- [Operating Principles](../corporate/governance/nzila-ventures-operating-principles.md)
+- [Strategic Roadmap 2025-2028](../business/reports/strategy-nzila-strategic-roadmap-20252028.md)
+- [Corporate Strategy Overview](../corporate/governance/guide-corporate-strategy-overview.md)
 
-### [Board of Directors](corporate/board/)
+### [Board of Directors](../corporate/board/)
 **Status**: 📋 Framework established
 
 - Board governance pack complete
 - Meeting cadence: [TBD]
 - Next board meeting: [TBD]
-- [Board Decision Tracker](corporate/governance/checklist-board-decision-tracker.md)
+- [Board Decision Tracker](../corporate/governance/checklist-board-decision-tracker.md)
 
-### [Finance & Capital](corporate/finance/)
+### [Finance & Capital](../corporate/finance/)
 **Status**: 📊 Planning Phase
 
 Key documents:
-- [Cap Table](corporate/governance/finance-nzila-cap-table-impact-sheet.md)
-- [Fundraising Strategy](corporate/finance/metrics-fundraising-strategy.md)
-- [Budget Strategy](corporate/finance/cfo-budget-strategy-tools.md)
-- [Revenue Model 2025-2027](corporate/finance/money-revenue-model-framework-20252027.md)
+- [Cap Table](../corporate/governance/finance-nzila-cap-table-impact-sheet.md)
+- [Fundraising Strategy](../corporate/finance/metrics-fundraising-strategy.md)
+- [Budget Strategy](../corporate/finance/cfo-budget-strategy-tools.md)
+- [Revenue Model 2025-2027](../corporate/finance/money-revenue-model-framework-20252027.md)
 
 **Next Actions**:
 - [ ] Finalize FY2026 budget
 - [ ] Complete Series Seed fundraise ($2M target)
 - [ ] Update cap table after fundraise
 
-### [ Human Resources](corporate/hr/)
+### [ Human Resources](../corporate/hr/)
 **Status**: 🌱 Building
 
 Key documents:
-- [Org Chart & Hiring Plan](corporate/hr/team-org-chart-hiring-plan-tracker.md)
-- [Compensation Matrix](corporate/hr/design-role-leveling-compensation-matrix.md)
-- [DEI Strategy](corporate/hr/global-diversity-equity-and-inclusion-dei-strategy.md)
-- [Culture & Onboarding](corporate/hr/people-hr-culture-onboarding-philosophy.md)
+- [Org Chart & Hiring Plan](../corporate/hr/team-org-chart-hiring-plan-tracker.md)
+- [Compensation Matrix](../corporate/hr/design-role-leveling-compensation-matrix.md)
+- [DEI Strategy](../corporate/hr/global-diversity-equity-and-inclusion-dei-strategy.md)
+- [Culture & Onboarding](../corporate/hr/people-hr-culture-onboarding-philosophy.md)
 
 **Next Actions**:
 - [ ] Define org chart (founding team + first hires)
 - [ ] Finalize compensation framework
 - [ ] Launch first hiring wave
 
-### [Legal & Compliance](corporate/legal/)
+### [Legal & Compliance](../corporate/legal/)
 **Status**: ⚖️ Foundation Set
 
 Key documents:
-- [Legal & Compliance Framework](corporate/legal/legal-compliance-framework.md)
-- [Operating Agreement Template](corporate/legal/guide-operating-agreement-template-venture-level.md)
-- [US Expansion Requirements](corporate/legal/us-u-s-expansion-binder-required-documents.md)
-- [IP Licensing](corporate/intellectual-property/document-royalty-licensing-flow-model.md)
+- [Legal & Compliance Framework](../corporate/legal/legal-compliance-framework.md)
+- [Operating Agreement Template](../corporate/legal/guide-operating-agreement-template-venture-level.md)
+- [US Expansion Requirements](../corporate/legal/us-u-s-expansion-binder-required-documents.md)
+- [IP Licensing](../corporate/intellectual-property/document-royalty-licensing-flow-model.md)
 
-### [Compliance & Risk](corporate/compliance/)
+### [Compliance & Risk](../corporate/compliance/)
 **Status**: 🛡️ Policies Defined
 
 Key documents:
-- [Enterprise Risk Management](corporate/compliance/legal-enterprise-risk-management-erm-framework.md)
-- [Security Policy Manual](corporate/compliance/security-policy-manual.md)
-- [Incident Response Playbook](corporate/compliance/security-incident-response-playbook-irp.md)
-- [Data Privacy & Security](corporate/compliance/data-privacy-security-strategy.md)
-- [Ethical AI Charter](corporate/compliance/ethical-ai-charter.md)
+- [Enterprise Risk Management](../corporate/compliance/legal-enterprise-risk-management-erm-framework.md)
+- [Security Policy Manual](../corporate/compliance/security-policy-manual.md)
+- [Incident Response Playbook](../corporate/compliance/security-incident-response-playbook-irp.md)
+- [Data Privacy & Security](../corporate/compliance/data-privacy-security-strategy.md)
+- [Ethical AI Charter](../corporate/compliance/ethical-ai-charter.md)
 
-### [Operations](corporate/operations/)
+### [Operations](../corporate/operations/)
 **Status**: 🛠️ Playbooks Ready
 
 Key documents:
-- [COO Playbook](knowledge/playbooks/coo-playbook-overview.md)
-- [Shared Services SLA Tracker](corporate/legal/tools-shared-services-sla-tracker.md)
-- [Request Intake Form Template](corporate/operations/checklist-request-intake-form-template.md)
+- [COO Playbook](../knowledge/playbooks/coo-playbook-overview.md)
+- [Shared Services SLA Tracker](../corporate/legal/tools-shared-services-sla-tracker.md)
+- [Request Intake Form Template](../corporate/operations/checklist-request-intake-form-template.md)
 
 ---
 
 ## 💼 Business Intelligence
 
-### [9+ Vertical Strategies](business/verticals/)
+### [9+ Vertical Strategies](../business/verticals/)
 
 1. **Healthtech** (Memora)
    - Status: 3,359 strategy docs organized
    - Legacy platform: 298 files (2.26 MB)
-   - [Strategy →](business/verticals/healthtech/)
+   - [Strategy →](../business/verticals/healthtech/)
 
 2. **Uniontech** (Union Eyes, C3UO)
    - Platforms: 2 (5,285 entities)
@@ -171,21 +171,21 @@ Key documents:
    - Tech Stack: Vite+React (both platforms)
    - Migration: TBD
 
-### [Market Research](business/market-research/)
-- [CMO Growth Blueprint](business/market-research/cmo-growth-blueprint.md)
-- [Comprehensive Marketing Strategy](business/market-research/growth-comprehensive-marketing-strategy.md)
-- [Product Validation & Market Fit](business/market-research/product-validation-market-fit-strategy.md)
+### [Market Research](../business/market-research/)
+- [CMO Growth Blueprint](../business/market-research/cmo-growth-blueprint.md)
+- [Comprehensive Marketing Strategy](../business/market-research/growth-comprehensive-marketing-strategy.md)
+- [Product Validation & Market Fit](../business/market-research/product-validation-market-fit-strategy.md)
 
-### [Executive Reports](business/reports/)
-- [Strategic Positioning Map 2025](business/reports/guide-strategic-positioning-map-2025.md)
-- [Communications Plan](business/reports/communications-plan.md)
-- [Customer Success Strategy](business/reports/partnership-customer-success-strategy.md)
+### [Executive Reports](../business/reports/)
+- [Strategic Positioning Map 2025](../business/reports/guide-strategic-positioning-map-2025.md)
+- [Communications Plan](../business/reports/communications-plan.md)
+- [Customer Success Strategy](../business/reports/partnership-customer-success-strategy.md)
 
 ---
 
 ## 🏗️ Platform & Technology
 
-### [Backbone Platform](platform/)
+### [Backbone Platform](../)
 **Status**: 📐 Design Complete, Build Pending
 
 - **Architecture**: Django 5 + DRF + PostgreSQL + pgvector
@@ -247,20 +247,20 @@ Key documents:
 - All platforms extracted and analyzed
 - [Portfolio Analysis Results](automation/data/legacy_portfolio_analysis.json)
 
-### [Strategic Documentation](knowledge/)
+### [Strategic Documentation](../)
 - Notion exports: 3,456 total documents (116 MB)
 - Corporate governance: 96 docs
 - Healthtech strategy: 3,359 docs
 - Legacy Memora platform: 298 files
 
-### [Templates](knowledge/templates/)
+### [Templates](../templates/)
 - Operating agreement templates
 - Board governance templates
 - Strategic review templates
 - (More coming soon)
 
-### [Playbooks](knowledge/playbooks/)
-- [COO Playbook Overview](knowledge/playbooks/coo-playbook-overview.md)
+### [Playbooks](../knowledge/playbooks/)
+- [COO Playbook Overview](../knowledge/playbooks/coo-playbook-overview.md)
 - Security & incident response
 - (More coming soon)
 
@@ -348,25 +348,25 @@ Technical debt scoring          →    Risk management
 ## 📋 Quick Links
 
 ### Corporate
-- [Mission & Vision](corporate/governance/nzila-mission-vision-values.md)
-- [Strategic Roadmap](business/reports/strategy-nzila-strategic-roadmap-20252028.md)
-- [Fundraising Strategy](corporate/finance/metrics-fundraising-strategy.md)
-- [Org Chart](corporate/hr/team-org-chart-hiring-plan-tracker.md)
+- [Mission & Vision](../corporate/governance/nzila-mission-vision-values.md)
+- [Strategic Roadmap](../business/reports/strategy-nzila-strategic-roadmap-20252028.md)
+- [Fundraising Strategy](../corporate/finance/metrics-fundraising-strategy.md)
+- [Org Chart](../corporate/hr/team-org-chart-hiring-plan-tracker.md)
 
 ### Business
-- [Portfolio Overview](business/verticals/framework-nzila-product-portfolio-overview-20252028.md)
-- [Market Research](business/market-research/)
-- [Vertical Strategies](business/verticals/)
+- [Portfolio Overview](../business/verticals/framework-nzila-product-portfolio-overview-20252028.md)
+- [Market Research](../business/market-research/)
+- [Vertical Strategies](../business/verticals/)
 
 ### Technology
 - [Backbone Build Plan](BACKBONE_BUILD_PLAN.md)
 - [Portfolio Deep Dive](PORTFOLIO_DEEP_DIVE.md)
-- [Platform Architecture](platform/architecture/)
+- [Platform Architecture](../architecture/)
 
 ### Governance
-- [Board Governance](corporate/board/)
-- [Legal Framework](corporate/legal/)
-- [Compliance Policies](corporate/compliance/)
+- [Board Governance](../corporate/board/)
+- [Legal Framework](../corporate/legal/)
+- [Compliance Policies](../corporate/compliance/)
 
 ---
 

@@ -17,7 +17,7 @@ Continue the flagship refactor work for Union Eyes and ABR Insights platforms, f
 
 **Created comprehensive migration audit reports:**
 
-- **[ue-audit-report.json](../data/ue-audit-report.json)**  
+- **[ue-audit-report.json](data/ue-audit-report.json)**  
   - 512 database tables across 11 Django apps
   - 130+ API routes documented
   - ML pipeline migration plan (TensorFlow.js → Python)
@@ -25,7 +25,7 @@ Continue the flagship refactor work for Union Eyes and ABR Insights platforms, f
   - **Estimate**: 10-12 weeks, EXTREME complexity
   - **Key challenges**: Pension forecasting ML, Grievance predictions, Member churn analysis
 
-- **[abr-audit-report.json](../data/abr-audit-report.json)**  
+- **[abr-audit-report.json](data/abr-audit-report.json)**  
   - 116 database tables across 8 Django apps
   - 18 API routes documented
   - **Supabase → Clerk auth migration** (3-phase strategy, 60 hours)
@@ -52,25 +52,25 @@ Continue the flagship refactor work for Union Eyes and ABR Insights platforms, f
 
 **Created 4 new automation scripts:**
 
-1. **[repo_populator.py](../generators/repo_populator.py)** (256 lines)  
+1. **[repo_populator.py](generators/repo_populator.py)** (256 lines)  
    - Populates production-ready repositories with generated code
    - Creates backend/, frontend/, infra/ structure
    - Copies all Django apps
    - Generates .env.example, .gitignore, README
 
-2. **[update_progress.py](../generators/update_progress.py)** (184 lines)  
+2. **[update_progress.py](generators/update_progress.py)** (184 lines)  
    - Auto-detects completed work
    - Updates migration dashboard
    - Validates quality gates
    - Syncs checkpoints with actual file state
 
-3. **[django_project_setup.py](../generators/django_project_setup.py)** (390 lines)  
+3. **[django_project_setup.py](generators/django_project_setup.py)** (390 lines)  
    - Creates Django project configuration
    - Generates manage.py, settings.py, urls.py, wsgi.py, asgi.py
    - Platform-specific requirements.txt
    - DRF + CORS configuration
 
-4. **[audit_report_generator.py](../generators/audit_report_generator.py)** (created earlier)  
+4. **[audit_report_generator.py](generators/audit_report_generator.py)** (created earlier)  
    - Syncs audit reports with generation data
    - Validates schema extraction completeness
 
@@ -138,7 +138,7 @@ nzila-abr-insights/
 
 ### 4. Progress Dashboard Updates ✅
 
-**Updated [MIGRATION_DASHBOARD.md](../data/MIGRATION_DASHBOARD.md)**
+**Updated [MIGRATION_DASHBOARD.md](data/MIGRATION_DASHBOARD.md)**
 
 | Platform | Before | After | Change |
 |----------|--------|-------|--------|
@@ -164,7 +164,7 @@ nzila-abr-insights/
 
 ### 5. Next Steps Documentation ✅
 
-**Created [NEXT_STEPS.md](../NEXT_STEPS.md)** - Complete roadmap with:
+**Created [NEXT_STEPS.md](NEXT_STEPS.md)** - Complete roadmap with:
 - Phase-by-phase breakdown (6 phases remaining)
 - Timeline estimates (10-12 weeks UE, 12-14 weeks ABR)
 - Critical path analysis
@@ -291,13 +291,13 @@ nzila-abr-insights/
 
 | Script | Lines | Purpose |
 |--------|-------|---------|
-| [repo_populator.py](../generators/repo_populator.py) | 256 | Populate production repos with generated code |
-| [update_progress.py](../generators/update_progress.py) | 184 | Auto-update migration dashboard |
-| [django_project_setup.py](../generators/django_project_setup.py) | 390 | Configure Django projects (manage.py, settings.py) |
-| [audit_report_generator.py](../generators/audit_report_generator.py) | ~200 | Generate/sync audit reports |
-| [code_generator.py](../generators/code_generator.py) | 1949 | Generate Django apps from schemas (existing) |
-| [dependency_analyzer.py](../generators/dependency_analyzer.py) | 556 | Map npm → Python dependencies (existing) |
-| [progress_tracker.py](../generators/progress_tracker.py) | 676 | Track migration progress with quality gates (existing) |
+| [repo_populator.py](generators/repo_populator.py) | 256 | Populate production repos with generated code |
+| [update_progress.py](generators/update_progress.py) | 184 | Auto-update migration dashboard |
+| [django_project_setup.py](generators/django_project_setup.py) | 390 | Configure Django projects (manage.py, settings.py) |
+| [audit_report_generator.py](generators/audit_report_generator.py) | ~200 | Generate/sync audit reports |
+| [code_generator.py](generators/code_generator.py) | 1949 | Generate Django apps from schemas (existing) |
+| [dependency_analyzer.py](generators/dependency_analyzer.py) | 556 | Map npm → Python dependencies (existing) |
+| [progress_tracker.py](generators/progress_tracker.py) | 676 | Track migration progress with quality gates (existing) |
 
 **Total Code Generated This Session**: ~1,030 lines  
 **Total Automation Tooling**: ~4,011 lines
@@ -355,12 +355,12 @@ nzila-abr-insights/
 
 ## 📚 Documentation Created
 
-1. **[ue-audit-report.json](../data/ue-audit-report.json)** — Complete Union Eyes migration audit
-2. **[abr-audit-report.json](../data/abr-audit-report.json)** — Complete ABR Insights migration audit
+1. **[ue-audit-report.json](data/ue-audit-report.json)** — Complete Union Eyes migration audit
+2. **[abr-audit-report.json](data/abr-audit-report.json)** — Complete ABR Insights migration audit
 3. **[union-eyes-scaffold.md](../../tech-repo-scaffold/vertical-apps/union-eyes-scaffold.md)** — Union Eyes repo guide
 4. **[abr-insights-scaffold.md](../../tech-repo-scaffold/vertical-apps/abr-insights-scaffold.md)** — ABR Insights repo guide
-5. **[NEXT_STEPS.md](../NEXT_STEPS.md)** — Comprehensive roadmap (10-14 weeks)
-6. **[MIGRATION_DASHBOARD.md](../data/MIGRATION_DASHBOARD.md)** — Live progress tracker
+5. **[NEXT_STEPS.md](NEXT_STEPS.md)** — Comprehensive roadmap (10-14 weeks)
+6. **[MIGRATION_DASHBOARD.md](data/MIGRATION_DASHBOARD.md)** — Live progress tracker
 7. **[SESSION_SUMMARY.md](./SESSION_SUMMARY.md)** — This document
 
 ---

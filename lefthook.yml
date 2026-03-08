@@ -31,7 +31,7 @@ pre-commit:
 
     link-check:
       glob: "*.md"
-      run: tsx scripts/link-check.ts docs/ content/ README.md
+      run: npx tsx scripts/link-check.ts {staged_files}
       fail_text: "Broken markdown links detected. Run `pnpm link-check` to see details."
 
 pre-push:
