@@ -111,9 +111,29 @@ export function isFipsEnabled(): boolean {
 /**
  * Attempt to enable FIPS mode programmatically.
  * Only works if Node.js was built with FIPS support (OpenSSL 3.x with FIPS provider).
+ *
+ * IMPORTANT: We only call crypto.setFips(1) when FIPS is already partially
+ * available (getFips() succeeds and the FIPS provider is loadable).
+ * Calling setFips(1) on a standard Node.js build (no FIPS provider) corrupts
+ * the OpenSSL provider state, breaking all subsequent crypto.subtle (WebCrypto)
+ * operations with "error:0308010C:digital envelope routines::unsupported".
  */
 export function enableFips(): boolean {
   try {
+    // If FIPS is already enabled, nothing to do
+    if (crypto.getFips() === 1) return true
+
+    // Only attempt to enable if the FIPS provider is actually available.
+    // On standard Node.js builds, setFips(1) will throw AND leave the
+    // OpenSSL provider in a broken state — so we must not call it.
+    // Check for FIPS provider availability via environment or build flag.
+    const hasFipsProvider =
+      process.config?.variables?.openssl_fips !== undefined ||
+      process.env.OPENSSL_CONF !== undefined ||
+      process.env.OPENSSL_MODULES !== undefined
+
+    if (!hasFipsProvider) return false
+
     crypto.setFips(1 as unknown as boolean)
     return crypto.getFips() === 1
   } catch {
