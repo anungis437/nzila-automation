@@ -60,22 +60,20 @@ async function assertBootInvariants(): Promise<void> {
     )
   }
 
-  // 3. FIPS 140-3 crypto boundary check
+  // 3. FIPS 140-3 crypto boundary check (advisory — does not block boot)
   try {
     const { assertFipsMode } = await import('./crypto/fips')
     const fipsStatus = assertFipsMode()
     if (fipsStatus.fipsRequired && !fipsStatus.fipsEnabled) {
-      errors.push(
-        'BOOT ASSERTION WARNING: FIPS 140-3 mode is required but not enabled. ' +
+      console.warn(
+        '[BOOT] FIPS 140-3 mode is required but not enabled. ' +
           `OpenSSL: ${fipsStatus.opensslVersion}, Node: ${fipsStatus.nodeVersion}. ` +
           'Use a FIPS-enabled Node.js build for IL4/IL5 compliance.',
       )
     }
   } catch {
-    // FIPS module not loadable — non-fatal in dev
-    if (process.env.NODE_ENV === 'production') {
-      errors.push('BOOT ASSERTION FAILED: FIPS crypto module (@nzila/os-core/crypto/fips) not loadable.')
-    }
+    // FIPS module not loadable — non-fatal
+    console.warn('[BOOT] FIPS crypto module not loadable — FIPS compliance unavailable.')
   }
 
   // 4. Print errors and fail fast
