@@ -7,7 +7,8 @@
 FROM node:22-alpine AS base
 
 # Patch CVE-2026-22184 (zlib buffer overflow) — upgrade ahead of base image rebuild
-RUN apk update && apk upgrade --no-cache zlib && rm -rf /var/cache/apk/*
+# Install openssl to get legacy provider module (needed for Clerk SDK crypto on OpenSSL 3)
+RUN apk update && apk upgrade --no-cache zlib && apk add --no-cache openssl && rm -rf /var/cache/apk/*
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
