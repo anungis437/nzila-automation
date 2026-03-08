@@ -39,9 +39,11 @@ async function assertBootInvariants(): Promise<void> {
   }
 
   // 2. Verify os-core packages are importable (structural check)
+  // Use dynamic import() instead of import.meta.resolve() because Next.js
+  // standalone mode bundles transpiled packages inline — node_modules entries
+  // don't exist on disk, so import.meta.resolve() always throws.
   try {
-    // Validates that the platform layer is correctly installed (resolve-only, no side effects)
-    import.meta.resolve('@nzila/db/scoped')
+    await import('@nzila/db/scoped')
   } catch {
     errors.push(
       'BOOT ASSERTION FAILED: @nzila/db/scoped is not resolvable. ' +
@@ -50,7 +52,7 @@ async function assertBootInvariants(): Promise<void> {
   }
 
   try {
-    import.meta.resolve('@nzila/db/audit')
+    await import('@nzila/db/audit')
   } catch {
     errors.push(
       'BOOT ASSERTION FAILED: @nzila/db/audit is not resolvable. ' +
