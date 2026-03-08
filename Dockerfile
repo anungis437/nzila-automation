@@ -187,7 +187,6 @@ ENV PORT=3001
 # Copy necessary files
 COPY --from=builder /app/apps/console/.next/standalone ./
 COPY --from=builder /app/apps/console/.next/static ./apps/console/.next/static
-COPY --from=builder /app/apps/console/public ./apps/console/public
 COPY --from=builder /app/content ./content
 
 # Create non-root user
