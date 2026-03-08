@@ -28,6 +28,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   transpilePackages: ['@nzila/ui', '@nzila/db', '@nzila/os-core', '@nzila/blob'],
   output: process.platform === 'win32' ? undefined : 'standalone',
+  outputFileTracingIncludes: {
+    '/**': ['../../packages/db/**/*'],
+  },
   headers: async () => [
     {
       source: '/(.*)',

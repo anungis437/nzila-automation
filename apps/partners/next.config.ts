@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
     '@nzila/tax',
   ],
   output: process.platform === 'win32' ? undefined : 'standalone',
+  outputFileTracingIncludes: {
+    '/**': ['../../packages/db/**/*'],
+  },
   images: {
     remotePatterns: [
       { hostname: 'images.unsplash.com' },
