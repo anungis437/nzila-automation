@@ -2,11 +2,11 @@
 # Nzila OS — GitOps
 
 environment: staging
-region: canadacentral
-resource_group: rg-nzila-staging
+region: eastus
+resource_group: nzila-staging-rg
 
 container_apps:
-  environment: cae-nzila-staging
+  environment: nzila-staging-env
   revision_mode: Multiple
   min_replicas: 2
   max_replicas: 5
@@ -69,14 +69,20 @@ apps:
         value: production
 
 database:
-  sku: GP_Standard_D2ds_v5
-  storage_gb: 128
-  backup_retention_days: 14
+  name: nzila-staging-db
+  sku: Standard_B2s
+  tier: Burstable
+  version: '15'
+  storage_gb: 32
+  backup_retention_days: 7
   high_availability: false
 
-redis:
-  sku: Standard
-  capacity: 1
+acr:
+  name: nzilastagingacr
+  sku: Basic
+
+key_vault:
+  name: nzila-staging-kv
 
 monitoring:
   sampling_percentage: 50

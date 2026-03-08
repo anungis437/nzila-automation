@@ -2,11 +2,11 @@
 # Nzila OS — GitOps
 
 environment: production
-region: canadacentral
-resource_group: rg-nzila-prod
+region: eastus
+resource_group: nzila-prod-rg
 
 container_apps:
-  environment: cae-nzila-prod
+  environment: nzila-prod-env
   revision_mode: Multiple
   min_replicas: 3
   max_replicas: 20

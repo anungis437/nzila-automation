@@ -41,7 +41,7 @@ permissions:
 env:
   NODE_VERSION: '22'
   PNPM_VERSION: '10.11.0'
-  ACR_NAME: acrNzila
+  ACR_NAME: nzilastagingacr
 
 jobs:
   # ── Determine deployment parameters ───────────────────────────────────────
@@ -137,13 +137,15 @@ jobs:
             echo "should_build=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Log in to Azure Container Registry
+      - name: Azure Login
         if: steps.check.outputs.should_build == 'true'
-        uses: azure/docker-login@v2
+        uses: azure/login@v2
         with:
-          login-server: ${{ env.ACR_NAME }}.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR login
+        if: steps.check.outputs.should_build == 'true'
+        run: az acr login --name ${{ env.ACR_NAME }}
 
       - name: Build and push
         if: steps.check.outputs.should_build == 'true'
