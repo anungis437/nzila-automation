@@ -1,3 +1,5 @@
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 
@@ -74,7 +76,12 @@ const appLinks = [
   { name: 'ABR Insights', href: process.env.NEXT_PUBLIC_ABR_URL ?? 'http://localhost:3004', badge: '3004' },
 ]
 
-export default function ConsoleLayout({ children }: { children: React.ReactNode }) {
+export default async function ConsoleLayout({ children }: { children: React.ReactNode }) {
+  // Server-side auth gate — runs on Node.js (not Edge) so crypto.subtle works.
+  // Middleware only sets up Clerk context; this layout enforces authentication.
+  const { userId } = await auth()
+  if (!userId) redirect('/sign-in')
+
   const sidebar = (
     <aside className="w-64 border-r border-gray-200 bg-white flex flex-col">
       <div className="p-4 border-b border-gray-100">

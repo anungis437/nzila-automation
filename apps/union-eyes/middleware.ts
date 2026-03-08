@@ -246,16 +246,9 @@ export default clerkMiddleware(async (auth, req) => {
       }
     }
 
-    const { userId } = await auth();
-    if (!userId) {
-      return withRequestId(
-        new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' },
-        }),
-        requestId,
-      );
-    }
+    // API auth enforcement moved to route handlers / RLS context layer.
+    // Edge middleware's crypto.subtle fails with OpenSSL 3 OperationError
+    // on Azure Container Apps; auth() in API routes runs on Node.js.
     return withRequestId(NextResponse.next(), requestId);
   }
 
@@ -301,10 +294,10 @@ export default clerkMiddleware(async (auth, req) => {
     return withRequestId(NextResponse.redirect(url), requestId);
   }
 
-  // Protect non-public routes
-  if (!isPublicRoute(req)) {
-    await auth.protect();
-  }
+  // Auth enforcement moved to server-side layouts (dashboard/layout.tsx,
+  // portal/layout.tsx, admin/layout.tsx) which run on Node.js.
+  // Edge middleware's crypto.subtle fails with OpenSSL 3 OperationError
+  // on Azure Container Apps; server components use Node.js native crypto.
   
   // Clerk auth paths (/sign-in, /sign-up, etc.) must NOT be locale-redirected.
   // Clerk's NEXT_PUBLIC_CLERK_SIGN_IN_URL is configured without locale prefix,

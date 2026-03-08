@@ -93,9 +93,10 @@ export default clerkMiddleware(async (auth, request) => {
   }
 
   // ── Authentication ────────────────────────────────────────────────────
-  if (!isPublicRoute(request)) {
-    await auth.protect()
-  }
+  // Auth enforcement moved to server-side layouts (portal/layout.tsx,
+  // admin/layout.tsx) which run on Node.js. Edge middleware's
+  // crypto.subtle fails with OpenSSL 3 OperationError on Azure
+  // Container Apps; server components use Node.js native crypto.
 
   // ── Request-ID propagation ────────────────────────────────────────────
   const requestId =
