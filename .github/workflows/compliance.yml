@@ -58,6 +58,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Prepare evidence directory
+        run: mkdir -p evidence
+
       # CC-1: Access control evidence
       - name: Collect access control evidence
         run: |
@@ -274,6 +277,7 @@ jobs:
 
       - name: Generate compliance dashboard
         run: |
+          mkdir -p evidence
           cat > evidence/compliance-report.md <<'REPORT'
           # Nzila OS Compliance Report
 
