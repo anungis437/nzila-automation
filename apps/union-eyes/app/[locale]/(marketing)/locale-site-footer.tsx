@@ -168,9 +168,9 @@ export default function LocaleSiteFooter() {
               Nzila Ventures
             </a>
             <span className="text-gray-700">·</span>
-            <Link href="/legal/privacy" className="hover:text-gray-300 transition-colors">{t('privacy')}</Link>
+            <Link href={`/${locale}/legal/privacy`} className="hover:text-gray-300 transition-colors">{t('privacy')}</Link>
             <span className="text-gray-700">·</span>
-            <Link href="/legal/terms" className="hover:text-gray-300 transition-colors">{t('terms')}</Link>
+            <Link href={`/${locale}/legal/terms`} className="hover:text-gray-300 transition-colors">{t('terms')}</Link>
             <span className="text-gray-700">·</span>
             <Link href={`/${locale}/contact`} className="hover:text-gray-300 transition-colors">{t('contact')}</Link>
           </div>
