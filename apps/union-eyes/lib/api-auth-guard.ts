@@ -514,6 +514,23 @@ export async function getUserContextForOrganization(
   });
 
   if (!membership) {
+    // ─── Fallback: PLATFORM_ADMIN_USER_IDS env var ───────────────────
+    const platformAdminIds = (process.env.PLATFORM_ADMIN_USER_IDS || '')
+      .split(',')
+      .map(id => id.trim())
+      .filter(Boolean);
+
+    if (platformAdminIds.includes(userId)) {
+      logger.info('[Auth] getUserContextForOrganization: platform admin bypass', { userId, organizationId });
+      return {
+        userId,
+        organizationId,
+        roles: ['app_owner'],
+        permissions: getPermissionsForRole('app_owner'),
+        memberId: 'platform-admin',
+      };
+    }
+
     return null;
   }
 
@@ -681,6 +698,15 @@ export function normalizeRole(role: string): UserRole {
 export async function hasRole(requiredRole: string): Promise<boolean> {
   const user = await getCurrentUser();
   if (!user) return false;
+
+  // Platform admins (PLATFORM_ADMIN_USER_IDS) have all roles
+  const platformAdminIds = (process.env.PLATFORM_ADMIN_USER_IDS || '')
+    .split(',')
+    .map(id => id.trim())
+    .filter(Boolean);
+  if (platformAdminIds.includes(user.id)) {
+    return true;
+  }
   
   const normalizedUserRole = normalizeRole(user.role || 'member');
   const normalizedRequiredRole = normalizeRole(requiredRole);
