@@ -11,8 +11,9 @@ export async function register() {
       // Log error but don't fail startup - tracing is non-critical
       const errorMessage = error instanceof Error ? error.message : String(error);
       const errorStack = error instanceof Error ? error.stack : undefined;
-      console.error('Failed to initialize OpenTelemetry tracing', errorMessage);
-      if (errorStack) console.error('Stack:', errorStack);
+      const { logger: log } = await import('./lib/logger');
+      log.error('Failed to initialize OpenTelemetry tracing', errorMessage);
+      if (errorStack) log.error('Stack:', errorStack);
     }
 
     // Initialise os-core metrics (SLO counters for union-eyes)
