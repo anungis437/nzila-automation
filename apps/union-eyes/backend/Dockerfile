@@ -37,5 +37,6 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn (WSGI — no uvicorn dependency needed)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "config.wsgi:application"]
+# Run migrations on startup, then start gunicorn (WSGI)
+# Migrations are idempotent — safe to run on every container start
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:8000 --workers 4 --timeout 120 config.wsgi:application"]

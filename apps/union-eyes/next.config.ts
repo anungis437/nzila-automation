@@ -306,8 +306,18 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        // Apply all security headers to non-CSS-static paths
+        source: '/((?!_next/static/css).*)',
         headers: securityHeaders,
+      },
+      {
+        // Next.js RSC streaming generates <script async> preloads for CSS modules.
+        // X-Content-Type-Options: nosniff causes browsers to reject text/css in a
+        // <script> context (console error). CSS still loads via <link> tags.
+        // Build-generated static CSS with content-addressed hashes is not at risk
+        // from MIME-sniffing, so omitting nosniff here is safe.
+        source: '/_next/static/css/:path*',
+        headers: securityHeaders.filter(h => h.key !== 'X-Content-Type-Options'),
       },
     ];
   },
