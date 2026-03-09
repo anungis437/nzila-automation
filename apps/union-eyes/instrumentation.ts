@@ -1,7 +1,4 @@
  
-import * as Sentry from '@sentry/nextjs';
-import { logger } from '@/lib/logger';
-
 export async function register() {
   // IMPORTANT: OpenTelemetry must be initialized FIRST, before any other imports
   // This ensures auto-instrumentation can wrap all modules correctly
@@ -14,8 +11,8 @@ export async function register() {
       // Log error but don't fail startup - tracing is non-critical
       const errorMessage = error instanceof Error ? error.message : String(error);
       const errorStack = error instanceof Error ? error.stack : undefined;
-      logger.error('Failed to initialize OpenTelemetry tracing', { detail: errorMessage });
-      if (errorStack) logger.error('Stack:', { detail: errorStack });
+      console.error('Failed to initialize OpenTelemetry tracing', errorMessage);
+      if (errorStack) console.error('Stack:', errorStack);
     }
 
     // Initialise os-core metrics (SLO counters for union-eyes)
@@ -138,4 +135,7 @@ export async function register() {
   }
 }
 
-export const onRequestError = Sentry.captureRequestError;
+export const onRequestError = async (...args: Parameters<typeof import('@sentry/nextjs').captureRequestError>) => {
+  const Sentry = await import('@sentry/nextjs');
+  return Sentry.captureRequestError(...args);
+};
