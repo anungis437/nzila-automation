@@ -146,6 +146,19 @@ jobs:
         if: steps.check.outputs.should_build == 'true'
         run: az acr login --name ${{ env.ACR_NAME }}
 
+      - name: Resolve Clerk publishable key
+        if: steps.check.outputs.should_build == 'true'
+        id: clerk
+        run: |
+          APP="${{ matrix.app }}"
+          case "$APP" in
+            web|console)   PK="${{ secrets.CLERK_PK_WEB }}" ;;
+            partners)      PK="${{ secrets.CLERK_PK_PARTNERS }}" ;;
+            union-eyes)    PK="${{ secrets.CLERK_PK_UNION_EYES }}" ;;
+            *)             PK="" ;;
+          esac
+          echo "pk=$PK" >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         if: steps.check.outputs.should_build == 'true'
         run: |
@@ -153,11 +166,16 @@ jobs:
           APP="${{ matrix.app }}"
           IMAGE="${{ env.ACR_NAME }}.azurecr.io/nzila/${APP}:${VERSION}"
 
+          BUILD_ARGS="--build-arg APP_NAME=${APP}"
+          if [ -n "${{ steps.clerk.outputs.pk }}" ]; then
+            BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ steps.clerk.outputs.pk }}"
+          fi
+
           docker build \
             --target "$APP" \
             --tag "$IMAGE" \
             --tag "${{ env.ACR_NAME }}.azurecr.io/nzila/${APP}:latest" \
-            --build-arg APP_NAME="$APP" \
+            ${BUILD_ARGS} \
             .
 
           docker push "$IMAGE"
