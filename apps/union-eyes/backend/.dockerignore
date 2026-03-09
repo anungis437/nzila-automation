@@ -1,0 +1,14 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+.env.*
+*.egg-info
+.git
+.pytest_cache
+node_modules
+docker-compose.yml
+*.md
+tests/
+generation_report.json

@@ -18,6 +18,7 @@ permissions:
 env:
   APP_NAME: nzila-os-union-eyes
   IMAGE: nzilastagingacr.azurecr.io/nzila-os-union-eyes
+  BACKEND_IMAGE: nzilastagingacr.azurecr.io/nzila-os-union-eyes-backend
 
 jobs:
   pre-deploy-gates:
@@ -97,7 +98,7 @@ jobs:
       - name: ACR login
         run: az acr login --name nzilastagingacr
 
-      - name: Build & push image
+      - name: Build & push frontend image
         run: |
           docker build \
             --target union-eyes \
@@ -110,9 +111,33 @@ jobs:
           docker push ${{ env.IMAGE }}:${{ github.sha }}
           docker push ${{ env.IMAGE }}:latest
 
-      - name: Update Container App
+      - name: Build & push backend image
+        run: |
+          az acr build \
+            --registry nzilastagingacr \
+            --image nzila-os-union-eyes-backend:${{ github.sha }} \
+            --image nzila-os-union-eyes-backend:latest \
+            --file apps/union-eyes/backend/Dockerfile \
+            apps/union-eyes/backend
+
+      - name: Update Container App (frontend + backend sidecar)
         run: |
           az containerapp update \
             --name ${{ env.APP_NAME }} \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --set-env-vars "DJANGO_API_URL=http://localhost:8000" \
+            --container-name ${{ env.APP_NAME }} \
             --image ${{ env.IMAGE }}:${{ github.sha }}
+          az containerapp update \
+            --name ${{ env.APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --container-name django-backend \
+            --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+
+      - name: Run Django migrations
+        run: |
+          az containerapp exec \
+            --name ${{ env.APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --container django-backend \
+            --command "python manage.py migrate --noinput"
