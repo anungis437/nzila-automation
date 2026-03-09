@@ -88,7 +88,7 @@ export default function DashboardError({
 
         <p className="mt-6 text-center text-sm text-gray-600">
           If this problem persists, please{' '}
-          <Link href="/support"
+          <Link href="/dashboard/support"
             className="font-medium text-blue-600 hover:text-blue-700 underline"
           >
             contact support
