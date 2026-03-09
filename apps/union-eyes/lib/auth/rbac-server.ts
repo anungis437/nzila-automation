@@ -86,15 +86,19 @@ export async function getUserRole(
 
     // 1. Try organization_users (canonical RBAC table)
     logger.info('[getUserRole] Step 1: querying organization_users for', { detail: userId });
-    const orgUser = await db
-      .select({ role: organizationUsers.role })
-      .from(organizationUsers)
-      .where(eq(organizationUsers.userId, userId))
-      .limit(1);
-    logger.info('[getUserRole] Step 1 result:', { detail: JSON.stringify(orgUser) });
+    try {
+      const orgUser = await db
+        .select({ role: organizationUsers.role })
+        .from(organizationUsers)
+        .where(eq(organizationUsers.userId, userId))
+        .limit(1);
+      logger.info('[getUserRole] Step 1 result:', { detail: JSON.stringify(orgUser) });
 
-    const fromOrgUsers = resolveUserRole(orgUser[0]?.role);
-    if (fromOrgUsers) return fromOrgUsers;
+      const fromOrgUsers = resolveUserRole(orgUser[0]?.role);
+      if (fromOrgUsers) return fromOrgUsers;
+    } catch (step1Error) {
+      logger.warn('[getUserRole] organization_users query failed, falling through', { detail: step1Error instanceof Error ? step1Error.message : step1Error });
+    }
 
     // 2. Try organization_members (org-scoped membership)
     if (organizationId) {
