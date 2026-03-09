@@ -128,7 +128,8 @@ const isMarketingPath = createRouteMatcher([
   "/status(.*)",
   "/case-studies(.*)",
   "/pilot-request(.*)",
-  "/legal(.*)",
+  // NOTE: /legal(..) NOT included here — intl middleware must redirect
+  // /legal/terms → /en-CA/legal/terms so the [locale] route matches.
 ]);
 
 // PR #4: Removed duplicate API route lists (now imported from lib/api-auth-guard.ts)

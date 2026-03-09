@@ -34,10 +34,14 @@ corporate
 *.swp
 *.swo
 
-# Environment
+# Environment — exclude at ALL levels to prevent app-level .env from
+# leaking secrets (e.g. pk_live_ keys) into the Docker build context.
 .env
 .env.local
 .env*.local
+**/.env
+**/.env.local
+**/.env*.local
 
 # Python
 __pycache__
