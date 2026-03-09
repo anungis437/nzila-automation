@@ -47,8 +47,8 @@ export default function LocaleSiteFooter() {
       { name: t('pilotRequest'), href: `/${locale}/pilot-request` },
     ],
     [t('legal')]: [
-      { name: t('privacy'),  href: '/legal/privacy' },
-      { name: t('terms'),    href: '/legal/terms' },
+      { name: t('privacy'),  href: `/${locale}/legal/privacy` },
+      { name: t('terms'),    href: `/${locale}/legal/terms` },
       { name: t('security'), href: '/security' },
     ],
   };

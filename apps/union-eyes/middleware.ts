@@ -105,6 +105,9 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/status(.*)",
   "/:locale/case-studies(.*)",
   "/:locale/pilot-request(.*)",
+  // Legal pages
+  "/legal(.*)",
+  "/:locale/legal(.*)",
 ]);
 
 // Clerk's auth pages live at root (no locale prefix) — skip intl redirect for them
@@ -125,6 +128,7 @@ const isMarketingPath = createRouteMatcher([
   "/status(.*)",
   "/case-studies(.*)",
   "/pilot-request(.*)",
+  "/legal(.*)",
 ]);
 
 // PR #4: Removed duplicate API route lists (now imported from lib/api-auth-guard.ts)
