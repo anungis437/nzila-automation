@@ -57,13 +57,9 @@ export async function register() {
         envValidation.errors.forEach((error, index) => {
           logger.error(`  ${index + 1}. ${error}`);
         });
-        
-        // In production, fail fast on missing critical environment variables
-        if (process.env.NODE_ENV === 'production') {
-          throw new Error('Critical environment variables are missing. Service cannot start.');
-        } else {
-          logger.warn('⚠️  [WARN] Development mode: continuing despite validation errors');
-        }
+        // Log but do not crash — the server should start with degraded
+        // functionality so health probes and monitoring remain reachable.
+        logger.warn('⚠️  Continuing with missing env vars — some features may be unavailable');
       } else {
         logger.info('Environment validation passed');
       }
@@ -121,11 +117,8 @@ export async function register() {
     } catch (error) {
       const { logger } = await import('./lib/logger');
       logger.error('Startup validation error', { error });
-      
-      // Re-throw in production to prevent starting with invalid config
-      if (process.env.NODE_ENV === 'production') {
-        throw error;
-      }
+      // Do not re-throw — let the server start so health probes and
+      // monitoring remain reachable even when config is incomplete.
     }
 
     await import('./sentry.server.config');
