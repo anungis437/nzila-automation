@@ -6,6 +6,8 @@ import { healthRoutes } from './routes/health.js'
 import { proofCenterRoutes } from './routes/proof-center.js'
 import { workflowRoutes } from './routes/workflows.js'
 import { jobRoutes } from './routes/jobs.js'
+import { runRoutes } from './routes/runs.js'
+import { statusRoutes } from './routes/status.js'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('orchestrator-api')
@@ -133,6 +135,8 @@ app.register(healthRoutes)
 app.register(commandRoutes, { prefix: '/commands' })
 app.register(workflowRoutes, { prefix: '/workflows' })
 app.register(jobRoutes, { prefix: '/jobs' })
+app.register(runRoutes, { prefix: '/runs' })
+app.register(statusRoutes, { prefix: '/status' })
 app.register(proofCenterRoutes, { prefix: '/api/proof-center' })
 
 // ── Start ──
