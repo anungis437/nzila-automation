@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start --port 3011",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",
