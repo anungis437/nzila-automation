@@ -58,9 +58,12 @@ describe('platform-context-orchestrator', () => {
       const entity = {
         id: ENTITY_ID,
         tenantId: TENANT,
-        type: OntologyEntityTypes.CASE as const,
-        status: EntityStatuses.ACTIVE as const,
-        displayName: 'Case #42',
+        entityType: OntologyEntityTypes.CASE,
+        canonicalName: 'Case #42',
+        aliases: [] as readonly string[],
+        status: EntityStatuses.ACTIVE,
+        tags: [] as readonly string[],
+        sourceSystems: [] as readonly string[],
         metadata: {},
         createdAt: '2025-01-01T00:00:00.000Z',
         updatedAt: '2025-01-01T00:00:00.000Z',
@@ -68,7 +71,7 @@ describe('platform-context-orchestrator', () => {
 
       const sources = makeSources({
         entity: {
-          async getEntity() {
+          async getEntity(_tenantId, _entityType, _entityId) {
             return entity
           },
         },

@@ -7,9 +7,6 @@ import {
   RelationshipTypes,
   type OntologyEntityType,
 } from '@nzila/platform-ontology'
-import {
-  CANONICAL_RELATIONSHIPS,
-} from '@nzila/platform-ontology'
 
 const entityTypes = Object.entries(OntologyEntityTypes)
 const statuses = Object.entries(EntityStatuses)
@@ -17,10 +14,6 @@ const relationshipTypes = Object.entries(RelationshipTypes)
 
 export default function OntologyExplorer() {
   const [selectedType, setSelectedType] = useState<OntologyEntityType | null>(null)
-
-  const entityDef = selectedType
-    ? CANONICAL_RELATIONSHIPS.find((r) => r.entityType === selectedType)
-    : null
 
   return (
     <div>
@@ -56,27 +49,27 @@ export default function OntologyExplorer() {
 
         {/* Selected Entity Detail */}
         <div className="col-span-2 rounded-lg border border-gray-200 bg-white p-4">
-          {selectedType && entityDef ? (
+          {selectedType ? (
             <>
               <h2 className="mb-1 text-lg font-semibold">{selectedType}</h2>
               <p className="mb-4 text-sm text-gray-500">
-                Canonical relationships defined for this entity type.
+                Available relationship types for this entity.
               </p>
 
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="pb-2 font-medium text-gray-500">Relationship</th>
-                    <th className="pb-2 font-medium text-gray-500">Target Type</th>
+                    <th className="pb-2 font-medium text-gray-500">Key</th>
+                    <th className="pb-2 font-medium text-gray-500">Relationship Type</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {entityDef.relationships.map((rel, i) => (
-                    <tr key={i} className="border-b border-gray-50">
+                  {relationshipTypes.map(([key, value]) => (
+                    <tr key={key} className="border-b border-gray-50">
                       <td className="py-2 font-mono text-xs text-gray-700">
-                        {rel.type}
+                        {key}
                       </td>
-                      <td className="py-2 text-gray-600">{rel.targetType}</td>
+                      <td className="py-2 text-gray-600">{value}</td>
                     </tr>
                   ))}
                 </tbody>

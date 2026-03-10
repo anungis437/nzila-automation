@@ -50,6 +50,7 @@ describe('platform-semantic-search', () => {
         entityId: '00000000-0000-0000-0000-000000000010',
         title: 'Ada Lovelace',
         content: 'First computer programmer, analytical engine expert',
+        metadata: {},
         tags: ['tech'],
       })
       await indexEntity(idx, {
@@ -58,6 +59,7 @@ describe('platform-semantic-search', () => {
         entityId: '00000000-0000-0000-0000-000000000011',
         title: 'Grace Hopper',
         content: 'Computer scientist, COBOL inventor, Navy admiral',
+        metadata: {},
         tags: ['tech', 'military'],
       })
       await indexEntity(idx, {
@@ -66,6 +68,7 @@ describe('platform-semantic-search', () => {
         entityId: '00000000-0000-0000-0000-000000000012',
         title: 'Annual Report 2024',
         content: 'Financial summary and outlook',
+        metadata: {},
         tags: ['finance'],
       })
     })
@@ -123,6 +126,7 @@ describe('platform-semantic-search', () => {
           entityId: '00000000-0000-0000-0000-000000000010',
           title: 'Test Doc',
           content: 'Test content',
+          metadata: {},
           tags: [],
         },
         [1, 0, 0],
@@ -149,6 +153,7 @@ describe('platform-semantic-search', () => {
         entityId: '00000000-0000-0000-0000-000000000010',
         title: 'To Remove',
         content: 'Will be removed',
+        metadata: {},
         tags: [],
       })
 

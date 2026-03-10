@@ -7,7 +7,7 @@ const searchModes = Object.entries(SearchModes)
 
 export default function SearchExplorer() {
   const [query, setQuery] = useState('')
-  const [mode, setMode] = useState(SearchModes.HYBRID)
+  const [mode, setMode] = useState<string>(SearchModes.HYBRID)
 
   return (
     <div>

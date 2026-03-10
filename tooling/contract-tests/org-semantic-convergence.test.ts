@@ -35,6 +35,14 @@ function collectFiles(dir: string, ext: string[]): string[] {
         if (['node_modules', '.git', 'dist', '.next', 'drizzle'].includes(e.name)) continue
         // Skip migration dirs
         if (e.name === 'migrations' || e.name === 'meta') continue
+        // Skip platform packages that use entityId as an ontology/domain concept
+        // (the entity being searched/reasoned/graphed — NOT org-scoping)
+        if ([
+          'platform-semantic-search', 'platform-reasoning-engine',
+          'platform-decision-graph', 'platform-data-fabric',
+          'platform-entity-graph', 'platform-context-orchestrator',
+          'platform-governed-ai',
+        ].includes(e.name)) continue
         stack.push(full)
       } else if (e.isFile() && ext.some(x => e.name.endsWith(x))) {
         found.push(full)

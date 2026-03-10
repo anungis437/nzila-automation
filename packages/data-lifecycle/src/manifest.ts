@@ -422,6 +422,34 @@ export const APP_MANIFESTS: DataLifecycleManifest[] = [
     residency: { type: 'managed', regions: ['southafricanorth'], orgSelectable: false, description: 'Managed hosting' },
     backup: { frequency: 'daily', provider: 'Azure Backup', location: 'Same region', encryptedAtRest: true, backupRetention: '7 days', rtoHours: 8, rpoHours: 4 },
   },
+
+  // ── Mobility ──────────────────────────────────────────────────────
+  {
+    appId: 'mobility',
+    appName: 'Mobility Immigration Platform',
+    version: '1.0.0',
+    lastUpdated: '2026-03-10',
+    dataCategories: [
+      { name: 'Mobility Client PII', description: 'Immigration client personal data, family members, advisors', containsPii: true, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Mobility Cases', description: 'Immigration cases, tasks, compliance events, documents', containsPii: true, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Mobility Communications', description: 'Client communications and AI outputs', containsPii: true, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Mobility Audit Logs', description: 'Mobility operation audit trail', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
+    ],
+    retentionSchedules: [
+      { category: 'Mobility Client PII', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Immigration records — regulatory requirement' },
+      { category: 'Mobility Cases', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Immigration case compliance' },
+      { category: 'Mobility Communications', retentionClass: '3_YEARS', retentionPeriod: '3 years', legalBasis: 'Communication audit trail' },
+      { category: 'Mobility Audit Logs', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Audit trail integrity' },
+    ],
+    deletionPolicies: [
+      { category: 'Mobility Client PII', method: 'crypto_shred', verification: 'deletion_certificate', authorizedRoles: ['platform_admin', 'dpo'], reversible: false },
+      { category: 'Mobility Cases', method: 'soft_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: true },
+      { category: 'Mobility Communications', method: 'hard_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: false },
+      { category: 'Mobility Audit Logs', method: 'retention_expiry', verification: 'automated_scan', authorizedRoles: [], reversible: false },
+    ],
+    residency: { type: 'managed', regions: ['southafricanorth', 'westeurope'], orgSelectable: true, description: 'Managed hosting with regional compliance' },
+    backup: { frequency: 'daily', provider: 'Azure Backup', location: 'Same region', encryptedAtRest: true, backupRetention: '30 days', rtoHours: 4, rpoHours: 2 },
+  },
 ]
 
 // ── Manifest Generation ─────────────────────────────────────────────────────

@@ -382,7 +382,7 @@ export const mobilityAuditLog = pgTable('mobility_audit_log', {
   actorId: text('actor_id').notNull(),
   action: text('action').notNull(),
   entityType: text('entity_type').notNull(),
-  entityId: uuid('entity_id'),
+  targetEntityId: uuid('entity_id'),
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })

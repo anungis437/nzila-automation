@@ -633,6 +633,9 @@ importers:
       '@nzila/mobility-programs':
         specifier: workspace:*
         version: link:../../packages/mobility-programs
+      '@nzila/os-core':
+        specifier: workspace:*
+        version: link:../../packages/os-core
       '@nzila/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -913,9 +916,15 @@ importers:
 
   apps/platform-admin:
     dependencies:
+      '@clerk/nextjs':
+        specifier: ^6.12.0
+        version: 6.39.0(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.4)
+      '@nzila/os-core':
+        specifier: workspace:*
+        version: link:../../packages/os-core
       '@nzila/platform-context-orchestrator':
         specifier: workspace:*
         version: link:../../packages/platform-context-orchestrator
@@ -2996,6 +3005,15 @@ importers:
         specifier: workspace:*
         version: link:../mobility-core
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3027,6 +3045,15 @@ importers:
         specifier: workspace:*
         version: link:../mobility-programs
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3258,6 +3285,15 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
@@ -3302,6 +3338,15 @@ importers:
       '@types/node':
         specifier: ^25
         version: 25.3.3
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3324,6 +3369,15 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
@@ -3362,6 +3416,15 @@ importers:
       '@types/node':
         specifier: ^25
         version: 25.3.3
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3378,6 +3441,15 @@ importers:
       '@types/node':
         specifier: ^25
         version: 25.3.3
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3484,6 +3556,15 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
@@ -3565,6 +3646,15 @@ importers:
       '@types/node':
         specifier: ^25
         version: 25.3.3
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3650,6 +3740,15 @@ importers:
       '@types/node':
         specifier: ^25
         version: 25.3.3
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3806,6 +3905,15 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
@@ -3863,12 +3971,34 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.0.0
+        version: 8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.0.0
+        version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
 
   packages/platform-utils:
     devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-validation:
+    dependencies:
+      zod:
+        specifier: ^3.25.0
+        version: 3.25.76
+    devDependencies:
+      tsx:
+        specifier: ^4.19.3
+        version: 4.21.0
       vitest:
         specifier: ^4.0.0
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)

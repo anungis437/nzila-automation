@@ -33,9 +33,8 @@ export function SiteNavigation() {
   }, []);
 
   /* ── Close mobile menu on route change ── */
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate: sync mobile menu with route
+  useEffect(() => { setMobileMenuOpen(false) }, [pathname]);
 
   /* ── Body scroll lock when mobile menu open ── */
   useEffect(() => {
