@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-03-08T14:42:17.365Z",
+  "capturedAt": "2026-03-10T20:12:36.986Z",
   "schemaDir": "packages/db/src/schema",
   "files": {
     "packages/db/src/schema/ai.ts": {
@@ -31,12 +31,16 @@
       "size": 4293
     },
     "packages/db/src/schema/index.ts": {
-      "hash": "8f4139947c8d03727e2d4a8f0b002ab4d4945aebc0861bab73faa6616abfc56a",
-      "size": 471
+      "hash": "26585c3e3c7df4afff90c706c8186a63afcfede3187ca571a998e0b5c3d5d83f",
+      "size": 1280
     },
     "packages/db/src/schema/ml.ts": {
       "hash": "cc221874e122db086918e3556e3f9376938e90765ad76c501e6699ca2098881f",
       "size": 13782
+    },
+    "packages/db/src/schema/mobility.ts": {
+      "hash": "66e6794ee5dd77a50e29ae5fbbe0cbae4b10d2a1ac6259429c8210c12dd7198e",
+      "size": 12006
     },
     "packages/db/src/schema/nacp.ts": {
       "hash": "af16ca8c0fbf3931517828dbd17e86e98c89ee6bd4405b62d28be0e8a636854c",
@@ -79,5 +83,5 @@
       "size": 9170
     }
   },
-  "compositeHash": "b66d26a124d881632b82bc828ced1b4fc1a1b234086aaa760b1bbd2399435c42"
+  "compositeHash": "41ae768652276a7faa7fd269f41dae32c81a0c6ac06d4713635e4698b138f5f5"
 }
