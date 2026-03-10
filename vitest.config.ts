@@ -87,6 +87,8 @@ export default defineConfig({
       'packages/mobility-programs',
       'packages/mobility-compliance',
       'packages/mobility-ai',
+      'packages/mobility-family',
+      'packages/mobility-case-engine',
       'packages/integrations-hubspot',
       'packages/integrations-m365',
       'packages/integrations-whatsapp',

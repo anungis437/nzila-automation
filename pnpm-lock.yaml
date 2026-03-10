@@ -2881,6 +2881,22 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
 
+  packages/mobility-case-engine:
+    dependencies:
+      '@nzila/mobility-compliance':
+        specifier: workspace:*
+        version: link:../mobility-compliance
+      '@nzila/mobility-core':
+        specifier: workspace:*
+        version: link:../mobility-core
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
   packages/mobility-compliance:
     dependencies:
       '@nzila/mobility-core':
@@ -2895,6 +2911,22 @@ importers:
       zod:
         specifier: ^3.24.0
         version: 3.25.76
+
+  packages/mobility-family:
+    dependencies:
+      '@nzila/mobility-core':
+        specifier: workspace:*
+        version: link:../mobility-core
+      '@nzila/mobility-programs':
+        specifier: workspace:*
+        version: link:../mobility-programs
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/mobility-programs:
     dependencies:

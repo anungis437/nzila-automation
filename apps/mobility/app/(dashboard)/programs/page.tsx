@@ -42,8 +42,8 @@ export default async function ProgramsPage() {
                 <h3 className="font-semibold text-gray-900">{program.name}</h3>
                 <p className="text-sm text-gray-500 mt-0.5">{program.countryCode}</p>
               </div>
-              <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${typeColors[program.type] ?? 'bg-gray-100 text-gray-600'}`}>
-                {program.type.replace(/_/g, ' ')}
+              <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${typeColors[program.programType] ?? 'bg-gray-100 text-gray-600'}`}>
+                {program.programType.replace(/_/g, ' ')}
               </span>
             </div>
 
