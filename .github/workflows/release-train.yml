@@ -62,6 +62,12 @@ jobs:
           fi
           pnpm tsx tooling/ai-evals/eval-gate.ts tooling/ai-evals/report.json
 
+      - name: GA gate (master governance check)
+        run: pnpm ga-check
+
+      - name: Validate release strict
+        run: pnpm validate:release:strict
+
   # ─── Gate 2: Security scans ───────────────────────────────────────────────
   security-gate:
     name: Security Gate
