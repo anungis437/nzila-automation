@@ -6,3 +6,4 @@ export { MetricsCollector, computePercentile, type MetricsCollectorPorts, type D
 export { parseRateLimitInfo, parseSlackRateLimit, parseHubSpotRateLimit, parseTeamsRateLimit, parseGenericRateLimit, type RateLimitParser } from './rateLimitParser'
 export { ChaosSimulator, CHAOS_SCENARIOS, isChaosAllowed, type ChaosConfig, type ChaosScenario, type ChaosPorts } from './chaos'
 export { SloComputer, type SloComputerPorts, type SloResult } from './slo'
+export { ResilientDispatcher, type ResilientDispatcherPorts, type ResilientDispatcherOptions } from './resilientAdapter'
