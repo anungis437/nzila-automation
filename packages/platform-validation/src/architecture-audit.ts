@@ -190,7 +190,7 @@ function checkCorrelationIds(filePath: string, lines: string[], repoRoot: string
   if (!hasCorrelation) {
     findings.push({
       rule: 'correlation-ids',
-      severity: 'info',
+      severity: 'warning',
       file: rel,
       line: 1,
       message: 'API route lacks correlation ID (requestId/traceId) handling',
@@ -216,7 +216,7 @@ function checkConfigFailFast(filePath: string, lines: string[], repoRoot: string
   if (!hasZod && content.length > 100) {
     findings.push({
       rule: 'config-fail-fast',
-      severity: 'info',
+      severity: 'warning',
       file: rel,
       line: 1,
       message: 'Config file does not use Zod validation — consider fail-fast at startup',
@@ -263,7 +263,7 @@ function checkPlatformPackageStructure(repoRoot: string): ArchFinding[] {
         if (!hasTestDir) {
           findings.push({
             rule: 'platform-structure',
-            severity: 'info',
+            severity: 'warning',
             file: `packages/${pkg}`,
             message: 'Platform package has no test files',
           })
