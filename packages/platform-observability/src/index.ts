@@ -86,3 +86,71 @@ export {
   reasoningEngineLogger,
   tracePlatformOp,
 } from './platform-os-hooks'
+
+// telemetry contracts
+export {
+  requestTelemetry,
+  workflowTelemetry,
+  integrationTelemetry,
+  aiRunTelemetry,
+  governanceTelemetry,
+  dataFabricTelemetry,
+  requestContextMiddleware,
+  apiRequestCount,
+  apiRequestLatency,
+  apiErrorRate,
+  apiAuthFailures,
+  workflowRuns,
+  workflowFailures,
+  workflowRetryCount,
+  workflowRunDuration,
+  workflowQueueDepth,
+  integrationWebhookVolume,
+  integrationApiFailures,
+  integrationRetryAttempts,
+  integrationSyncDuration,
+  integrationProviderLatency,
+  dataFabricIngestionRate,
+  dataFabricMappingConflicts,
+  dataFabricSyncLag,
+  dataFabricReconciliationFailures,
+  aiReasoningRuns,
+  aiReasoningLatency,
+  aiCitationCoverage,
+  aiApprovalRequired,
+  aiUnsafeOutputFlags,
+  govPolicyViolations,
+  govApprovalBacklog,
+  govAuditEvents,
+  govSensitiveActionFreq,
+} from './telemetry-contracts'
+export type { TelemetryContext, RequestTelemetryOptions } from './telemetry-contracts'
+
+// reliability engineering (SLO / SLI)
+export {
+  PLATFORM_SLOS,
+  computeErrorBudget,
+  meetsSlo,
+} from './reliability'
+export type {
+  SliMetric,
+  SliDefinition,
+  SloComparison,
+  SloTarget,
+  ErrorBudgetStatus,
+} from './reliability'
+
+// alerting model
+export {
+  PLATFORM_ALERT_RULES,
+  fireAlert,
+} from './alerting'
+export type {
+  AlertCategory,
+  AlertSeverity,
+  AlertRule,
+  AlertAction,
+  AlertActionType,
+  AlertEvent,
+  AlertSink,
+} from './alerting'

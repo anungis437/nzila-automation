@@ -93,6 +93,8 @@ export default defineConfig({
       'packages/platform-semantic-search',
       'packages/platform-governed-ai',
       'packages/platform-reasoning-engine',
+      // Platform observability
+      'packages/platform-observability',
       // Mobility packages
       'packages/mobility-core',
       'packages/mobility-programs',
