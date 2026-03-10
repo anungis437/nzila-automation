@@ -1,0 +1,34 @@
+{
+  "name": "@nzila/mobility-client-portal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3011",
+    "build": "next build",
+    "start": "next start --port 3011",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.12.0",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.400.0",
+    "@heroicons/react": "^2.2.0",
+    "@nzila/mobility-core": "workspace:*",
+    "@nzila/mobility-programs": "workspace:*",
+    "@nzila/ui": "workspace:*",
+    "next": "16.1.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@nzila/config": "workspace:*",
+    "@tailwindcss/postcss": "^4",
+    "@types/react": "^19.1.2",
+    "tailwindcss": "^4",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.18"
+  }
+}

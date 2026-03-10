@@ -82,6 +82,17 @@ export default defineConfig({
       // New gap-fill packages
       'packages/platform-rum',
       'packages/ai-registry',
+      // Mobility packages
+      'packages/mobility-core',
+      'packages/mobility-programs',
+      'packages/mobility-compliance',
+      'packages/mobility-ai',
+      'packages/integrations-hubspot',
+      'packages/integrations-m365',
+      'packages/integrations-whatsapp',
+      // Mobility apps
+      'apps/mobility',
+      'apps/mobility-client-portal',
       // Tooling
       'tooling/openapi-gen',
       // Contract tests (architectural invariants)

@@ -1,0 +1,21 @@
+{
+  "name": "@nzila/integrations-hubspot",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contacts": "./src/contacts.ts",
+    "./deals": "./src/deals.ts",
+    "./webhooks": "./src/webhooks.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@nzila/mobility-core": "workspace:*",
+    "zod": "^3.24.0"
+  }
+}

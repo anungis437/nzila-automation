@@ -1,0 +1,19 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/db": ["../../packages/db/src/index.ts"],
+      "@nzila/db/schema": ["../../packages/db/src/schema/index.ts"],
+      "@nzila/mobility-core": ["../../packages/mobility-core/src/index.ts"],
+      "@nzila/mobility-programs": ["../../packages/mobility-programs/src/index.ts"],
+      "@nzila/mobility-compliance": ["../../packages/mobility-compliance/src/index.ts"],
+      "@nzila/mobility-ai": ["../../packages/mobility-ai/src/index.ts"],
+      "@nzila/integrations-hubspot": ["../../packages/integrations-hubspot/src/index.ts"],
+      "@nzila/integrations-m365": ["../../packages/integrations-m365/src/index.ts"],
+      "@nzila/integrations-whatsapp": ["../../packages/integrations-whatsapp/src/index.ts"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next"]
+}

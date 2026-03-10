@@ -184,6 +184,20 @@ export const ORG_SCOPED_TABLES = [
   'tradeEvidenceArtifacts',
   'tradeVehicleListings',
   'tradeVehicleDocs',
+
+  // ── mobility.ts ──────────────────────────────────────────
+  'mobilityFirms',
+  'mobilityAdvisors',
+  'mobilityClients',
+  'mobilityFamilyMembers',
+  'mobilityPrograms',
+  'mobilityCases',
+  'mobilityCaseTasks',
+  'mobilityDocuments',
+  'mobilityComplianceEvents',
+  'mobilityCommunications',
+  'mobilityAiOutputs',
+  'mobilityAuditLog',
 ] as const
 
 /**
