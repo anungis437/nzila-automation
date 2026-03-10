@@ -3,14 +3,17 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit, rateLimitHeaders } from '@nzila/os-core/rateLimit'
 
 /**
- * Public routes — everything else requires authentication.
- * /api/health is intentionally public (probe endpoints must not require auth).
+ * Platform Admin Edge Middleware — Three-layer protection.
+ *
+ * Layer 1: Rate limiting (skip in dev — HMR triggers too many requests)
+ * Layer 2: Clerk authentication (skip in dev — prevents handshake loops)
+ * Layer 3: Request-ID propagation (x-request-id header)
  */
+
 const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/api/webhooks(.*)',
   '/api/health(.*)',
 ])
 
@@ -53,5 +56,8 @@ export default clerkMiddleware(async (auth, request) => {
 })
 
 export const config = {
-  matcher: ['/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)'],
+  matcher: [
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
+  ],
 }

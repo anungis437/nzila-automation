@@ -44,7 +44,9 @@
     "./audit": "./src/audit/index.ts",
     "./audit/abr": "./src/audit/abr.ts",
     "./crypto/fips": "./src/crypto/fips.ts",
-    "./resilience": "./src/resilience/index.ts"
+    "./resilience": "./src/resilience/index.ts",
+    "./api-response": "./src/api-response.ts",
+    "./api-handler": "./src/api-handler.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

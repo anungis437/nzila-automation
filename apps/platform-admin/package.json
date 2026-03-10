@@ -11,7 +11,9 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.12.0",
     "@heroicons/react": "^2.2.0",
+    "@nzila/os-core": "workspace:*",
     "@nzila/platform-context-orchestrator": "workspace:*",
     "@nzila/platform-data-fabric": "workspace:*",
     "@nzila/platform-decision-graph": "workspace:*",
