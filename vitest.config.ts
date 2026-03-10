@@ -103,6 +103,7 @@ export default defineConfig({
       'packages/integrations-hubspot',
       'packages/integrations-m365',
       'packages/integrations-whatsapp',
+      'packages/org',
       // Mobility apps
       'apps/mobility',
       'apps/mobility-client-portal',
