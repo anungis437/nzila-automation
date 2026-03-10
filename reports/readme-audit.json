@@ -1,0 +1,665 @@
+{
+  "generatedAt": "2026-03-10T19:25:37.800Z",
+  "totalPackages": 97,
+  "criticalPackages": 58,
+  "criticalMissing": [
+    "ai-registry",
+    "integrations-core",
+    "integrations-db",
+    "integrations-hubspot",
+    "integrations-m365",
+    "integrations-runtime",
+    "integrations-whatsapp",
+    "mobility-ai",
+    "mobility-case-engine",
+    "mobility-compliance",
+    "mobility-core",
+    "mobility-family",
+    "mobility-programs",
+    "org",
+    "payments-stripe",
+    "platform-assurance",
+    "platform-compliance-snapshots",
+    "platform-cost",
+    "platform-deploy",
+    "platform-events",
+    "platform-evidence-pack",
+    "platform-export",
+    "platform-integrations-control-plane",
+    "platform-marketplace",
+    "platform-metrics",
+    "platform-observability",
+    "platform-ops",
+    "platform-performance",
+    "platform-procurement-proof",
+    "platform-proof",
+    "platform-rfp-generator",
+    "platform-rum",
+    "platform-utils",
+    "qbo"
+  ],
+  "criticalStub": [],
+  "nonCriticalMissing": [
+    "agri-adapters",
+    "agri-core",
+    "agri-db",
+    "agri-events",
+    "agri-intelligence",
+    "agri-traceability",
+    "chatops-slack",
+    "chatops-teams",
+    "cli",
+    "commerce-audit",
+    "commerce-core",
+    "commerce-db",
+    "commerce-events",
+    "commerce-evidence",
+    "commerce-governance",
+    "commerce-integration-tests",
+    "commerce-observability",
+    "commerce-services",
+    "commerce-state",
+    "comms-email",
+    "comms-push",
+    "comms-sms",
+    "crm-hubspot",
+    "data-lifecycle",
+    "finops",
+    "fx",
+    "nacp-core",
+    "pricing-engine",
+    "secrets",
+    "tax",
+    "tools-runtime",
+    "trade-adapters",
+    "trade-cars",
+    "trade-core",
+    "trade-db",
+    "webhooks",
+    "zonga-core"
+  ],
+  "checks": [
+    {
+      "package": "agri-adapters",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "agri-core",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "agri-db",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "agri-events",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "agri-intelligence",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "agri-traceability",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "ai-core",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1570
+    },
+    {
+      "package": "ai-registry",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "ai-sdk",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1089
+    },
+    {
+      "package": "blob",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1131
+    },
+    {
+      "package": "chatops-slack",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "chatops-teams",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "cli",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-audit",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-core",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-db",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-events",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-evidence",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-governance",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-integration-tests",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-observability",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-services",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "commerce-state",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "comms-email",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "comms-push",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "comms-sms",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "config",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 679
+    },
+    {
+      "package": "crm-hubspot",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "data-lifecycle",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "db",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1363
+    },
+    {
+      "package": "evidence",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 991
+    },
+    {
+      "package": "finops",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "fx",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "integrations-core",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "integrations-db",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "integrations-hubspot",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "integrations-m365",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "integrations-runtime",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "integrations-whatsapp",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "ml-core",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 963
+    },
+    {
+      "package": "ml-sdk",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 752
+    },
+    {
+      "package": "mobility-ai",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "mobility-case-engine",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "mobility-compliance",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "mobility-core",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "mobility-family",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "mobility-programs",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "nacp-core",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "org",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "os-core",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 3560
+    },
+    {
+      "package": "otel-core",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1328
+    },
+    {
+      "package": "payments-stripe",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-assurance",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-compliance-snapshots",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-context-orchestrator",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 2546
+    },
+    {
+      "package": "platform-cost",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-data-fabric",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1891
+    },
+    {
+      "package": "platform-decision-graph",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 2527
+    },
+    {
+      "package": "platform-deploy",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-entity-graph",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1021
+    },
+    {
+      "package": "platform-event-fabric",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 992
+    },
+    {
+      "package": "platform-events",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-evidence-pack",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-export",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-governed-ai",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 2226
+    },
+    {
+      "package": "platform-integrations-control-plane",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-isolation",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1000
+    },
+    {
+      "package": "platform-knowledge-registry",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1170
+    },
+    {
+      "package": "platform-marketplace",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-metrics",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-observability",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-ontology",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1291
+    },
+    {
+      "package": "platform-ops",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-performance",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-policy-engine",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1355
+    },
+    {
+      "package": "platform-procurement-proof",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-proof",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-reasoning-engine",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 2143
+    },
+    {
+      "package": "platform-rfp-generator",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-rum",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-semantic-search",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1731
+    },
+    {
+      "package": "platform-utils",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "platform-validation",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 1231
+    },
+    {
+      "package": "pricing-engine",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "qbo",
+      "critical": true,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "scripts-book",
+      "critical": false,
+      "hasReadme": true,
+      "readmeLength": 4806
+    },
+    {
+      "package": "secrets",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "shop-quoter",
+      "critical": false,
+      "hasReadme": true,
+      "readmeLength": 2270
+    },
+    {
+      "package": "tax",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "tools-runtime",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "trade-adapters",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "trade-cars",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "trade-core",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "trade-db",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "ui",
+      "critical": true,
+      "hasReadme": true,
+      "readmeLength": 828
+    },
+    {
+      "package": "webhooks",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    },
+    {
+      "package": "zonga-core",
+      "critical": false,
+      "hasReadme": false,
+      "readmeLength": 0
+    }
+  ]
+}
