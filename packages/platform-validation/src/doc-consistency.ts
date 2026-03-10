@@ -100,7 +100,7 @@ function checkStaleReferences(filePath: string, content: string, repoRoot: strin
       if (!existsSync(resolvedFromFile) && !existsSync(resolvedFromRoot) && !existsSync(resolvedFromDocs)) {
         findings.push({
           rule: 'stale-reference',
-          severity: 'info',
+          severity: 'warning',
           file: rel,
           line: i + 1,
           message: `Possible broken link: [${match[1]}](${target})`,
@@ -115,7 +115,7 @@ function checkStaleReferences(filePath: string, content: string, repoRoot: strin
       if (!existsSync(join(repoRoot, 'packages', pkgName, 'package.json'))) {
         findings.push({
           rule: 'stale-package-ref',
-          severity: 'info',
+          severity: 'warning',
           file: rel,
           line: i + 1,
           message: `References @nzila/${pkgName} but package does not exist`,
@@ -246,7 +246,7 @@ function checkRequiredDocs(repoRoot: string): DocFinding[] {
       if (!existsSync(join(pkgDir, 'README.md'))) {
         findings.push({
           rule: 'missing-package-readme',
-          severity: 'info',
+          severity: 'warning',
           file: `packages/${pkg}`,
           message: `Package ${pkg} missing README.md`,
         })
