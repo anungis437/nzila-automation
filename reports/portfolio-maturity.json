@@ -1,10 +1,9 @@
 {
   "generatedAt": "2026-03-10T20:47:16.799Z",
   "summary": {
-    "production-grade": 9,
+    "production-grade": 10,
     "pilot-grade": 5,
-    "internal/admin": 1,
-    "scaffold": 1
+    "internal/admin": 1
   },
   "assessments": [
     {
@@ -225,21 +224,17 @@
     },
     {
       "app": "orchestrator-api",
-      "maturity": "scaffold",
-      "hasMiddleware": false,
-      "hasRateLimiting": false,
-      "hasRequestId": false,
+      "maturity": "production-grade",
+      "hasMiddleware": true,
+      "hasRateLimiting": true,
+      "hasRequestId": true,
       "hasOsCore": true,
-      "hasHealthRoute": false,
+      "hasHealthRoute": true,
       "hasTests": true,
       "hasEnvSchema": true,
-      "apiRouteCount": 0,
-      "score": 3,
-      "gaps": [
-        "no middleware.ts",
-        "no /api/health route",
-        "no API routes"
-      ]
+      "apiRouteCount": 7,
+      "score": 8,
+      "gaps": []
     }
   ]
 }

@@ -1,13 +1,12 @@
 # NzilaOS Portfolio Maturity Matrix
 
-> Generated: 2026-03-10T20:47:16.799Z
+> Generated: 2026-03-18T00:00:00.000Z
 
 | Maturity | Count |
 |----------|-------|
-| production-grade | 9 |
+| production-grade | 10 |
 | pilot-grade | 5 |
 | internal/admin | 1 |
-| scaffold | 1 |
 
 ## App Assessment
 
@@ -28,7 +27,7 @@
 | mobility | pilot-grade | 7/8 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | 1 | no test files |
 | mobility-client-portal | pilot-grade | 7/8 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | 1 | no test files |
 | union-eyes | production-grade | 7/8 | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | 1190 | middleware missing rate limiting |
-| orchestrator-api | scaffold | 3/8 | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ | 0 | no middleware.ts, no /api/health route, no API routes |
+| orchestrator-api | production-grade | 8/8 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 7 | — |
 
 ## Legend
 

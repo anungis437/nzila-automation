@@ -9,6 +9,7 @@ import { jobRoutes } from './routes/jobs.js'
 import { runRoutes } from './routes/runs.js'
 import { statusRoutes } from './routes/status.js'
 import { createLogger } from '@nzila/os-core'
+import { getEventBus, getAIRunStore, getPolicyEvaluator } from './platform.js'
 
 const logger = createLogger('orchestrator-api')
 
@@ -47,6 +48,16 @@ try {
 const PORT = Number(process.env.PORT ?? 4000)
 const HOST = process.env.HOST ?? '0.0.0.0'
 const API_KEY = process.env.ORCHESTRATOR_API_KEY ?? ''
+
+// ── Platform Integration (event-fabric + governed-ai) ───────────────────────
+try {
+  getEventBus()
+  getAIRunStore()
+  getPolicyEvaluator()
+  logger.info('Platform integration hooks initialized')
+} catch (err) {
+  logger.warn('Platform integration init skipped', { error: err })
+}
 
 const app = Fastify({
   logger: {

@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { CommandSchema } from '../contract.js'
 import { dispatchWorkflow } from '../dispatch.js'
 import { createCommand, getCommand, listCommands, updateCommandStatus } from '../store.js'
+import { emitCommandEvent } from '../platform.js'
 
 export async function commandRoutes(app: FastifyInstance) {
   /**
@@ -34,6 +35,13 @@ export async function commandRoutes(app: FastifyInstance) {
     })
 
     app.log.info({ correlation_id: cmd.correlation_id, playbook: cmd.playbook }, 'Command accepted')
+
+    // Emit platform event for observability
+    emitCommandEvent('automation.command.created', {
+      correlation_id: cmd.correlation_id,
+      playbook: cmd.playbook,
+      dry_run: cmd.dry_run,
+    }, cmd.requested_by).catch(() => { /* non-blocking */ })
 
     // Fire-and-forget dispatch (update status async)
     dispatchWorkflow({

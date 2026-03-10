@@ -14,7 +14,7 @@
 | App | Test Files | Test Types | Notes |
 |-----|:---------:|------------|-------|
 | union-eyes | 21 | Unit + contract + integration | Representation protocol, FSM, evidence |
-| orchestrator-api | 2 | Smoke + route tests | GET /health, /status, /runs, /workflows |
+| orchestrator-api | 3 | Unit + contract + store integration | Schema, workflows, in-memory store lifecycle |
 | cfo | 2 | Smoke + integration | Platform integration |
 | console | 2 | Smoke + integration | Platform integration |
 | cora | 2 | Smoke + resolve-org | Role mapping, read-only permissions |
@@ -41,15 +41,17 @@
 | integrations-runtime | 8 | ResilientDispatcher, circuit breaker, retry, DLQ |
 | payments-stripe | 5 | Webhook verification, Zod schemas, payment lifecycle |
 | ai-core | 2 | AI model registry, prompt management |
-| agri-core | 1 | Domain types, validation |
+| mobility-compliance | 1 | Workflow FSM (6-step), risk scoring, severity penalty |
+| mobility-ai | 1 | AI governance, prohibited actions, document checklists |
+| agri-core | 2 | FSM (lot + shipment), domain types, validation |
+| agri-intelligence | 2 | Yield, loss, payout analytics |
+| trade-core | 1 | Deal FSM engine, 9 states, 5 failure modes |
 | agri-events | 1 | Event bus, domain events |
-| agri-intelligence | 1 | Intelligence queries |
 | agri-traceability | 1 | Evidence pack builders |
 | integrations-hubspot | 1 | Webhook schema, sync |
 | integrations-m365 | 1 | Graph API adapter |
 | integrations-whatsapp | 1 | Provider pattern |
 | qbo | 1 | OAuth + entity sync |
-| trade-core | 1 | Trade domain types |
 
 ### Tier 3 — Packages Without Tests
 

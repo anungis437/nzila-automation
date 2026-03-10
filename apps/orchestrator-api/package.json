@@ -16,6 +16,8 @@
     "@fastify/rate-limit": "^10.0.0",
     "@nzila/db": "workspace:*",
     "@nzila/os-core": "workspace:*",
+    "@nzila/platform-event-fabric": "workspace:*",
+    "@nzila/platform-governed-ai": "workspace:*",
     "@nzila/platform-procurement-proof": "workspace:*",
     "@nzila/platform-utils": "workspace:*",
     "drizzle-orm": "^0.39.0",
