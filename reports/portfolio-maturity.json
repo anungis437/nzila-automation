@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-03-10T19:24:27.955Z",
+  "generatedAt": "2026-03-10T20:47:16.799Z",
   "summary": {
-    "production": 15,
-    "integration-ready": 0,
-    "scaffold": 1,
-    "placeholder": 0
+    "production-grade": 9,
+    "pilot-grade": 5,
+    "internal/admin": 1,
+    "scaffold": 1
   },
   "assessments": [
     {
       "app": "abr",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -23,7 +23,7 @@
     },
     {
       "app": "cfo",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -37,7 +37,7 @@
     },
     {
       "app": "console",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -51,7 +51,7 @@
     },
     {
       "app": "cora",
-      "maturity": "production",
+      "maturity": "pilot-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -65,7 +65,7 @@
     },
     {
       "app": "nacp-exams",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -79,7 +79,7 @@
     },
     {
       "app": "partners",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -93,7 +93,7 @@
     },
     {
       "app": "platform-admin",
-      "maturity": "production",
+      "maturity": "internal/admin",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -107,7 +107,7 @@
     },
     {
       "app": "pondu",
-      "maturity": "production",
+      "maturity": "pilot-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -121,7 +121,7 @@
     },
     {
       "app": "shop-quoter",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -135,7 +135,7 @@
     },
     {
       "app": "trade",
-      "maturity": "production",
+      "maturity": "pilot-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -149,7 +149,7 @@
     },
     {
       "app": "web",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -163,7 +163,7 @@
     },
     {
       "app": "zonga",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -177,7 +177,7 @@
     },
     {
       "app": "mobility",
-      "maturity": "production",
+      "maturity": "pilot-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -193,7 +193,7 @@
     },
     {
       "app": "mobility-client-portal",
-      "maturity": "production",
+      "maturity": "pilot-grade",
       "hasMiddleware": true,
       "hasRateLimiting": true,
       "hasRequestId": true,
@@ -209,7 +209,7 @@
     },
     {
       "app": "union-eyes",
-      "maturity": "production",
+      "maturity": "production-grade",
       "hasMiddleware": true,
       "hasRateLimiting": false,
       "hasRequestId": true,

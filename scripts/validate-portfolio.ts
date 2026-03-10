@@ -25,7 +25,7 @@ function findRepoRoot(): string {
   throw new Error('Cannot find repo root')
 }
 
-type Maturity = 'production' | 'integration-ready' | 'scaffold' | 'placeholder'
+type Maturity = 'production-grade' | 'pilot-grade' | 'internal/admin' | 'scaffold'
 
 interface AppAssessment {
   app: string
@@ -115,11 +115,22 @@ for (const app of readdirSync(appsDir)) {
   const score = [hasMiddleware, hasRateLimiting, hasRequestId, hasOsCore, hasHealthRoute, hasTests, hasEnvSchema, apiRouteCount > 0]
     .filter(Boolean).length
 
+  // Classification uses both score and domain signals
+  // internal/admin: admin dashboards, not customer-facing
+  const INTERNAL_APPS = new Set(['platform-admin'])
+  // pilot-grade: verticals with limited test coverage or early-stage data integration
+  const PILOT_APPS = new Set(['mobility', 'mobility-client-portal', 'trade', 'pondu', 'cora'])
+
   let maturity: Maturity
-  if (score >= 7) maturity = 'production'
-  else if (score >= 5) maturity = 'integration-ready'
-  else if (score >= 3) maturity = 'scaffold'
-  else maturity = 'placeholder'
+  if (INTERNAL_APPS.has(app)) {
+    maturity = 'internal/admin'
+  } else if (score <= 3) {
+    maturity = 'scaffold'
+  } else if (PILOT_APPS.has(app) || (!hasTests && score < 8)) {
+    maturity = 'pilot-grade'
+  } else {
+    maturity = 'production-grade'
+  }
 
   assessments.push({
     app, maturity, hasMiddleware, hasRateLimiting, hasRequestId,
@@ -132,10 +143,10 @@ assessments.sort((a, b) => b.score - a.score)
 
 // Summary
 const summary = {
-  production: assessments.filter(a => a.maturity === 'production').length,
-  'integration-ready': assessments.filter(a => a.maturity === 'integration-ready').length,
+  'production-grade': assessments.filter(a => a.maturity === 'production-grade').length,
+  'pilot-grade': assessments.filter(a => a.maturity === 'pilot-grade').length,
+  'internal/admin': assessments.filter(a => a.maturity === 'internal/admin').length,
   scaffold: assessments.filter(a => a.maturity === 'scaffold').length,
-  placeholder: assessments.filter(a => a.maturity === 'placeholder').length,
 }
 
 // Write JSON
@@ -181,8 +192,8 @@ console.log('\n═════════════════════�
 console.log('  NzilaOS Portfolio Maturity Matrix')
 console.log('══════════════════════════════════════════════════════════════\n')
 for (const a of assessments) {
-  const icon = a.maturity === 'production' ? '🟢' : a.maturity === 'integration-ready' ? '🟡' : a.maturity === 'scaffold' ? '🟠' : '🔴'
+  const icon = a.maturity === 'production-grade' ? '🟢' : a.maturity === 'pilot-grade' ? '🟡' : a.maturity === 'internal/admin' ? '🔵' : '🟠'
   console.log(`${icon} ${a.app.padEnd(25)} ${a.maturity.padEnd(20)} ${a.score}/8  ${a.gaps.length > 0 ? `[${a.gaps.join(', ')}]` : ''}`)
 }
-console.log(`\n  Production: ${summary.production}  |  Integration-Ready: ${summary['integration-ready']}  |  Scaffold: ${summary.scaffold}  |  Placeholder: ${summary.placeholder}`)
+console.log(`\n  Production-Grade: ${summary['production-grade']}  |  Pilot-Grade: ${summary['pilot-grade']}  |  Internal/Admin: ${summary['internal/admin']}  |  Scaffold: ${summary.scaffold}`)
 console.log('\n  Reports written to reports/portfolio-maturity.{json,md}\n')
