@@ -106,6 +106,11 @@ export default defineConfig({
       // Mobility apps
       'apps/mobility',
       'apps/mobility-client-portal',
+      // Remaining apps
+      'apps/trade',
+      'apps/platform-admin',
+      // Platform validation
+      'packages/platform-validation',
       // Tooling
       'tooling/openapi-gen',
       // Contract tests (architectural invariants)
