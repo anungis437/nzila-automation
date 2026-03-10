@@ -1,0 +1,4462 @@
+{
+  "generatedAt": "2026-03-10T17:42:01.988Z",
+  "filesScanned": 709,
+  "totalFindings": 647,
+  "findingsByRule": {
+    "stale-package-ref": 25,
+    "stale-reference": 277,
+    "naming-inconsistency": 260,
+    "missing-package-readme": 85
+  },
+  "findingsBySeverity": {
+    "error": 0,
+    "warning": 0,
+    "info": 647
+  },
+  "findings": [
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 88,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 100,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 29,
+      "message": "References @nzila/redis but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 29,
+      "message": "References @nzila/search but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 116,
+      "message": "References @nzila/redis but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 378,
+      "message": "References @nzila/redis but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 381,
+      "message": "References @nzila/redis but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 423,
+      "message": "References @nzila/redis but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/architecture/STACK_AUTHORITY.md",
+      "line": 5,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 33,
+      "message": "Possible broken link: [`packages/pricing-engine/src/pricing-engine.ts`](../../packages/pricing-engine/src/pricing-engine.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 55,
+      "message": "Possible broken link: [`packages/commerce-state/`](../../packages/commerce-state/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 81,
+      "message": "Possible broken link: [`packages/commerce-audit/src/audit.ts`](../../packages/commerce-audit/src/audit.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 82,
+      "message": "Possible broken link: [`packages/commerce-evidence/src/evidence.ts`](../../packages/commerce-evidence/src/evidence.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 112,
+      "message": "Possible broken link: [`packages/shop-quoter/`](../../packages/shop-quoter/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 139,
+      "message": "Possible broken link: [`packages/commerce-governance/src/gates.ts`](../../packages/commerce-governance/src/gates.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 85,
+      "message": "Possible broken link: [`docs/commerce/LEGACY_REVIEW.md`](LEGACY_REVIEW.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 100,
+      "message": "Possible broken link: [`docs/commerce/DOMAIN_MODEL_DRAFT.md`](DOMAIN_MODEL_DRAFT.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 101,
+      "message": "Possible broken link: [`packages/commerce-core/src/types/index.ts`](../../packages/commerce-core/src/types/index.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 102,
+      "message": "Possible broken link: [`packages/commerce-core/src/enums.ts`](../../packages/commerce-core/src/enums.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 103,
+      "message": "Possible broken link: [`packages/commerce-core/src/schemas/index.ts`](../../packages/commerce-core/src/schemas/index.ts)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 117,
+      "message": "Possible broken link: [`packages/pricing-engine/`](../../packages/pricing-engine/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 118,
+      "message": "Possible broken link: [`packages/commerce-state/`](../../packages/commerce-state/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 119,
+      "message": "Possible broken link: [`packages/commerce-audit/`](../../packages/commerce-audit/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 120,
+      "message": "Possible broken link: [`packages/commerce-events/`](../../packages/commerce-events/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 134,
+      "message": "Possible broken link: [`packages/commerce-governance/`](../../packages/commerce-governance/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 135,
+      "message": "Possible broken link: [`packages/commerce-evidence/`](../../packages/commerce-evidence/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 136,
+      "message": "Possible broken link: [`packages/commerce-observability/`](../../packages/commerce-observability/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 150,
+      "message": "Possible broken link: [`packages/shop-quoter/`](../../packages/shop-quoter/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/commerce/meie/WP_DELIVERABLES.md",
+      "line": 151,
+      "message": "Possible broken link: [`docs/commerce/IRAP_TECHNICAL_DESIGN.md`](IRAP_TECHNICAL_DESIGN.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/explanation/README.md",
+      "line": 8,
+      "message": "Possible broken link: [Org Isolation Model](org-isolation.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/explanation/README.md",
+      "line": 9,
+      "message": "Possible broken link: [Stack Authority](stack-authority.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/explanation/README.md",
+      "line": 10,
+      "message": "Possible broken link: [Content vs Governance](content-governance.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/explanation/README.md",
+      "line": 18,
+      "message": "Possible broken link: [SLO Philosophy](slo-philosophy.md)"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 148,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 15,
+      "message": "References @nzila/web but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 16,
+      "message": "References @nzila/console but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 17,
+      "message": "References @nzila/partners but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 18,
+      "message": "References @nzila/union-eyes but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 19,
+      "message": "References @nzila/orchestrator-api but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 38,
+      "message": "References @nzila/analytics but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 71,
+      "message": "References @nzila/security but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 71,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 183,
+      "message": "References @nzila/security but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/build-reproducibility.md",
+      "line": 5,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/logging.md",
+      "line": 5,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/hardening/observability.md",
+      "line": 5,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/how-to/README.md",
+      "line": 6,
+      "message": "Possible broken link: [Deploy to Azure](deploy-azure.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/how-to/README.md",
+      "line": 9,
+      "message": "Possible broken link: [Add a New Tenant](add-tenant.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/how-to/README.md",
+      "line": 13,
+      "message": "Possible broken link: [Add OPA Policy](add-opa-policy.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/how-to/README.md",
+      "line": 19,
+      "message": "Possible broken link: [Configure SLOs](configure-slos.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/how-to/README.md",
+      "line": 22,
+      "message": "Possible broken link: [Run Chaos Tests](run-chaos-tests.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/migration/app-alignment/union-eyes.md",
+      "line": 40,
+      "message": "Possible broken link: [app/api/health/route.ts](../../apps/union-eyes/app/api/health/route.ts)"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/migration/ROLLBACK_RUNBOOK.md",
+      "line": 5,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/migration/ROLLBACK_RUNBOOK.md",
+      "line": 154,
+      "message": "References @nzila/platform but package does not exist"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/ops/incident-response.md",
+      "line": 149,
+      "message": "Possible broken link: [Proof Pack](../../apps/console/app/(dashboard)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 16,
+      "message": "Possible broken link: [Creating a Package](tutorials/creating-package.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 17,
+      "message": "Possible broken link: [Setting Up Observability](tutorials/observability-setup.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 18,
+      "message": "Possible broken link: [Multi-Tenant Data Access](tutorials/multi-tenant.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 25,
+      "message": "Possible broken link: [Deploy to Azure](how-to/deploy-azure.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 26,
+      "message": "Possible broken link: [Add a New Tenant](how-to/add-tenant.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 29,
+      "message": "Possible broken link: [Run Chaos Tests](how-to/run-chaos-tests.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 30,
+      "message": "Possible broken link: [Add OPA Policy](how-to/add-opa-policy.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 31,
+      "message": "Possible broken link: [Configure SLOs](how-to/configure-slos.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 38,
+      "message": "Possible broken link: [Architecture](reference/architecture.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 39,
+      "message": "Possible broken link: [API Reference](reference/api.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 41,
+      "message": "Possible broken link: [Database Schema](reference/schema.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 42,
+      "message": "Possible broken link: [Policy Engine](reference/policy-engine.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 43,
+      "message": "Possible broken link: [AI Gateway](reference/ai-gateway.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 44,
+      "message": "Possible broken link: [Evidence System](reference/evidence.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 45,
+      "message": "Possible broken link: [Configuration](reference/configuration.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 53,
+      "message": "Possible broken link: [Org Isolation Model](explanation/org-isolation.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 54,
+      "message": "Possible broken link: [Stack Authority](explanation/stack-authority.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 56,
+      "message": "Possible broken link: [SLO Philosophy](explanation/slo-philosophy.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 57,
+      "message": "Possible broken link: [Content vs Governance](explanation/content-governance.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 64,
+      "message": "Possible broken link: [Incident Response](runbooks/incident-response.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 65,
+      "message": "Possible broken link: [Database Recovery](runbooks/database-recovery.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 67,
+      "message": "Possible broken link: [AI Model Rollback](runbooks/ai-model-rollback.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 69,
+      "message": "Possible broken link: [Tenant Offboarding](runbooks/tenant-offboarding.md)"
+    },
+    {
+      "rule": "stale-package-ref",
+      "severity": "info",
+      "file": "docs/reference/packages.md",
+      "line": 66,
+      "message": "References @nzila/analytics but package does not exist"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/reference/README.md",
+      "line": 8,
+      "message": "Possible broken link: [Database Schema](schema.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/reference/README.md",
+      "line": 12,
+      "message": "Possible broken link: [Evidence System](evidence.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/reference/README.md",
+      "line": 15,
+      "message": "Possible broken link: [AI Gateway](ai-gateway.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/reference/README.md",
+      "line": 18,
+      "message": "Possible broken link: [Configuration](configuration.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/runbooks/README.md",
+      "line": 10,
+      "message": "Possible broken link: [Database Recovery](database-recovery.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/runbooks/README.md",
+      "line": 11,
+      "message": "Possible broken link: [AI Model Rollback](ai-model-rollback.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/runbooks/README.md",
+      "line": 15,
+      "message": "Possible broken link: [Tenant Offboarding](tenant-offboarding.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/tutorials/adding-ai.md",
+      "line": 136,
+      "message": "Possible broken link: [Reference: AI Gateway](../reference/ai-gateway.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/tutorials/README.md",
+      "line": 12,
+      "message": "Possible broken link: [Creating a Package](creating-package.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/tutorials/README.md",
+      "line": 13,
+      "message": "Possible broken link: [Setting Up Observability](observability-setup.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "docs/tutorials/README.md",
+      "line": 14,
+      "message": "Possible broken link: [Multi-Tenant Data Access](multi-tenant.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 279,
+      "message": "Possible broken link: [portfolio-5yr-projections.md](portfolio-5yr-projections.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 280,
+      "message": "Possible broken link: [flagship-unit-economics.md](flagship-unit-economics.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 281,
+      "message": "Possible broken link: [platform-revenue-models.md](platform-revenue-models.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 282,
+      "message": "Possible broken link: [break-even-analysis.md](break-even-analysis.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 283,
+      "message": "Possible broken link: [fundraising-scenarios.md](fundraising-scenarios.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 284,
+      "message": "Possible broken link: [cap-table-exit-modeling.md](cap-table-exit-modeling.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/financial-models/README.md",
+      "line": 285,
+      "message": "Possible broken link: [assumptions-methodology.md](assumptions-methodology.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/README.md",
+      "line": 25,
+      "message": "Possible broken link: [**One-Pager: Portfolio Overview**](./one-pager-portfolio.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/README.md",
+      "line": 29,
+      "message": "Possible broken link: [**Executive Summary**](./executive-summary.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/README.md",
+      "line": 35,
+      "message": "Possible broken link: [**Financial Projections (2026-2030)**](../financial-models/projections-2026-2030.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/README.md",
+      "line": 36,
+      "message": "Possible broken link: [**Unit Economics Analysis**](../financial-models/unit-economics.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/README.md",
+      "line": 37,
+      "message": "Possible broken link: [**Cap Table & Shareholder Info**](./cap-table-2026.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/investor-materials/README.md",
+      "line": 38,
+      "message": "Possible broken link: [**Historical Financials**](./historical-financials.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 158,
+      "message": "Possible broken link: [Portfolio Deep Dive Analysis](../PORTFOLIO_DEEP_DIVE.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 159,
+      "message": "Possible broken link: [Migration Plan](../MIGRATION_PLAN.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 160,
+      "message": "Possible broken link: [Corporate Dashboard](../CORPORATE_DASHBOARD.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 173,
+      "message": "Possible broken link: [Financial Projections](./financial-models/projections-2026-2030.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 174,
+      "message": "Possible broken link: [One-Pager: Portfolio Overview](./investor-materials/one-pager-portfolio.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 177,
+      "message": "Possible broken link: [OKRs & KPIs](./metrics/okrs-2026.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 179,
+      "message": "Possible broken link: [Operational Playbooks](./playbooks/README.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/business/README.md",
+      "line": 184,
+      "message": "Possible broken link: [Case Studies](./market-research/case-studies.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 79,
+      "message": "Possible broken link: [🤝 Shared Services Directory](%F0%9F%A4%9D%20Shared%20Services%20Directory%201e685df0190780178224c73fd564a794.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 81,
+      "message": "Possible broken link: [📄 Internal SLA Guide](%F0%9F%93%84%20Internal%20SLA%20Guide%201e685df0190780bba3bfd001ec450db6.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 83,
+      "message": "Possible broken link: [🪪 Internal Brand Use & Approval Flow](%F0%9F%AA%AA%20Internal%20Brand%20Use%20&%20Approval%20Flow%201e685df0190780aaa675d1560209a8d2.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 85,
+      "message": "Possible broken link: [🧩 Access & Roles Matrix](%F0%9F%A7%A9%20Access%20&%20Roles%20Matrix%201e685df019078071a5e2dc146571d30a.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 87,
+      "message": "Possible broken link: [🧾 Shared Services Budget Allocation Sheet](%F0%9F%A7%BE%20Shared%20Services%20Budget%20Allocation%20Sheet%201e885df019078071982ff25870d4e41b.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 89,
+      "message": "Possible broken link: [📊 SLA Tracker (Live Ledger)](%F0%9F%93%8A%20SLA%20Tracker%20(Live%20Ledger)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 91,
+      "message": "Possible broken link: [📋 Request Intake Form Template](%F0%9F%93%8B%20Request%20Intake%20Form%20Template%201e885df019078038b994c1481b4734fd.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 93,
+      "message": "Possible broken link: [🧠 Talent Assignment Protocol](%F0%9F%A7%A0%20Talent%20Assignment%20Protocol%201e885df0190780c68eb0d91030899a99.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/knowledge-strategic-ops-shared-services-overview.md",
+      "line": 95,
+      "message": "Possible broken link: [🧩 Handoff & Exit Criteria](%F0%9F%A7%A9%20Handoff%20&%20Exit%20Criteria%201e885df0190780d78302c52266ae426f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/security-oversight-compliance-integration.md",
+      "line": 5,
+      "message": "Possible broken link: [📋 Quarterly Venture Audit Template](%F0%9F%93%8B%20Quarterly%20Venture%20Audit%20Template%201e685df019078088991ef23c068f6da1.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/security-oversight-compliance-integration.md",
+      "line": 7,
+      "message": "Possible broken link: [⚠️ Strategic Risk Escalation SOP](%E2%9A%A0%EF%B8%8F%20Strategic%20Risk%20Escalation%20SOP%201e685df0190780abbadec24e12481e48.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/compliance/security-oversight-compliance-integration.md",
+      "line": 9,
+      "message": "Possible broken link: [📑 Policy Sync Tracker](%F0%9F%93%91%20Policy%20Sync%20Tracker%201e685df01907803b89cdc21ccdf4a344.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/finance-capital-strategy-resource-allocation.md",
+      "line": 5,
+      "message": "Possible broken link: [📚 Capital Strategy & Resource Allocation Overview](%F0%9F%93%9A%20Capital%20Strategy%20&%20Resource%20Allocation%20Overview%201e885df0190780109b11cc129ceb092d.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 62,
+      "message": "Possible broken link: [💰 Capital Deployment Plan](%F0%9F%92%B0%20Capital%20Deployment%20Plan%201e685df0190780e58cd7f9800c4d80b8.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 64,
+      "message": "Possible broken link: [💼 Fundraising Gatekeeper Guide](%F0%9F%92%BC%20Fundraising%20Gatekeeper%20Guide%201e685df01907805fa404dda1e437422b.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 66,
+      "message": "Possible broken link: [📈 Venture Forecasts (Finance Linkage)](%F0%9F%93%88%20Venture%20Forecasts%20(Finance%20Linkage)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 68,
+      "message": "Possible broken link: [🧾 Royalty & Licensing Flow Model](%F0%9F%A7%BE%20Royalty%20&%20Licensing%20Flow%20Model%201e685df01907808bacecd6bc61d1f84a.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 70,
+      "message": "Possible broken link: [📊 Strategic Review Template](%F0%9F%93%8A%20Strategic%20Review%20Template%201e885df019078059ba51ee595889d694.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 72,
+      "message": "Possible broken link: [📋 Board Decision Tracker](%F0%9F%93%8B%20Board%20Decision%20Tracker%201e885df019078000878ae83a65c42126.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 74,
+      "message": "Possible broken link: [🧮 Nzila Cap Table Impact Sheet](%F0%9F%A7%AE%20Nzila%20Cap%20Table%20Impact%20Sheet%201e885df01907806f958cdd271ddc2ca8.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 76,
+      "message": "Possible broken link: [📂 SAFE Template (Nzila Version)](%F0%9F%93%82%20SAFE%20Template%20(Nzila%20Version)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 78,
+      "message": "Possible broken link: [📑 Spinout Criteria & Checklist](%F0%9F%93%91%20Spinout%20Criteria%20&%20Checklist%201e885df019078021be23d952e065c2cc.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 80,
+      "message": "Possible broken link: [🛠️ Shared Services SLA Tracker](%F0%9F%9B%A0%EF%B8%8F%20Shared%20Services%20SLA%20Tracker%201e885df0190780aa8fa4fd6bb9fe1d1e.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 82,
+      "message": "Possible broken link: [📉 Runway Risk Response Protocol](%F0%9F%93%89%20Runway%20Risk%20Response%20Protocol%201e885df019078052a187f29d9d41ffae.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 84,
+      "message": "Possible broken link: [🔍 Due Diligence Data Room Index](%F0%9F%94%8D%20Due%20Diligence%20Data%20Room%20Index%201e885df0190780428eddc10cb64de693.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/finance/knowledge-capital-strategy-resource-allocation-overview.md",
+      "line": 86,
+      "message": "Possible broken link: [🧾 Revenue Recognition & Grant Accounting Guide](%F0%9F%A7%BE%20Revenue%20Recognition%20&%20Grant%20Accounting%20Guide%201e885df019078070aef1df6eebde8afb.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/governance-docs.md",
+      "line": 94,
+      "message": "Possible broken link: [🏛️ Board Governance Pack](%F0%9F%8F%9B%EF%B8%8F%20Board%20Governance%20Pack%201e685df019078035adabeca9400cfe63.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/governance-docs.md",
+      "line": 96,
+      "message": "Possible broken link: [🧾 Founder & Executive Roles & Equity Memo](%F0%9F%A7%BE%20Founder%20&%20Executive%20Roles%20&%20Equity%20Memo%201e685df01907800a8c17d225b5312ca3.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/governance-docs.md",
+      "line": 98,
+      "message": "Possible broken link: [📊 Strategic Review Template (Quarterly)](%F0%9F%93%8A%20Strategic%20Review%20Template%20(Quarterly)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/governance-docs.md",
+      "line": 100,
+      "message": "Possible broken link: [🪙 Spinout Criteria & Checklist](%F0%9F%AA%99%20Spinout%20Criteria%20&%20Checklist%201e685df01907804ab8fefed85c15f7e1.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/governance-docs.md",
+      "line": 102,
+      "message": "Possible broken link: [📘 Operating Agreement Template (Venture-Level)](%F0%9F%93%98%20Operating%20Agreement%20Template%20(Venture-Level)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 17,
+      "message": "Possible broken link: [🧭 Corporate Strategy Overview](%F0%9F%A7%AD%20Corporate%20Strategy%20Overview%201e685df0190780feba62c7f76b4995c8.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 19,
+      "message": "Possible broken link: [Nzila Ventures Operating Principles](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 20,
+      "message": "Possible broken link: [Multi-Product Operating Architecture](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 21,
+      "message": "Possible broken link: [Nzila Strategic Roadmap (2025–2028)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 22,
+      "message": "Possible broken link: [Strategic Positioning Map (2025)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 23,
+      "message": "Possible broken link: [Quarterly Planning Cycle](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 24,
+      "message": "Possible broken link: [Legacy & Impact Statement](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 30,
+      "message": "Possible broken link: [Strategic Ops & Shared Services Overview](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 31,
+      "message": "Possible broken link: [Shared Services Playbooks](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 32,
+      "message": "Possible broken link: [Shared Services Directory](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 33,
+      "message": "Possible broken link: [Access & Roles Matrix](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 34,
+      "message": "Possible broken link: [Shared Services Budget Allocation Sheet](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 35,
+      "message": "Possible broken link: [Internal SLA Guide](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 36,
+      "message": "Possible broken link: [Internal Brand Use & Approval Flow](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 37,
+      "message": "Possible broken link: [SLA Tracker (Live Ledger)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 38,
+      "message": "Possible broken link: [Request Intake Form Template](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 39,
+      "message": "Possible broken link: [Talent Assignment Protocol](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 40,
+      "message": "Possible broken link: [Handoff & Exit Criteria](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 41,
+      "message": "Possible broken link: [Shared Services SLA Tracker](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 47,
+      "message": "Possible broken link: [Capital Strategy & Resource Allocation Overview](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 48,
+      "message": "Possible broken link: [Capital Deployment Plan](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 49,
+      "message": "Possible broken link: [Fundraising Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 50,
+      "message": "Possible broken link: [SAFE Template (Nzila Version)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 51,
+      "message": "Possible broken link: [Venture Forecasts (Finance Linkage)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 52,
+      "message": "Possible broken link: [Nzila Cap Table Impact Sheet](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 53,
+      "message": "Possible broken link: [Revenue Recognition & Grant Accounting Guide](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 54,
+      "message": "Possible broken link: [Revenue Model Framework (2025–2027)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 55,
+      "message": "Possible broken link: [Fundraising Gatekeeper Guide](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 61,
+      "message": "Possible broken link: [Product Validation & Market Fit Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 62,
+      "message": "Possible broken link: [Comprehensive Marketing Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 63,
+      "message": "Possible broken link: [Communications Plan](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 64,
+      "message": "Possible broken link: [Partner Monetization Summary (Revenue & Non-Rev)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 65,
+      "message": "Possible broken link: [Royalty & Licensing Flow Model](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 66,
+      "message": "Possible broken link: [SDK / API Licensing Terms (Draft)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 67,
+      "message": "Possible broken link: [IP Commercialization Tracker](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 68,
+      "message": "Possible broken link: [IP Licensing Decision Tree: Open vs. Closed](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 69,
+      "message": "Possible broken link: [Spinout Criteria & Checklist](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 75,
+      "message": "Possible broken link: [Enterprise Risk Management (ERM) Framework](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 76,
+      "message": "Possible broken link: [Risk Appetite Definitions](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 77,
+      "message": "Possible broken link: [Strategic Risk Escalation SOP](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 78,
+      "message": "Possible broken link: [Security Policy Manual](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 79,
+      "message": "Possible broken link: [Incident Response Playbook (IRP)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 80,
+      "message": "Possible broken link: [Vendor Security Review SOP](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 81,
+      "message": "Possible broken link: [Data Privacy & Security Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 82,
+      "message": "Possible broken link: [Data Jurisdiction Map](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 83,
+      "message": "Possible broken link: [Policy Sync Tracker](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 84,
+      "message": "Possible broken link: [Oversight & Compliance Integration](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 85,
+      "message": "Possible broken link: [Quarterly Venture Audit Template](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 91,
+      "message": "Possible broken link: [Founder & Executive Roles & Equity Memo](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 92,
+      "message": "Possible broken link: [HR and Talent Development Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 93,
+      "message": "Possible broken link: [Leadership Succession Plan](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 94,
+      "message": "Possible broken link: [Org Chart & Hiring Plan Tracker](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 95,
+      "message": "Possible broken link: [Role Leveling & Compensation Matrix](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 96,
+      "message": "Possible broken link: [ESOP Grant Mechanics & Communication Deck](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 97,
+      "message": "Possible broken link: [DEI Commitment Snapshot](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 98,
+      "message": "Possible broken link: [Diversity, Equity, and Inclusion (DEI) Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 99,
+      "message": "Possible broken link: [COO Playbook Overview](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 100,
+      "message": "Possible broken link: [CFO Budget Strategy & Tools](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 101,
+      "message": "Possible broken link: [Board Continuity & Observer Policy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 102,
+      "message": "Possible broken link: [Founder Succession & Continuity Plan](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 108,
+      "message": "Possible broken link: [Ethical AI Charter](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 109,
+      "message": "Possible broken link: [Sustainability Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 110,
+      "message": "Possible broken link: [Social Impact Strategy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 111,
+      "message": "Possible broken link: [AI Companion Manifesto](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 112,
+      "message": "Possible broken link: [Nzila R&D Innovation Lens](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 113,
+      "message": "Possible broken link: [Clinic Partnership Philosophy](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 114,
+      "message": "Possible broken link: [CMO Growth Blueprint](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 115,
+      "message": "Possible broken link: [Nzila Strategic Partnerships Map](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 121,
+      "message": "Possible broken link: [Strategic Review Template (Quarterly)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 122,
+      "message": "Possible broken link: [Board Governance Pack](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 123,
+      "message": "Possible broken link: [Operating Agreement Template (Venture-Level)](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 124,
+      "message": "Possible broken link: [Board Decision Tracker](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 125,
+      "message": "Possible broken link: [Due Diligence Data Room Index](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 126,
+      "message": "Possible broken link: [Exit & Long-Term Value Framework](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 127,
+      "message": "Possible broken link: [Legal & Compliance Framework](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 128,
+      "message": "Possible broken link: [Shareholder and Corporate Structure Summary](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 129,
+      "message": "Possible broken link: [Mission & Vision Deep Dive](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 130,
+      "message": "Possible broken link: [Nzila Mission, Vision, Values](Strategy%20&%20Operating%20Model%20Dashboard%201e885df01907808b8ddee0d34de3f66f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 132,
+      "message": "Possible broken link: [🏛️ Governance Docs](%F0%9F%8F%9B%EF%B8%8F%20Governance%20Docs%201e685df0190780708db5e193b4880bb0.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 137,
+      "message": "Possible broken link: [🧩 Shared Services Playbooks](%F0%9F%A7%A9%20Shared%20Services%20Playbooks%201e685df01907802ab0acefa79d68e227.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 139,
+      "message": "Possible broken link: [🔐 Oversight & Compliance Integration](%F0%9F%94%90%20Oversight%20&%20Compliance%20Integration%201e685df0190780b297f0e63bd5ac831f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 141,
+      "message": "Possible broken link: [💰 Revenue Model Framework (2025–2027)](%F0%9F%92%B0%20Revenue%20Model%20Framework%20(2025%E2%80%932027)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 143,
+      "message": "Possible broken link: [Nzila Mission, Vision, Values](Nzila%20Mission,%20Vision,%20Values%201e485df01907801d9e7dc0c264d93004.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 145,
+      "message": "Possible broken link: [Nzila Ventures Operating Principles](Nzila%20Ventures%20Operating%20Principles%201e485df019078045a862fc7b321db9a4.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 147,
+      "message": "Possible broken link: [🔰 **Nzila Strategic Roadmap (2025–2028)**](%F0%9F%94%B0%20Nzila%20Strategic%20Roadmap%20(2025%E2%80%932028)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 149,
+      "message": "Possible broken link: [🧭 **Strategic Positioning Map (2025**](%F0%9F%A7%AD%20Strategic%20Positioning%20Map%20(2025%201e585df019078042b661c24d4926c0e8.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 151,
+      "message": "Possible broken link: [🏗️ Multi-Product Operating Architecture](%F0%9F%8F%97%EF%B8%8F%20Multi-Product%20Operating%20Architecture%201e585df01907804c85b6debb645d1f39.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 153,
+      "message": "Possible broken link: [🌍 **Legacy & Impact Statement**](%F0%9F%8C%8D%20Legacy%20&%20Impact%20Statement%201e585df0190780e4b765e2238cf14e36.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 155,
+      "message": "Possible broken link: [📅 Quarterly Planning Cycle](%F0%9F%93%85%20Quarterly%20Planning%20Cycle%201e585df019078099aaf9e09db371387f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 157,
+      "message": "Possible broken link: [🧾 Exit & Long-Term Value Framework](%F0%9F%A7%BE%20Exit%20&%20Long-Term%20Value%20Framework%201e585df01907807385dff648d93c1088.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 165,
+      "message": "Possible broken link: [📈 CMO Growth Blueprint](%F0%9F%93%88%20CMO%20Growth%20Blueprint%201e485df01907804e8e0dd15d72420459.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 167,
+      "message": "Possible broken link: [🧭 Clinic Partnership Philosophy](%F0%9F%A7%AD%20Clinic%20Partnership%20Philosophy%201e485df0190780a8a380fbec8f29f6e8.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 169,
+      "message": "Possible broken link: [🧩 Nzila Product Portfolio Overview (2025–2028)](%F0%9F%A7%A9%20Nzila%20Product%20Portfolio%20Overview%20(2025%E2%80%932028)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 171,
+      "message": "Possible broken link: [🛠️ Nzila CTO Technical Strategy Summary](%F0%9F%9B%A0%EF%B8%8F%20Nzila%20CTO%20Technical%20Strategy%20Summary%201e485df0190780d391c3c2e7f27f340f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 173,
+      "message": "Possible broken link: [AI Companion Manifesto](AI%20Companion%20Manifesto%201e485df0190780cc85dce794648f26c2.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 175,
+      "message": "Possible broken link: [🧭 Nzila R&D Innovation Lens](%F0%9F%A7%AD%20Nzila%20R&D%20Innovation%20Lens%201e485df0190780e1a255cfd31fb2ffdd.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 177,
+      "message": "Possible broken link: [👥 HR Culture & Onboarding Philosophy](%F0%9F%91%A5%20HR%20Culture%20&%20Onboarding%20Philosophy%201e485df0190780d9ab3ccba0554b13c1.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 179,
+      "message": "Possible broken link: [🤖 Ethical AI Charter](%F0%9F%A4%96%20Ethical%20AI%20Charter%201e485df0190780a78548e5e40a6c6c76.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 181,
+      "message": "Possible broken link: [🔐 Data Governance Overview](%F0%9F%94%90%20Data%20Governance%20Overview%201e485df01907800ab490fcfe7cb093af.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 183,
+      "message": "Possible broken link: [⚖️ Legal & Compliance Framework](%E2%9A%96%EF%B8%8F%20Legal%20&%20Compliance%20Framework%201e485df01907805ca4a3e462e41ccb51.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 185,
+      "message": "Possible broken link: [⚖️ **Shareholder and Corporate Structure Summary**](%E2%9A%96%EF%B8%8F%20Shareholder%20and%20Corporate%20Structure%20Summary%201e485df0190780e39a5af8ddf2d738c1.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 187,
+      "message": "Possible broken link: [CFO Budget Strategy & Tools](CFO%20Budget%20Strategy%20&%20Tools%201e485df019078060bd27d668a6adcba9.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 189,
+      "message": "Possible broken link: [COO Playbook Overview](COO%20Playbook%20Overview%201e485df0190780ac80b8f52add45823c.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 191,
+      "message": "Possible broken link: [🛡️ **Security Policy Manual**](%F0%9F%9B%A1%EF%B8%8F%20Security%20Policy%20Manual%201e885df01907801287fcc8861cc5544c.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 196,
+      "message": "Possible broken link: [🔐 Vendor Security Review SOP](%F0%9F%94%90%20Vendor%20Security%20Review%20SOP%201e885df019078023ada2f11be6799aa5.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 198,
+      "message": "Possible broken link: [🧑‍💼 Org Chart & Hiring Plan Tracker](%F0%9F%A7%91%E2%80%8D%F0%9F%92%BC%20Org%20Chart%20&%20Hiring%20Plan%20Tracker%201e885df0190780d58fc8ddf334be3d7c.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 200,
+      "message": "Possible broken link: [📐 Role Leveling & Compensation Matrix](%F0%9F%93%90%20Role%20Leveling%20&%20Compensation%20Matrix%201e885df01907806e96f3ca5730b1a453.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 202,
+      "message": "Possible broken link: [📊 ESOP Grant Mechanics & Communication Deck](%F0%9F%93%8A%20ESOP%20Grant%20Mechanics%20&%20Communication%20Deck%201e885df019078076830ad906274cc987.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 204,
+      "message": "Possible broken link: [📊 DEI Commitment Snapshot](%F0%9F%93%8A%20DEI%20Commitment%20Snapshot%201e885df0190780048f9cc3a0c73bbe41.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 209,
+      "message": "Possible broken link: [🌐 **Data Jurisdiction Map**](%F0%9F%8C%90%20Data%20Jurisdiction%20Map%201e885df0190780b4b5b4d67a692fa1e9.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 211,
+      "message": "Possible broken link: [📘 IP Commercialization Tracker](%F0%9F%93%98%20IP%20Commercialization%20Tracker%201e885df019078021b732d1f5b595fd61.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 213,
+      "message": "Possible broken link: [📄 SDK / API Licensing Terms (Draft)](%F0%9F%93%84%20SDK%20API%20Licensing%20Terms%20(Draft)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 215,
+      "message": "Possible broken link: [🌳 IP Licensing Decision Tree: Open vs. Closed](%F0%9F%8C%B3%20IP%20Licensing%20Decision%20Tree%20Open%20vs%20Closed%201e885df01907809984bdc55f87035821.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 217,
+      "message": "Possible broken link: [💡 Partner Monetization Summary: Revenue & Non-Revenue Models](%F0%9F%92%A1%20Partner%20Monetization%20Summary%20Revenue%20&%20Non-Reven%201e885df01907801fad10fe4c7f32c991.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 219,
+      "message": "Possible broken link: [📜 **Founder Succession & Continuity Plan**](%F0%9F%93%9C%20Founder%20Succession%20&%20Continuity%20Plan%201e885df0190780c0b39bfb37b4a9b752.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 221,
+      "message": "Possible broken link: [📜 **Board Continuity & Observer Policy**](%F0%9F%93%9C%20Board%20Continuity%20&%20Observer%20Policy%201e885df019078045b569edb9c49db453.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 223,
+      "message": "Possible broken link: [Detailed Financial Strategy](Detailed%20Financial%20Strategy%201e885df01907805e8ec0f9a69a106683.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 228,
+      "message": "Possible broken link: [👥 **HR and Talent Development Strategy**](%F0%9F%91%A5%20HR%20and%20Talent%20Development%20Strategy%201e885df01907805bb46ef88599a2a09c.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 230,
+      "message": "Possible broken link: [👔 **Leadership Succession Plan**](%F0%9F%91%94%20Leadership%20Succession%20Plan%201e885df01907803bb7b7e27ccfbfe963.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 232,
+      "message": "Possible broken link: [🌍 Diversity, Equity, and Inclusion (DEI) Strategy](%F0%9F%8C%8D%20Diversity,%20Equity,%20and%20Inclusion%20(DEI)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 234,
+      "message": "Possible broken link: [📈 **Comprehensive Marketing Strategy**](%F0%9F%93%88%20Comprehensive%20Marketing%20Strategy%201e885df01907808a88d1c59d1f9bf480.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 236,
+      "message": "Possible broken link: [🗣️ **Communications Plan**](%F0%9F%97%A3%EF%B8%8F%20Communications%20Plan%201e885df0190780b0ab92ec79bdf0d3a7.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 238,
+      "message": "Possible broken link: [⚖️ **Enterprise Risk Management (ERM) Framework**](%E2%9A%96%EF%B8%8F%20Enterprise%20Risk%20Management%20(ERM)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 240,
+      "message": "Possible broken link: [⚠️ Risk Appetite Definitions](%E2%9A%A0%EF%B8%8F%20Risk%20Appetite%20Definitions%201e885df0190780fd918fe3337bc1c04d.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 242,
+      "message": "Possible broken link: [🤝 Customer Success Strategy](%F0%9F%A4%9D%20Customer%20Success%20Strategy%201e885df019078087a18fd5ed309d1b3f.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 244,
+      "message": "Possible broken link: [😊 Client Satisfaction & Retention Plan](%F0%9F%98%8A%20Client%20Satisfaction%20&%20Retention%20Plan%201e885df0190780c68517e7ba38300d7e.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 246,
+      "message": "Possible broken link: [🧩 Mergers & Acquisitions (M&A) Strategy](%F0%9F%A7%A9%20Mergers%20&%20Acquisitions%20(M&A)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 248,
+      "message": "Possible broken link: [🔐 Data Privacy & Security Strategy](%F0%9F%94%90%20Data%20Privacy%20&%20Security%20Strategy%201e885df01907806c9438fb2e8fb17768.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 250,
+      "message": "Possible broken link: [🚧 Technology Roadmap (2025–2026)](%F0%9F%9A%A7%20Technology%20Roadmap%20(2025%E2%80%932026)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 252,
+      "message": "Possible broken link: [💡 Future Tech Investments Strategy](%F0%9F%92%A1%20Future%20Tech%20Investments%20Strategy%201e885df01907801c9a05df1c5ad3b61c.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 254,
+      "message": "Possible broken link: [🌱 Sustainability Strategy](%F0%9F%8C%B1%20Sustainability%20Strategy%201e885df0190780aa98cafbb9ed894873.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 256,
+      "message": "Possible broken link: [🤝 Social Impact Strategy](%F0%9F%A4%9D%20Social%20Impact%20Strategy%201e885df01907803fa095d33941c4d2e9.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 258,
+      "message": "Possible broken link: [✅ Product Validation & Market Fit Strategy](%E2%9C%85%20Product%20Validation%20&%20Market%20Fit%20Strategy%201e885df0190780c58b08e814b3850f65.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/governance/strategy-operating-model-dashboard.md",
+      "line": 260,
+      "message": "Possible broken link: [🧩 **Unified Sales Strategy**](%F0%9F%A7%A9%20Unified%20Sales%20Strategy%201e985df019078089a3f3d38cc902aa65.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/corporate/operations/framework-shared-services-playbooks.md",
+      "line": 5,
+      "message": "Possible broken link: [📚 Strategic Ops & Shared Services Overview](%F0%9F%93%9A%20Strategic%20Ops%20&%20Shared%20Services%20Overview%201e885df0190780348a40d5c7a2633e42.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 199,
+      "message": "Possible broken link: [Platform Manifest](nzila-platform-manifest.json)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 212,
+      "message": "Possible broken link: [Portfolio Analysis](automation/data/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 213,
+      "message": "Possible broken link: [Legacy Portfolio Analysis](automation/data/legacy_portfolio_analysis.json)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 216,
+      "message": "Possible broken link: [Content Metadata](automation/data/content_metadata.json)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 223,
+      "message": "Possible broken link: [Legacy Portfolio Analyzer](automation/analyzers/legacy_portfolio_analyzer.py)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 227,
+      "message": "Possible broken link: [Nzila Content Organizer](automation/organizers/nzila_content_organizer.py)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 228,
+      "message": "Possible broken link: [Healthtech Strategy Organizer](automation/organizers/organize_healthtech.py)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 245,
+      "message": "Possible broken link: [Legacy Codebases](legacy-codebases/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 248,
+      "message": "Possible broken link: [Portfolio Analysis Results](automation/data/legacy_portfolio_analysis.json)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_DASHBOARD.md",
+      "line": 364,
+      "message": "Possible broken link: [Platform Architecture](../architecture/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_INDEX.md",
+      "line": 205,
+      "message": "Possible broken link: [Technical Blueprints](../platform/blueprints/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/CORPORATE_INDEX.md",
+      "line": 206,
+      "message": "Possible broken link: [Migration Plans](../platform/migrations/)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/LEGACY_README.md",
+      "line": 206,
+      "message": "Possible broken link: [business/financial-models/5-year-projections.md](business/financial-models/5-year-projections.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/LEGACY_README.md",
+      "line": 207,
+      "message": "Possible broken link: [business/investor-materials/pitch-deck-2026.md](business/investor-materials/pitch-deck-2026.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/LEGACY_README.md",
+      "line": 211,
+      "message": "Possible broken link: [ai/README.md](ai/README.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/README.md",
+      "line": 18,
+      "message": "Possible broken link: [PORTFOLIO_DEEP_DIVE.md](../../PORTFOLIO_DEEP_DIVE.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/README.md",
+      "line": 19,
+      "message": "Possible broken link: [BACKBONE_ARCHITECTURE.md](../../BACKBONE_ARCHITECTURE.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/README.md",
+      "line": 20,
+      "message": "Possible broken link: [BACKBONE_BUILD_PLAN.md](../../BACKBONE_BUILD_PLAN.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/README.md",
+      "line": 21,
+      "message": "Possible broken link: [MULTI_VERTICAL_STRATEGY.md](../../MULTI_VERTICAL_STRATEGY.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/README.md",
+      "line": 25,
+      "message": "Possible broken link: [BUSINESS_AUTOMATION_OPPORTUNITIES.md](../../BUSINESS_AUTOMATION_OPPORTUNITIES.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/README.md",
+      "line": 126,
+      "message": "Possible broken link: [BACKBONE_ARCHITECTURE.md](../../BACKBONE_ARCHITECTURE.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 593,
+      "message": "Possible broken link: [automation/generators/manifest_generator.py](../automation/generators/manifest_generator.py)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 594,
+      "message": "Possible broken link: [automation/orchestrator.py](../automation/orchestrator.py)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 595,
+      "message": "Possible broken link: [business/README.md](../business/README.md)"
+    },
+    {
+      "rule": "stale-reference",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 596,
+      "message": "Possible broken link: [nzila-scripts-book-template/](../nzila-scripts-book-template/)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "ARCHITECTURE.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "ARCHITECTURE.md",
+      "line": 5,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "CONTRIBUTING.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.business.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.business.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.business.md",
+      "line": 5,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.business.md",
+      "line": 7,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.business.md",
+      "line": 91,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.business.md",
+      "line": 99,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.md",
+      "line": 5,
+      "message": "\"nzila-os\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.md",
+      "line": 13,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.md",
+      "line": 15,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "README.md",
+      "line": 69,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/agri/04-events-and-integrations.md",
+      "line": 37,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/agri/05-security-and-isolation.md",
+      "line": 23,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/agri/06-evidence-and-traceability.md",
+      "line": 22,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/agri/06-evidence-and-traceability.md",
+      "line": 83,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 5,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 15,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 18,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 31,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 53,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 75,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 101,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 102,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 104,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/AUDIT_ENFORCEMENT.md",
+      "line": 107,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/compliance-snapshots.md",
+      "line": 69,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ENFORCEMENT_SUMMARY.md",
+      "line": 23,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ENFORCEMENT_SUMMARY.md",
+      "line": 35,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ENFORCEMENT_SUMMARY.md",
+      "line": 100,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ENFORCEMENT_SUMMARY.md",
+      "line": 106,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/EVIDENCE_LIFECYCLE.md",
+      "line": 30,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/integration-control-plane.md",
+      "line": 67,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 5,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 19,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 43,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 47,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 49,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 51,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 55,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 59,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 110,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 111,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 112,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_ISOLATION.md",
+      "line": 115,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 12,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 36,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 38,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 41,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 49,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 64,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 75,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 79,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/ORG_SCOPED_TABLES.md",
+      "line": 107,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/platform-event-bus.md",
+      "line": 35,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/platform-event-bus.md",
+      "line": 58,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/platform-event-bus.md",
+      "line": 65,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/platform-event-bus.md",
+      "line": 80,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 11,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 146,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 147,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 148,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 164,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 165,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 174,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 185,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 186,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 191,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 192,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 196,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 225,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 273,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/POLYGLOT_PERSISTENCE.md",
+      "line": 362,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_AUTHORITY.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_AUTHORITY.md",
+      "line": 71,
+      "message": "\"organizationId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_AUTHORITY.md",
+      "line": 89,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_AUTHORITY.md",
+      "line": 90,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 13,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 88,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 104,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 105,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 109,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/STACK_FRAGMENTATION_MATRIX.md",
+      "line": 125,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/VERTICAL_SCAFFOLDING.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/VERTICAL_SCAFFOLDING.md",
+      "line": 6,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/VERTICAL_SCAFFOLDING.md",
+      "line": 27,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/VERTICAL_SCAFFOLDING.md",
+      "line": 38,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/VERTICAL_SCAFFOLDING.md",
+      "line": 60,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/architecture/VERTICAL_SCAFFOLDING.md",
+      "line": 79,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ADR/ADR-SQ-001-adapter-pattern.md",
+      "line": 20,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/IRAP_TECHNICAL_DESIGN.md",
+      "line": 205,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/meie/PROGRESS_REPORT.md",
+      "line": 73,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/meie/TECHNICAL_UNCERTAINTIES.md",
+      "line": 110,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ORG_SCOPE_PLAN.md",
+      "line": 254,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ORG_SCOPE_PLAN.md",
+      "line": 259,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ORG_SCOPE_PLAN.md",
+      "line": 268,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ORG_SCOPE_PLAN.md",
+      "line": 270,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ORG_SCOPE_PLAN.md",
+      "line": 294,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/ORG_SCOPE_PLAN.md",
+      "line": 329,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/spec/ORG_SCOPE_PLAN.md",
+      "line": 254,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/spec/ORG_SCOPE_PLAN.md",
+      "line": 259,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/spec/ORG_SCOPE_PLAN.md",
+      "line": 268,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/spec/ORG_SCOPE_PLAN.md",
+      "line": 270,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/spec/ORG_SCOPE_PLAN.md",
+      "line": 294,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/commerce/spec/ORG_SCOPE_PLAN.md",
+      "line": 329,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/deploy/profiles.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/deploy/profiles.md",
+      "line": 11,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/disaster-recovery.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/enterprise-readiness.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/enterprise-readiness.md",
+      "line": 218,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/explanation/evidence-first.md",
+      "line": 49,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_CERTIFICATION_REPORT.md",
+      "line": 92,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 36,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 51,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 70,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 116,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 122,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ga/GA_READINESS_GATE.md",
+      "line": 201,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 18,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 138,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/hardening/BASELINE.md",
+      "line": 156,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/hardening/logging.md",
+      "line": 36,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/hardening/observability.md",
+      "line": 24,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/incident-response.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/incident-response.md",
+      "line": 99,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 10,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 59,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 60,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 61,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 64,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 67,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 68,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migration/ENFORCEMENT_UPGRADE.md",
+      "line": 115,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migrations/trade/TRADE-DELIVERABLES.md",
+      "line": 52,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migrations/trade/TRADE-DELIVERABLES.md",
+      "line": 255,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migrations/trade/TRADE-DELIVERABLES.md",
+      "line": 361,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/migrations/trade/TRADE-DELIVERABLES.md",
+      "line": 369,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ops/runbooks/rb-006-tenant-isolation-breach.md",
+      "line": 46,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ops/runbooks/rb-006-tenant-isolation-breach.md",
+      "line": 60,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/ops/runbooks/README.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/pilot/01-scope-checklist.md",
+      "line": 13,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/pilot/02-data-onboarding.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/pilot/03-security-privacy-packet.md",
+      "line": 11,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/pilot/04-monitoring-and-slos.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/pilot/04-monitoring-and-slos.md",
+      "line": 11,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/pilot/05-demo-script.md",
+      "line": 26,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 18,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 73,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 101,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 140,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 141,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 146,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 150,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 151,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 152,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 161,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 162,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/acceptance-matrix.md",
+      "line": 163,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/dominance-train.md",
+      "line": 20,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/dominance-train.md",
+      "line": 99,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/dominance-train.md",
+      "line": 105,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/dominance-train.md",
+      "line": 140,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 10,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 52,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 84,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 85,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 86,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 93,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform/semantic-convergence-entity-to-org.md",
+      "line": 98,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform-readiness.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform-readiness.md",
+      "line": 11,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform-readiness.md",
+      "line": 280,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform-readiness.md",
+      "line": 293,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform-readiness.md",
+      "line": 36,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/platform-readiness.md",
+      "line": 38,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/policy-engine.md",
+      "line": 73,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/procurement-pack.md",
+      "line": 150,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/README.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/reference/packages.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/reference/packages.md",
+      "line": 79,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/reference/README.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 61,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 67,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 68,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 69,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 78,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 85,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 136,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ENTERPRISE_STRESS_TEST.md",
+      "line": 367,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/EVIDENCE_INDEX.md",
+      "line": 46,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/EVIDENCE_INDEX.md",
+      "line": 47,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/EVIDENCE_INDEX.md",
+      "line": 48,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/EVIDENCE_INDEX.md",
+      "line": 50,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/EVIDENCE_INDEX.md",
+      "line": 77,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ONE_WEEK_SPRINT.md",
+      "line": 99,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/ONE_WEEK_SPRINT.md",
+      "line": 101,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 116,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 117,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 141,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 144,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 372,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 412,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 426,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 432,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 441,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 453,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 462,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 470,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 477,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 483,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 484,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 486,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 490,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 493,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 494,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 496,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/stress-test/REMEDIATION_PLAN.md",
+      "line": 498,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/tutorials/adding-ai.md",
+      "line": 41,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/tutorials/adding-ai.md",
+      "line": 42,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/tutorials/adding-ai.md",
+      "line": 50,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/tutorials/adding-ai.md",
+      "line": 119,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/tutorials/first-app.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "docs/tutorials/first-app.md",
+      "line": 122,
+      "message": "\"nzila-os\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/business/verticals/edtech-cybersecurity/strategy/compliance-privacy.md",
+      "line": 140,
+      "message": "\"Evidence package\" should be \"evidence pack\" (evidence artifact)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_ACTIONS_PHASE_C.md",
+      "line": 3,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_ACTIONS_PHASE_C.md",
+      "line": 109,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_ACTIONS_PHASE_C.md",
+      "line": 131,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_ACTIONS_PHASE_C.md",
+      "line": 205,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_ACTIONS_PHASE_C.md",
+      "line": 224,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 30,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 93,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 138,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 148,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 164,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/AI_CONTROL_PLANE.md",
+      "line": 201,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 247,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 248,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 249,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 295,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/docs/technical-specs/STANDARDIZATION_ARCHITECTURE.md",
+      "line": 296,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/ga/GA_CHECK_REPORT.md",
+      "line": 52,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/reports/ALIGNMENT_REPORT.md",
+      "line": 3,
+      "message": "\"NZILAOS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/reports/ALIGNMENT_REPORT.md",
+      "line": 103,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/reports/ALIGNMENT_REPORT.md",
+      "line": 305,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/reports/ALIGNMENT_REPORT.md",
+      "line": 344,
+      "message": "\"organizationId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/reports/ALIGNMENT_REPORT.md",
+      "line": 362,
+      "message": "\"organizationId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/security/HSM_KEY_ROTATION.md",
+      "line": 233,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/security/MTLS_IMPLEMENTATION.md",
+      "line": 22,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/security/THREAT_MODEL.md",
+      "line": 1,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/security/THREAT_MODEL.md",
+      "line": 15,
+      "message": "\"Nzila OS\" should be \"NzilaOS\" (platform name)"
+    },
+    {
+      "rule": "naming-inconsistency",
+      "severity": "info",
+      "file": "governance/security/THREAT_MODEL.md",
+      "line": 144,
+      "message": "\"orgId\" should be \"org_id\" (tenant identifier)"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/agri-adapters",
+      "message": "Package agri-adapters missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/agri-core",
+      "message": "Package agri-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/agri-db",
+      "message": "Package agri-db missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/agri-events",
+      "message": "Package agri-events missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/agri-intelligence",
+      "message": "Package agri-intelligence missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/agri-traceability",
+      "message": "Package agri-traceability missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/ai-core",
+      "message": "Package ai-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/ai-registry",
+      "message": "Package ai-registry missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/ai-sdk",
+      "message": "Package ai-sdk missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/blob",
+      "message": "Package blob missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/chatops-slack",
+      "message": "Package chatops-slack missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/chatops-teams",
+      "message": "Package chatops-teams missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/cli",
+      "message": "Package cli missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-audit",
+      "message": "Package commerce-audit missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-core",
+      "message": "Package commerce-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-db",
+      "message": "Package commerce-db missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-events",
+      "message": "Package commerce-events missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-evidence",
+      "message": "Package commerce-evidence missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-governance",
+      "message": "Package commerce-governance missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-integration-tests",
+      "message": "Package commerce-integration-tests missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-observability",
+      "message": "Package commerce-observability missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-services",
+      "message": "Package commerce-services missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/commerce-state",
+      "message": "Package commerce-state missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/comms-email",
+      "message": "Package comms-email missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/comms-push",
+      "message": "Package comms-push missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/comms-sms",
+      "message": "Package comms-sms missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/config",
+      "message": "Package config missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/crm-hubspot",
+      "message": "Package crm-hubspot missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/data-lifecycle",
+      "message": "Package data-lifecycle missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/db",
+      "message": "Package db missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/evidence",
+      "message": "Package evidence missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/finops",
+      "message": "Package finops missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/fx",
+      "message": "Package fx missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/integrations-core",
+      "message": "Package integrations-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/integrations-db",
+      "message": "Package integrations-db missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/integrations-hubspot",
+      "message": "Package integrations-hubspot missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/integrations-m365",
+      "message": "Package integrations-m365 missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/integrations-runtime",
+      "message": "Package integrations-runtime missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/integrations-whatsapp",
+      "message": "Package integrations-whatsapp missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/ml-core",
+      "message": "Package ml-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/ml-sdk",
+      "message": "Package ml-sdk missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/mobility-ai",
+      "message": "Package mobility-ai missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/mobility-case-engine",
+      "message": "Package mobility-case-engine missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/mobility-compliance",
+      "message": "Package mobility-compliance missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/mobility-core",
+      "message": "Package mobility-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/mobility-family",
+      "message": "Package mobility-family missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/mobility-programs",
+      "message": "Package mobility-programs missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/nacp-core",
+      "message": "Package nacp-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/org",
+      "message": "Package org missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/os-core",
+      "message": "Package os-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/otel-core",
+      "message": "Package otel-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/payments-stripe",
+      "message": "Package payments-stripe missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-assurance",
+      "message": "Package platform-assurance missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-compliance-snapshots",
+      "message": "Package platform-compliance-snapshots missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-cost",
+      "message": "Package platform-cost missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-deploy",
+      "message": "Package platform-deploy missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-events",
+      "message": "Package platform-events missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-evidence-pack",
+      "message": "Package platform-evidence-pack missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-export",
+      "message": "Package platform-export missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-integrations-control-plane",
+      "message": "Package platform-integrations-control-plane missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-isolation",
+      "message": "Package platform-isolation missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-marketplace",
+      "message": "Package platform-marketplace missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-metrics",
+      "message": "Package platform-metrics missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-observability",
+      "message": "Package platform-observability missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-ops",
+      "message": "Package platform-ops missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-performance",
+      "message": "Package platform-performance missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-policy-engine",
+      "message": "Package platform-policy-engine missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-procurement-proof",
+      "message": "Package platform-procurement-proof missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-proof",
+      "message": "Package platform-proof missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-rfp-generator",
+      "message": "Package platform-rfp-generator missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-rum",
+      "message": "Package platform-rum missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-utils",
+      "message": "Package platform-utils missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/platform-validation",
+      "message": "Package platform-validation missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/pricing-engine",
+      "message": "Package pricing-engine missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/qbo",
+      "message": "Package qbo missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/secrets",
+      "message": "Package secrets missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/tax",
+      "message": "Package tax missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/tools-runtime",
+      "message": "Package tools-runtime missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/trade-adapters",
+      "message": "Package trade-adapters missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/trade-cars",
+      "message": "Package trade-cars missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/trade-core",
+      "message": "Package trade-core missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/trade-db",
+      "message": "Package trade-db missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/ui",
+      "message": "Package ui missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/webhooks",
+      "message": "Package webhooks missing README.md"
+    },
+    {
+      "rule": "missing-package-readme",
+      "severity": "info",
+      "file": "packages/zonga-core",
+      "message": "Package zonga-core missing README.md"
+    }
+  ]
+}

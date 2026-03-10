@@ -1,0 +1,4599 @@
+{
+  "generatedAt": "2026-03-10T17:42:00.048Z",
+  "totalPackages": 97,
+  "totalApps": 16,
+  "summary": {
+    "production-ready": 11,
+    "functional": 83,
+    "scaffold-only": 3,
+    "deprecated": 0,
+    "unknown": 0
+  },
+  "packages": [
+    {
+      "name": "@nzila/agri-adapters",
+      "path": "packages/agri-adapters",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./weather",
+        "./market",
+        "./mobile-money",
+        "./sms"
+      ],
+      "dependencies": [
+        "@nzila/agri-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/agri-core",
+      "path": "packages/agri-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 7,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schemas",
+        "./enums",
+        "./fsm"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/agri-db",
+      "path": "packages/agri-db",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 15,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./readonly",
+        "./producers",
+        "./crops",
+        "./harvests",
+        "./lots",
+        "./quality",
+        "./batches",
+        "./warehouses",
+        "./shipments",
+        "./payments",
+        "./certifications",
+        "./traceability",
+        "./intelligence"
+      ],
+      "dependencies": [
+        "@nzila/agri-core",
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/agri-events",
+      "path": "packages/agri-events",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./event-types",
+        "./bus"
+      ],
+      "dependencies": [
+        "@nzila/agri-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/agri-intelligence",
+      "path": "packages/agri-intelligence",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./yield",
+        "./loss",
+        "./payout",
+        "./providers"
+      ],
+      "dependencies": [
+        "@nzila/agri-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/agri-traceability",
+      "path": "packages/agri-traceability",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./packs",
+        "./chain"
+      ],
+      "dependencies": [
+        "@nzila/agri-core",
+        "@nzila/evidence"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/ai-core",
+      "path": "packages/ai-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 23,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./providers/azure-openai",
+        "./gateway",
+        "./redact",
+        "./budgets",
+        "./logging",
+        "./prompts",
+        "./schemas",
+        "./types",
+        "./artifacts",
+        "./policy",
+        "./actions/execute",
+        "./actions/attestation",
+        "./actions/evidence-pack",
+        "./tools/knowledge",
+        "./tools/stripe"
+      ],
+      "dependencies": [
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/payments-stripe",
+        "@nzila/tools-runtime",
+        "openai",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/ai-registry",
+      "path": "packages/ai-registry",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 3,
+      "srcFileCount": 10,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./model-card",
+        "./risk-classification",
+        "./governance-lifecycle",
+        "./nist-rmf",
+        "./bias-detection",
+        "./carbon-tracking"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/ai-sdk",
+      "path": "packages/ai-sdk",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./client",
+        "./streaming",
+        "./types",
+        "./eslint-no-shadow-ai"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/blob",
+      "path": "packages/blob",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 1,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@azure/storage-blob",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/chatops-slack",
+      "path": "packages/chatops-slack",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./adapter"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/chatops-teams",
+      "path": "packages/chatops-teams",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./adapter"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/cli",
+      "path": "packages/cli",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "commander"
+      ],
+      "devDependencies": [
+        "tsx",
+        "typescript"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-audit",
+      "path": "packages/commerce-audit",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./audit",
+        "./evidence"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-state"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-core",
+      "path": "packages/commerce-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schemas",
+        "./enums"
+      ],
+      "dependencies": [
+        "@nzila/org",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-db",
+      "path": "packages/commerce-db",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 18,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./customers",
+        "./quotes",
+        "./orders",
+        "./invoices",
+        "./fulfillment",
+        "./payments",
+        "./opportunities",
+        "./disputes",
+        "./evidence",
+        "./sync"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/db",
+        "@nzila/org",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-events",
+      "path": "packages/commerce-events",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 7,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./bus",
+        "./saga",
+        "./types",
+        "./event-types"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-audit"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-evidence",
+      "path": "packages/commerce-evidence",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-audit",
+        "@nzila/os-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-governance",
+      "path": "packages/commerce-governance",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-state",
+        "@nzila/pricing-engine"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-integration-tests",
+      "path": "packages/commerce-integration-tests",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": false,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 1,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Missing src/index.ts barrel export"
+        }
+      ],
+      "exports": [],
+      "dependencies": [],
+      "devDependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-state",
+        "@nzila/commerce-governance",
+        "@nzila/commerce-events",
+        "@nzila/commerce-audit",
+        "@nzila/commerce-evidence",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-observability",
+      "path": "packages/commerce-observability",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 7,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-state",
+        "@nzila/commerce-events",
+        "@nzila/commerce-audit",
+        "@nzila/os-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-services",
+      "path": "packages/commerce-services",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 12,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./quote",
+        "./sagas",
+        "./aging-report"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-state",
+        "@nzila/commerce-audit",
+        "@nzila/pricing-engine",
+        "@nzila/commerce-events"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/commerce-state",
+      "path": "packages/commerce-state",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 8,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./machines"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/comms-email",
+      "path": "packages/comms-email",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./resend",
+        "./sendgrid",
+        "./mailgun"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "resend",
+        "@sendgrid/mail",
+        "mailgun.js",
+        "form-data",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/comms-push",
+      "path": "packages/comms-push",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./firebase"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "firebase-admin",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/comms-sms",
+      "path": "packages/comms-sms",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./twilio"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "twilio",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/config",
+      "path": "packages/config",
+      "maturity": "scaffold-only",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": false,
+      "hasTypeConfig": false,
+      "hasDependencies": false,
+      "testFileCount": 0,
+      "srcFileCount": 0,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Missing src/index.ts barrel export"
+        },
+        {
+          "type": "info",
+          "message": "Missing tsconfig.json"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "No source files in src/"
+        }
+      ],
+      "exports": [
+        "./tsconfig/base",
+        "./tsconfig/nextjs",
+        "./eslint",
+        "./eslint-no-direct-provider",
+        "./prettier"
+      ],
+      "dependencies": [],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/crm-hubspot",
+      "path": "packages/crm-hubspot",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./adapter",
+        "./client"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/data-lifecycle",
+      "path": "packages/data-lifecycle",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [],
+      "devDependencies": [
+        "@nzila/config",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/db",
+      "path": "packages/db",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 29,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./schema",
+        "./client",
+        "./raw",
+        "./scoped",
+        "./audit",
+        "./platform",
+        "./org-registry",
+        "./eslint-no-shadow-db"
+      ],
+      "dependencies": [
+        "@nzila/platform-data-fabric",
+        "@nzila/platform-decision-graph",
+        "@nzila/platform-event-fabric",
+        "@nzila/platform-governed-ai",
+        "@nzila/platform-knowledge-registry",
+        "@nzila/platform-ontology",
+        "@nzila/platform-reasoning-engine",
+        "@nzila/platform-semantic-search",
+        "drizzle-orm",
+        "postgres",
+        "zod"
+      ],
+      "devDependencies": [
+        "drizzle-kit",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/evidence",
+      "path": "packages/evidence",
+      "maturity": "scaffold-only",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": false,
+      "hasTypeConfig": false,
+      "hasDependencies": false,
+      "testFileCount": 0,
+      "srcFileCount": 0,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Missing src/index.ts barrel export"
+        },
+        {
+          "type": "info",
+          "message": "Missing tsconfig.json"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "No source files in src/"
+        }
+      ],
+      "exports": [
+        ".",
+        "./seal"
+      ],
+      "dependencies": [],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/finops",
+      "path": "packages/finops",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 8,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./quotas",
+        "./recommendations",
+        "./metering",
+        "./alerts",
+        "./tenant-provisioning"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/fx",
+      "path": "packages/fx",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 7,
+      "srcFileCount": 15,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./rates",
+        "./convert",
+        "./gain-loss",
+        "./boc",
+        "./cache",
+        "./ledger"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/integrations-core",
+      "path": "packages/integrations-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./registry",
+        "./schemas",
+        "./events"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/integrations-db",
+      "path": "packages/integrations-db",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./schema",
+        "./repos",
+        "./health-schema",
+        "./health-repos"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/integrations-hubspot",
+      "path": "packages/integrations-hubspot",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./contacts",
+        "./deals",
+        "./webhooks"
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/integrations-m365",
+      "path": "packages/integrations-m365",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./sharepoint",
+        "./outlook",
+        "./teams"
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/integrations-runtime",
+      "path": "packages/integrations-runtime",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 7,
+      "srcFileCount": 17,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./dispatcher",
+        "./retry",
+        "./health",
+        "./circuitBreaker",
+        "./metrics",
+        "./rateLimitParser",
+        "./chaos",
+        "./slo",
+        "./policy"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "@nzila/integrations-db",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/integrations-whatsapp",
+      "path": "packages/integrations-whatsapp",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./messaging",
+        "./providers"
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/ml-core",
+      "path": "packages/ml-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./registry",
+        "./types",
+        "./evidence"
+      ],
+      "dependencies": [
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/ml-sdk",
+      "path": "packages/ml-sdk",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./client",
+        "./server",
+        "./types",
+        "./eslint-no-shadow-ml"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/mobility-ai",
+      "path": "packages/mobility-ai",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./copilot",
+        "./governance"
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/mobility-case-engine",
+      "path": "packages/mobility-case-engine",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "@nzila/mobility-compliance"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/mobility-compliance",
+      "path": "packages/mobility-compliance",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./workflows",
+        "./risk"
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/mobility-core",
+      "path": "packages/mobility-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schemas",
+        "./enums"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/mobility-family",
+      "path": "packages/mobility-family",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "@nzila/mobility-programs"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/mobility-programs",
+      "path": "packages/mobility-programs",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./engine",
+        "./data"
+      ],
+      "dependencies": [
+        "@nzila/mobility-core",
+        "zod"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/nacp-core",
+      "path": "packages/nacp-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 3,
+      "srcFileCount": 9,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schemas",
+        "./enums",
+        "./machines"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-state",
+        "@nzila/commerce-audit",
+        "@nzila/commerce-events",
+        "@nzila/org",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/org",
+      "path": "packages/org",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./context"
+      ],
+      "dependencies": [],
+      "devDependencies": [
+        "@nzila/config",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/os-core",
+      "path": "packages/os-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 8,
+      "srcFileCount": 65,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./policy",
+        "./templates",
+        "./types",
+        "./hash",
+        "./evidence",
+        "./evidence/types",
+        "./evidence/builder",
+        "./evidence/generate-evidence-index",
+        "./evidence/redaction",
+        "./evidence/lifecycle",
+        "./evidence/verify-pack",
+        "./evidence/seal",
+        "./evidence/collectors/security",
+        "./evidence/collectors/incident-sims",
+        "./evidence/collectors/schema",
+        "./evidence/collectors/ai-evals",
+        "./evidence/collectors/ml-drift",
+        "./evidence/collectors/stripe-close",
+        "./evidence/collectors/year-end",
+        "./telemetry",
+        "./retention",
+        "./config",
+        "./secrets",
+        "./rateLimit",
+        "./rateLimit/store",
+        "./orgRateLimit",
+        "./mtls",
+        "./idempotency",
+        "./ai-env",
+        "./boot-assert",
+        "./classification",
+        "./abr/confidential-reporting",
+        "./ue/case-evidence-export",
+        "./fin/key-lifecycle",
+        "./audit",
+        "./audit/abr",
+        "./crypto/fips",
+        "./resilience"
+      ],
+      "dependencies": [
+        "@nzila/blob",
+        "@nzila/db",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/otel-core",
+      "path": "packages/otel-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 7,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./spans",
+        "./cost",
+        "./evidence",
+        "./slo"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "@nzila/platform-observability",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/payments-stripe",
+      "path": "packages/payments-stripe",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 5,
+      "srcFileCount": 15,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./client",
+        "./webhooks",
+        "./normalize",
+        "./primitives",
+        "./reports",
+        "./types",
+        "./env",
+        "./evidence"
+      ],
+      "dependencies": [
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "drizzle-orm",
+        "stripe",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-assurance",
+      "path": "packages/platform-assurance",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./scorer"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-compliance-snapshots",
+      "path": "packages/platform-compliance-snapshots",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 10,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./collector",
+        "./chain",
+        "./generator",
+        "./verifier"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "@nzila/platform-events",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-context-orchestrator",
+      "path": "packages/platform-context-orchestrator",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 5,
+      "findings": [],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology",
+        "@nzila/platform-entity-graph",
+        "@nzila/platform-event-fabric",
+        "@nzila/platform-knowledge-registry",
+        "@nzila/platform-decision-graph",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript"
+      ]
+    },
+    {
+      "name": "@nzila/platform-cost",
+      "path": "packages/platform-cost",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./rollup",
+        "./budget"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-data-fabric",
+      "path": "packages/platform-data-fabric",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [],
+      "exports": [
+        ".",
+        "./types",
+        "./schema",
+        "./adapters"
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology",
+        "@nzila/platform-event-fabric",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-decision-graph",
+      "path": "packages/platform-decision-graph",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [],
+      "exports": [
+        ".",
+        "./schema"
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology",
+        "@nzila/platform-event-fabric",
+        "@nzila/platform-knowledge-registry",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript"
+      ]
+    },
+    {
+      "name": "@nzila/platform-deploy",
+      "path": "packages/platform-deploy",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./sovereign"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-entity-graph",
+      "path": "packages/platform-entity-graph",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 5,
+      "findings": [],
+      "exports": [
+        ".",
+        "./types",
+        "./traversal"
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-event-fabric",
+      "path": "packages/platform-event-fabric",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 7,
+      "findings": [],
+      "exports": [
+        ".",
+        "./types",
+        "./bus",
+        "./schema",
+        "./registry"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-events",
+      "path": "packages/platform-events",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 8,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schema",
+        "./bus",
+        "./store",
+        "./dispatcher"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "@nzila/os-core",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/platform-evidence-pack",
+      "path": "packages/platform-evidence-pack",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 10,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./orchestrator",
+        "./exporter",
+        "./verifier",
+        "./retention"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/platform-events",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-export",
+      "path": "packages/platform-export",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-governed-ai",
+      "path": "packages/platform-governed-ai",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [],
+      "exports": [
+        ".",
+        "./schema"
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology",
+        "@nzila/platform-context-orchestrator",
+        "@nzila/platform-decision-graph",
+        "@nzila/platform-knowledge-registry",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript"
+      ]
+    },
+    {
+      "name": "@nzila/platform-integrations-control-plane",
+      "path": "packages/platform-integrations-control-plane",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 11,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./registry",
+        "./webhook-verify",
+        "./dlq",
+        "./rate-limiter",
+        "./dashboard"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "@nzila/integrations-runtime",
+        "@nzila/integrations-db",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/platform-events",
+        "zod"
+      ],
+      "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/platform-isolation",
+      "path": "packages/platform-isolation",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./multi-org-stress"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-knowledge-registry",
+      "path": "packages/platform-knowledge-registry",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [],
+      "exports": [
+        ".",
+        "./types",
+        "./schema",
+        "./store"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-marketplace",
+      "path": "packages/platform-marketplace",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./registry",
+        "./installer",
+        "./exporter"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "@nzila/integrations-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-metrics",
+      "path": "packages/platform-metrics",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./org",
+        "./platform"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-observability",
+      "path": "packages/platform-observability",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 5,
+      "srcFileCount": 13,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./correlation",
+        "./metrics",
+        "./span",
+        "./health",
+        "./logger"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/platform-ontology",
+      "path": "packages/platform-ontology",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 7,
+      "findings": [],
+      "exports": [
+        ".",
+        "./types",
+        "./schema",
+        "./relationships",
+        "./registry",
+        "./validators"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-ops",
+      "path": "packages/platform-ops",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 9,
+      "srcFileCount": 19,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./health-digest",
+        "./health-alerts",
+        "./trend-detection",
+        "./ops-score",
+        "./failure-simulation",
+        "./pilot-export",
+        "./digest-trends",
+        "./trend-alerts",
+        "./pilot-pack"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/platform-performance",
+      "path": "packages/platform-performance",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 3,
+      "srcFileCount": 7,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./scale-harness",
+        "./scale-report"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-policy-engine",
+      "path": "packages/platform-policy-engine",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./loader",
+        "./evaluator",
+        "./audit"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "@nzila/platform-events",
+        "yaml",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-procurement-proof",
+      "path": "packages/platform-procurement-proof",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 3,
+      "srcFileCount": 22,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./collector",
+        "./exporter",
+        "./zip-exporter",
+        "./collectors",
+        "./real-ports",
+        "./schemas",
+        "./sections"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "@nzila/platform-utils",
+        "@nzila/platform-evidence-pack",
+        "@nzila/platform-compliance-snapshots",
+        "@nzila/platform-integrations-control-plane",
+        "@nzila/platform-observability",
+        "@nzila/platform-policy-engine",
+        "fflate",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-proof",
+      "path": "packages/platform-proof",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 11,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./integrations",
+        "./abr",
+        "./nacp",
+        "./data-lifecycle",
+        "./ports/nacp"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-reasoning-engine",
+      "path": "packages/platform-reasoning-engine",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 9,
+      "findings": [],
+      "exports": [
+        ".",
+        "./schema",
+        "./demos"
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology",
+        "@nzila/platform-context-orchestrator",
+        "@nzila/platform-governed-ai",
+        "@nzila/platform-decision-graph",
+        "@nzila/platform-knowledge-registry",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript"
+      ]
+    },
+    {
+      "name": "@nzila/platform-rfp-generator",
+      "path": "packages/platform-rfp-generator",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./generator"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "@nzila/platform-procurement-proof",
+        "@nzila/platform-assurance",
+        "@nzila/platform-utils",
+        "zod"
+      ],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-rum",
+      "path": "packages/platform-rum",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./web-vitals",
+        "./reporter",
+        "./types"
+      ],
+      "dependencies": [
+        "@nzila/platform-observability",
+        "web-vitals",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-semantic-search",
+      "path": "packages/platform-semantic-search",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 6,
+      "findings": [],
+      "exports": [
+        ".",
+        "./schema"
+      ],
+      "dependencies": [
+        "@nzila/platform-ontology",
+        "@nzila/platform-entity-graph",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript"
+      ]
+    },
+    {
+      "name": "@nzila/platform-utils",
+      "path": "packages/platform-utils",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": false,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 3,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Missing tsconfig.json"
+        }
+      ],
+      "exports": [
+        ".",
+        "./time"
+      ],
+      "dependencies": [],
+      "devDependencies": [
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-validation",
+      "path": "packages/platform-validation",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./package-audit",
+        "./architecture-audit",
+        "./claim-verification",
+        "./doc-consistency"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "devDependencies": [
+        "tsx",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/pricing-engine",
+      "path": "packages/pricing-engine",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 4,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        "."
+      ],
+      "dependencies": [
+        "@nzila/commerce-core"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/qbo",
+      "path": "packages/qbo",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 9,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./env",
+        "./oauth",
+        "./client",
+        "./accounts",
+        "./types",
+        "./coa-mapping",
+        "./journal-write",
+        "./sync"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "nzila-scripts-book-template",
+      "path": "packages/scripts-book",
+      "maturity": "scaffold-only",
+      "hasReadme": true,
+      "hasTests": false,
+      "hasBarrelExport": false,
+      "hasTypeConfig": false,
+      "hasDependencies": false,
+      "testFileCount": 0,
+      "srcFileCount": 0,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing src/index.ts barrel export"
+        },
+        {
+          "type": "info",
+          "message": "Missing tsconfig.json"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "No source files in src/"
+        },
+        {
+          "type": "info",
+          "message": "Package name \"nzila-scripts-book-template\" doesn't follow @nzila/ scope"
+        }
+      ],
+      "exports": [],
+      "dependencies": [],
+      "devDependencies": []
+    },
+    {
+      "name": "@nzila/secrets",
+      "path": "packages/secrets",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 5,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./keyvault",
+        "./rotation",
+        "./scanner"
+      ],
+      "dependencies": [
+        "@nzila/os-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/shop-quoter",
+      "path": "packages/shop-quoter",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 6,
+      "findings": [],
+      "exports": [
+        ".",
+        "./adapter",
+        "./mapper",
+        "./types"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-services",
+        "@nzila/commerce-audit",
+        "@nzila/commerce-events",
+        "@nzila/pricing-engine",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/tax",
+      "path": "packages/tax",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 17,
+      "srcFileCount": 36,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./deadlines",
+        "./cra-deadlines",
+        "./validation",
+        "./governance",
+        "./evidence",
+        "./rates",
+        "./bn-validation",
+        "./installments",
+        "./prescribed-interest",
+        "./gst-hst",
+        "./payroll-thresholds",
+        "./penalties",
+        "./personal-rates",
+        "./dividend-tax",
+        "./data-versions",
+        "./salary-vs-dividend-advanced",
+        "./bn-validation-bulk"
+      ],
+      "dependencies": [
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/blob",
+        "drizzle-orm",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/tools-runtime",
+      "path": "packages/tools-runtime",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 9,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./blob",
+        "./sanitize"
+      ],
+      "dependencies": [
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/payments-stripe",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/trade-adapters",
+      "path": "packages/trade-adapters",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 2,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [
+        ".",
+        "./legacy-eexports"
+      ],
+      "dependencies": [
+        "@nzila/trade-core",
+        "@nzila/trade-db"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/trade-cars",
+      "path": "packages/trade-cars",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 11,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./components",
+        "./helpers"
+      ],
+      "dependencies": [
+        "@nzila/trade-core",
+        "react",
+        "react-dom",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@types/react",
+        "@types/react-dom",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/trade-core",
+      "path": "packages/trade-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 10,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schemas",
+        "./enums",
+        "./machines"
+      ],
+      "dependencies": [
+        "@nzila/org",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/trade-db",
+      "path": "packages/trade-db",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 12,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./parties",
+        "./listings",
+        "./deals",
+        "./quotes",
+        "./financing",
+        "./shipments",
+        "./documents",
+        "./commissions",
+        "./schema"
+      ],
+      "dependencies": [
+        "@nzila/trade-core",
+        "@nzila/db",
+        "@nzila/org",
+        "drizzle-orm"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/ui",
+      "path": "packages/ui",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 4,
+      "srcFileCount": 11,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./globals.css"
+      ],
+      "dependencies": [],
+      "devDependencies": [
+        "@nzila/config",
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@types/react",
+        "@types/react-dom",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@vitejs/plugin-react",
+        "eslint",
+        "jsdom",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/webhooks",
+      "path": "packages/webhooks",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 6,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./outbound",
+        "./inbound",
+        "./types"
+      ],
+      "dependencies": [
+        "@nzila/integrations-core",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    },
+    {
+      "name": "@nzila/zonga-core",
+      "path": "packages/zonga-core",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 3,
+      "srcFileCount": 10,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [
+        ".",
+        "./types",
+        "./schemas",
+        "./enums",
+        "./services"
+      ],
+      "dependencies": [
+        "@nzila/commerce-core",
+        "@nzila/commerce-audit",
+        "@nzila/commerce-events",
+        "@nzila/org",
+        "zod"
+      ],
+      "devDependencies": [
+        "typescript",
+        "vitest",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ]
+    }
+  ],
+  "apps": [
+    {
+      "name": "@nzila/abr",
+      "path": "apps/abr",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 43,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/platform-performance",
+        "@nzila/integrations-core",
+        "@nzila/integrations-runtime",
+        "@nzila/ui",
+        "@nzila/ai-sdk",
+        "@nzila/ml-sdk",
+        "axios",
+        "clsx",
+        "drizzle-orm",
+        "framer-motion",
+        "next",
+        "next-intl",
+        "react",
+        "react-dom",
+        "tailwind-merge",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "@vitejs/plugin-react",
+        "@vitest/coverage-v8",
+        "eslint",
+        "eslint-config-next",
+        "prettier",
+        "tailwindcss",
+        "tailwindcss-animate",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/cfo",
+      "path": "apps/cfo",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 134,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/ui",
+        "@nzila/ai-sdk",
+        "@nzila/ml-sdk",
+        "clsx",
+        "drizzle-orm",
+        "framer-motion",
+        "lucide-react",
+        "next",
+        "next-intl",
+        "react",
+        "react-dom",
+        "tailwind-merge",
+        "zod",
+        "resend",
+        "@nzila/commerce-observability",
+        "@nzila/payments-stripe",
+        "@nzila/qbo",
+        "@nzila/tax",
+        "@nzila/commerce-core",
+        "@nzila/fx"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "tailwindcss-animate",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/console",
+      "path": "apps/console",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 2,
+      "srcFileCount": 192,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/ai-core",
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/payments-stripe",
+        "@nzila/platform-export",
+        "@nzila/platform-metrics",
+        "@nzila/platform-ops",
+        "@nzila/platform-performance",
+        "@nzila/platform-proof",
+        "@nzila/qbo",
+        "@nzila/tax",
+        "@nzila/ui",
+        "framer-motion",
+        "@types/dompurify",
+        "dompurify",
+        "drizzle-orm",
+        "gray-matter",
+        "next",
+        "react",
+        "react-dom",
+        "remark",
+        "remark-html",
+        "zod",
+        "@nzila/commerce-observability",
+        "@nzila/platform-events",
+        "@nzila/platform-integrations-control-plane",
+        "@nzila/platform-evidence-pack",
+        "@nzila/platform-compliance-snapshots",
+        "@nzila/platform-observability",
+        "@nzila/platform-policy-engine",
+        "@nzila/platform-procurement-proof",
+        "@nzila/platform-marketplace",
+        "@nzila/platform-assurance"
+      ],
+      "devDependencies": [
+        "@nzila/ai-sdk",
+        "@nzila/config",
+        "@nzila/ml-sdk",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/cora",
+      "path": "apps/cora",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 23,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/os-core",
+        "@nzila/agri-core",
+        "@nzila/agri-db",
+        "@nzila/agri-intelligence",
+        "@nzila/agri-traceability",
+        "@nzila/agri-adapters",
+        "@nzila/evidence",
+        "@nzila/ui",
+        "@nzila/db",
+        "next",
+        "react",
+        "react-dom",
+        "framer-motion",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "babel-plugin-react-compiler",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/mobility",
+      "path": "apps/mobility",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 23,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "framer-motion",
+        "@heroicons/react",
+        "lucide-react",
+        "@nzila/db",
+        "@nzila/mobility-core",
+        "@nzila/mobility-programs",
+        "@nzila/mobility-compliance",
+        "@nzila/mobility-ai",
+        "@nzila/integrations-hubspot",
+        "@nzila/integrations-m365",
+        "@nzila/integrations-whatsapp",
+        "@nzila/os-core",
+        "@nzila/ui",
+        "next",
+        "react",
+        "react-dom",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/mobility-client-portal",
+      "path": "apps/mobility-client-portal",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 21,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "framer-motion",
+        "lucide-react",
+        "@heroicons/react",
+        "@nzila/mobility-core",
+        "@nzila/mobility-programs",
+        "@nzila/ui",
+        "next",
+        "react",
+        "react-dom"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/react",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/nacp-exams",
+      "path": "apps/nacp-exams",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 58,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/nacp-core",
+        "@nzila/os-core",
+        "@nzila/ui",
+        "@nzila/ai-sdk",
+        "@nzila/ml-sdk",
+        "@nzila/commerce-audit",
+        "@nzila/commerce-observability",
+        "@nzila/commerce-state",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
+        "@radix-ui/react-select",
+        "@radix-ui/react-tabs",
+        "@radix-ui/react-toast",
+        "clsx",
+        "framer-motion",
+        "lucide-react",
+        "next",
+        "next-intl",
+        "react",
+        "react-dom",
+        "tailwind-merge",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "tailwindcss-animate",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/orchestrator-api",
+      "path": "apps/orchestrator-api",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 14,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@fastify/helmet",
+        "@fastify/rate-limit",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/platform-procurement-proof",
+        "@nzila/platform-utils",
+        "drizzle-orm",
+        "fastify",
+        "postgres",
+        "zod"
+      ],
+      "devDependencies": [
+        "@types/node",
+        "tsx",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/partners",
+      "path": "apps/partners",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 61,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/blob",
+        "@nzila/ml-sdk",
+        "@nzila/payments-stripe",
+        "@nzila/ui",
+        "@nzila/ai-sdk",
+        "@nzila/commerce-observability",
+        "drizzle-orm",
+        "next",
+        "react",
+        "react-dom",
+        "framer-motion",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/platform-admin",
+      "path": "apps/platform-admin",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 12,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@heroicons/react",
+        "@nzila/platform-context-orchestrator",
+        "@nzila/platform-data-fabric",
+        "@nzila/platform-decision-graph",
+        "@nzila/platform-entity-graph",
+        "@nzila/platform-event-fabric",
+        "@nzila/platform-governed-ai",
+        "@nzila/platform-knowledge-registry",
+        "@nzila/platform-ontology",
+        "@nzila/platform-reasoning-engine",
+        "@nzila/platform-semantic-search",
+        "@nzila/ui",
+        "next",
+        "react",
+        "react-dom",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/pondu",
+      "path": "apps/pondu",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 38,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/os-core",
+        "@nzila/agri-core",
+        "@nzila/agri-db",
+        "@nzila/agri-events",
+        "@nzila/agri-traceability",
+        "@nzila/agri-adapters",
+        "@nzila/blob",
+        "@nzila/evidence",
+        "@nzila/integrations-runtime",
+        "@nzila/ui",
+        "@nzila/db",
+        "next",
+        "react",
+        "react-dom",
+        "framer-motion",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "babel-plugin-react-compiler",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/shop-quoter-app",
+      "path": "apps/shop-quoter",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 91,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/commerce-core",
+        "@nzila/commerce-db",
+        "@nzila/commerce-services",
+        "@nzila/commerce-audit",
+        "@nzila/db",
+        "@nzila/blob",
+        "@nzila/os-core",
+        "@nzila/pricing-engine",
+        "@nzila/shop-quoter",
+        "@nzila/ui",
+        "@nzila/ai-sdk",
+        "@nzila/ml-sdk",
+        "clsx",
+        "framer-motion",
+        "next",
+        "next-intl",
+        "react",
+        "react-dom",
+        "tailwind-merge",
+        "tailwindcss-animate",
+        "zod",
+        "@nzila/commerce-observability",
+        "@nzila/commerce-state",
+        "@nzila/commerce-governance",
+        "@nzila/commerce-events"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/trade",
+      "path": "apps/trade",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": false,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 0,
+      "srcFileCount": 33,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        },
+        {
+          "type": "info",
+          "message": "No test files found"
+        },
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/os-core",
+        "@nzila/trade-core",
+        "@nzila/trade-db",
+        "@nzila/trade-cars",
+        "@nzila/trade-adapters",
+        "@nzila/evidence",
+        "@nzila/integrations-runtime",
+        "@nzila/ui",
+        "@nzila/db",
+        "next",
+        "react",
+        "react-dom",
+        "framer-motion",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "babel-plugin-react-compiler",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/union-eyes",
+      "path": "apps/union-eyes",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 24,
+      "srcFileCount": 2739,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@aws-sdk/client-s3",
+        "@aws-sdk/client-textract",
+        "@aws-sdk/s3-request-presigner",
+        "@azure/cognitiveservices-computervision",
+        "@azure/identity",
+        "@azure/keyvault-keys",
+        "@azure/keyvault-secrets",
+        "@azure/ms-rest-js",
+        "@azure/msal-node",
+        "@azure/storage-blob",
+        "@clerk/backend",
+        "@clerk/nextjs",
+        "@clerk/themes",
+        "@google-cloud/vision",
+        "@headlessui/react",
+        "@hello-pangea/dnd",
+        "@heroicons/react",
+        "@hookform/resolvers",
+        "@microsoft/microsoft-graph-client",
+        "@nzila/ai-sdk",
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/ml-sdk",
+        "@nzila/os-core",
+        "@nzila/payments-stripe",
+        "@nzila/ui",
+        "@paralleldrive/cuid2",
+        "@radix-ui/react-accordion",
+        "@radix-ui/react-alert-dialog",
+        "@radix-ui/react-aspect-ratio",
+        "@radix-ui/react-avatar",
+        "@radix-ui/react-checkbox",
+        "@radix-ui/react-collapsible",
+        "@radix-ui/react-context-menu",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
+        "@radix-ui/react-hover-card",
+        "@radix-ui/react-label",
+        "@radix-ui/react-menubar",
+        "@radix-ui/react-navigation-menu",
+        "@radix-ui/react-popover",
+        "@radix-ui/react-progress",
+        "@radix-ui/react-radio-group",
+        "@radix-ui/react-scroll-area",
+        "@radix-ui/react-select",
+        "@radix-ui/react-separator",
+        "@radix-ui/react-slider",
+        "@radix-ui/react-slot",
+        "@radix-ui/react-switch",
+        "@radix-ui/react-tabs",
+        "@radix-ui/react-toast",
+        "@radix-ui/react-toggle",
+        "@radix-ui/react-toggle-group",
+        "@radix-ui/react-tooltip",
+        "@react-email/components",
+        "@react-email/render",
+        "@react-pdf/renderer",
+        "@sentry/nextjs",
+        "@stripe/react-stripe-js",
+        "@stripe/stripe-js",
+        "@tanstack/react-query",
+        "@tanstack/react-table",
+        "@tensorflow/tfjs-node",
+        "@tiptap/extension-color",
+        "@tiptap/extension-image",
+        "@tiptap/extension-link",
+        "@tiptap/extension-placeholder",
+        "@tiptap/extension-text-align",
+        "@tiptap/extension-text-style",
+        "@tiptap/extension-underline",
+        "@tiptap/react",
+        "@tiptap/starter-kit",
+        "@types/geoip-lite",
+        "@types/node-cron",
+        "@types/node-geocoder",
+        "@types/papaparse",
+        "@types/qrcode",
+        "@types/twilio",
+        "@upstash/redis",
+        "@whop-apps/sdk",
+        "axios",
+        "bullmq",
+        "canvas-confetti",
+        "chart.js",
+        "class-variance-authority",
+        "clsx",
+        "cmdk",
+        "date-fns",
+        "decimal.js",
+        "dompurify",
+        "dotenv",
+        "driver.js",
+        "drizzle-orm",
+        "drizzle-zod",
+        "embla-carousel-react",
+        "exceljs",
+        "firebase-admin",
+        "framer-motion",
+        "geoip-lite",
+        "googleapis",
+        "graphql-yoga",
+        "html2canvas",
+        "import-in-the-middle",
+        "input-otp",
+        "ioredis",
+        "jspdf",
+        "lucide-react",
+        "mammoth",
+        "microsoft-cognitiveservices-speech-sdk",
+        "next",
+        "next-intl",
+        "next-themes",
+        "node-cron",
+        "node-geocoder",
+        "papaparse",
+        "pdf-parse",
+        "pdfjs-dist",
+        "pdfkit",
+        "pg",
+        "postgres",
+        "qrcode",
+        "react",
+        "react-chartjs-2",
+        "react-day-picker",
+        "react-dom",
+        "react-dropzone",
+        "react-email",
+        "react-hook-form",
+        "react-resizable-panels",
+        "recharts",
+        "require-in-the-middle",
+        "resend",
+        "rrule",
+        "server-only",
+        "simple-statistics",
+        "sonner",
+        "square",
+        "stripe",
+        "swagger-ui-react",
+        "swr",
+        "tailwind-merge",
+        "tailwindcss-animate",
+        "tesseract.js",
+        "twilio",
+        "uuid",
+        "vaul",
+        "zod"
+      ],
+      "devDependencies": [
+        "@asteasolutions/zod-to-openapi",
+        "@next/bundle-analyzer",
+        "@nzila/config",
+        "@nzila/evidence",
+        "@opentelemetry/api",
+        "@opentelemetry/auto-instrumentations-node",
+        "@opentelemetry/exporter-trace-otlp-http",
+        "@opentelemetry/resources",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/semantic-conventions",
+        "@playwright/test",
+        "@supabase/supabase-js",
+        "@tailwindcss/postcss",
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@testing-library/user-event",
+        "@types/archiver",
+        "@types/canvas-confetti",
+        "@types/js-yaml",
+        "@types/lodash",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "@types/supertest",
+        "@types/swagger-ui-react",
+        "@types/uuid",
+        "@typescript-eslint/parser",
+        "@vitejs/plugin-react",
+        "@vitest/coverage-v8",
+        "archiver",
+        "drizzle-kit",
+        "eslint",
+        "eslint-config-next",
+        "glob",
+        "husky",
+        "js-yaml",
+        "jsdom",
+        "markdownlint-cli",
+        "postcss",
+        "supertest",
+        "tailwindcss",
+        "ts-morph",
+        "tsx",
+        "turbo",
+        "typescript",
+        "vitest",
+        "zod-to-json-schema"
+      ]
+    },
+    {
+      "name": "@nzila/web",
+      "path": "apps/web",
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 46,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Not using \"type\": \"module\""
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@heroicons/react",
+        "@nzila/os-core",
+        "@nzila/ui",
+        "@types/dompurify",
+        "dompurify",
+        "framer-motion",
+        "gray-matter",
+        "next",
+        "react",
+        "react-dom",
+        "rehype-autolink-headings",
+        "rehype-highlight",
+        "rehype-slug",
+        "rehype-stringify",
+        "remark",
+        "remark-gfm",
+        "remark-rehype"
+      ],
+      "devDependencies": [
+        "@nzila/ai-sdk",
+        "@nzila/config",
+        "@nzila/ml-sdk",
+        "@tailwindcss/postcss",
+        "@tailwindcss/typography",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "babel-plugin-react-compiler",
+        "eslint",
+        "eslint-config-next",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    },
+    {
+      "name": "@nzila/zonga",
+      "path": "apps/zonga",
+      "maturity": "functional",
+      "hasReadme": false,
+      "hasTests": true,
+      "hasBarrelExport": true,
+      "hasTypeConfig": true,
+      "hasDependencies": true,
+      "testFileCount": 1,
+      "srcFileCount": 100,
+      "findings": [
+        {
+          "type": "info",
+          "message": "Missing README.md"
+        }
+      ],
+      "exports": [],
+      "dependencies": [
+        "@clerk/nextjs",
+        "@nzila/blob",
+        "@nzila/db",
+        "@nzila/os-core",
+        "@nzila/ui",
+        "@nzila/zonga-core",
+        "@nzila/ai-sdk",
+        "@nzila/ml-sdk",
+        "@nzila/commerce-audit",
+        "@nzila/commerce-observability",
+        "@nzila/commerce-state",
+        "@nzila/payments-stripe",
+        "clsx",
+        "framer-motion",
+        "next",
+        "next-intl",
+        "react",
+        "react-dom",
+        "tailwind-merge",
+        "tailwindcss-animate",
+        "zod"
+      ],
+      "devDependencies": [
+        "@nzila/config",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "tailwindcss",
+        "typescript",
+        "vitest"
+      ]
+    }
+  ],
+  "crossCutting": {
+    "circularDeps": [],
+    "orphanedPackages": [
+      "@nzila/ai-registry",
+      "@nzila/chatops-slack",
+      "@nzila/chatops-teams",
+      "@nzila/cli",
+      "@nzila/commerce-integration-tests",
+      "@nzila/comms-email",
+      "@nzila/comms-push",
+      "@nzila/comms-sms",
+      "@nzila/crm-hubspot",
+      "@nzila/data-lifecycle",
+      "@nzila/finops",
+      "@nzila/ml-core",
+      "@nzila/mobility-case-engine",
+      "@nzila/mobility-family",
+      "@nzila/otel-core",
+      "@nzila/platform-cost",
+      "@nzila/platform-deploy",
+      "@nzila/platform-isolation",
+      "@nzila/platform-rfp-generator",
+      "@nzila/platform-rum",
+      "@nzila/platform-validation",
+      "nzila-scripts-book-template",
+      "@nzila/secrets",
+      "@nzila/webhooks"
+    ],
+    "namingViolations": [
+      "nzila-scripts-book-template: missing @nzila/ scope"
+    ],
+    "duplicateResponsibilities": [
+      "Area \"ai\" has 5 packages: @nzila/ai-core, @nzila/ai-registry, @nzila/ai-sdk, @nzila/mobility-ai, @nzila/platform-governed-ai",
+      "Area \"integrations\" has 7 packages: @nzila/integrations-core, @nzila/integrations-db, @nzila/integrations-hubspot, @nzila/integrations-m365, @nzila/integrations-runtime, @nzila/integrations-whatsapp, @nzila/platform-integrations-control-plane",
+      "Area \"engine\" has 4 packages: @nzila/mobility-case-engine, @nzila/platform-policy-engine, @nzila/platform-reasoning-engine, @nzila/pricing-engine"
+    ]
+  }
+}

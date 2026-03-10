@@ -1,0 +1,267 @@
+{
+  "generatedAt": "2026-03-10T17:42:01.759Z",
+  "totalClaims": 22,
+  "summary": {
+    "implemented": 20,
+    "partial": 2,
+    "docs-only": 0,
+    "roadmap": 0,
+    "unsupported": 0
+  },
+  "claims": [
+    {
+      "id": "SEC-001",
+      "category": "Security",
+      "text": "Org-level tenant isolation with row-level security",
+      "source": "ARCHITECTURE.md, procurement-pack.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/db/src/schema (org_id columns)",
+        "packages/platform-isolation"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "SEC-002",
+      "category": "Security",
+      "text": "Azure Key Vault for secrets management",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/secrets"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "SEC-003",
+      "category": "Security",
+      "text": "Secret scanning in CI (Gitleaks + TruffleHog)",
+      "source": "procurement-pack.md",
+      "status": "implemented",
+      "evidence": [
+        ".github/workflows",
+        "package.json#secret-scan"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "AUD-001",
+      "category": "Audit",
+      "text": "Tamper-evident audit trails with hash-chaining",
+      "source": "ARCHITECTURE.md, procurement-pack.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/evidence",
+        "packages/platform-proof",
+        "hash-chain code"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "AUD-002",
+      "category": "Audit",
+      "text": "Evidence packs with sealed artifacts for procurement",
+      "source": "procurement-pack.md, evidence-packs.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-evidence-pack",
+        "packages/platform-procurement-proof"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "AI-001",
+      "category": "AI",
+      "text": "AI control plane with per-app profiles and budget enforcement",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/ai-core",
+        "packages/platform-governed-ai"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "AI-002",
+      "category": "AI",
+      "text": "ML registry with versioned model activation and approval workflows",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/ml-core",
+        "packages/ai-registry"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "OBS-001",
+      "category": "Observability",
+      "text": "Structured telemetry with OpenTelemetry and request correlation",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/otel-core",
+        "packages/platform-observability"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CFG-001",
+      "category": "Configuration",
+      "text": "Zod-validated config with fail-fast at startup",
+      "source": "ARCHITECTURE.md",
+      "status": "partial",
+      "evidence": [
+        "packages/config"
+      ],
+      "notes": "Zod validation not confirmed"
+    },
+    {
+      "id": "DATA-001",
+      "category": "Data",
+      "text": "Data retention enforcement with audit logging",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/data-lifecycle"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "GOV-001",
+      "category": "Governance",
+      "text": "Centralized RBAC/authorization policy engine",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-policy-engine"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "GOV-002",
+      "category": "Governance",
+      "text": "Partner entitlements as data (no hardcoded defaults)",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/db/src/schema (partner_entities)",
+        "packages/org"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "GOV-003",
+      "category": "Governance",
+      "text": "SBOM generation and build attestation",
+      "source": "procurement-pack.md",
+      "status": "implemented",
+      "evidence": [
+        "package.json#generate:sbom",
+        "package.json#attest:build"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "FIN-001",
+      "category": "Finance",
+      "text": "QuickBooks Online sync with reconciliation",
+      "source": "ARCHITECTURE.md",
+      "status": "partial",
+      "evidence": [
+        "packages/qbo"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "FIN-002",
+      "category": "Finance",
+      "text": "Stripe payment processing with reconciliation",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/payments-stripe"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "PLAT-001",
+      "category": "Platform",
+      "text": "Platform ontology with typed entity taxonomy",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-ontology"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "PLAT-002",
+      "category": "Platform",
+      "text": "Entity graph with cross-domain relationship tracking",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-entity-graph"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "PLAT-003",
+      "category": "Platform",
+      "text": "Event fabric for cross-domain event routing",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-event-fabric"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "PLAT-004",
+      "category": "Platform",
+      "text": "Semantic search across platform data",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-semantic-search"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "PLAT-005",
+      "category": "Platform",
+      "text": "Governed AI with policy controls and compliance",
+      "source": "ARCHITECTURE.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-governed-ai"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TEST-001",
+      "category": "Testing",
+      "text": "Contract tests covering org isolation, authz, stack authority",
+      "source": "ALIGNMENT_REPORT.md",
+      "status": "implemented",
+      "evidence": [
+        "tooling/contract-tests/",
+        "package.json#contract-tests"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "COMP-001",
+      "category": "Compliance",
+      "text": "Compliance snapshots for point-in-time auditing",
+      "source": "procurement-pack.md",
+      "status": "implemented",
+      "evidence": [
+        "packages/platform-compliance-snapshots"
+      ],
+      "notes": ""
+    }
+  ],
+  "unsafeClaims": []
+}

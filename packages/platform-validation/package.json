@@ -1,0 +1,29 @@
+{
+  "name": "@nzila/platform-validation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package-audit": "./src/package-audit.ts",
+    "./architecture-audit": "./src/architecture-audit.ts",
+    "./claim-verification": "./src/claim-verification.ts",
+    "./doc-consistency": "./src/doc-consistency.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "audit:packages": "tsx src/package-audit.ts",
+    "audit:architecture": "tsx src/architecture-audit.ts",
+    "audit:claims": "tsx src/claim-verification.ts",
+    "audit:docs": "tsx src/doc-consistency.ts",
+    "audit:all": "tsx src/run-all.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.3",
+    "vitest": "^4.0.0"
+  }
+}

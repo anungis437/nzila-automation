@@ -62,3 +62,27 @@ export type {
   LoggerContext,
   LogSink,
 } from './logger'
+
+// platform OS hooks
+export {
+  entityGraphOps,
+  eventFabricPublished,
+  decisionGraphCreated,
+  aiRunExecutions,
+  reasoningChainExecutions,
+  dataFabricSyncJobs,
+  searchLatency,
+  aiRunLatency,
+  reasoningChainLatency,
+  ontologyLogger,
+  entityGraphLogger,
+  eventFabricLogger,
+  knowledgeRegistryLogger,
+  dataFabricLogger,
+  decisionGraphLogger,
+  contextOrchestratorLogger,
+  semanticSearchLogger,
+  governedAILogger,
+  reasoningEngineLogger,
+  tracePlatformOp,
+} from './platform-os-hooks'

@@ -1,0 +1,30 @@
+{
+  "name": "@nzila/platform-reasoning-engine",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts",
+    "./demos": "./src/demos/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@nzila/platform-ontology": "workspace:*",
+    "@nzila/platform-context-orchestrator": "workspace:*",
+    "@nzila/platform-governed-ai": "workspace:*",
+    "@nzila/platform-decision-graph": "workspace:*",
+    "@nzila/platform-knowledge-registry": "workspace:*",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
