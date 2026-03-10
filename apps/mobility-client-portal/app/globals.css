@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   Global Mobility OS — Client Portal Design System
+   Nzila portfolio standard (amber/teal client theme)
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ----- Nzila portfolio tokens ----- */
+  --navy:        #0B1121;
+  --navy-light:  #131B2E;
+  --electric:    #2563EB;
+  --violet:      #8B5CF6;
+  --emerald:     #10B981;
+
+  /* ----- Client portal accent: teal/amber ----- */
+  --amber:       #D97706;
+  --amber-light: #F59E0B;
+  --gold:        #D4A843;
+  --gold-light:  #E8C468;
+  --teal:        #0D9488;
+  --teal-light:  #14B8A6;
+
+  /* ----- Surface tokens ----- */
+  --background:  #fafbfc;
+  --surface:     #ffffff;
+  --muted:       #6b7280;
+  --border:      #e5e7eb;
+}
+
+/* Register custom colors for Tailwind v4 */
+@theme inline {
+  --color-navy: #0B1121;
+  --color-navy-light: #131B2E;
+  --color-electric: #2563EB;
+  --color-electric-light: #3B82F6;
+  --color-violet: #8B5CF6;
+  --color-emerald: #10B981;
+  --color-amber: #D97706;
+  --color-amber-light: #F59E0B;
+  --color-gold: #D4A843;
+  --color-gold-light: #E8C468;
+  --color-teal: #0D9488;
+  --color-teal-light: #14B8A6;
+  --color-coral: #EF4444;
+}
+
+/* ───────── Utility classes ───────── */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--teal) 0%, var(--amber) 50%, var(--gold) 100%);
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-teal {
+  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, var(--amber) 0%, var(--amber-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.bg-mesh {
+  background-image:
+    radial-gradient(at 20% 20%, rgba(13,148,136,0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(217,119,6,0.10) 0%, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(139,92,246,0.06) 0%, transparent 70%);
+}
+
+.hover-lift {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(13, 148, 136, 0.18);
+}
+
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+.border-gradient {
+  border-image: linear-gradient(135deg, var(--teal), var(--amber)) 1;
+}
+
+.pulse-glow {
+  animation: pulse-glow-kf 3s ease-in-out infinite;
+}
+@keyframes pulse-glow-kf {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0.30); }
+  50%      { box-shadow: 0 0 24px 8px rgba(13,148,136,0.12); }
+}
+
+.hover-underline {
+  position: relative;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--teal);
+  transition: width 0.3s ease;
+}
+.hover-underline:hover::after {
+  width: 100%;
+}
+
+/* ───────── Carousel ───────── */
+.carousel-container {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+@keyframes carousel {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-carousel {
+  animation: carousel 90s linear infinite;
+}
+.animate-carousel:hover {
+  animation-play-state: paused;
+}
+
+/* ───────── Custom scrollbar ───────── */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(13, 148, 136, 0.3);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 148, 136, 0.5);
+}
+
+/* ───────── Selection ───────── */
+::selection {
+  background: rgba(13, 148, 136, 0.25);
+  color: inherit;
+}
+
+/* ───────── Clerk overrides ───────── */
+.cl-card { border-radius: 1rem !important; }
+.cl-formButtonPrimary {
+  background-color: var(--teal) !important;
+  border-radius: 0.75rem !important;
+}
+.cl-formButtonPrimary:hover {
+  background-color: var(--teal-light) !important;
+}

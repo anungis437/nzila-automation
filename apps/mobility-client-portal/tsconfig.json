@@ -1,0 +1,14 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/mobility-core": ["../../packages/mobility-core/src"],
+      "@nzila/mobility-core/*": ["../../packages/mobility-core/src/*"],
+      "@nzila/mobility-programs": ["../../packages/mobility-programs/src"],
+      "@nzila/mobility-programs/*": ["../../packages/mobility-programs/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next"]
+}
