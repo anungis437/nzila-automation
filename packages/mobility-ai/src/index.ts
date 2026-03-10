@@ -24,3 +24,10 @@ export {
   DEFAULT_AI_GOVERNANCE,
 } from './governance'
 export type { AiGovernancePolicy, GovernanceViolation } from './governance'
+
+// Document Checklist
+export {
+  generateDocumentChecklist,
+  updateChecklistStats,
+} from './checklist'
+export type { ChecklistItem, DocumentChecklist } from './checklist'

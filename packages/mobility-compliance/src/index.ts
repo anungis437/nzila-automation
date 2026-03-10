@@ -16,3 +16,11 @@ export type {
 
 export { computeRiskScore, requiresTwoStepApproval } from './risk'
 export type { RiskSignal, RiskAssessment } from './risk'
+
+export { buildEvidenceEntry, buildEvidencePack } from './evidence'
+export type {
+  EvidenceEntry,
+  EvidenceAttachment,
+  EvidencePack,
+  EvidencePackSummary,
+} from './evidence'
