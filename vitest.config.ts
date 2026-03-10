@@ -82,6 +82,17 @@ export default defineConfig({
       // New gap-fill packages
       'packages/platform-rum',
       'packages/ai-registry',
+      // Platform OS packages
+      'packages/platform-ontology',
+      'packages/platform-entity-graph',
+      'packages/platform-event-fabric',
+      'packages/platform-knowledge-registry',
+      'packages/platform-data-fabric',
+      'packages/platform-decision-graph',
+      'packages/platform-context-orchestrator',
+      'packages/platform-semantic-search',
+      'packages/platform-governed-ai',
+      'packages/platform-reasoning-engine',
       // Mobility packages
       'packages/mobility-core',
       'packages/mobility-programs',

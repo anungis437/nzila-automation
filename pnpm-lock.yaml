@@ -911,6 +911,88 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  apps/platform-admin:
+    dependencies:
+      '@heroicons/react':
+        specifier: ^2.2.0
+        version: 2.2.0(react@19.2.4)
+      '@nzila/platform-context-orchestrator':
+        specifier: workspace:*
+        version: link:../../packages/platform-context-orchestrator
+      '@nzila/platform-data-fabric':
+        specifier: workspace:*
+        version: link:../../packages/platform-data-fabric
+      '@nzila/platform-decision-graph':
+        specifier: workspace:*
+        version: link:../../packages/platform-decision-graph
+      '@nzila/platform-entity-graph':
+        specifier: workspace:*
+        version: link:../../packages/platform-entity-graph
+      '@nzila/platform-event-fabric':
+        specifier: workspace:*
+        version: link:../../packages/platform-event-fabric
+      '@nzila/platform-governed-ai':
+        specifier: workspace:*
+        version: link:../../packages/platform-governed-ai
+      '@nzila/platform-knowledge-registry':
+        specifier: workspace:*
+        version: link:../../packages/platform-knowledge-registry
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../../packages/platform-ontology
+      '@nzila/platform-reasoning-engine':
+        specifier: workspace:*
+        version: link:../../packages/platform-reasoning-engine
+      '@nzila/platform-semantic-search':
+        specifier: workspace:*
+        version: link:../../packages/platform-semantic-search
+      '@nzila/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@nzila/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/node':
+        specifier: ^25
+        version: 25.3.3
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.3(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
   apps/pondu:
     dependencies:
       '@clerk/nextjs':
@@ -2666,6 +2748,30 @@ importers:
 
   packages/db:
     dependencies:
+      '@nzila/platform-data-fabric':
+        specifier: workspace:*
+        version: link:../platform-data-fabric
+      '@nzila/platform-decision-graph':
+        specifier: workspace:*
+        version: link:../platform-decision-graph
+      '@nzila/platform-event-fabric':
+        specifier: workspace:*
+        version: link:../platform-event-fabric
+      '@nzila/platform-governed-ai':
+        specifier: workspace:*
+        version: link:../platform-governed-ai
+      '@nzila/platform-knowledge-registry':
+        specifier: workspace:*
+        version: link:../platform-knowledge-registry
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      '@nzila/platform-reasoning-engine':
+        specifier: workspace:*
+        version: link:../platform-reasoning-engine
+      '@nzila/platform-semantic-search':
+        specifier: workspace:*
+        version: link:../platform-semantic-search
       drizzle-orm:
         specifier: ^0.39.0
         version: 0.39.3(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(pg@8.19.0)(postgres@3.4.8)
@@ -3131,6 +3237,31 @@ importers:
         specifier: ^4.0.0
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/platform-context-orchestrator:
+    dependencies:
+      '@nzila/platform-decision-graph':
+        specifier: workspace:*
+        version: link:../platform-decision-graph
+      '@nzila/platform-entity-graph':
+        specifier: workspace:*
+        version: link:../platform-entity-graph
+      '@nzila/platform-event-fabric':
+        specifier: workspace:*
+        version: link:../platform-event-fabric
+      '@nzila/platform-knowledge-registry':
+        specifier: workspace:*
+        version: link:../platform-knowledge-registry
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
   packages/platform-cost:
     dependencies:
       '@nzila/db':
@@ -3156,6 +3287,47 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/platform-data-fabric:
+    dependencies:
+      '@nzila/platform-event-fabric':
+        specifier: workspace:*
+        version: link:../platform-event-fabric
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^25
+        version: 25.3.3
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-decision-graph:
+    dependencies:
+      '@nzila/platform-event-fabric':
+        specifier: workspace:*
+        version: link:../platform-event-fabric
+      '@nzila/platform-knowledge-registry':
+        specifier: workspace:*
+        version: link:../platform-knowledge-registry
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
   packages/platform-deploy:
     dependencies:
       '@nzila/db':
@@ -3174,6 +3346,38 @@ importers:
       eslint:
         specifier: ^9.39.0
         version: 9.39.3(jiti@2.6.1)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-entity-graph:
+    dependencies:
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+    devDependencies:
+      '@types/node':
+        specifier: ^25
+        version: 25.3.3
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-event-fabric:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^25
+        version: 25.3.3
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3262,6 +3466,28 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/platform-governed-ai:
+    dependencies:
+      '@nzila/platform-context-orchestrator':
+        specifier: workspace:*
+        version: link:../platform-context-orchestrator
+      '@nzila/platform-decision-graph':
+        specifier: workspace:*
+        version: link:../platform-decision-graph
+      '@nzila/platform-knowledge-registry':
+        specifier: workspace:*
+        version: link:../platform-knowledge-registry
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
   packages/platform-integrations-control-plane:
     dependencies:
       '@nzila/db':
@@ -3323,6 +3549,22 @@ importers:
       eslint:
         specifier: ^9.39.0
         version: 9.39.3(jiti@2.6.1)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-knowledge-registry:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^25
+        version: 25.3.3
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3392,6 +3634,22 @@ importers:
       eslint:
         specifier: ^9.39.0
         version: 9.39.3(jiti@2.6.1)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-ontology:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^25
+        version: 25.3.3
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -3527,6 +3785,31 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/platform-reasoning-engine:
+    dependencies:
+      '@nzila/platform-context-orchestrator':
+        specifier: workspace:*
+        version: link:../platform-context-orchestrator
+      '@nzila/platform-decision-graph':
+        specifier: workspace:*
+        version: link:../platform-decision-graph
+      '@nzila/platform-governed-ai':
+        specifier: workspace:*
+        version: link:../platform-governed-ai
+      '@nzila/platform-knowledge-registry':
+        specifier: workspace:*
+        version: link:../platform-knowledge-registry
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
   packages/platform-rfp-generator:
     dependencies:
       '@nzila/os-core':
@@ -3567,6 +3850,22 @@ importers:
       vitest:
         specifier: ^4.0.0
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-semantic-search:
+    dependencies:
+      '@nzila/platform-entity-graph':
+        specifier: workspace:*
+        version: link:../platform-entity-graph
+      '@nzila/platform-ontology':
+        specifier: workspace:*
+        version: link:../platform-ontology
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
 
   packages/platform-utils:
     devDependencies:

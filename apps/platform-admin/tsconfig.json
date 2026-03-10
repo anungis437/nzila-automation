@@ -1,0 +1,28 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/ui": ["../../packages/ui/src"],
+      "@nzila/platform-ontology": ["../../packages/platform-ontology/src/index.ts"],
+      "@nzila/platform-entity-graph": ["../../packages/platform-entity-graph/src/index.ts"],
+      "@nzila/platform-event-fabric": ["../../packages/platform-event-fabric/src/index.ts"],
+      "@nzila/platform-knowledge-registry": ["../../packages/platform-knowledge-registry/src/index.ts"],
+      "@nzila/platform-data-fabric": ["../../packages/platform-data-fabric/src/index.ts"],
+      "@nzila/platform-decision-graph": ["../../packages/platform-decision-graph/src/index.ts"],
+      "@nzila/platform-context-orchestrator": ["../../packages/platform-context-orchestrator/src/index.ts"],
+      "@nzila/platform-semantic-search": ["../../packages/platform-semantic-search/src/index.ts"],
+      "@nzila/platform-governed-ai": ["../../packages/platform-governed-ai/src/index.ts"],
+      "@nzila/platform-reasoning-engine": ["../../packages/platform-reasoning-engine/src/index.ts"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../packages/ui/src/**/*.ts",
+    "../../packages/ui/src/**/*.tsx"
+  ],
+  "exclude": ["node_modules"]
+}

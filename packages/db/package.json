@@ -25,6 +25,14 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@nzila/platform-data-fabric": "workspace:*",
+    "@nzila/platform-decision-graph": "workspace:*",
+    "@nzila/platform-event-fabric": "workspace:*",
+    "@nzila/platform-governed-ai": "workspace:*",
+    "@nzila/platform-knowledge-registry": "workspace:*",
+    "@nzila/platform-ontology": "workspace:*",
+    "@nzila/platform-reasoning-engine": "workspace:*",
+    "@nzila/platform-semantic-search": "workspace:*",
     "drizzle-orm": "^0.39.0",
     "postgres": "^3.4.5",
     "zod": "^3.24.0"

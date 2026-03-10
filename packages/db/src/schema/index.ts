@@ -19,3 +19,36 @@ export * from './zonga'
 export * from './platform'
 export * from './trade'
 export * from './mobility'
+
+// Platform OS schemas (re-exported from dedicated packages)
+export {
+  ontologyEntities,
+  ontologyRelationships,
+} from '@nzila/platform-ontology/schema'
+export {
+  platformEvents,
+  eventSubscriptions,
+} from '@nzila/platform-event-fabric/schema'
+export {
+  knowledgeAssets,
+  knowledgeVersions,
+} from '@nzila/platform-knowledge-registry/schema'
+export {
+  canonicalRecords,
+  recordLineage,
+  syncJobs,
+  syncConflicts,
+} from '@nzila/platform-data-fabric/schema'
+export {
+  decisionNodes,
+  decisionEdges,
+} from '@nzila/platform-decision-graph/schema'
+export {
+  searchDocuments,
+} from '@nzila/platform-semantic-search/schema'
+export {
+  aiRunRecords,
+} from '@nzila/platform-governed-ai/schema'
+export {
+  reasoningChains,
+} from '@nzila/platform-reasoning-engine/schema'
