@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-03-10T17:42:00.048Z",
+  "generatedAt": "2026-03-10T20:46:00.733Z",
   "totalPackages": 97,
   "totalApps": 16,
   "summary": {
-    "production-ready": 11,
-    "functional": 83,
+    "production-ready": 19,
+    "functional": 75,
     "scaffold-only": 3,
     "deprecated": 0,
     "unknown": 0
@@ -231,20 +231,15 @@
     {
       "name": "@nzila/ai-core",
       "path": "packages/ai-core",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
       "testFileCount": 2,
       "srcFileCount": 23,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "findings": [],
       "exports": [
         ".",
         "./providers/azure-openai",
@@ -317,7 +312,7 @@
       "name": "@nzila/ai-sdk",
       "path": "packages/ai-sdk",
       "maturity": "functional",
-      "hasReadme": false,
+      "hasReadme": true,
       "hasTests": false,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
@@ -325,10 +320,6 @@
       "testFileCount": 0,
       "srcFileCount": 4,
       "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        },
         {
           "type": "info",
           "message": "No test files found"
@@ -354,7 +345,7 @@
       "name": "@nzila/blob",
       "path": "packages/blob",
       "maturity": "functional",
-      "hasReadme": false,
+      "hasReadme": true,
       "hasTests": false,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
@@ -363,11 +354,7 @@
       "srcFileCount": 1,
       "findings": [
         {
-          "type": "info",
-          "message": "Missing README.md"
-        },
-        {
-          "type": "info",
+          "type": "warning",
           "message": "No test files found"
         }
       ],
@@ -968,7 +955,7 @@
       "name": "@nzila/config",
       "path": "packages/config",
       "maturity": "scaffold-only",
-      "hasReadme": false,
+      "hasReadme": true,
       "hasTests": false,
       "hasBarrelExport": false,
       "hasTypeConfig": false,
@@ -976,10 +963,6 @@
       "testFileCount": 0,
       "srcFileCount": 0,
       "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        },
         {
           "type": "info",
           "message": "Missing src/index.ts barrel export"
@@ -1078,20 +1061,15 @@
     {
       "name": "@nzila/db",
       "path": "packages/db",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
       "testFileCount": 2,
       "srcFileCount": 29,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "findings": [],
       "exports": [
         ".",
         "./schema",
@@ -1126,7 +1104,7 @@
       "name": "@nzila/evidence",
       "path": "packages/evidence",
       "maturity": "scaffold-only",
-      "hasReadme": false,
+      "hasReadme": true,
       "hasTests": false,
       "hasBarrelExport": false,
       "hasTypeConfig": false,
@@ -1134,10 +1112,6 @@
       "testFileCount": 0,
       "srcFileCount": 0,
       "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        },
         {
           "type": "info",
           "message": "Missing src/index.ts barrel export"
@@ -1451,7 +1425,7 @@
       "name": "@nzila/ml-core",
       "path": "packages/ml-core",
       "maturity": "functional",
-      "hasReadme": false,
+      "hasReadme": true,
       "hasTests": false,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
@@ -1459,10 +1433,6 @@
       "testFileCount": 0,
       "srcFileCount": 4,
       "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        },
         {
           "type": "info",
           "message": "No test files found"
@@ -1490,7 +1460,7 @@
       "name": "@nzila/ml-sdk",
       "path": "packages/ml-sdk",
       "maturity": "functional",
-      "hasReadme": false,
+      "hasReadme": true,
       "hasTests": false,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
@@ -1498,10 +1468,6 @@
       "testFileCount": 0,
       "srcFileCount": 5,
       "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        },
         {
           "type": "info",
           "message": "No test files found"
@@ -1585,6 +1551,9 @@
         "@nzila/mobility-compliance"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -1682,6 +1651,9 @@
         "@nzila/mobility-programs"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -1771,11 +1743,11 @@
       "srcFileCount": 2,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
-          "type": "info",
+          "type": "warning",
           "message": "No test files found"
         }
       ],
@@ -1793,20 +1765,15 @@
     {
       "name": "@nzila/os-core",
       "path": "packages/os-core",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
-      "testFileCount": 8,
-      "srcFileCount": 65,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "testFileCount": 11,
+      "srcFileCount": 70,
+      "findings": [],
       "exports": [
         ".",
         "./policy",
@@ -1846,7 +1813,9 @@
         "./audit",
         "./audit/abr",
         "./crypto/fips",
-        "./resilience"
+        "./resilience",
+        "./api-response",
+        "./api-handler"
       ],
       "dependencies": [
         "@nzila/blob",
@@ -1863,20 +1832,15 @@
     {
       "name": "@nzila/otel-core",
       "path": "packages/otel-core",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
       "testFileCount": 1,
       "srcFileCount": 7,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "findings": [],
       "exports": [
         ".",
         "./spans",
@@ -1907,7 +1871,7 @@
       "srcFileCount": 15,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -1948,7 +1912,7 @@
       "srcFileCount": 4,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -1978,7 +1942,7 @@
       "srcFileCount": 10,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2023,6 +1987,9 @@
         "zod"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript"
       ]
     },
@@ -2039,7 +2006,7 @@
       "srcFileCount": 6,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2085,6 +2052,9 @@
       ],
       "devDependencies": [
         "@types/node",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -2112,6 +2082,9 @@
         "zod"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript"
       ]
     },
@@ -2128,7 +2101,7 @@
       "srcFileCount": 5,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2170,6 +2143,9 @@
       ],
       "devDependencies": [
         "@types/node",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -2198,6 +2174,9 @@
       ],
       "devDependencies": [
         "@types/node",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -2215,7 +2194,7 @@
       "srcFileCount": 8,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2254,7 +2233,7 @@
       "srcFileCount": 10,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2290,7 +2269,7 @@
       "srcFileCount": 2,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2334,6 +2313,9 @@
         "zod"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript"
       ]
     },
@@ -2350,7 +2332,7 @@
       "srcFileCount": 11,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2383,20 +2365,15 @@
     {
       "name": "@nzila/platform-isolation",
       "path": "packages/platform-isolation",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
       "testFileCount": 2,
       "srcFileCount": 5,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "findings": [],
       "exports": [
         ".",
         "./multi-org-stress"
@@ -2437,6 +2414,9 @@
       ],
       "devDependencies": [
         "@types/node",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -2454,7 +2434,7 @@
       "srcFileCount": 6,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2487,7 +2467,7 @@
       "srcFileCount": 4,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2522,7 +2502,7 @@
       "srcFileCount": 13,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2572,6 +2552,9 @@
       ],
       "devDependencies": [
         "@types/node",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript",
         "vitest"
       ]
@@ -2589,7 +2572,7 @@
       "srcFileCount": 19,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2628,7 +2611,7 @@
       "srcFileCount": 7,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2653,20 +2636,15 @@
     {
       "name": "@nzila/platform-policy-engine",
       "path": "packages/platform-policy-engine",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
       "testFileCount": 1,
       "srcFileCount": 6,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "findings": [],
       "exports": [
         ".",
         "./types",
@@ -2697,7 +2675,7 @@
       "srcFileCount": 22,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2740,7 +2718,7 @@
       "srcFileCount": 11,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2791,6 +2769,9 @@
         "zod"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript"
       ]
     },
@@ -2807,7 +2788,7 @@
       "srcFileCount": 5,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2840,7 +2821,7 @@
       "srcFileCount": 5,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -2882,6 +2863,9 @@
         "zod"
       ],
       "devDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
         "typescript"
       ]
     },
@@ -2898,7 +2882,7 @@
       "srcFileCount": 3,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -2918,24 +2902,15 @@
     {
       "name": "@nzila/platform-validation",
       "path": "packages/platform-validation",
-      "maturity": "functional",
-      "hasReadme": false,
-      "hasTests": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
+      "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
-      "testFileCount": 0,
-      "srcFileCount": 6,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        },
-        {
-          "type": "info",
-          "message": "No test files found"
-        }
-      ],
+      "testFileCount": 1,
+      "srcFileCount": 7,
+      "findings": [],
       "exports": [
         ".",
         "./package-audit",
@@ -2995,11 +2970,11 @@
       "srcFileCount": 9,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
-          "type": "info",
+          "type": "warning",
           "message": "No test files found"
         }
       ],
@@ -3074,7 +3049,7 @@
       "srcFileCount": 5,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -3372,20 +3347,15 @@
     {
       "name": "@nzila/ui",
       "path": "packages/ui",
-      "maturity": "functional",
-      "hasReadme": false,
+      "maturity": "production-ready",
+      "hasReadme": true,
       "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
       "testFileCount": 4,
       "srcFileCount": 11,
-      "findings": [
-        {
-          "type": "info",
-          "message": "Missing README.md"
-        }
-      ],
+      "findings": [],
       "exports": [
         ".",
         "./globals.css"
@@ -3495,7 +3465,7 @@
       "srcFileCount": 43,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -3558,7 +3528,7 @@
       "srcFileCount": 134,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -3620,7 +3590,7 @@
       "srcFileCount": 192,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -3687,20 +3657,16 @@
       "path": "apps/cora",
       "maturity": "functional",
       "hasReadme": false,
-      "hasTests": false,
+      "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
-      "testFileCount": 0,
-      "srcFileCount": 23,
+      "testFileCount": 1,
+      "srcFileCount": 24,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
-        },
-        {
-          "type": "info",
-          "message": "No test files found"
         },
         {
           "type": "info",
@@ -3753,11 +3719,11 @@
       "srcFileCount": 23,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
-          "type": "info",
+          "type": "warning",
           "message": "No test files found"
         },
         {
@@ -3812,11 +3778,11 @@
       "srcFileCount": 21,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
-          "type": "info",
+          "type": "warning",
           "message": "No test files found"
         }
       ],
@@ -3828,6 +3794,7 @@
         "@heroicons/react",
         "@nzila/mobility-core",
         "@nzila/mobility-programs",
+        "@nzila/os-core",
         "@nzila/ui",
         "next",
         "react",
@@ -3855,7 +3822,7 @@
       "srcFileCount": 58,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -3918,7 +3885,7 @@
       "srcFileCount": 14,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],
@@ -3955,7 +3922,7 @@
       "srcFileCount": 61,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -4000,20 +3967,16 @@
       "path": "apps/platform-admin",
       "maturity": "functional",
       "hasReadme": false,
-      "hasTests": false,
+      "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
-      "testFileCount": 0,
-      "srcFileCount": 12,
+      "testFileCount": 1,
+      "srcFileCount": 16,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
-        },
-        {
-          "type": "info",
-          "message": "No test files found"
         },
         {
           "type": "info",
@@ -4022,7 +3985,9 @@
       ],
       "exports": [],
       "dependencies": [
+        "@clerk/nextjs",
         "@heroicons/react",
+        "@nzila/os-core",
         "@nzila/platform-context-orchestrator",
         "@nzila/platform-data-fabric",
         "@nzila/platform-decision-graph",
@@ -4057,20 +4022,16 @@
       "path": "apps/pondu",
       "maturity": "functional",
       "hasReadme": false,
-      "hasTests": false,
+      "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
-      "testFileCount": 0,
-      "srcFileCount": 38,
+      "testFileCount": 1,
+      "srcFileCount": 39,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
-        },
-        {
-          "type": "info",
-          "message": "No test files found"
         },
         {
           "type": "info",
@@ -4125,7 +4086,7 @@
       "srcFileCount": 91,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         },
         {
@@ -4181,20 +4142,16 @@
       "path": "apps/trade",
       "maturity": "functional",
       "hasReadme": false,
-      "hasTests": false,
+      "hasTests": true,
       "hasBarrelExport": true,
       "hasTypeConfig": true,
       "hasDependencies": true,
-      "testFileCount": 0,
-      "srcFileCount": 33,
+      "testFileCount": 1,
+      "srcFileCount": 35,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
-        },
-        {
-          "type": "info",
-          "message": "No test files found"
         },
         {
           "type": "info",
@@ -4519,7 +4476,7 @@
       "srcFileCount": 100,
       "findings": [
         {
-          "type": "info",
+          "type": "warning",
           "message": "Missing README.md"
         }
       ],

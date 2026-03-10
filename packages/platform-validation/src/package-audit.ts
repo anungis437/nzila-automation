@@ -142,11 +142,20 @@ function auditPackage(pkgDir: string, root: string): PackageAuditEntry {
     return { name, path: relPath, maturity: 'deprecated', hasReadme, hasTests, hasBarrelExport, hasTypeConfig, hasDependencies, testFileCount, srcFileCount, findings, exports, dependencies, devDependencies }
   }
 
-  // Findings
-  if (!hasReadme) findings.push({ type: 'info', message: 'Missing README.md' })
+  // Findings — severity depends on whether this is a production app or critical package
+  const isCriticalPackage = !isApp && srcFileCount > 0 && (
+    relPath.startsWith('packages/platform-') ||
+    relPath.startsWith('packages/os-') ||
+    ['db', 'config', 'blob', 'secrets', 'evidence', 'payments-stripe', 'qbo', 'org'].some(p => relPath === `packages/${p}`)
+  )
+  if (!hasReadme) {
+    findings.push({ type: (isApp || isCriticalPackage) ? 'warning' : 'info', message: 'Missing README.md' })
+  }
   if (!hasBarrelExport) findings.push({ type: 'info', message: 'Missing src/index.ts barrel export' })
   if (!hasTypeConfig) findings.push({ type: 'info', message: 'Missing tsconfig.json' })
-  if (!hasTests) findings.push({ type: 'info', message: 'No test files found' })
+  if (!hasTests) {
+    findings.push({ type: (isApp || isCriticalPackage) ? 'warning' : 'info', message: 'No test files found' })
+  }
   if (srcFileCount === 0 && !isApp) findings.push({ type: 'info', message: 'No source files in src/' })
 
   // Naming

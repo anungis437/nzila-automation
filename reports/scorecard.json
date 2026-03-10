@@ -1,36 +1,61 @@
 {
-  "generatedAt": "2026-03-10T17:42:01.990Z",
-  "overallGrade": "A+",
+  "generatedAt": "2026-03-10T20:46:02.745Z",
+  "overallGrade": "A-",
   "dimensions": [
     {
-      "dimension": "Package Maturity",
-      "score": "A+",
+      "dimension": "Architecture",
+      "score": "B",
       "errors": 0,
-      "warnings": 0,
-      "notes": "11 production-ready, 3 scaffold-only"
+      "warnings": 1256,
+      "notes": "4516 files scanned"
     },
     {
-      "dimension": "Architecture Consistency",
+      "dimension": "Security",
       "score": "A+",
       "errors": 0,
       "warnings": 0,
-      "notes": "4501 files scanned"
+      "notes": "org-isolation + SDK boundary checks"
     },
     {
-      "dimension": "Claim Integrity",
-      "score": "A+",
+      "dimension": "Governance",
+      "score": "A",
       "errors": 0,
-      "warnings": 0,
-      "notes": "20/22 claims verified"
+      "warnings": 2,
+      "notes": "20/22 claims verified, 2 partial"
     },
     {
-      "dimension": "Documentation Quality",
-      "score": "A+",
+      "dimension": "Documentation",
+      "score": "B",
       "errors": 0,
-      "warnings": 0,
+      "warnings": 373,
       "notes": "709 files scanned"
+    },
+    {
+      "dimension": "Portfolio Maturity",
+      "score": "B",
+      "errors": 0,
+      "warnings": 41,
+      "notes": "19 production-ready, 3 scaffold-only"
+    },
+    {
+      "dimension": "Test Coverage",
+      "score": "A",
+      "errors": 0,
+      "warnings": 2,
+      "notes": "2 apps without tests, 0 platform pkgs without tests"
+    },
+    {
+      "dimension": "Validation Integrity",
+      "score": "A",
+      "errors": 0,
+      "warnings": 3,
+      "notes": "367 info-level findings"
     }
   ],
   "blockers": [],
-  "recommendations": []
+  "recommendations": [
+    "2 production apps lack test coverage",
+    "Complete 2 partially-implemented claims",
+    "Fix broken documentation links and stale references"
+  ]
 }
