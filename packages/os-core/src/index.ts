@@ -15,6 +15,17 @@ export { RetentionClass } from './retention/policies'
 export { assertBootInvariants } from './boot-assert'
 export * from './resilience/index'
 export {
+  ApiError,
+  ApiErrorCode,
+  apiSuccess,
+  apiError,
+  type ApiSuccessResponse,
+  type ApiErrorResponse,
+  type ApiMeta,
+  type ApiErrorDetail,
+} from './api-response'
+export { apiHandler, type ApiHandlerOptions, type HandlerContext } from './api-handler'
+export {
   checkIdempotency,
   InMemoryIdempotencyCache,
   hashPayload,

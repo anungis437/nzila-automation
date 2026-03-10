@@ -18,6 +18,7 @@
     "@heroicons/react": "^2.2.0",
     "@nzila/mobility-core": "workspace:*",
     "@nzila/mobility-programs": "workspace:*",
+    "@nzila/os-core": "workspace:*",
     "@nzila/ui": "workspace:*",
     "next": "16.1.6",
     "react": "19.2.4",

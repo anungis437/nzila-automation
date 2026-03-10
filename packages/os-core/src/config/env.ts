@@ -107,6 +107,37 @@ const orchestratorSchema = baseSchema.extend({
   GITHUB_REPO_NAME: z.string().default('nzila-automation'),
 })
 
+const mobilitySchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+})
+
+const mobilityClientPortalSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+})
+
+const ponduSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+})
+
+const coraSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+})
+
+const tradeSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+  STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
+})
+
+const platformAdminSchema = baseSchema.extend({
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  ...clerkMixin,
+})
+
 // ---------------------------------------------------------------------------
 // Validation helper
 // ---------------------------------------------------------------------------
@@ -121,6 +152,12 @@ type AppName =
   | 'zonga'
   | 'abr'
   | 'orchestrator-api'
+  | 'mobility'
+  | 'mobility-client-portal'
+  | 'pondu'
+  | 'cora'
+  | 'trade'
+  | 'platform-admin'
   | 'base'
 
 const SCHEMAS: Record<AppName, ZodTypeAny> = {
@@ -135,6 +172,12 @@ const SCHEMAS: Record<AppName, ZodTypeAny> = {
   zonga: zongaSchema,
   abr: abrSchema,
   'orchestrator-api': orchestratorSchema,
+  mobility: mobilitySchema,
+  'mobility-client-portal': mobilityClientPortalSchema,
+  pondu: ponduSchema,
+  cora: coraSchema,
+  trade: tradeSchema,
+  'platform-admin': platformAdminSchema,
 }
 
 export type ValidatedEnv<T extends AppName = 'base'> = T extends 'console'
@@ -157,7 +200,19 @@ export type ValidatedEnv<T extends AppName = 'base'> = T extends 'console'
                   ? z.infer<typeof abrSchema>
                   : T extends 'orchestrator-api'
                     ? z.infer<typeof orchestratorSchema>
-                    : z.infer<typeof baseSchema>
+                    : T extends 'mobility'
+                      ? z.infer<typeof mobilitySchema>
+                      : T extends 'mobility-client-portal'
+                        ? z.infer<typeof mobilityClientPortalSchema>
+                        : T extends 'pondu'
+                          ? z.infer<typeof ponduSchema>
+                          : T extends 'cora'
+                            ? z.infer<typeof coraSchema>
+                            : T extends 'trade'
+                              ? z.infer<typeof tradeSchema>
+                              : T extends 'platform-admin'
+                                ? z.infer<typeof platformAdminSchema>
+                                : z.infer<typeof baseSchema>
 
 /**
  * Validate environment variables for the given app.
@@ -199,4 +254,10 @@ export {
   zongaSchema,
   abrSchema,
   orchestratorSchema,
+  mobilitySchema,
+  mobilityClientPortalSchema,
+  ponduSchema,
+  coraSchema,
+  tradeSchema,
+  platformAdminSchema,
 }
