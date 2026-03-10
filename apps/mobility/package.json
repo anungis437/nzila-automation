@@ -1,0 +1,46 @@
+{
+  "name": "@nzila/mobility",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3010",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .next .turbo node_modules"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.12.0",
+    "framer-motion": "^11.0.0",
+    "@heroicons/react": "^2.2.0",
+    "lucide-react": "^0.400.0",
+    "@nzila/db": "workspace:*",
+    "@nzila/mobility-core": "workspace:*",
+    "@nzila/mobility-programs": "workspace:*",
+    "@nzila/mobility-compliance": "workspace:*",
+    "@nzila/mobility-ai": "workspace:*",
+    "@nzila/integrations-hubspot": "workspace:*",
+    "@nzila/integrations-m365": "workspace:*",
+    "@nzila/integrations-whatsapp": "workspace:*",
+    "@nzila/os-core": "workspace:*",
+    "@nzila/ui": "workspace:*",
+    "next": "16.1.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@nzila/config": "workspace:*",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^25",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^10",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^4.0.18"
+  }
+}
