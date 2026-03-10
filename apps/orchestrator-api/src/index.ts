@@ -4,6 +4,8 @@ import rateLimit from '@fastify/rate-limit'
 import { commandRoutes } from './routes/commands.js'
 import { healthRoutes } from './routes/health.js'
 import { proofCenterRoutes } from './routes/proof-center.js'
+import { workflowRoutes } from './routes/workflows.js'
+import { jobRoutes } from './routes/jobs.js'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('orchestrator-api')
@@ -129,6 +131,8 @@ app.addHook('onRequest', async (req, reply) => {
 // ── Routes ──
 app.register(healthRoutes)
 app.register(commandRoutes, { prefix: '/commands' })
+app.register(workflowRoutes, { prefix: '/workflows' })
+app.register(jobRoutes, { prefix: '/jobs' })
 app.register(proofCenterRoutes, { prefix: '/api/proof-center' })
 
 // ── Start ──
