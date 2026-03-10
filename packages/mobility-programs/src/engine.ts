@@ -92,3 +92,55 @@ export function rankProgramOptions(
     .map((program) => evaluateProgramEligibility(profile, program))
     .sort((a, b) => b.score - a.score)
 }
+
+/* ── Program Comparison ───────────────────────────────────── */
+
+export interface ProgramComparisonRow {
+  field: string
+  values: Record<string, string | number | boolean | string[]>
+}
+
+export interface ProgramComparison {
+  programIds: string[]
+  programs: ProgramDefinition[]
+  rows: ProgramComparisonRow[]
+}
+
+/**
+ * Compare multiple programs side-by-side across key dimensions.
+ * Accepts country codes to look up from the catalog.
+ */
+export function comparePrograms(
+  countryCodes: string[],
+  catalog: readonly ProgramDefinition[],
+): ProgramComparison {
+  const programs = countryCodes
+    .map((code) => catalog.find((p) => p.countryCode === code || p.country === code))
+    .filter((p): p is ProgramDefinition => p !== undefined)
+
+  const fields: Array<{ field: string; extract: (p: ProgramDefinition) => string | number | boolean | string[] }> = [
+    { field: 'Programme Name', extract: (p) => p.name },
+    { field: 'Type', extract: (p) => p.programType.replace(/_/g, ' ') },
+    { field: 'Minimum Investment', extract: (p) => p.minimumInvestment },
+    { field: 'Currency', extract: (p) => p.currency },
+    { field: 'Processing (days)', extract: (p) => p.processingTimeDays },
+    { field: 'Time to Citizenship', extract: (p) => p.timeToCitizenship ?? 'N/A' },
+    { field: 'Citizenship Path', extract: (p) => p.citizenshipPath },
+    { field: 'Physical Presence', extract: (p) => p.physicalPresenceRequired },
+    { field: 'Dependents Allowed', extract: (p) => p.dependentsAllowed },
+    { field: 'Investment Types', extract: (p) => p.investmentTypes.map((t) => t.replace(/_/g, ' ')) },
+    { field: 'Risk Rating', extract: (p) => p.riskRating },
+    { field: 'Required Documents', extract: (p) => p.requiredDocuments.map((d) => d.replace(/_/g, ' ')) },
+  ]
+
+  const rows: ProgramComparisonRow[] = fields.map(({ field, extract }) => ({
+    field,
+    values: Object.fromEntries(programs.map((p) => [p.countryCode, extract(p)])),
+  }))
+
+  return {
+    programIds: programs.map((p) => p.countryCode),
+    programs,
+    rows,
+  }
+}
