@@ -7,7 +7,7 @@ export default defineProject({
   test: {
     name: 'shop-quoter-app',
     environment: 'node',
-    include: ['lib/**/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'tests/**/*.test.ts'],
   },
   resolve: {
     alias: {

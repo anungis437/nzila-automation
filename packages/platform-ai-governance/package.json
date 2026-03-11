@@ -1,0 +1,27 @@
+{
+  "name": "@nzila/platform-ai-governance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./model-registry": "./src/modelRegistry.ts",
+    "./prompt-versioning": "./src/promptVersioning.ts",
+    "./decision-log": "./src/decisionLog.ts",
+    "./review": "./src/humanReview.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "@nzila/platform-policy-engine": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

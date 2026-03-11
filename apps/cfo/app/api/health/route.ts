@@ -48,6 +48,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: allHealthy ? 'ok' : 'degraded',
+      service: APP,
       app: `@nzila/${APP}`,
       buildInfo: { version: VERSION, commit: COMMIT },
       checks,

@@ -120,7 +120,7 @@ function generateFiles(name: string, options: CreateVerticalOptions): GeneratedF
             start: 'next start',
             lint: 'next lint',
             typecheck: 'tsc --noEmit',
-            test: 'vitest run --passWithNoTests',
+            test: 'vitest run',
           },
           dependencies: {
             '@clerk/nextjs': '^6.0.0',

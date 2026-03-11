@@ -1,0 +1,27 @@
+{
+  "name": "@nzila/platform-governance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./audit-timeline": "./src/auditTimeline.ts",
+    "./status": "./src/governanceStatus.ts",
+    "./validator": "./src/complianceValidator.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "@nzila/platform-policy-engine": "workspace:*",
+    "@nzila/platform-evidence-pack": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

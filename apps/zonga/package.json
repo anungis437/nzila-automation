@@ -9,7 +9,7 @@
     "start": "next start --port 3006",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",

@@ -118,6 +118,13 @@ export default defineConfig({
       'tooling/openapi-gen',
       // Contract tests (architectural invariants)
       'tooling/contract-tests',
+      // Governance & AI intelligence packages
+      'packages/platform-governance',
+      'packages/platform-intelligence',
+      'packages/platform-ai-query',
+      'packages/platform-anomaly-engine',
+      'packages/platform-agent-workflows',
+      'packages/platform-ai-governance',
     ],
   },
 })

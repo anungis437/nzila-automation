@@ -1,7 +1,9 @@
-import { defineProject } from "vitest/config";
+import { defineProject } from 'vitest/config'
 
 export default defineProject({
   test: {
-    name: "cfo",
+    name: 'cfo',
+    environment: 'node',
+    include: ['lib/**/*.test.ts', 'tests/**/*.test.ts'],
   },
-});
+})

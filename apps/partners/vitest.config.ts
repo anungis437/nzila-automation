@@ -4,6 +4,6 @@ export default defineProject({
   test: {
     name: 'partners',
     environment: 'node',
-    include: ['lib/**/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'tests/**/*.test.ts'],
   },
 })
