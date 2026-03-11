@@ -10,7 +10,12 @@
  * dependencies and import { withAudit, createAuditedScopedDb } from '@nzila/db'.
  */
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import {
+  createRequestContext,
+  runWithContext,
+} from '@nzila/os-core/telemetry'
 
 /**
  * withAudit contract placeholder.
@@ -45,4 +50,20 @@ export async function authenticateUser(): Promise<
     }
   }
   return { ok: true, userId }
+}
+
+// ── Request Context wrapper ─────────────────────────────────────────────────
+
+/**
+ * Wraps a route handler with os-core request context.
+ * Extracts x-request-id and W3C traceparent from headers,
+ * then runs the handler inside AsyncLocalStorage so the
+ * os-core logger auto-attaches requestId/traceId to every log.
+ */
+export async function withRequestContext<T>(
+  req: NextRequest | Request,
+  handler: () => Promise<T>,
+): Promise<T> {
+  const ctx = createRequestContext(req, { appName: 'web' })
+  return runWithContext(ctx, handler)
 }

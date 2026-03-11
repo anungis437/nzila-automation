@@ -211,3 +211,41 @@ packages:
     steward: null
     tier: utility
     description: "Shared low-level utilities"
+
+  # ── AI & intelligence ─────────────────────────────────────────────────────
+  platform-intelligence:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "Cross-vertical intelligence aggregation and insights"
+
+  platform-ai-query:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "Natural-language query interface for platform data"
+
+  platform-anomaly-engine:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "Anomaly detection across verticals"
+
+  platform-agent-workflows:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "AI agent workflow orchestration"
+
+  platform-ai-governance:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "AI model governance, bias detection, and audit trails"
+
+  # ── Governance ────────────────────────────────────────────────────────────
+  platform-governance:
+    owner: "@nzila/governance"
+    steward: null
+    tier: foundational
+    description: "Cross-vertical governance enforcement and compliance checks"
