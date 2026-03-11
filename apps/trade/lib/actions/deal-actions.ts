@@ -16,7 +16,6 @@ import {
   buildTransitionAuditEntry,
   type TradeServiceResult,
   type TradeDeal,
-  type TradeAuditEntry,
   TradeDealStage,
 } from '@nzila/trade-core'
 import {
@@ -144,7 +143,7 @@ export async function transitionDeal(
 }
 
 export async function getDealTransitions(
-  dealId: string,
+  _dealId: string,
 ): Promise<TradeServiceResult<{ transitions: string[] }>> {
   const ctx = await resolveOrgContext()
 
@@ -166,12 +165,12 @@ export async function getDealTransitions(
   }
 }
 
-export async function listDeals(opts?: {
+export async function listDeals(_opts?: {
   page?: number
   pageSize?: number
   stage?: string
 }): Promise<TradeServiceResult<{ deals: TradeDeal[]; total: number }>> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   // TODO: read via trade-db repository scoped to ctx.orgId
 
@@ -184,9 +183,9 @@ export async function listDeals(opts?: {
 }
 
 export async function getDeal(
-  dealId: string,
+  _dealId: string,
 ): Promise<TradeServiceResult<TradeDeal | null>> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   // TODO: read via trade-db repository scoped to ctx.orgId
   // const repo = createTradeDealRepository(readonlyDb)

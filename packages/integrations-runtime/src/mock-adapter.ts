@@ -119,7 +119,7 @@ export class MockAdapter implements IntegrationAdapter {
   }
 
   /** All recorded health check calls */
-  get healthCalls(): readonly Array<{ credentials: Record<string, unknown>; timestamp: string }> {
+  get healthCalls(): ReadonlyArray<{ credentials: Record<string, unknown>; timestamp: string }> {
     return this._healthCalls
   }
 

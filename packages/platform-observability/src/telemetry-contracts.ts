@@ -64,10 +64,9 @@ export interface TelemetryContext {
   readonly traceId: string
   readonly spanId: string
   readonly actorId?: string
-  readonly tenantId?: string
+  readonly orgId?: string
   readonly workflowId?: string
   readonly jobId?: string
-  readonly entityId?: string
   readonly integrationProvider?: string
   readonly environment: string
   readonly service: string
@@ -317,16 +316,16 @@ export function dataFabricTelemetry(sourceSystem: string) {
     mappingApplied(ruleId: string, entityType: string) {
       logger.info('mapping_applied', { sourceSystem, ruleId, entityType })
     },
-    reconciliationPerformed(entityId: string, matched: boolean) {
+    reconciliationPerformed(recordId: string, matched: boolean) {
       if (!matched) dataFabricReconciliationFailures.inc()
-      logger.info('reconciliation_performed', { sourceSystem, entityId, matched })
+      logger.info('reconciliation_performed', { sourceSystem, recordId, matched })
     },
-    conflictDetected(entityId: string, field: string) {
+    conflictDetected(recordId: string, field: string) {
       dataFabricMappingConflicts.inc()
-      logger.warn('conflict_detected', { sourceSystem, entityId, field })
+      logger.warn('conflict_detected', { sourceSystem, recordId, field })
     },
-    lineageUpdated(entityId: string) {
-      logger.info('lineage_updated', { sourceSystem, entityId })
+    lineageUpdated(recordId: string) {
+      logger.info('lineage_updated', { sourceSystem, recordId })
     },
     syncLagUpdated(lagMs: number) {
       dataFabricSyncLag.set(lagMs)
@@ -356,7 +355,7 @@ export function requestContextMiddleware(service: string) {
         traceId: getHeader('x-trace-id') ?? '',
         spanId: getHeader('x-span-id') ?? '',
         actorId: getHeader('x-actor-id'),
-        tenantId: getHeader('x-org-id'),
+        orgId: getHeader('x-org-id'),
         environment: process.env.NODE_ENV ?? 'development',
         service,
       }

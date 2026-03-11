@@ -91,13 +91,13 @@ export async function finalizeCommission(
   }
 }
 
-export async function listCommissions(opts?: {
+export async function listCommissions(_opts?: {
   page?: number
   pageSize?: number
   status?: string
   dealId?: string
 }): Promise<TradeServiceResult<{ commissions: TradeCommission[]; total: number }>> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   // TODO: read via trade-db repository scoped to ctx.orgId
 

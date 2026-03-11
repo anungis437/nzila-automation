@@ -12,10 +12,8 @@ import {
   createPartySchema,
   updatePartySchema,
   buildActionAuditEntry,
-  hashAuditEntry,
   type TradeServiceResult,
   type TradeParty,
-  type TradeAuditEntry,
 } from '@nzila/trade-core'
 
 export async function createParty(
@@ -82,12 +80,12 @@ export async function updateParty(
   return { ok: true, data: { partyId: parsed.data.id }, error: null, auditEntries: [entry] }
 }
 
-export async function listParties(opts?: {
+export async function listParties(_opts?: {
   page?: number
   pageSize?: number
   role?: string
 }): Promise<TradeServiceResult<{ parties: TradeParty[]; total: number }>> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   // TODO: read via trade-db repository scoped to ctx.orgId
   // const repo = createTradePartyRepository(readonlyDb)

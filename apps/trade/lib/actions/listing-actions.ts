@@ -111,13 +111,13 @@ export async function addListingMedia(
   return { ok: true, data: { mediaId: id }, error: null, auditEntries: [entry] }
 }
 
-export async function listListings(opts?: {
+export async function listListings(_opts?: {
   page?: number
   pageSize?: number
   status?: string
   listingType?: string
 }): Promise<TradeServiceResult<{ listings: TradeListing[]; total: number }>> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   // TODO: read via trade-db repository scoped to ctx.orgId
 

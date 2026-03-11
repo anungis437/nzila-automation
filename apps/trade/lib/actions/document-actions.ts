@@ -51,9 +51,9 @@ export async function uploadDocument(
 }
 
 export async function listDocumentsForDeal(
-  dealId: string,
+  _dealId: string,
 ): Promise<TradeServiceResult<{ documents: TradeDocument[] }>> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   // TODO: read via trade-db repository scoped to ctx.orgId
 

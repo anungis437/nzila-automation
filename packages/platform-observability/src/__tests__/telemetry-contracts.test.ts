@@ -143,7 +143,7 @@ describe('telemetry-contracts', () => {
       })
 
       expect(ctx.requestId).toBe('req-123')
-      expect(ctx.tenantId).toBe('org-456')
+      expect(ctx.orgId).toBe('org-456')
       expect(ctx.traceId).toBe('trace-789')
       expect(ctx.service).toBe('console')
     })

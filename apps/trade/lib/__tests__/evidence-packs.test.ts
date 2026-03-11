@@ -45,37 +45,37 @@ const DEAL = {
   orgId: 'org-001',
   status: 'accepted',
   counterparty: 'buyer-x',
-} as any
+} as unknown
 
 const QUOTE = {
   id: 'quote-001',
   total: 50000,
   currency: 'USD',
   acceptedAt: new Date('2026-03-01'),
-} as any
+} as unknown
 
 const SHIPMENT = {
   id: 'ship-001',
   trackingRef: 'TRK-12345',
   status: 'delivered',
-} as any
+} as unknown
 
 const DOCUMENTS = [
   { docType: 'bill_of_lading', contentHash: 'abc123', uri: '/docs/bol.pdf' },
   { docType: 'certificate_of_origin', contentHash: 'def456', uri: '/docs/coo.pdf' },
-] as any[]
+] as unknown[]
 
 const COMMISSION = {
   id: 'comm-001',
   rateBps: 250,
   amountCents: 12500,
   currency: 'USD',
-} as any
+} as unknown
 
 const AUDIT_ENTRIES = [
   { action: 'quote_accepted', actorId: 'user-1', timestamp: '2026-03-01T00:00:00Z' },
   { action: 'shipment_created', actorId: 'user-1', timestamp: '2026-03-02T00:00:00Z' },
-] as any[]
+] as unknown[]
 
 // ── Tests ───────────────────────────────────────────────────────────────────
 
