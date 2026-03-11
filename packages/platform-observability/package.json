@@ -20,7 +20,6 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@nzila/os-core": "workspace:*",
     "zod": "^3.24.0"
   },
   "devDependencies": {

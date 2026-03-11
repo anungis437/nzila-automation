@@ -7,10 +7,10 @@
  * @module @nzila/platform-observability/span
  */
 import { randomBytes } from 'node:crypto'
-import { createLogger } from '@nzila/os-core/telemetry'
+import { createLogger } from './logger.js'
 import type { SpanData, SpanEvent, TraceContext } from './types'
 
-const logger = createLogger('platform-span')
+const logger = createLogger()
 
 // ── Span ────────────────────────────────────────────────────────────────────
 

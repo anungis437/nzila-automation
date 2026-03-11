@@ -6,10 +6,10 @@
  *
  * @module @nzila/platform-observability/health
  */
-import { createLogger } from '@nzila/os-core/telemetry'
+import { createLogger } from './logger.js'
 import type { HealthCheckResult, HealthReport, HealthStatus } from './types'
 
-const logger = createLogger('platform-health')
+const logger = createLogger()
 
 // ── Types ───────────────────────────────────────────────────────────────────
 

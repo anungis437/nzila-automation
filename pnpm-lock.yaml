@@ -3744,9 +3744,6 @@ importers:
 
   packages/platform-observability:
     dependencies:
-      '@nzila/os-core':
-        specifier: workspace:*
-        version: link:../os-core
       zod:
         specifier: ^3.24.0
         version: 3.25.76

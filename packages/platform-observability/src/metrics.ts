@@ -6,10 +6,10 @@
  *
  * @module @nzila/platform-observability/metrics
  */
-import { createLogger } from '@nzila/os-core/telemetry'
+import { createLogger } from './logger.js'
 import type { MetricType, MetricDefinition, MetricSample } from './types'
 
-const logger = createLogger('platform-metrics')
+const logger = createLogger()
 
 // ── Counter ─────────────────────────────────────────────────────────────────
 
