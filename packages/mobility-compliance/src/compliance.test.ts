@@ -114,7 +114,7 @@ describe('Compliance Workflows', () => {
       const state = initWorkflow('case-001')
       const result = advanceWorkflow(state, {
         passed: true,
-        eventType: 'kyc_verified',
+        eventType: 'kyc_completed',
         severity: 'info',
         details: {},
       })
@@ -126,7 +126,7 @@ describe('Compliance Workflows', () => {
       const state = initWorkflow('case-001')
       const result = advanceWorkflow(state, {
         passed: false,
-        eventType: 'kyc_failed',
+        eventType: 'compliance_rejected',
         severity: 'warning',
         details: { reason: 'Document expired' },
       })
@@ -139,7 +139,7 @@ describe('Compliance Workflows', () => {
       const state = initWorkflow('case-001')
       const result = advanceWorkflow(state, {
         passed: false,
-        eventType: 'aml_flagged',
+        eventType: 'aml_flag',
         severity: 'critical',
         details: { reason: 'PEP match' },
       })
@@ -153,7 +153,7 @@ describe('Compliance Workflows', () => {
       }
       const result = advanceWorkflow(state, {
         passed: false,
-        eventType: 'aml_flagged',
+        eventType: 'aml_flag',
         severity: 'critical',
         details: {},
       })
@@ -164,7 +164,7 @@ describe('Compliance Workflows', () => {
       const state = initWorkflow('case-001')
       const result = advanceWorkflow(state, {
         passed: true,
-        eventType: 'kyc_verified',
+        eventType: 'kyc_completed',
         severity: 'info',
         details: {},
       })
