@@ -2923,6 +2923,12 @@ importers:
       '@nzila/integrations-db':
         specifier: workspace:*
         version: link:../integrations-db
+      '@nzila/platform-observability':
+        specifier: workspace:*
+        version: link:../platform-observability
+      '@nzila/platform-ops':
+        specifier: workspace:*
+        version: link:../platform-ops
       zod:
         specifier: ^3.24.0
         version: 3.25.76

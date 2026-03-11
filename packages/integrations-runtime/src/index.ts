@@ -7,3 +7,10 @@ export { parseRateLimitInfo, parseSlackRateLimit, parseHubSpotRateLimit, parseTe
 export { ChaosSimulator, CHAOS_SCENARIOS, isChaosAllowed, type ChaosConfig, type ChaosScenario, type ChaosPorts } from './chaos'
 export { SloComputer, type SloComputerPorts, type SloResult } from './slo'
 export { ResilientDispatcher, type ResilientDispatcherPorts, type ResilientDispatcherOptions } from './resilientAdapter'
+
+// PR4: Integration reliability hardening
+export { withTimeout, getTimeoutMs, TimeoutError, DEFAULT_TIMEOUT_CONFIG, type TimeoutConfig } from './timeout'
+export { createValidatedAdapter, validateSendRequest, type ValidationError, type ValidationResult } from './adapter-validator'
+export { executeWithClassifiedRetry, DEFAULT_CLASSIFIED_RETRY_CONFIG, type ClassifiedRetryConfig, type ClassifiedRetryResult } from './classified-retry'
+export { recordIntegrationTelemetry, recordSendTelemetry, type IntegrationTelemetryEvent, type TelemetryBridgePorts } from './telemetry-bridge'
+export { MockAdapter, createMockAdapter, type MockAdapterConfig, type RecordedCall } from './mock-adapter'

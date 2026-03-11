@@ -14,7 +14,12 @@
     "./rateLimitParser": "./src/rateLimitParser.ts",
     "./chaos": "./src/chaos.ts",
     "./slo": "./src/slo.ts",
-    "./policy": "./src/policy.ts"
+    "./policy": "./src/policy.ts",
+    "./timeout": "./src/timeout.ts",
+    "./adapter-validator": "./src/adapter-validator.ts",
+    "./classified-retry": "./src/classified-retry.ts",
+    "./telemetry-bridge": "./src/telemetry-bridge.ts",
+    "./mock-adapter": "./src/mock-adapter.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -24,6 +29,8 @@
   "dependencies": {
     "@nzila/integrations-core": "workspace:*",
     "@nzila/integrations-db": "workspace:*",
+    "@nzila/platform-ops": "workspace:*",
+    "@nzila/platform-observability": "workspace:*",
     "zod": "^3.24.0"
   },
   "devDependencies": {
