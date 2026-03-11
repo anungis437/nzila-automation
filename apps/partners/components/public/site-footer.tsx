@@ -8,22 +8,22 @@ const footerLinks = {
     { href: "#features", label: "Co-Marketing" },
   ],
   Resources: [
-    { href: "/docs", label: "Partner Docs" },
-    { href: "/api", label: "API Hub" },
-    { href: "/blog", label: "Partner Blog" },
-    { href: "/changelog", label: "Changelog" },
+    { href: "#", label: "Partner Docs" },
+    { href: "#", label: "API Hub" },
+    { href: "#", label: "Partner Blog" },
+    { href: "#", label: "Changelog" },
   ],
   Company: [
     { href: "https://nzilaventures.com", label: "Nzila Ventures" },
     { href: "https://nzilaventures.com/products", label: "All Products" },
-    { href: "/careers", label: "Careers" },
-    { href: "/contact", label: "Contact" },
+    { href: "https://nzilaventures.com/careers", label: "Careers" },
+    { href: "https://nzilaventures.com/contact", label: "Contact" },
   ],
   Legal: [
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms of Service" },
-    { href: "/security", label: "Security" },
-    { href: "/partner-agreement", label: "Partner Agreement" },
+    { href: "https://nzilaventures.com/privacy", label: "Privacy Policy" },
+    { href: "https://nzilaventures.com/terms", label: "Terms of Service" },
+    { href: "https://nzilaventures.com/security", label: "Security" },
+    { href: "#", label: "Partner Agreement" },
   ],
 };
 

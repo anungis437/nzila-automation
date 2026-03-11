@@ -1,6 +1,11 @@
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import { SignIn } from '@clerk/nextjs'
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const { userId } = await auth()
+  if (userId) redirect('/portal')
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-blue-50">
       <SignIn
