@@ -22,11 +22,11 @@ environments:
     enabled: false
     mode: "warn"      # warn = log only, enforce = block
   staging:
-    enabled: false
-    mode: "warn"
+    enabled: true
+    mode: "warn"       # warn-only in staging — surface regressions early
   pilot:
-    enabled: false     # flip to true when ready for pilot gate
-    mode: "enforce"
+    enabled: true
+    mode: "enforce"    # hard gate in pilot
   prod:
     enabled: false     # flip to true when ready for prod gate
     mode: "enforce"

@@ -18,6 +18,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      '@clerk/nextjs':
+        specifier: ^7.0.4
+        version: 7.0.4(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.0
@@ -123,7 +127,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl:
         specifier: ^4.6.0
         version: 4.8.3(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -172,7 +176,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       prettier:
         specifier: ^3.2.0
         version: 3.8.1
@@ -244,7 +248,7 @@ importers:
         version: 0.576.0(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl:
         specifier: ^4.6.0
         version: 4.8.3(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -392,7 +396,7 @@ importers:
         version: 4.0.3
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -486,7 +490,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -520,7 +524,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -577,7 +581,7 @@ importers:
         version: 0.400.0(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -647,7 +651,7 @@ importers:
         version: 0.400.0(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -735,7 +739,7 @@ importers:
         version: 0.576.0(react@19.2.4)
       next:
         specifier: ^16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl:
         specifier: ^4.6.0
         version: 4.8.3(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -881,7 +885,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -981,7 +985,7 @@ importers:
         version: link:../../packages/ui
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -1069,7 +1073,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -1178,7 +1182,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl:
         specifier: ^4.6.0
         version: 4.8.3(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -1269,7 +1273,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -1350,7 +1354,7 @@ importers:
         specifier: ^2.33.0
         version: 2.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/nextjs':
-        specifier: ^6.12.0
+        specifier: ^6.39.0
         version: 6.39.0(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/themes':
         specifier: ^2.4.43
@@ -1645,7 +1649,7 @@ importers:
         version: 1.48.0
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl:
         specifier: ^4.6.0
         version: 4.8.3(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -1928,7 +1932,7 @@ importers:
         version: 4.0.3
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -2046,7 +2050,7 @@ importers:
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: ^16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl:
         specifier: ^4.6.0
         version: 4.8.3(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -4964,6 +4968,10 @@ packages:
     resolution: {integrity: sha512-sVR214TlJ5vsRprDE9EiZpqeNq/YVhCQLtAZ19ugjNf1C9xMX28JoMyodI/dU5FLBelmgSyjBAjodPULjIeF+w==}
     engines: {node: '>=18.17.0'}
 
+  '@clerk/backend@3.2.0':
+    resolution: {integrity: sha512-3APNJ5jt5Db9f441FPVTjgzvPxjLhekygomkMOhsvPpItRNNEHgFZM/bGXYetgcOtUrO6vWcuhf1rlNSTRelhg==}
+    engines: {node: '>=20.9.0'}
+
   '@clerk/clerk-react@5.61.3':
     resolution: {integrity: sha512-W21aNEeHtqh3xJLuW5g2ydben/1D5pSnxsl/kCnv0IY1zma7lO+aIJ7Br2bR4FKKkiu695mPnjtY+fvkQmCXBg==}
     engines: {node: '>=18.17.0'}
@@ -4980,9 +4988,36 @@ packages:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
       react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
 
+  '@clerk/nextjs@7.0.4':
+    resolution: {integrity: sha512-Vnx+2akiAxogvLW0ZdRU1idREdznRuhUYxSOI/YLfqVzZ+ORtTz5lrNlSKiBx9oSM6nd11LSKfFnVkLaAbU0fQ==}
+    engines: {node: '>=20.9.0'}
+    peerDependencies:
+      next: ^15.2.8 || ^15.3.8 || ^15.4.10 || ^15.5.9 || ^15.6.0-0 || ^16.0.10 || ^16.1.0-0
+      react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+      react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+
+  '@clerk/react@6.1.0':
+    resolution: {integrity: sha512-xHFvpQGBZGuuAp/d7+n2LAPoaeqPsqrG5ValR0//Ol6gRGCttnjJ0CVk806dlIzs7JZNLO68+i/MZanowCjEMw==}
+    engines: {node: '>=20.9.0'}
+    peerDependencies:
+      react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+      react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+
   '@clerk/shared@3.47.2':
     resolution: {integrity: sha512-dwUT27DKq3Gr9vn9lAfc/LSe79P1rKIib8/mTWA7ZEzY7XX2Yq5UnDMCMznYrI8oVLdJrCT4ypFXRgnH306Oew==}
     engines: {node: '>=18.17.0'}
+    peerDependencies:
+      react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+      react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@clerk/shared@4.3.0':
+    resolution: {integrity: sha512-Ydt8YGohNXEs6aBBLnti80OJT551yYWVTugFTO8Ee+uIZpStyqXF+ufBtJleuhfxs1D5KjtpIxc+hTqkZtqMyQ==}
+    engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
       react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -9071,6 +9106,9 @@ packages:
     resolution: {integrity: sha512-w31dd8HOx3k9vPtcQh5QHP9GwKcgbMp87j58qi6xgiBnFFtKEAgCWnDw4qUT8aHwkCp8bKvb/KGKWWHedP0AAg==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
+
+  '@tanstack/query-core@5.90.16':
+    resolution: {integrity: sha512-MvtWckSVufs/ja463/K4PyJeqT+HMlJWtw6PrCpywznd2NSgO3m4KwO9RqbFqGg6iDE8vVMFWMeQI4Io3eEYww==}
 
   '@tanstack/query-core@5.90.20':
     resolution: {integrity: sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==}
@@ -16627,6 +16665,15 @@ snapshots:
       - react
       - react-dom
 
+  '@clerk/backend@3.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@clerk/shared': 4.3.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      standardwebhooks: 1.0.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - react
+      - react-dom
+
   '@clerk/clerk-react@5.61.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@clerk/shared': 3.47.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -16640,10 +16687,28 @@ snapshots:
       '@clerk/clerk-react': 5.61.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/shared': 3.47.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/types': 4.101.20(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
       server-only: 0.0.1
+      tslib: 2.8.1
+
+  '@clerk/nextjs@7.0.4(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@clerk/backend': 3.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/react': 6.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/shared': 4.3.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      server-only: 0.0.1
+      tslib: 2.8.1
+
+  '@clerk/react@6.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@clerk/shared': 4.3.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
       tslib: 2.8.1
 
   '@clerk/shared@3.47.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
@@ -16654,6 +16719,17 @@ snapshots:
       js-cookie: 3.0.5
       std-env: 3.10.0
       swr: 2.3.4(react@19.2.4)
+    optionalDependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@clerk/shared@4.3.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@tanstack/query-core': 5.90.16
+      dequal: 2.0.3
+      glob-to-regexp: 0.4.1
+      js-cookie: 3.0.5
+      std-env: 3.10.0
     optionalDependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
@@ -20609,7 +20685,7 @@ snapshots:
       '@sentry/react': 10.41.0(react@19.2.4)
       '@sentry/vercel-edge': 10.41.0
       '@sentry/webpack-plugin': 5.1.1(webpack@5.105.2(esbuild@0.25.12))
-      next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       rollup: 4.59.0
       stacktrace-parser: 0.1.11
     transitivePeerDependencies:
@@ -21665,6 +21741,8 @@ snapshots:
     dependencies:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.2.1
+
+  '@tanstack/query-core@5.90.16': {}
 
   '@tanstack/query-core@5.90.20': {}
 
@@ -24124,7 +24202,7 @@ snapshots:
       '@next/eslint-plugin-next': 16.1.6
       eslint: 9.39.3(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.3(jiti@2.6.1))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1))
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.3(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.39.3(jiti@2.6.1))
@@ -24167,7 +24245,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.3(jiti@2.6.1)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
@@ -24182,14 +24260,29 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3(jiti@2.6.1)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.3(jiti@2.6.1)):
+    dependencies:
+      '@nolyfill/is-core-module': 1.0.39
+      debug: 4.4.3
+      eslint: 9.39.3(jiti@2.6.1)
+      get-tsconfig: 4.13.6
+      is-bun-module: 2.0.0
+      stable-hash: 0.0.5
+      tinyglobby: 0.2.15
+      unrs-resolver: 1.11.1
+    optionalDependencies:
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3(jiti@2.6.1))
+    transitivePeerDependencies:
+      - supports-color
+
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.3(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.3(jiti@2.6.1))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -24215,7 +24308,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.3(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3(jiti@2.6.1))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1)))(eslint@9.39.3(jiti@2.6.1))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -26527,7 +26620,7 @@ snapshots:
       '@swc/core': 1.15.11
       icu-minify: 4.8.3
       negotiator: 1.0.0
-      next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl-swc-plugin-extractor: 4.8.3
       po-parser: 2.1.1
       react: 19.2.4
@@ -26542,7 +26635,7 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 16.1.6
       '@swc/helpers': 0.5.15
@@ -26551,7 +26644,7 @@ snapshots:
       postcss: 8.4.31
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
-      styled-jsx: 5.1.6(@babel/core@7.29.0)(react@19.2.4)
+      styled-jsx: 5.1.6(react@19.2.4)
     optionalDependencies:
       '@next/swc-darwin-arm64': 16.1.6
       '@next/swc-darwin-x64': 16.1.6
@@ -28189,12 +28282,10 @@ snapshots:
 
   stubs@3.0.0: {}
 
-  styled-jsx@5.1.6(@babel/core@7.29.0)(react@19.2.4):
+  styled-jsx@5.1.6(react@19.2.4):
     dependencies:
       client-only: 0.0.1
       react: 19.2.4
-    optionalDependencies:
-      '@babel/core': 7.29.0
 
   superagent@10.3.0:
     dependencies:

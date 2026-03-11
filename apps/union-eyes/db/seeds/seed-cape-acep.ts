@@ -209,7 +209,7 @@ export async function seedCapeAcep(): Promise<CapeAcepSeedResult> {
       INSERT INTO dues_rules (
         organization_id, rule_name, rule_code, description,
         calculation_type, percentage_rate, base_field,
-        billing_frequency, is_active, effective_date, created_by
+        billing_frequency, is_active, effective_date
       ) VALUES (
         ${result.organizationId},
         ${CAPE_DUES_RULE.ruleName},
@@ -220,8 +220,7 @@ export async function seedCapeAcep(): Promise<CapeAcepSeedResult> {
         ${CAPE_DUES_RULE.baseField},
         ${CAPE_DUES_RULE.billingFrequency},
         ${CAPE_DUES_RULE.isActive},
-        ${CAPE_DUES_RULE.effectiveDate},
-        ${CAPE_DUES_RULE.createdBy}
+        ${CAPE_DUES_RULE.effectiveDate}
       )
       ON CONFLICT (organization_id, rule_code) DO NOTHING
     `

@@ -49,6 +49,10 @@
 /governance/**                 @nzila/platform @nzila/security
 /security/redteam/**           @nzila/security @nzila/platform
 
+# Platform packages — ownership changes require platform review
+/packages/platform-*/package.json  @nzila/platform
+/governance/platform-package-owners.yaml  @nzila/platform @nzila/eng
+
 # AI / ML packages
 /packages/ai-core/**  @nzila/ai
 /packages/ai-sdk/**   @nzila/ai @nzila/eng
