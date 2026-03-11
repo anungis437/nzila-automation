@@ -6,6 +6,7 @@ import {
   DEFAULT_RETRY_CONFIG,
   DEFAULT_SLO_TARGETS,
   type WorkflowDefinition,
+  type DangerLevel,
 } from '@nzila/platform-ops'
 
 /**
@@ -18,16 +19,35 @@ import {
 
 const registry = createWorkflowRegistry()
 
+function seedWf(name: string, tags: string[], dangerLevel: DangerLevel, requiresApproval: boolean): WorkflowDefinition {
+  return {
+    name,
+    description: name.replace(/-/g, ' '),
+    version: '1.0.0',
+    status: 'active',
+    dangerLevel,
+    requiresApproval,
+    defaultDryRun: false,
+    estimatedDurationSeconds: 60,
+    requiredPermissions: [],
+    retry: DEFAULT_RETRY_CONFIG,
+    slo: DEFAULT_SLO_TARGETS,
+    tags,
+    owner: tags[0] ?? 'platform',
+    registeredAt: new Date().toISOString(),
+  }
+}
+
 // Seed the registry with known workflows for display purposes
 const seedWorkflows: WorkflowDefinition[] = [
-  { name: 'tenant-onboarding', domain: 'platform', danger: 'high', hasRollback: true, hasCircuitBreaker: true },
-  { name: 'invoice-generation', domain: 'commerce', danger: 'high', hasRollback: true, hasCircuitBreaker: false },
-  { name: 'notification-dispatch', domain: 'integrations', danger: 'low', hasRollback: false, hasCircuitBreaker: true },
-  { name: 'document-processing', domain: 'automation', danger: 'medium', hasRollback: true, hasCircuitBreaker: true },
-  { name: 'ai-model-inference', domain: 'ai', danger: 'medium', hasRollback: false, hasCircuitBreaker: true },
-  { name: 'data-sync', domain: 'integrations', danger: 'medium', hasRollback: true, hasCircuitBreaker: true },
-  { name: 'report-generation', domain: 'analytics', danger: 'low', hasRollback: false, hasCircuitBreaker: false },
-  { name: 'kyc-verification', domain: 'compliance', danger: 'high', hasRollback: true, hasCircuitBreaker: true },
+  seedWf('tenant-onboarding', ['platform'], 'destructive', true),
+  seedWf('invoice-generation', ['commerce'], 'destructive', true),
+  seedWf('notification-dispatch', ['integrations'], 'safe', false),
+  seedWf('document-processing', ['automation'], 'moderate', true),
+  seedWf('ai-model-inference', ['ai'], 'moderate', false),
+  seedWf('data-sync', ['integrations'], 'moderate', true),
+  seedWf('report-generation', ['analytics'], 'safe', false),
+  seedWf('kyc-verification', ['compliance'], 'destructive', true),
 ]
 
 for (const wf of seedWorkflows) {
@@ -36,9 +56,9 @@ for (const wf of seedWorkflows) {
 
 function dangerBadge(level: string) {
   const colors: Record<string, string> = {
-    low: 'bg-green-100 text-green-700',
-    medium: 'bg-yellow-100 text-yellow-700',
-    high: 'bg-red-100 text-red-700',
+    safe: 'bg-green-100 text-green-700',
+    moderate: 'bg-yellow-100 text-yellow-700',
+    destructive: 'bg-red-100 text-red-700',
   }
   return colors[level] ?? 'bg-gray-100 text-gray-600'
 }
@@ -49,10 +69,10 @@ export default function OrchestratorOpsPage() {
 
   const allWorkflows = registry.list()
   const workflows = domainFilter
-    ? allWorkflows.filter((w) => w.domain.toLowerCase().includes(domainFilter.toLowerCase()))
+    ? allWorkflows.filter((w) => w.tags.some(t => t.toLowerCase().includes(domainFilter.toLowerCase())))
     : allWorkflows
 
-  const domains = [...new Set(allWorkflows.map((w) => w.domain))].sort()
+  const domains = [...new Set(allWorkflows.flatMap((w) => w.tags))].sort()
 
   return (
     <div>
@@ -100,10 +120,10 @@ export default function OrchestratorOpsPage() {
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
                   <th className="px-4 py-3 font-medium text-gray-500">Workflow</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Domain</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">Tags</th>
                   <th className="px-4 py-3 font-medium text-gray-500">Danger</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Rollback</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Circuit Breaker</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">Approval</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,27 +132,25 @@ export default function OrchestratorOpsPage() {
                     <td className="px-4 py-2 font-mono text-xs text-gray-800">{wf.name}</td>
                     <td className="px-4 py-2">
                       <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
-                        {wf.domain}
+                        {wf.tags.join(', ')}
                       </span>
                     </td>
                     <td className="px-4 py-2">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${dangerBadge(wf.danger)}`}>
-                        {wf.danger}
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${dangerBadge(wf.dangerLevel)}`}>
+                        {wf.dangerLevel}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {wf.hasRollback ? (
+                      {wf.requiresApproval ? (
                         <span className="text-green-600">✓</span>
                       ) : (
                         <span className="text-gray-300">—</span>
                       )}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {wf.hasCircuitBreaker ? (
-                        <span className="text-green-600">✓</span>
-                      ) : (
-                        <span className="text-gray-300">—</span>
-                      )}
+                      <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-600">
+                        {wf.status}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -183,31 +201,24 @@ export default function OrchestratorOpsPage() {
       {tab === 'slo' && (
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <h3 className="mb-4 text-lg font-semibold">Workflow SLO Targets</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded border border-gray-100 p-4">
               <div className="text-xs font-medium text-gray-400">Success Rate Target</div>
               <div className="mt-1 text-3xl font-bold text-green-600">
-                {(DEFAULT_SLO_TARGETS.successRate * 100).toFixed(1)}%
+                {DEFAULT_SLO_TARGETS.successRatePercent.toFixed(1)}%
               </div>
               <div className="mt-1 text-xs text-gray-400">
-                Error budget: {((1 - DEFAULT_SLO_TARGETS.successRate) * 100).toFixed(2)}%
+                Error budget: {(100 - DEFAULT_SLO_TARGETS.successRatePercent).toFixed(2)}%
               </div>
             </div>
             <div className="rounded border border-gray-100 p-4">
-              <div className="text-xs font-medium text-gray-400">P99 Latency Target</div>
+              <div className="text-xs font-medium text-gray-400">Max Duration Target</div>
               <div className="mt-1 text-3xl font-bold text-blue-600">
-                {(DEFAULT_SLO_TARGETS.p99LatencyMs / 1000).toFixed(1)}s
+                {(DEFAULT_SLO_TARGETS.maxDurationMs / 1000).toFixed(1)}s
               </div>
               <div className="mt-1 text-xs text-gray-400">
-                {DEFAULT_SLO_TARGETS.p99LatencyMs.toLocaleString()}ms
+                {DEFAULT_SLO_TARGETS.maxDurationMs.toLocaleString()}ms
               </div>
-            </div>
-            <div className="rounded border border-gray-100 p-4">
-              <div className="text-xs font-medium text-gray-400">Max DLQ Depth</div>
-              <div className="mt-1 text-3xl font-bold text-orange-600">
-                {DEFAULT_SLO_TARGETS.maxDlqDepth}
-              </div>
-              <div className="mt-1 text-xs text-gray-400">Dead letter queue ceiling</div>
             </div>
           </div>
           <div className="mt-4 rounded bg-blue-50 p-3 text-xs text-blue-700">

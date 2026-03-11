@@ -220,7 +220,7 @@ export function computeOpsScoreDelta(
   history: OpsScoreHistoryEntry[],
 ): OpsScoreDelta {
   const sorted = [...history].sort((a, b) => a.date.localeCompare(b.date))
-  const previous = sorted.length > 0 ? sorted[0].score : current
+  const previous = sorted.length > 0 ? sorted[0]!.score : current
 
   const delta = current - previous
   const direction: OpsScoreDelta['direction'] =

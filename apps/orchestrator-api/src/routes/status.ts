@@ -13,9 +13,9 @@ export async function statusRoutes(app: FastifyInstance) {
   app.get('/', async () => {
     const commands = await listCommands()
     const total = commands.length
-    const succeeded = commands.filter((c) => c.status === 'completed').length
+    const succeeded = commands.filter((c) => c.status === 'succeeded').length
     const failed = commands.filter((c) => c.status === 'failed').length
-    const pending = commands.filter((c) => c.status === 'pending' || c.status === 'queued').length
+    const pending = commands.filter((c) => c.status === 'pending' || c.status === 'dispatched').length
 
     return {
       status: 'operational',

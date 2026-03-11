@@ -40,17 +40,19 @@ export function getEventBus(): PlatformEventBus {
 export async function emitCommandEvent(
   eventType: string,
   payload: Record<string, unknown>,
-  actor: string,
+  actorId: string,
+  tenantId = 'system',
 ): Promise<void> {
   const bus = getEventBus()
   const event = buildPlatformEvent({
     type: eventType as Parameters<typeof buildPlatformEvent>[0]['type'],
     payload,
-    actor,
+    actorId,
+    tenantId,
     source: 'orchestrator-api',
   })
   await bus.publish(event)
-  logger.info({ eventType, actor }, 'Platform event emitted')
+  logger.info('Platform event emitted', { eventType, actorId })
 }
 
 // ── Governed AI ─────────────────────────────────────────────────────────────

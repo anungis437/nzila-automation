@@ -100,9 +100,10 @@ export function computeLinearRegression(values: number[]): {
   let sumX2 = 0
 
   for (let i = 0; i < n; i++) {
+    const v = values[i]!
     sumX += i
-    sumY += values[i]
-    sumXY += i * values[i]
+    sumY += v
+    sumXY += i * v
     sumX2 += i * i
   }
 
@@ -117,9 +118,10 @@ export function computeLinearRegression(values: number[]): {
   let ssTot = 0
   let ssRes = 0
   for (let i = 0; i < n; i++) {
+    const v = values[i]!
     const predicted = intercept + slope * i
-    ssTot += (values[i] - yMean) ** 2
-    ssRes += (values[i] - predicted) ** 2
+    ssTot += (v - yMean) ** 2
+    ssRes += (v - predicted) ** 2
   }
   const rSquared = ssTot === 0 ? 0 : Math.max(0, 1 - ssRes / ssTot)
 

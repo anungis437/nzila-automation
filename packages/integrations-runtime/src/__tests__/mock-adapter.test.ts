@@ -29,8 +29,8 @@ describe('MockAdapter', () => {
 
     await adapter.send(sampleRequest(), { apiKey: 'test' })
     expect(adapter.callCount).toBe(1)
-    expect(adapter.calls[0].request.to).toBe('user@example.com')
-    expect(adapter.calls[0].credentials).toEqual({ apiKey: 'test' })
+    expect(adapter.calls[0]!.request.to).toBe('user@example.com')
+    expect(adapter.calls[0]!.credentials).toEqual({ apiKey: 'test' })
   })
 
   it('returns queued results in order', async () => {

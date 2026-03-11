@@ -99,7 +99,7 @@ export default function PlatformHealthPage() {
           </thead>
           <tbody>
             {filtered.map(([name, slo]) => {
-              const met = meetsSlo(name, simulatedValues[name] ?? slo.target)
+              const met = meetsSlo(slo, simulatedValues[name] ?? slo.target)
               return (
                 <tr key={name} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="px-4 py-2 font-mono text-xs text-gray-800">{name}</td>
@@ -111,7 +111,7 @@ export default function PlatformHealthPage() {
                   <td className="px-4 py-2 font-mono text-xs">
                     {slo.target > 1 ? `${slo.target}ms` : `${(slo.target * 100).toFixed(1)}%`}
                   </td>
-                  <td className="px-4 py-2 text-xs text-gray-500">{slo.windowDays ?? 30}d</td>
+                  <td className="px-4 py-2 text-xs text-gray-500">{Math.round(slo.windowHours / 24)}d</td>
                   <td className="px-4 py-2">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${sloStatusColor(met)}`}

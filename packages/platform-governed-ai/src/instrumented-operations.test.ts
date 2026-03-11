@@ -7,13 +7,14 @@ import type { AIModelProvider, AIRunRequest } from '../src/types'
 
 function createMockProvider(overrides: Partial<AIModelProvider> = {}): AIModelProvider {
   return {
+    modelId: 'gpt-4',
     modelVersion: '1.0',
     async invoke(input) {
       return {
         output: { result: 'mock-output' },
         confidence: 0.92,
         reasoning: 'mock reasoning chain',
-        tokenUsage: { prompt: 100, completion: 50 },
+        tokenUsage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
       }
     },
     ...overrides,
@@ -64,7 +65,7 @@ describe('executeInstrumentedAIRun', () => {
     const policyEvaluator = {
       async evaluate() {
         return [
-          { policyName: 'data-residency', satisfied: false, reason: 'Region not allowed' },
+          { policyId: 'pol-1', policyName: 'data-residency', satisfied: false, reason: 'Region not allowed' },
         ]
       },
     }
@@ -114,7 +115,7 @@ describe('executeInstrumentedAIRun', () => {
       policyEvaluator,
       request,
       evidence: [
-        { sourceType: 'document', sourceId: 'doc-1', relevanceScore: 0.95, content: 'evidence text' },
+        { id: 'ev-1', sourceType: 'document', sourceId: 'doc-1', excerpt: 'evidence text', relevanceScore: 0.95 },
       ],
     })
 
