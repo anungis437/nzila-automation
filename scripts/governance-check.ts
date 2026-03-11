@@ -148,14 +148,16 @@ for (const pkg of requiredPlatformPkgs) {
 const hasSbom =
   fileExists(path.join(ROOT, 'sbom.json')) ||
   fileExists(path.join(ROOT, 'sbom.spdx.json')) ||
-  fileExists(path.join(ROOT, 'bom.json'))
+  fileExists(path.join(ROOT, 'bom.json')) ||
+  fileExists(path.join(ROOT, 'ops', 'security', 'sbom.json'))
 check('platform', 'sbom-exists', hasSbom, 'Root SBOM file')
 
 // Build attestation
 const hasAttestation =
   fileExists(path.join(ROOT, 'attestation.json')) ||
   fileExists(path.join(ROOT, '.attestation')) ||
-  fileExists(path.join(ROOT, 'build-attestation.json'))
+  fileExists(path.join(ROOT, 'build-attestation.json')) ||
+  fileExists(path.join(ROOT, 'ops', 'security', 'build-attestation.json'))
 check('platform', 'build-attestation', hasAttestation, 'Build attestation artefact')
 
 // Evidence pack package
