@@ -27,8 +27,9 @@ export default clerkMiddleware(async (auth, request) => {
     url.pathname = newPath
     return NextResponse.redirect(url, 308)
   }
-  if (pathname.startsWith('/api/orgs')) {
-    const newPath = pathname.replace(/^\/api\/orgs/, '/api/orgs')
+  // Legacy /api/entities → /api/orgs redirect
+  if (pathname.startsWith('/api/entities')) {
+    const newPath = pathname.replace(/^\/api\/entities/, '/api/orgs')
     const url = request.nextUrl.clone()
     url.pathname = newPath
     return NextResponse.redirect(url, 308)

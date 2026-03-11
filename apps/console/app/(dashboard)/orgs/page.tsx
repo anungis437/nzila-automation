@@ -26,7 +26,7 @@ export default function EntitiesPage() {
 
   // Fetch on mount
   useEffect(() => {
-    fetch('/api/entities')
+    fetch('/api/orgs')
       .then((r) => r.json())
       .then((data) => { setEntities(data); setLoading(false) })
       .catch(() => setLoading(false))
@@ -34,7 +34,7 @@ export default function EntitiesPage() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
-    const res = await fetch('/api/entities', {
+    const res = await fetch('/api/orgs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
