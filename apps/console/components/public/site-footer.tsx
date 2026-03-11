@@ -9,15 +9,15 @@ const footerLinks = {
   ],
   Internal: [
     { href: "/docs", label: "Runbooks" },
-    { href: "/api", label: "API Reference" },
-    { href: "/changelog", label: "Changelog" },
-    { href: "/status", label: "System Status" },
+    { href: "#", label: "API Reference" },
+    { href: "#", label: "Changelog" },
+    { href: "#", label: "System Status" },
   ],
   Company: [
     { href: "https://nzilaventures.com", label: "Nzila Ventures" },
     { href: "https://nzilaventures.com/products", label: "All Products" },
-    { href: "/security", label: "Security" },
-    { href: "/contact", label: "Contact" },
+    { href: "https://nzilaventures.com/security", label: "Security" },
+    { href: "https://nzilaventures.com/contact", label: "Contact" },
   ],
 };
 
