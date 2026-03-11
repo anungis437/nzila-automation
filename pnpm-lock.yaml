@@ -931,6 +931,12 @@ importers:
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.4)
+      '@nzila/integrations-core':
+        specifier: workspace:*
+        version: link:../../packages/integrations-core
+      '@nzila/integrations-runtime':
+        specifier: workspace:*
+        version: link:../../packages/integrations-runtime
       '@nzila/os-core':
         specifier: workspace:*
         version: link:../../packages/os-core
@@ -955,9 +961,15 @@ importers:
       '@nzila/platform-knowledge-registry':
         specifier: workspace:*
         version: link:../../packages/platform-knowledge-registry
+      '@nzila/platform-observability':
+        specifier: workspace:*
+        version: link:../../packages/platform-observability
       '@nzila/platform-ontology':
         specifier: workspace:*
         version: link:../../packages/platform-ontology
+      '@nzila/platform-ops':
+        specifier: workspace:*
+        version: link:../../packages/platform-ops
       '@nzila/platform-reasoning-engine':
         specifier: workspace:*
         version: link:../../packages/platform-reasoning-engine
