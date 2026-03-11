@@ -83,7 +83,7 @@ export function createInstrumentedEventBus(
         eventType: event.type,
         eventId: event.id,
         source: event.metadata.source,
-        actor: event.metadata.actor,
+        actorId: event.metadata.actorId,
       })
 
       governance.auditEmitted('event_published', {

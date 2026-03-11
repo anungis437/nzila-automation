@@ -8,11 +8,12 @@ describe('createInstrumentedEventBus', () => {
     vi.restoreAllMocks()
   })
 
-  function buildTestEvent(type = 'workflow.created' as const) {
+  function buildTestEvent(type: string = 'workflow.started') {
     return buildPlatformEvent({
       type,
       payload: { name: 'test-workflow' },
-      actor: 'test-user',
+      actorId: 'test-user',
+      tenantId: 'test-tenant',
       source: 'test',
     })
   }
@@ -22,7 +23,7 @@ describe('createInstrumentedEventBus', () => {
     const bus = createInstrumentedEventBus({ store })
 
     const received: unknown[] = []
-    bus.subscribe('workflow.created', async (e) => {
+    bus.subscribe('workflow.started', async (e) => {
       received.push(e)
     })
 
@@ -30,7 +31,7 @@ describe('createInstrumentedEventBus', () => {
     await bus.publish(event)
 
     expect(received).toHaveLength(1)
-    expect(received[0]).toMatchObject({ type: 'workflow.created' })
+    expect(received[0]).toMatchObject({ type: 'workflow.started' })
   })
 
   it('persists events to the store', async () => {
@@ -40,7 +41,7 @@ describe('createInstrumentedEventBus', () => {
     const event = buildTestEvent()
     await bus.publish(event)
 
-    const replayed = await bus.replay('workflow.created', '2000-01-01')
+    const replayed = await bus.replay('workflow.started', '2000-01-01')
     expect(replayed).toHaveLength(1)
   })
 
@@ -52,7 +53,7 @@ describe('createInstrumentedEventBus', () => {
       },
     })
 
-    bus.subscribe('workflow.created', async () => {
+    bus.subscribe('workflow.started', async () => {
       throw new Error('handler-boom')
     })
 
@@ -66,7 +67,7 @@ describe('createInstrumentedEventBus', () => {
   it('tracks subscriptions and unsubscriptions', () => {
     const bus = createInstrumentedEventBus()
 
-    const unsub1 = bus.subscribe('workflow.created', async () => {})
+    const unsub1 = bus.subscribe('workflow.started', async () => {})
     const unsub2 = bus.subscribeAll(async () => {})
 
     // Unsubscribe
@@ -85,10 +86,10 @@ describe('createInstrumentedEventBus', () => {
       received.push(e.type)
     })
 
-    await bus.publish(buildTestEvent('workflow.created'))
+    await bus.publish(buildTestEvent('workflow.started'))
     await bus.publish(buildTestEvent('workflow.completed'))
 
-    expect(received).toEqual(['workflow.created', 'workflow.completed'])
+    expect(received).toEqual(['workflow.started', 'workflow.completed'])
   })
 
   it('replays events from store', async () => {
@@ -98,20 +99,20 @@ describe('createInstrumentedEventBus', () => {
     await bus.publish(buildTestEvent())
     await bus.publish(buildTestEvent())
 
-    const events = await bus.replay('workflow.created', '2000-01-01')
+    const events = await bus.replay('workflow.started', '2000-01-01')
     expect(events).toHaveLength(2)
   })
 
   it('replay returns empty when no store', async () => {
     const bus = createInstrumentedEventBus()
-    const events = await bus.replay('workflow.created', '2000-01-01')
+    const events = await bus.replay('workflow.started', '2000-01-01')
     expect(events).toEqual([])
   })
 
   it('clear empties all handlers', async () => {
     const bus = createInstrumentedEventBus()
     const received: unknown[] = []
-    bus.subscribe('workflow.created', async (e) => received.push(e))
+    bus.subscribe('workflow.started', async (e) => { received.push(e) })
 
     bus.clear()
     await bus.publish(buildTestEvent())
