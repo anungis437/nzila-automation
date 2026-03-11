@@ -30,42 +30,113 @@ import {
   ShieldExclamationIcon,
   BeakerIcon,
   DocumentArrowDownIcon,
+  CpuChipIcon,
+  UsersIcon,
+  WrenchScrewdriverIcon,
+  CircleStackIcon,
+  BanknotesIcon,
+  ClipboardDocumentCheckIcon,
 } from '@heroicons/react/24/outline'
 import { ExecutiveModeWrapper } from './executive-mode'
+import { SidebarNav, type NavGroup } from '@/components/sidebar-nav'
 
-const navItems = [
-  { name: 'Dashboard', href: '/console', icon: HomeIcon },
-  { name: 'Platform', href: '/platform', icon: GlobeAltIcon },
-  { name: 'Business OS', href: '/business', icon: BuildingOffice2Icon },
-  { name: 'Audit Insights', href: '/audit-insights', icon: ShieldCheckIcon },
-  { name: 'System Health', href: '/system-health', icon: ServerIcon },
-  { name: 'Governance', href: '/governance', icon: EyeIcon },
-  { name: 'Performance', href: '/performance', icon: BoltIcon },
-  { name: 'Regressions', href: '/performance/regressions', icon: ArrowTrendingUpIcon },
-  { name: 'Isolation', href: '/isolation-certification', icon: LockClosedIcon },
-  { name: 'Proof Pack', href: '/proof-pack', icon: FingerPrintIcon },
-  { name: 'Scale Sim', href: '/scale-simulation', icon: ArrowTrendingUpIcon },
-  { name: 'Deploy Profile', href: '/deployment-profile', icon: CloudIcon },
-  { name: 'Economics', href: '/platform-economics', icon: CurrencyDollarIcon },
-  { name: 'Cost', href: '/cost', icon: CurrencyDollarIcon },
-  { name: 'Audit Graph', href: '/audit-graph', icon: LinkIcon },
-  { name: 'Ops', href: '/ops', icon: ShieldExclamationIcon },
-  { name: 'Trend Detection', href: '/trend-detection', icon: ChartBarSquareIcon },
-  { name: 'Ops Score', href: '/ops-score', icon: ShieldExclamationIcon },
-  { name: 'Failure Sim', href: '/failure-simulation', icon: BeakerIcon },
-  { name: 'Pilot Export', href: '/pilot/export', icon: DocumentArrowDownIcon },
-  { name: 'Docs', href: '/docs', icon: DocumentTextIcon },
-  { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
-  { name: 'Automation', href: '/automation', icon: CogIcon },
-  { name: 'Standards', href: '/standards', icon: BookOpenIcon },
-  { name: 'Integrations', href: '/integrations', icon: PuzzlePieceIcon },
-  { name: 'Control Plane', href: '/integrations-control-plane', icon: PuzzlePieceIcon },
-  { name: 'Evidence Packs', href: '/evidence-packs', icon: DocumentArrowDownIcon },
-  { name: 'Compliance', href: '/compliance-snapshots', icon: ShieldCheckIcon },
-  { name: 'Proof Center', href: '/proof-center', icon: FingerPrintIcon },
-  { name: 'Assurance', href: '/assurance', icon: ShieldCheckIcon },
-  { name: 'Marketplace', href: '/marketplace', icon: PuzzlePieceIcon },
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+const navGroups: NavGroup[] = [
+  {
+    label: 'Overview',
+    defaultOpen: true,
+    items: [
+      { name: 'Dashboard', href: '/console', icon: HomeIcon },
+      { name: 'Platform', href: '/platform', icon: GlobeAltIcon },
+      { name: 'System Health', href: '/system-health', icon: ServerIcon },
+      { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
+    ],
+  },
+  {
+    label: 'Governance & Compliance',
+    items: [
+      { name: 'Governance', href: '/governance', icon: EyeIcon },
+      { name: 'Compliance', href: '/compliance-snapshots', icon: ShieldCheckIcon },
+      { name: 'Assurance', href: '/assurance', icon: ShieldCheckIcon },
+      { name: 'Standards', href: '/standards', icon: BookOpenIcon },
+      { name: 'Audit Insights', href: '/audit-insights', icon: ShieldCheckIcon },
+      { name: 'Audit Graph', href: '/audit-graph', icon: LinkIcon },
+      { name: 'NACP Integrity', href: '/nacp-integrity', icon: ClipboardDocumentCheckIcon },
+    ],
+  },
+  {
+    label: 'Evidence & Proof',
+    items: [
+      { name: 'Evidence Packs', href: '/evidence-packs', icon: DocumentArrowDownIcon },
+      { name: 'Proof Center', href: '/proof-center', icon: FingerPrintIcon },
+      { name: 'Proof Pack', href: '/proof-pack', icon: FingerPrintIcon },
+      { name: 'Isolation', href: '/isolation-certification', icon: LockClosedIcon },
+      { name: 'Pilot Export', href: '/pilot/export', icon: DocumentArrowDownIcon },
+    ],
+  },
+  {
+    label: 'Operations',
+    items: [
+      { name: 'Ops', href: '/ops', icon: ShieldExclamationIcon },
+      { name: 'Ops Score', href: '/ops-score', icon: ShieldExclamationIcon },
+      { name: 'Performance', href: '/performance', icon: BoltIcon },
+      { name: 'Regressions', href: '/performance/regressions', icon: ArrowTrendingUpIcon },
+      { name: 'Trend Detection', href: '/trend-detection', icon: ChartBarSquareIcon },
+      { name: 'Failure Sim', href: '/failure-simulation', icon: BeakerIcon },
+      { name: 'Scale Sim', href: '/scale-simulation', icon: ArrowTrendingUpIcon },
+      { name: 'Deploy Profile', href: '/deployment-profile', icon: CloudIcon },
+    ],
+  },
+  {
+    label: 'Cost & Economics',
+    items: [
+      { name: 'Cost', href: '/cost', icon: CurrencyDollarIcon },
+      { name: 'Economics', href: '/platform-economics', icon: BanknotesIcon },
+    ],
+  },
+  {
+    label: 'Integrations',
+    items: [
+      { name: 'Integrations', href: '/integrations', icon: PuzzlePieceIcon },
+      { name: 'Control Plane', href: '/integrations-control-plane', icon: WrenchScrewdriverIcon },
+      { name: 'Marketplace', href: '/marketplace', icon: PuzzlePieceIcon },
+    ],
+  },
+  {
+    label: 'AI & ML',
+    items: [
+      { name: 'AI Overview', href: '/console/ai/overview', icon: CpuChipIcon },
+      { name: 'AI Models', href: '/console/ai/models', icon: CpuChipIcon },
+      { name: 'AI Actions', href: '/console/ai/actions', icon: CpuChipIcon },
+      { name: 'AI Knowledge', href: '/console/ai/knowledge', icon: CircleStackIcon },
+      { name: 'AI Usage', href: '/console/ai/usage', icon: ChartBarIcon },
+      { name: 'ML Overview', href: '/console/ml/overview', icon: CpuChipIcon },
+      { name: 'ML Models', href: '/console/ml/models', icon: CpuChipIcon },
+      { name: 'ML Runs', href: '/console/ml/runs', icon: BoltIcon },
+    ],
+  },
+  {
+    label: 'Business',
+    items: [
+      { name: 'Business OS', href: '/business', icon: BuildingOffice2Icon },
+      { name: 'Finance', href: '/business/finance', icon: BanknotesIcon },
+      { name: 'Equity', href: '/business/equity', icon: ChartBarIcon },
+      { name: 'Corporate Gov', href: '/business/governance', icon: EyeIcon },
+      { name: 'Approvals', href: '/business/approvals', icon: ClipboardDocumentCheckIcon },
+      { name: 'Signatures', href: '/business/signatures', icon: FingerPrintIcon },
+      { name: 'Queues', href: '/business/queues', icon: CircleStackIcon },
+    ],
+  },
+  {
+    label: 'Admin',
+    items: [
+      { name: 'Organizations', href: '/orgs', icon: UsersIcon },
+      { name: 'Automation', href: '/automation', icon: CogIcon },
+      { name: 'Docs', href: '/docs', icon: DocumentTextIcon },
+      { name: 'Data Retention', href: '/console/admin/retention', icon: CircleStackIcon },
+      { name: 'Stripe', href: '/console/finance/stripe', icon: BanknotesIcon },
+      { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+    ],
+  },
 ]
 
 // External app URLs — configurable via NEXT_PUBLIC_* env vars
@@ -89,18 +160,7 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
           Nzila Console
         </Link>
       </div>
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition"
-          >
-            <item.icon className="h-5 w-5" />
-            {item.name}
-          </Link>
-        ))}
-      </nav>
+      <SidebarNav groups={navGroups} />
 
       {/* App Launcher */}
       <div className="px-3 pb-2 border-t border-gray-100 pt-3">

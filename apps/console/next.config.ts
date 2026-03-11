@@ -26,7 +26,33 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@nzila/ui', '@nzila/db', '@nzila/os-core', '@nzila/blob'],
+  transpilePackages: [
+    '@nzila/ai-core',
+    '@nzila/blob',
+    '@nzila/commerce-observability',
+    '@nzila/db',
+    '@nzila/ml-sdk',
+    '@nzila/os-core',
+    '@nzila/payments-stripe',
+    '@nzila/platform-assurance',
+    '@nzila/platform-compliance-snapshots',
+    '@nzila/platform-events',
+    '@nzila/platform-evidence-pack',
+    '@nzila/platform-export',
+    '@nzila/platform-integrations-control-plane',
+    '@nzila/platform-isolation',
+    '@nzila/platform-marketplace',
+    '@nzila/platform-metrics',
+    '@nzila/platform-observability',
+    '@nzila/platform-ops',
+    '@nzila/platform-performance',
+    '@nzila/platform-policy-engine',
+    '@nzila/platform-procurement-proof',
+    '@nzila/platform-proof',
+    '@nzila/qbo',
+    '@nzila/tax',
+    '@nzila/ui',
+  ],
   output: process.platform === 'win32' ? undefined : 'standalone',
   headers: async () => [
     {
