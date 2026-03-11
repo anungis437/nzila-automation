@@ -1,0 +1,213 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Platform Package Ownership Registry
+#
+# Every platform-* package must have a declared owner team and a steward
+# (individual accountable for API stability and maintenance).
+#
+# Teams:
+#   @nzila/platform    — Core platform infrastructure
+#   @nzila/ai          — AI/ML capabilities
+#   @nzila/ops         — Observability, deploy, cost
+#   @nzila/governance  — Compliance, evidence, policy
+#   @nzila/commerce    — Commerce verticals
+#   @nzila/mobility    — Mobility domain
+#
+# Review: quarterly (next: 2026-06-10)
+# ──────────────────────────────────────────────────────────────────────────────
+
+version: "1.0"
+lastUpdated: "2026-03-11"
+
+packages:
+  # ── Core ontology & reasoning ─────────────────────────────────────────────
+  platform-ontology:
+    owner: "@nzila/platform"
+    steward: null            # assign a named steward
+    tier: foundational       # foundational | service | utility
+    description: "Canonical business entity type system (40+ types)"
+
+  platform-reasoning-engine:
+    owner: "@nzila/ai"
+    steward: null
+    tier: foundational
+    description: "Cross-vertical reasoning chains, confidence scoring"
+
+  platform-governed-ai:
+    owner: "@nzila/ai"
+    steward: null
+    tier: foundational
+    description: "AI governance lifecycle — policy, invocation, evidence, audit"
+
+  # ── Entity & knowledge graph ──────────────────────────────────────────────
+  platform-entity-graph:
+    owner: "@nzila/platform"
+    steward: null
+    tier: foundational
+    description: "Entity relationship graph"
+
+  platform-knowledge-registry:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "Knowledge management and retrieval"
+
+  platform-decision-graph:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "Decision graph for structured decision-making"
+
+  platform-semantic-search:
+    owner: "@nzila/ai"
+    steward: null
+    tier: service
+    description: "Semantic search capabilities"
+
+  # ── Event & data fabric ───────────────────────────────────────────────────
+  platform-event-fabric:
+    owner: "@nzila/platform"
+    steward: null
+    tier: foundational
+    description: "Event streaming infrastructure"
+
+  platform-events:
+    owner: "@nzila/platform"
+    steward: null
+    tier: foundational
+    description: "Platform-wide event definitions and bus"
+
+  platform-data-fabric:
+    owner: "@nzila/platform"
+    steward: null
+    tier: service
+    description: "Data integration layer"
+
+  platform-context-orchestrator:
+    owner: "@nzila/platform"
+    steward: null
+    tier: service
+    description: "Cross-vertical context management"
+
+  # ── Governance, evidence & compliance ─────────────────────────────────────
+  platform-proof:
+    owner: "@nzila/governance"
+    steward: null
+    tier: foundational
+    description: "Evidence proof sections for all verticals"
+
+  platform-evidence-pack:
+    owner: "@nzila/governance"
+    steward: null
+    tier: foundational
+    description: "Evidence pack assembly and sealing"
+
+  platform-assurance:
+    owner: "@nzila/governance"
+    steward: null
+    tier: service
+    description: "Assurance dashboard and scoring"
+
+  platform-compliance-snapshots:
+    owner: "@nzila/governance"
+    steward: null
+    tier: service
+    description: "Point-in-time compliance snapshots"
+
+  platform-policy-engine:
+    owner: "@nzila/governance"
+    steward: null
+    tier: foundational
+    description: "Policy evaluation engine"
+
+  platform-validation:
+    owner: "@nzila/governance"
+    steward: null
+    tier: utility
+    description: "Cross-package validation utilities"
+
+  platform-isolation:
+    owner: "@nzila/governance"
+    steward: null
+    tier: foundational
+    description: "Tenant isolation enforcement"
+
+  platform-procurement-proof:
+    owner: "@nzila/governance"
+    steward: null
+    tier: service
+    description: "Procurement evidence and proof generation"
+
+  # ── Ops, observability & deploy ───────────────────────────────────────────
+  platform-observability:
+    owner: "@nzila/ops"
+    steward: null
+    tier: foundational
+    description: "Observability hooks — metrics, tracing, health"
+
+  platform-metrics:
+    owner: "@nzila/ops"
+    steward: null
+    tier: service
+    description: "Metrics collection and aggregation"
+
+  platform-rum:
+    owner: "@nzila/ops"
+    steward: null
+    tier: service
+    description: "Real User Monitoring"
+
+  platform-performance:
+    owner: "@nzila/ops"
+    steward: null
+    tier: service
+    description: "Performance budget enforcement"
+
+  platform-ops:
+    owner: "@nzila/ops"
+    steward: null
+    tier: foundational
+    description: "Ops utilities — failure classification, SLO targets"
+
+  platform-deploy:
+    owner: "@nzila/ops"
+    steward: null
+    tier: service
+    description: "Deployment orchestration"
+
+  platform-cost:
+    owner: "@nzila/ops"
+    steward: null
+    tier: service
+    description: "Cost budget checking and event recording"
+
+  # ── Export, marketplace & integrations ─────────────────────────────────────
+  platform-export:
+    owner: "@nzila/platform"
+    steward: null
+    tier: service
+    description: "Org evidence export datasets"
+
+  platform-marketplace:
+    owner: "@nzila/commerce"
+    steward: null
+    tier: service
+    description: "Platform marketplace capabilities"
+
+  platform-integrations-control-plane:
+    owner: "@nzila/ops"
+    steward: null
+    tier: service
+    description: "Integration lifecycle and health management"
+
+  platform-rfp-generator:
+    owner: "@nzila/governance"
+    steward: null
+    tier: utility
+    description: "RFP document generation"
+
+  # ── Shared utilities ──────────────────────────────────────────────────────
+  platform-utils:
+    owner: "@nzila/platform"
+    steward: null
+    tier: utility
+    description: "Shared low-level utilities"
