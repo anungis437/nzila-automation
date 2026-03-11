@@ -6,7 +6,7 @@ import {
   computeErrorBudget,
   meetsSlo,
   type SloTarget,
-} from '@nzila/platform-observability'
+} from '@nzila/platform-observability/reliability'
 
 /**
  * Platform Health Dashboard

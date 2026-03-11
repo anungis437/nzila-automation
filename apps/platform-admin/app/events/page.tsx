@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { PlatformEventTypes } from '@nzila/platform-event-fabric'
+import { PlatformEventTypes } from '@nzila/platform-event-fabric/types'
 
 const eventTypes = Object.entries(PlatformEventTypes)
 

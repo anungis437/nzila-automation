@@ -12,7 +12,8 @@
     "./metrics": "./src/metrics.ts",
     "./span": "./src/span.ts",
     "./health": "./src/health.ts",
-    "./logger": "./src/logger.ts"
+    "./logger": "./src/logger.ts",
+    "./reliability": "./src/reliability.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

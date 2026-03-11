@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AIOperationTypes, AIRunStatuses } from '@nzila/platform-governed-ai'
+import { AIOperationTypes, AIRunStatuses } from '@nzila/platform-governed-ai/types'
 
 const operationTypes = Object.entries(AIOperationTypes)
 const runStatuses = Object.entries(AIRunStatuses)

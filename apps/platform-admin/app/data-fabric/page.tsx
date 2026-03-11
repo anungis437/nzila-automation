@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { SourceSystemCategories, SyncStatuses, ResolutionStrategies } from '@nzila/platform-data-fabric'
+import { SourceSystemCategories, SyncStatuses, ResolutionStrategies } from '@nzila/platform-data-fabric/types'
 
 const categories = Object.entries(SourceSystemCategories)
 const syncStatuses = Object.entries(SyncStatuses)

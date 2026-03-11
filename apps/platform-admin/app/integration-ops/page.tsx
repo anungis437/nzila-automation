@@ -1,8 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { IntegrationEventTypes } from '@nzila/integrations-core'
-import { DEFAULT_TIMEOUT_CONFIG, DEFAULT_CLASSIFIED_RETRY_CONFIG } from '@nzila/integrations-runtime'
+import { IntegrationEventTypes } from '@nzila/integrations-core/events'
+import { DEFAULT_TIMEOUT_CONFIG } from '@nzila/integrations-runtime/timeout'
+
+/** Inlined to avoid pulling server-side deps from classified-retry barrel */
+const DEFAULT_CLASSIFIED_RETRY_CONFIG = {
+  retry: { maxAttempts: 3, initialDelayMs: 1_000, maxDelayMs: 30_000, backoffMultiplier: 2 },
+  timeout: DEFAULT_TIMEOUT_CONFIG,
+} as const
 
 /**
  * Integration Ops Dashboard
