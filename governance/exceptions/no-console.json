@@ -98,6 +98,12 @@
       "owner": "platform-team",
       "justification": "Client-safe API logger for union-eyes — os-core createLogger uses Node.js APIs unavailable in Turbopack client bundles. Console is used as the structured output sink.",
       "expiresOn": "2026-09-01"
+    },
+    {
+      "path": "apps/*/lib/demoSeed.ts",
+      "owner": "platform-team",
+      "justification": "Demo seed scripts are CLI programs invoked via npx tsx — console output is appropriate for development tooling.",
+      "expiresOn": "2026-09-01"
     }
   ]
 }

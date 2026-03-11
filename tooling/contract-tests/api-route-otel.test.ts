@@ -26,13 +26,14 @@ const INSTRUMENTED_APPS = [
   'nacp-exams',
   'zonga',
   'partners',
+  'web',
 ] as const
 
 /**
  * Apps that only have /api/health — no business API routes yet.
  * These are tracked but not enforced for route instrumentation.
  */
-const EARLY_STAGE_APPS = ['abr', 'web'] as const
+const EARLY_STAGE_APPS = ['abr'] as const
 
 /**
  * Recursively find all route.ts files under a directory.
