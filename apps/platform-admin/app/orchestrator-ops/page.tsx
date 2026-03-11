@@ -7,7 +7,7 @@ import {
   DEFAULT_SLO_TARGETS,
   type WorkflowDefinition,
   type DangerLevel,
-} from '@nzila/platform-ops'
+} from '@nzila/platform-ops/workflow-registry'
 
 /**
  * Orchestrator Ops Dashboard
