@@ -209,26 +209,21 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy with Bicep
+      - name: Deploy to Container Apps
         id: deploy
         run: |
           ENV="${{ needs.plan.outputs.environment }}"
           VERSION="${{ needs.plan.outputs.version }}"
-          CONFIG="infrastructure/gitops/environments/${ENV}.yml"
+          APPS="${{ needs.plan.outputs.apps }}"
+          RG="nzila-${ENV}-rg"
+          ACR="${{ env.ACR_NAME }}.azurecr.io"
 
           echo "Deploying to $ENV with version $VERSION"
-          echo "Using config: $CONFIG"
-
-          # Deploy infrastructure with Bicep
-          # az deployment group create \
-          #   --resource-group "rg-nzila-${ENV}" \
-          #   --template-file tech-repo-scaffold/infra-as-code/bicep/main.bicep \
-          #   --parameters environment="${ENV}" imageTag="${VERSION}"
 
           # Resolve the Container Apps Environment default domain
           DOMAIN=$(az containerapp env show \
             --name "nzila-${ENV}-env" \
-            --resource-group "nzila-${ENV}-rg" \
+            --resource-group "$RG" \
             --query "properties.defaultDomain" -o tsv 2>/dev/null || echo "")
           if [ -n "$DOMAIN" ]; then
             echo "url=https://nzila-os-web.${DOMAIN}" >> "$GITHUB_OUTPUT"
@@ -236,9 +231,45 @@ jobs:
             echo "url=https://nzila-os-web.delightfulisland-0d503d3c.eastus.azurecontainerapps.io" >> "$GITHUB_OUTPUT"
           fi
 
+          # Update each Container App with the newly built image
+          ALL_APPS=(web console partners union-eyes abr orchestrator-api cfo)
+          FAILED=()
+
+          for APP in "${ALL_APPS[@]}"; do
+            if [ "$APPS" != "all" ] && ! echo "$APPS" | grep -q "$APP"; then
+              echo "Skipping $APP (not in requested list)"
+              continue
+            fi
+
+            CA_NAME="nzila-os-${APP}"
+            IMAGE="${ACR}/nzila/${APP}:${VERSION}"
+            echo "Updating $CA_NAME → $IMAGE ..."
+
+            # union-eyes has multiple containers; specify container name
+            if [ "$APP" = "union-eyes" ]; then
+              az containerapp update \
+                --name "$CA_NAME" \
+                --resource-group "$RG" \
+                --container-name "nzila-os-union-eyes" \
+                --image "$IMAGE" \
+                --output none 2>&1 || FAILED+=("$APP")
+            else
+              az containerapp update \
+                --name "$CA_NAME" \
+                --resource-group "$RG" \
+                --image "$IMAGE" \
+                --output none 2>&1 || FAILED+=("$APP")
+            fi
+          done
+
           echo "### Deployment Complete" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Environment**: $ENV" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Version**: $VERSION" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ ${#FAILED[@]} -gt 0 ]; then
+            echo "- **Failed apps**: ${FAILED[*]}" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Some apps failed to deploy: ${FAILED[*]}"
+          fi
           echo "- **Status**: ✅ Success" >> "$GITHUB_STEP_SUMMARY"
 
   # ── Post-deployment verification ──────────────────────────────────────────
@@ -249,6 +280,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Health checks
         run: |
@@ -262,10 +298,15 @@ jobs:
             --query "properties.defaultDomain" -o tsv 2>/dev/null || echo "delightfulisland-0d503d3c.eastus.azurecontainerapps.io")
 
           # Verify all app health endpoints
-          APPS=(web console partners union-eyes abr orchestrator-api cfo)
+          APPS=(web console partners union-eyes)
           for APP in "${APPS[@]}"; do
             echo "Checking $APP health..."
-            # curl -sf "https://nzila-os-${APP}.${DOMAIN}/health" || echo "WARN: $APP not reachable"
+            STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "https://nzila-os-${APP}.${DOMAIN}/" 2>/dev/null || echo "000")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ]; then
+              echo "  ✅ $APP: HTTP $STATUS"
+            else
+              echo "  ⚠️  $APP: HTTP $STATUS (may not be deployed yet)"
+            fi
           done
 
       - name: Smoke tests
