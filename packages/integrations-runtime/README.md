@@ -72,10 +72,66 @@ const report = await computer.exportReport(orgId);
 
 `loadIntegrationPolicy(rootDir)` — loads circuit breaker, retry, and SLA configuration from `ops/integration-policy.yml`. Supports per-provider overrides merged with platform defaults. Cached after first load.
 
+### Timeout (`timeout.ts`)
+
+Per-provider timeout enforcement for adapter calls:
+
+```ts
+const result = await withTimeout('hubspot', () => adapter.send(request), config);
+```
+
+`DEFAULT_TIMEOUT_CONFIG` provides provider-specific budgets (Slack: 10s, HubSpot: 20s, Twilio: 12s, etc.). Throws `TimeoutError` with `code='INTEGRATION_TIMEOUT'`, provider name, and budget.
+
+### Adapter Validator (`adapter-validator.ts`)
+
+Zod schema validation at adapter boundaries:
+
+```ts
+const validated = createValidatedAdapter(inner);
+const result = await validated.send(request); // validates before calling inner
+```
+
+Returns `{ ok: false }` on validation failure without calling the inner adapter. Uses `SendMessageSchema` from `integrations-core`.
+
+### Classified Retry (`classified-retry.ts`)
+
+Retry engine combining failure classification + state machine + timeout:
+
+```ts
+const result = await executeWithClassifiedRetry('hubspot', () => adapter.send(req));
+```
+
+On each failure: classifies via `classifyFailure()`, permanent errors abort immediately, transient errors retry with exponential backoff via `RetryStateMachine`.
+
+### Telemetry Bridge (`telemetry-bridge.ts`)
+
+Bridges integration runtime events to platform-observability structured telemetry:
+
+```ts
+recordIntegrationTelemetry({ provider: 'hubspot', channel: 'email', action: 'providerRequest', durationMs: 150 });
+```
+
+Dispatches to the appropriate telemetry contract method based on `event.action`.
+
+### Mock Adapter (`mock-adapter.ts`)
+
+Configurable mock adapter for testing integration reliability:
+
+```ts
+const mock = createMockAdapter({ defaultResult: { ok: true, messageId: 'test-1' } });
+mock.enqueueResults([{ ok: false, error: 'timeout' }]);
+const result = await mock.send(request);
+console.log(mock.callCount); // 1
+```
+
+Features: call recording, result queue, latency simulation, health check stubbing.
+
 ## Dependencies
 
 - `@nzila/integrations-core` — Domain types, adapter interface, event taxonomy
 - `@nzila/integrations-db` — Repository port interfaces
+- `@nzila/platform-ops` — Failure classification, retry state machine
+- `@nzila/platform-observability` — Telemetry contracts, structured logging
 - `zod` — Runtime validation
 
 ## Maturity
@@ -83,7 +139,7 @@ const report = await computer.exportReport(orgId);
 | Metric       | Value                                                |
 |--------------|------------------------------------------------------|
 | Status       | Stable                                               |
-| Tests        | 8+ test files (dispatcher, retry, circuit breaker, chaos, metrics, rate-limit parser, SLO) |
-| Consumers    | Application wiring, orchestrator-api                 |
+| Tests        | 13+ test files (dispatcher, retry, circuit breaker, chaos, metrics, rate-limit parser, SLO, timeout, adapter-validator, classified-retry, mock-adapter, telemetry-bridge, reliability-contracts) |
+| Consumers    | Application wiring, orchestrator-api, platform-admin |
 
 <!-- maturity:stable -->
