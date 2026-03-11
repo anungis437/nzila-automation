@@ -26,6 +26,20 @@ import { createLogger } from '@nzila/os-core'
 
 const financeLogger = createLogger('api:finance:close')
 
+/**
+ * Compute budget utilization from closed vs total periods for an org.
+ * Returns a percentage 0-100.
+ */
+async function computeBudgetUtilization(orgId: string): Promise<number> {
+  const periods = await platformDb
+    .select()
+    .from(closePeriods)
+    .where(eq(closePeriods.orgId, orgId))
+  if (periods.length === 0) return 0
+  const closed = periods.filter((p) => p.status === 'closed').length
+  return Math.round((closed / periods.length) * 100)
+}
+
 // ── Request schemas ──────────────────────────────────────────────────────────
 
 const ClosePeriodPostSchema = z.object({
@@ -79,7 +93,7 @@ export async function POST(req: NextRequest) {
     },
     context: {
       periodType,
-      budgetUtilization: 0, // TODO(prod): fetch real budget utilization
+      budgetUtilization: await computeBudgetUtilization(orgId),
     },
     orgId,
     environment: process.env.NODE_ENV ?? 'development',

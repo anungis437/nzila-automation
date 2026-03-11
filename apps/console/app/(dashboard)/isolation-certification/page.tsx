@@ -13,6 +13,7 @@ import {
   ExclamationCircleIcon,
   CheckCircleIcon,
   ClockIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline'
 
 export const dynamic = 'force-dynamic'
@@ -49,11 +50,20 @@ export default async function IsolationCertificationPage({
 
   return (
     <div className={isExecutive ? 'p-12 bg-gray-50 min-h-screen' : 'p-8'}>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Isolation Certification</h1>
-        <p className="text-gray-500 mt-1">
-          Platform isolation audit — RLS enforcement, org scoping, and data boundary verification
-        </p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Isolation Certification</h1>
+          <p className="text-gray-500 mt-1">
+            Platform isolation audit — RLS enforcement, org scoping, and data boundary verification
+          </p>
+        </div>
+        <a
+          href="/api/isolation?download=true"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+        >
+          <DocumentArrowDownIcon className="h-4 w-4" />
+          Export JSON
+        </a>
       </div>
 
       {/* Score overview */}

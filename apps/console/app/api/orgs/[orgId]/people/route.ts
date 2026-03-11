@@ -7,12 +7,16 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { recordAuditEvent, AUDIT_ACTIONS } from '@/lib/audit-db'
-import { authenticateUser } from '@/lib/api-guards'
+import { authenticateUser, requireOrgAccess } from '@/lib/api-guards'
+import { withSpan } from '@nzila/os-core/telemetry'
+import { platformDb } from '@nzila/db/platform'
+import { orgMembers } from '@nzila/db/schema'
 import { z } from 'zod'
 
 const AddMemberSchema = z.object({
-  email: z.string().email(),
-  role: z.string().min(1),
+  clerkUserId: z.string().min(1),
+  role: z.enum(['org_admin', 'org_secretary', 'org_viewer']),
+  email: z.string().email().optional(),
   displayName: z.string().optional(),
 })
 
@@ -20,34 +24,42 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ orgId: string }> },
 ) {
-  const authResult = await authenticateUser()
-  if (!authResult.ok) return authResult.response
-  const { userId, platformRole: actorRole } = authResult
-
   const { orgId } = await params
-  const body = await request.json()
-  const parsed = AddMemberSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 })
-  }
 
-  const { email, role, displayName } = parsed.data
+  return withSpan('api.orgs.people.add', { orgId }, async () => {
+    const access = await requireOrgAccess(orgId, { minRole: 'org_admin' })
+    if (!access.ok) return access.response
 
-  // TODO: Actual member creation via DB insert (orgMembers table)
-  const newMemberId = crypto.randomUUID()
+    const body = await request.json()
+    const parsed = AddMemberSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 })
+    }
 
-  await recordAuditEvent({
-    orgId,
-    actorClerkUserId: userId,
-    actorRole,
-    action: AUDIT_ACTIONS.MEMBER_ADD,
-    targetType: 'member',
-    targetId: newMemberId,
-    afterJson: { email, role, displayName },
+    const { clerkUserId, role, email, displayName } = parsed.data
+
+    const [member] = await platformDb
+      .insert(orgMembers)
+      .values({
+        orgId,
+        clerkUserId,
+        role,
+      })
+      .returning()
+
+    await recordAuditEvent({
+      orgId,
+      actorClerkUserId: access.context.userId,
+      actorRole: access.context.membership?.role ?? access.context.platformRole,
+      action: AUDIT_ACTIONS.MEMBER_ADD,
+      targetType: 'member',
+      targetId: member.id,
+      afterJson: { clerkUserId, role, email, displayName },
+    })
+
+    return NextResponse.json(
+      { id: member.id, clerkUserId, role, email, displayName, orgId, status: member.status },
+      { status: 201 },
+    )
   })
-
-  return NextResponse.json(
-    { id: newMemberId, email, role, displayName, orgId },
-    { status: 201 },
-  )
 }

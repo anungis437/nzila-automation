@@ -10,7 +10,10 @@ import { z } from 'zod'
 import { authenticateUser } from '@/lib/api-guards'
 import { recordAuditEvent } from '@/lib/audit-db'
 import { enforcePolicies } from '@/lib/policy-enforcement'
+import { withSpan } from '@nzila/os-core/telemetry'
 import { createLogger } from '@nzila/os-core'
+import { platformDb } from '@nzila/db/platform'
+import { votes } from '@nzila/db/schema'
 
 const logger = createLogger('api:governance:votes')
 
@@ -89,15 +92,16 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Vote recording ───────────────────────────────────────────────────
-    const voteRecord = {
-      id: crypto.randomUUID(),
-      orgId,
-      motionId,
-      vote,
-      votedBy: auth.userId,
-      votedAt: new Date().toISOString(),
-      policyEnforced: true,
-    }
+    const choiceMap = { for: 'yes', against: 'no', abstain: 'abstain' } as const
+    const [voteRecord] = await platformDb
+      .insert(votes)
+      .values({
+        orgId,
+        approvalId: motionId,
+        voterPersonId: auth.userId,
+        choice: choiceMap[vote],
+      })
+      .returning()
 
     await recordAuditEvent({
       orgId,
