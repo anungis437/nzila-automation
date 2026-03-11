@@ -4,10 +4,16 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { listCBAs, createCBA, type CBAFilters } from '@/lib/services/cba-service';
+import { getCurrentUser } from '@/lib/api-auth-guard';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const url = new URL(req.url);
   const filters: CBAFilters = {};
 
@@ -31,6 +37,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const body = await req.json();
   const cba = await createCBA(body);
   return NextResponse.json(cba, { status: 201 });

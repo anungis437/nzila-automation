@@ -7,12 +7,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/db';
 import { grievanceTransitions } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { getCurrentUser } from '@/lib/api-auth-guard';
 
 export const dynamic = 'force-dynamic';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { id } = await params;
   const history = await db
     .select()
