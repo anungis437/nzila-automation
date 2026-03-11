@@ -3,12 +3,77 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import {
+  HomeIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  CogIcon,
+  BookOpenIcon,
+  BuildingOffice2Icon,
+  PuzzlePieceIcon,
+  Cog6ToothIcon,
+  ArrowTopRightOnSquareIcon,
+  GlobeAltIcon,
+  ShieldCheckIcon,
+  ServerIcon,
+  EyeIcon,
+  BoltIcon,
+  LockClosedIcon,
+  FingerPrintIcon,
+  ArrowTrendingUpIcon,
+  CloudIcon,
+  CurrencyDollarIcon,
+  LinkIcon,
+  ChartBarSquareIcon,
+  ShieldExclamationIcon,
+  BeakerIcon,
+  DocumentArrowDownIcon,
+  CpuChipIcon,
+  UsersIcon,
+  WrenchScrewdriverIcon,
+  CircleStackIcon,
+  BanknotesIcon,
+  ClipboardDocumentCheckIcon,
+  ChevronDownIcon,
+} from '@heroicons/react/24/outline'
+
+const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  HomeIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  CogIcon,
+  BookOpenIcon,
+  BuildingOffice2Icon,
+  PuzzlePieceIcon,
+  Cog6ToothIcon,
+  ArrowTopRightOnSquareIcon,
+  GlobeAltIcon,
+  ShieldCheckIcon,
+  ServerIcon,
+  EyeIcon,
+  BoltIcon,
+  LockClosedIcon,
+  FingerPrintIcon,
+  ArrowTrendingUpIcon,
+  CloudIcon,
+  CurrencyDollarIcon,
+  LinkIcon,
+  ChartBarSquareIcon,
+  ShieldExclamationIcon,
+  BeakerIcon,
+  DocumentArrowDownIcon,
+  CpuChipIcon,
+  UsersIcon,
+  WrenchScrewdriverIcon,
+  CircleStackIcon,
+  BanknotesIcon,
+  ClipboardDocumentCheckIcon,
+}
 
 export interface NavItem {
   name: string
   href: string
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  icon: string
 }
 
 export interface NavGroup {
@@ -55,6 +120,7 @@ function NavSection({ group, pathname }: { group: NavGroup; pathname: string }) 
           {group.items.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(item.href + '/')
+            const Icon = iconMap[item.icon]
             return (
               <Link
                 key={item.href}
@@ -65,7 +131,7 @@ function NavSection({ group, pathname }: { group: NavGroup; pathname: string }) 
                     : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                <item.icon className="h-5 w-5 shrink-0" />
+                {Icon && <Icon className="h-5 w-5 shrink-0" />}
                 {item.name}
               </Link>
             )
