@@ -1,18 +1,21 @@
 /**
- * GET POST /api/bargaining/tentative-agreements
- * -> Django bargaining: /api/bargaining/tentative-agreements/
- * Auto-migrated by scripts/migrate_routes.py
+ * GET /api/bargaining/tentative-agreements
+ * Drizzle ORM — direct database access (migrated from Django proxy)
  */
-import { NextRequest } from 'next/server';
-import { djangoProxy } from '@/lib/django-proxy';
+import { NextRequest, NextResponse } from 'next/server';
+import { listTentativeAgreements } from '@/lib/services/negotiations-service';
 
 export const dynamic = 'force-dynamic';
 
-export function GET(req: NextRequest) {
-  return djangoProxy(req, '/api/bargaining/tentative-agreements/');
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const negotiationId = url.searchParams.get('negotiationId') || undefined;
+  const result = await listTentativeAgreements(negotiationId);
+  return NextResponse.json(result);
 }
 
-export function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
+  const { djangoProxy } = await import('@/lib/django-proxy');
   return djangoProxy(req, '/api/bargaining/tentative-agreements/', { method: 'POST' });
 }
 
