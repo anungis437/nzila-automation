@@ -4,9 +4,8 @@
  * Integrates platform-policy-engine for content publishing
  * and admin analytics access.
  */
-import type { PolicyEvaluationInput } from '@nzila/platform-policy-engine'
+import type { PolicyEvaluationInput, PolicyDefinition } from '@nzila/platform-policy-engine'
 import { evaluatePolicy, isBlocked } from '@nzila/platform-policy-engine'
-import type { PolicyDefinition } from '@nzila/platform-policy-engine'
 
 export type WebPolicyAction = 'content_publishing' | 'admin_analytics_access'
 
@@ -16,32 +15,38 @@ const WEB_POLICIES: PolicyDefinition[] = [
     name: 'Content Publishing Policy',
     description: 'Controls content publishing operations',
     version: '1.0.0',
-    scope: { apps: ['web'], actions: ['content_publishing'] },
+    type: 'access',
+    enabled: true,
+    scope: { resources: ['web'] },
     rules: [
       {
         id: 'publish-role',
         description: 'Content publishing requires editor or admin role',
         conditions: [{ field: 'action', operator: 'eq', value: 'content_publishing' }],
         effect: 'allow',
-        severity: 'medium',
+        severity: 'warning',
       },
     ],
+    metadata: {},
   },
   {
     id: 'web-admin-analytics',
     name: 'Admin Analytics Access Policy',
     description: 'Restricts analytics access to admin roles',
     version: '1.0.0',
-    scope: { apps: ['web'], actions: ['admin_analytics_access'] },
+    type: 'access',
+    enabled: true,
+    scope: { resources: ['web'] },
     rules: [
       {
         id: 'analytics-admin-only',
         description: 'Analytics access requires admin role',
         conditions: [{ field: 'action', operator: 'eq', value: 'admin_analytics_access' }],
         effect: 'allow',
-        severity: 'high',
+        severity: 'critical',
       },
     ],
+    metadata: {},
   },
 ]
 
@@ -56,28 +61,30 @@ export async function checkWebPolicy(
   action: WebPolicyAction,
   context: Record<string, unknown>,
 ): Promise<PolicyCheckResult> {
+  const orgId = (context.orgId as string) ?? 'default'
   const input: PolicyEvaluationInput = {
+    policyId: '',
     action,
     resource: 'web',
     actor: {
-      id: (context.userId as string) ?? 'system',
-      type: 'user',
+      userId: (context.userId as string) ?? 'system',
       roles: (context.roles as string[]) ?? [],
     },
     context,
-    timestamp: new Date().toISOString(),
+    orgId,
+    environment: (context.environment as string) ?? 'production',
   }
 
   const policy = WEB_POLICIES.find((p) =>
-    p.scope.actions?.includes(action),
+    p.rules.some((r) => r.conditions.some((c) => c.value === action)),
   )
 
   if (!policy) {
     return { allowed: true, action }
   }
 
-  const result = evaluatePolicy(policy, input)
-  const blocked = isBlocked(result)
+  const result = evaluatePolicy(policy, { ...input, policyId: policy.id })
+  const blocked = isBlocked([result])
 
   return {
     allowed: !blocked,

@@ -17,6 +17,7 @@
     "@heroicons/react": "^2.2.0",
     "@nzila/db": "workspace:*",
     "@nzila/os-core": "workspace:*",
+    "@nzila/platform-policy-engine": "workspace:*",
     "@nzila/blob": "workspace:*",
     "@nzila/ml-sdk": "workspace:*",
     "@nzila/payments-stripe": "workspace:*",
