@@ -216,7 +216,16 @@ jobs:
           #   --template-file tech-repo-scaffold/infra-as-code/bicep/main.bicep \
           #   --parameters environment="${ENV}" imageTag="${VERSION}"
 
-          echo "url=https://nzila-${ENV}.azurecontainerapps.io" >> "$GITHUB_OUTPUT"
+          # Resolve the Container Apps Environment default domain
+          DOMAIN=$(az containerapp env show \
+            --name "nzila-${ENV}-env" \
+            --resource-group "nzila-${ENV}-rg" \
+            --query "properties.defaultDomain" -o tsv 2>/dev/null || echo "")
+          if [ -n "$DOMAIN" ]; then
+            echo "url=https://nzila-os-web.${DOMAIN}" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=https://nzila-os-web.delightfulisland-0d503d3c.eastus.azurecontainerapps.io" >> "$GITHUB_OUTPUT"
+          fi
 
           echo "### Deployment Complete" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Environment**: $ENV" >> "$GITHUB_STEP_SUMMARY"
@@ -237,11 +246,17 @@ jobs:
           ENV="${{ needs.plan.outputs.environment }}"
           echo "Running health checks for $ENV environment..."
 
+          # Resolve the Container Apps Environment default domain
+          DOMAIN=$(az containerapp env show \
+            --name "nzila-${ENV}-env" \
+            --resource-group "nzila-${ENV}-rg" \
+            --query "properties.defaultDomain" -o tsv 2>/dev/null || echo "delightfulisland-0d503d3c.eastus.azurecontainerapps.io")
+
           # Verify all app health endpoints
           APPS=(web console partners union-eyes abr orchestrator-api cfo)
           for APP in "${APPS[@]}"; do
             echo "Checking $APP health..."
-            # curl -sf "https://nzila-${APP}-${ENV}.azurecontainerapps.io/health" || echo "WARN: $APP not reachable"
+            # curl -sf "https://nzila-os-${APP}.${DOMAIN}/health" || echo "WARN: $APP not reachable"
           done
 
       - name: Smoke tests
