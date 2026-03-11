@@ -171,6 +171,12 @@ jobs:
             BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ steps.clerk.outputs.pk }}"
           fi
 
+          # Cross-app navigation URLs (baked into Next.js at build time)
+          if [ "${APP}" = "web" ]; then
+            BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_CONSOLE_URL=https://nzila-os-console.delightfulisland-0d503d3c.eastus.azurecontainerapps.io"
+            BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_PARTNERS_URL=https://nzila-os-partners.delightfulisland-0d503d3c.eastus.azurecontainerapps.io"
+          fi
+
           docker build \
             --target "$APP" \
             --tag "$IMAGE" \
