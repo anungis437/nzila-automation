@@ -39,6 +39,12 @@ export {
 } from './adapters'
 export type { MapSourceRecordOptions } from './adapters'
 
+// Instrumented operations
+export {
+  instrumentedMapSourceRecord,
+  instrumentedReconcile,
+} from './instrumented-adapters'
+
 // In-memory store
 export { createInMemoryDataFabricStore } from './memory-store'
 

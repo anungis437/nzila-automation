@@ -39,5 +39,8 @@ export {
 // Builders
 export { buildPlatformEvent, type BuildEventInput } from './builders'
 
+// Instrumented bus
+export { createInstrumentedEventBus } from './instrumented-bus'
+
 // Schema (Drizzle)
 export { platformEvents, eventSubscriptions } from './schema'

@@ -38,3 +38,6 @@ export {
 
 // Drizzle schema
 export { aiRunRecords } from './schema'
+
+// Instrumented operations
+export { executeInstrumentedAIRun } from './instrumented-operations'

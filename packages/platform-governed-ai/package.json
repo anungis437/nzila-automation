@@ -16,6 +16,7 @@
     "lint": "eslint src/"
   },
   "dependencies": {
+    "@nzila/platform-observability": "workspace:*",
     "@nzila/platform-ontology": "workspace:*",
     "@nzila/platform-context-orchestrator": "workspace:*",
     "@nzila/platform-decision-graph": "workspace:*",

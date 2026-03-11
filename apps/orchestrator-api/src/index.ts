@@ -10,6 +10,7 @@ import { runRoutes } from './routes/runs.js'
 import { statusRoutes } from './routes/status.js'
 import { createLogger } from '@nzila/os-core'
 import { getEventBus, getAIRunStore, getPolicyEvaluator } from './platform.js'
+import { telemetryHooks } from './telemetry-hooks.js'
 
 const logger = createLogger('orchestrator-api')
 
@@ -143,6 +144,7 @@ app.addHook('onRequest', async (req, reply) => {
 
 // ── Routes ──
 app.register(healthRoutes)
+app.register(telemetryHooks)
 app.register(commandRoutes, { prefix: '/commands' })
 app.register(workflowRoutes, { prefix: '/workflows' })
 app.register(jobRoutes, { prefix: '/jobs' })
