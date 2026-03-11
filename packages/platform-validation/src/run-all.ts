@@ -11,6 +11,7 @@ import { runPackageAudit } from './package-audit.js'
 import { runArchitectureAudit } from './architecture-audit.js'
 import { runClaimVerification } from './claim-verification.js'
 import { runDocConsistency } from './doc-consistency.js'
+import { runOpsReadinessAudit } from './ops-readiness-audit.js'
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -79,7 +80,7 @@ if (process.argv[1]?.includes('run-all')) {
   console.log('═══════════════════════════════════════════════════════════\n')
 
   // 1. Package audit
-  console.log('🔍 [1/4] Package Audit...')
+  console.log('🔍 [1/5] Package Audit...')
   const pkgReport = runPackageAudit(root)
   writeFileSync(join(reportsDir, 'package-audit.json'), JSON.stringify(pkgReport, null, 2))
   const pkgErrors = [...pkgReport.packages, ...pkgReport.apps].flatMap(p => p.findings).filter(f => f.type === 'error').length
@@ -87,13 +88,13 @@ if (process.argv[1]?.includes('run-all')) {
   console.log(`   ${pkgReport.totalPackages} packages, ${pkgReport.totalApps} apps — ${pkgErrors} errors, ${pkgWarnings} warnings\n`)
 
   // 2. Architecture audit
-  console.log('🏗️  [2/4] Architecture Consistency...')
+  console.log('🏗️  [2/5] Architecture Consistency...')
   const archReport = runArchitectureAudit(root)
   writeFileSync(join(reportsDir, 'architecture-audit.json'), JSON.stringify(archReport, null, 2))
   console.log(`   ${archReport.totalFiles} files — ${archReport.findingsBySeverity.error} errors, ${archReport.findingsBySeverity.warning} warnings\n`)
 
   // 3. Claim verification
-  console.log('📋 [3/4] Claim Verification...')
+  console.log('📋 [3/5] Claim Verification...')
   const claimReport = runClaimVerification(root)
   writeFileSync(join(reportsDir, 'claim-verification.json'), JSON.stringify(claimReport, null, 2))
   const claimErrors = claimReport.summary.unsupported
@@ -101,10 +102,16 @@ if (process.argv[1]?.includes('run-all')) {
   console.log(`   ${claimReport.totalClaims} claims — ${claimReport.summary.implemented} verified, ${claimErrors} unsupported, ${claimWarnings} docs-only\n`)
 
   // 4. Doc consistency
-  console.log('📝 [4/4] Documentation Consistency...')
+  console.log('📝 [4/5] Documentation Consistency...')
   const docReport = runDocConsistency(root)
   writeFileSync(join(reportsDir, 'doc-consistency.json'), JSON.stringify(docReport, null, 2))
   console.log(`   ${docReport.filesScanned} files — ${docReport.findingsBySeverity.error} errors, ${docReport.findingsBySeverity.warning} warnings\n`)
+
+  // 5. Ops readiness audit
+  console.log('🔧 [5/5] Operational Readiness...')
+  const opsReport = runOpsReadinessAudit(root)
+  writeFileSync(join(reportsDir, 'ops-readiness-audit.json'), JSON.stringify(opsReport, null, 2))
+  console.log(`   ${opsReport.totalPackages} platform packages — ${opsReport.maturityScore}% maturity, ${opsReport.findingsBySeverity.error} errors, ${opsReport.findingsBySeverity.warning} warnings\n`)
 
   // ── Derived metrics ────────────────────────────────────────────────────
   // Security: org-isolation errors + direct-provider-sdk violations
@@ -184,6 +191,13 @@ if (process.argv[1]?.includes('run-all')) {
       errors: 0,
       warnings: integrityWarnings,
       notes: `${totalInfo} info-level findings`,
+    },
+    {
+      dimension: 'Ops Readiness',
+      score: grade(opsReport.findingsBySeverity.error, opsReport.findingsBySeverity.warning),
+      errors: opsReport.findingsBySeverity.error,
+      warnings: opsReport.findingsBySeverity.warning,
+      notes: `${opsReport.totalPackages} platform pkgs, ${opsReport.maturityScore}% maturity`,
     },
   ]
 

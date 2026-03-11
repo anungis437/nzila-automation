@@ -1,0 +1,1925 @@
+{
+  "generatedAt": "2026-03-11T05:39:16.596Z",
+  "totalPackages": 42,
+  "totalFindings": 198,
+  "findingsByRule": {
+    "needs-structured-logging": 26,
+    "needs-health-check": 28,
+    "needs-metrics": 33,
+    "needs-error-classification": 20,
+    "no-bare-console": 91
+  },
+  "findingsBySeverity": {
+    "error": 91,
+    "warning": 87,
+    "info": 20
+  },
+  "packages": [
+    {
+      "name": "ai-core",
+      "path": "packages/ai-core",
+      "srcFileCount": 23,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": true,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/ai-core",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/ai-core",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/ai-core",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "ai-registry",
+      "path": "packages/ai-registry",
+      "srcFileCount": 7,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/ai-registry",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/ai-registry",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/ai-registry",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/ai-registry",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "ai-sdk",
+      "path": "packages/ai-sdk",
+      "srcFileCount": 4,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/ai-sdk",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/ai-sdk",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/ai-sdk",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "integrations-core",
+      "path": "packages/integrations-core",
+      "srcFileCount": 6,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": true,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/integrations-core",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/integrations-core",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/integrations-core",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "integrations-db",
+      "path": "packages/integrations-db",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": true,
+      "hasMetrics": true,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/integrations-db",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        }
+      ]
+    },
+    {
+      "name": "integrations-hubspot",
+      "path": "packages/integrations-hubspot",
+      "srcFileCount": 6,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/integrations-hubspot",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/integrations-hubspot",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/integrations-hubspot",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/integrations-hubspot",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "integrations-m365",
+      "path": "packages/integrations-m365",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/integrations-m365",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/integrations-m365",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/integrations-m365",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "integrations-runtime",
+      "path": "packages/integrations-runtime",
+      "srcFileCount": 23,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": true,
+      "hasMetrics": true,
+      "hasTelemetryContract": true,
+      "hasErrorClassification": true,
+      "hasCircuitBreaker": true,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/integrations-runtime",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        }
+      ]
+    },
+    {
+      "name": "integrations-whatsapp",
+      "path": "packages/integrations-whatsapp",
+      "srcFileCount": 4,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/integrations-whatsapp",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/integrations-whatsapp",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/integrations-whatsapp",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "ml-core",
+      "path": "packages/ml-core",
+      "srcFileCount": 4,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/ml-core",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/ml-core",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/ml-core",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "ml-sdk",
+      "path": "packages/ml-sdk",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/ml-sdk",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/ml-sdk",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/ml-sdk",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-assurance",
+      "path": "packages/platform-assurance",
+      "srcFileCount": 3,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": true,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": []
+    },
+    {
+      "name": "platform-compliance-snapshots",
+      "path": "packages/platform-compliance-snapshots",
+      "srcFileCount": 6,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-compliance-snapshots",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-compliance-snapshots",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-compliance-snapshots",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-context-orchestrator",
+      "path": "packages/platform-context-orchestrator",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-context-orchestrator",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-context-orchestrator",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-context-orchestrator",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-cost",
+      "path": "packages/platform-cost",
+      "srcFileCount": 6,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": true,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-cost",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-cost",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-cost",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-data-fabric",
+      "path": "packages/platform-data-fabric",
+      "srcFileCount": 8,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-data-fabric",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-data-fabric",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-data-fabric",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-decision-graph",
+      "path": "packages/platform-decision-graph",
+      "srcFileCount": 6,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-decision-graph",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-decision-graph",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-decision-graph",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-decision-graph",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-deploy",
+      "path": "packages/platform-deploy",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-deploy",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-deploy",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-deploy",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-entity-graph",
+      "path": "packages/platform-entity-graph",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-entity-graph",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-entity-graph",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-entity-graph",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-event-fabric",
+      "path": "packages/platform-event-fabric",
+      "srcFileCount": 9,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": true,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-event-fabric",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-event-fabric",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-event-fabric",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-events",
+      "path": "packages/platform-events",
+      "srcFileCount": 6,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-events",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-events",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-events",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-evidence-pack",
+      "path": "packages/platform-evidence-pack",
+      "srcFileCount": 6,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-evidence-pack",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-evidence-pack",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-evidence-pack",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-export",
+      "path": "packages/platform-export",
+      "srcFileCount": 1,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": []
+    },
+    {
+      "name": "platform-governed-ai",
+      "path": "packages/platform-governed-ai",
+      "srcFileCount": 8,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-governed-ai",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-governed-ai",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-governed-ai",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-integrations-control-plane",
+      "path": "packages/platform-integrations-control-plane",
+      "srcFileCount": 7,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-integrations-control-plane",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-integrations-control-plane",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-integrations-control-plane",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-isolation",
+      "path": "packages/platform-isolation",
+      "srcFileCount": 5,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-isolation",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-isolation",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-isolation",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-knowledge-registry",
+      "path": "packages/platform-knowledge-registry",
+      "srcFileCount": 6,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-knowledge-registry",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-knowledge-registry",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-knowledge-registry",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-knowledge-registry",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-marketplace",
+      "path": "packages/platform-marketplace",
+      "srcFileCount": 5,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": true,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-marketplace",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-metrics",
+      "path": "packages/platform-metrics",
+      "srcFileCount": 3,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-metrics",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        }
+      ]
+    },
+    {
+      "name": "platform-observability",
+      "path": "packages/platform-observability",
+      "srcFileCount": 11,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": true,
+      "hasMetrics": true,
+      "hasTelemetryContract": true,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": true,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-observability",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-ontology",
+      "path": "packages/platform-ontology",
+      "srcFileCount": 7,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-ontology",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-ontology",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-ontology",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-ontology",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-ops",
+      "path": "packages/platform-ops",
+      "srcFileCount": 27,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": true,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": true,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-ops",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-ops",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-performance",
+      "path": "packages/platform-performance",
+      "srcFileCount": 7,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-performance",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-performance",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-performance",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-performance",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-policy-engine",
+      "path": "packages/platform-policy-engine",
+      "srcFileCount": 5,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-policy-engine",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-policy-engine",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-procurement-proof",
+      "path": "packages/platform-procurement-proof",
+      "srcFileCount": 19,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": true,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-procurement-proof",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-procurement-proof",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-proof",
+      "path": "packages/platform-proof",
+      "srcFileCount": 11,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-proof",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-proof",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-proof",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-proof",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-reasoning-engine",
+      "path": "packages/platform-reasoning-engine",
+      "srcFileCount": 9,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 26,
+      "findings": [
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 22,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 32,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 65,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 90,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 93,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 131,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 134,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 210,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 211,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 212,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/cross-vertical-demo.ts",
+          "line": 214,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 25,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 28,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 85,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 88,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 103,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 106,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 116,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 119,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 146,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 149,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 172,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 175,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 215,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 216,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-reasoning-engine/src/demos/mobility-demo.ts",
+          "line": 218,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-reasoning-engine",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-reasoning-engine",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-reasoning-engine",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-reasoning-engine",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-rfp-generator",
+      "path": "packages/platform-rfp-generator",
+      "srcFileCount": 3,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": true,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": []
+    },
+    {
+      "name": "platform-rum",
+      "path": "packages/platform-rum",
+      "srcFileCount": 4,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-rum",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-rum",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-rum",
+          "message": "Platform package lacks metrics instrumentation"
+        }
+      ]
+    },
+    {
+      "name": "platform-semantic-search",
+      "path": "packages/platform-semantic-search",
+      "srcFileCount": 6,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": [
+        {
+          "rule": "needs-structured-logging",
+          "severity": "warning",
+          "file": "packages/platform-semantic-search",
+          "message": "Platform package lacks structured logging — add StructuredLogger"
+        },
+        {
+          "rule": "needs-health-check",
+          "severity": "warning",
+          "file": "packages/platform-semantic-search",
+          "message": "Platform package lacks health check exports — add healthCheck function"
+        },
+        {
+          "rule": "needs-metrics",
+          "severity": "warning",
+          "file": "packages/platform-semantic-search",
+          "message": "Platform package lacks metrics instrumentation"
+        },
+        {
+          "rule": "needs-error-classification",
+          "severity": "info",
+          "file": "packages/platform-semantic-search",
+          "message": "Consider adding failure classification for better retry decisions"
+        }
+      ]
+    },
+    {
+      "name": "platform-utils",
+      "path": "packages/platform-utils",
+      "srcFileCount": 2,
+      "hasStructuredLogging": false,
+      "hasHealthCheck": false,
+      "hasMetrics": false,
+      "hasTelemetryContract": false,
+      "hasErrorClassification": false,
+      "hasCircuitBreaker": false,
+      "hasAuditEmission": false,
+      "bareConsoleCount": 0,
+      "findings": []
+    },
+    {
+      "name": "platform-validation",
+      "path": "packages/platform-validation",
+      "srcFileCount": 7,
+      "hasStructuredLogging": true,
+      "hasHealthCheck": true,
+      "hasMetrics": true,
+      "hasTelemetryContract": true,
+      "hasErrorClassification": true,
+      "hasCircuitBreaker": true,
+      "hasAuditEmission": true,
+      "bareConsoleCount": 65,
+      "findings": [
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 380,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 386,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 387,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 388,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 389,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 390,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 391,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 394,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 398,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/architecture-audit.ts",
+          "line": 399,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 629,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 636,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 637,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 638,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 639,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 640,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 641,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 644,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 646,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/claim-verification.ts",
+          "line": 648,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 376,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 382,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 383,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 384,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 385,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 386,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 389,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/doc-consistency.ts",
+          "line": 390,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 448,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 455,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 456,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 457,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 458,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 459,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 460,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 461,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 462,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 463,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 464,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 465,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 471,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/package-audit.ts",
+          "line": 472,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 78,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 79,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 80,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 83,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 88,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 91,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 94,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 97,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 102,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 105,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 108,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 111,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 114,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 335,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 336,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 337,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 339,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 341,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 344,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 345,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 347,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 349,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        },
+        {
+          "rule": "no-bare-console",
+          "severity": "error",
+          "file": "packages/platform-validation/src/run-all.ts",
+          "line": 350,
+          "message": "Bare console.* call — use StructuredLogger from @nzila/platform-observability"
+        }
+      ]
+    }
+  ],
+  "maturityScore": 24
+}

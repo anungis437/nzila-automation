@@ -8,7 +8,8 @@
     "./package-audit": "./src/package-audit.ts",
     "./architecture-audit": "./src/architecture-audit.ts",
     "./claim-verification": "./src/claim-verification.ts",
-    "./doc-consistency": "./src/doc-consistency.ts"
+    "./doc-consistency": "./src/doc-consistency.ts",
+    "./ops-readiness-audit": "./src/ops-readiness-audit.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -17,6 +18,7 @@
     "audit:architecture": "tsx src/architecture-audit.ts",
     "audit:claims": "tsx src/claim-verification.ts",
     "audit:docs": "tsx src/doc-consistency.ts",
+    "audit:ops-readiness": "tsx src/ops-readiness-audit.ts",
     "audit:all": "tsx src/run-all.ts"
   },
   "dependencies": {
