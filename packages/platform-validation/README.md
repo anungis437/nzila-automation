@@ -1,6 +1,8 @@
 # @nzila/platform-validation
 
-Automated validation suite for the NzilaOS platform. Scans code, docs, architecture, and operational readiness for consistency, produces graded scorecards.
+Automated validation suite for the NzilaOS platform. Scans code, docs,
+architecture, and operational readiness for consistency, produces graded
+scorecards.
 
 ## Audits
 
@@ -38,7 +40,8 @@ Scans all platform packages (`platform-*`, `integrations-*`, `ai-*`, `ml-*`) for
 | `needs-metrics` | Warning | Package has no MetricsRegistry usage |
 | `needs-error-classification` | Info | Package has no `classifyFailure` usage |
 
-Outputs a **maturity score** (0–100%) based on 4 key markers per package: structured logging, health check, metrics, audit emission.
+Outputs a **maturity score** (0–100%) based on 4 key markers per
+package: structured logging, health check, metrics, audit emission.
 
 ## Grading
 

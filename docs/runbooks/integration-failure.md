@@ -40,14 +40,14 @@ Check `reports/ops-readiness-audit.json` for current error classification covera
 
 | Provider | Status page |
 |----------|-------------|
-| Resend | https://resend.com/status |
-| Twilio | https://status.twilio.com |
-| Slack | https://status.slack.com |
-| HubSpot | https://status.hubspot.com |
-| Microsoft 365/Teams | https://status.office365.com |
-| WhatsApp (Meta) | https://developers.facebook.com/status |
-| Postmark | https://status.postmarkapp.com |
-| SendGrid | https://status.sendgrid.com |
+| Resend | <https://resend.com/status> |
+| Twilio | <https://status.twilio.com> |
+| Slack | <https://status.slack.com> |
+| HubSpot | <https://status.hubspot.com> |
+| Microsoft 365/Teams | <https://status.office365.com> |
+| WhatsApp (Meta) | <https://developers.facebook.com/status> |
+| Postmark | <https://status.postmarkapp.com> |
+| SendGrid | <https://status.sendgrid.com> |
 
 ## Response
 

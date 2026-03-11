@@ -20,6 +20,7 @@ Workflow failures surface through:
 Check the Orchestrator Ops dashboard at `/orchestrator-ops` in platform-admin.
 
 Key data points:
+
 - Workflow name and domain
 - Danger level (high/medium/low)
 - Whether rollback and circuit breaker are configured
@@ -37,6 +38,7 @@ The `classifyFailure()` function from `platform-ops` categorises errors:
 ### Step 3: Check retry state
 
 The `RetryStateMachine` tracks:
+
 - Current attempt number
 - Next delay (exponential backoff)
 - Decision: `retry`, `exhaust` (budget spent), or `abort` (permanent)
@@ -71,6 +73,7 @@ For workflows with `danger: 'high'`:
 ### Circuit breaker behaviour
 
 Workflows with `hasCircuitBreaker: true`:
+
 1. Breaker opens after failure threshold
 2. Subsequent calls fail fast (no cascade)
 3. After cooldown, half-open probe tests recovery
