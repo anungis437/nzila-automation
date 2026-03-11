@@ -24,7 +24,12 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_WEB_URL",
         "NEXT_PUBLIC_CONSOLE_URL",
+        "NEXT_PUBLIC_PARTNERS_URL",
+        "NEXT_PUBLIC_UNION_EYES_URL",
+        "NEXT_PUBLIC_ABR_URL",
+        "NEXT_PUBLIC_CFO_URL",
         "NEXT_PUBLIC_APP_URL",
         "CLERK_SECRET_KEY",
         "NODE_ENV"

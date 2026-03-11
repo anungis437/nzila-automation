@@ -101,6 +101,9 @@ jobs:
             --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }} \
             --build-arg NEXT_PUBLIC_CONSOLE_URL=https://nzila-os-console.delightfulisland-0d503d3c.eastus.azurecontainerapps.io \
             --build-arg NEXT_PUBLIC_PARTNERS_URL=https://nzila-os-partners.delightfulisland-0d503d3c.eastus.azurecontainerapps.io \
+            --build-arg NEXT_PUBLIC_UNION_EYES_URL=https://nzila-os-union-eyes.delightfulisland-0d503d3c.eastus.azurecontainerapps.io \
+            --build-arg NEXT_PUBLIC_ABR_URL=https://nzila-os-abr.delightfulisland-0d503d3c.eastus.azurecontainerapps.io \
+            --build-arg NEXT_PUBLIC_CFO_URL=https://nzila-os-cfo.delightfulisland-0d503d3c.eastus.azurecontainerapps.io \
             -t ${{ env.IMAGE }}:${{ github.sha }} \
             -t ${{ env.IMAGE }}:latest \
             .

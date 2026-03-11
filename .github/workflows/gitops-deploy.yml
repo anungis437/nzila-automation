@@ -172,10 +172,13 @@ jobs:
           fi
 
           # Cross-app navigation URLs (baked into Next.js at build time)
-          if [ "${APP}" = "web" ]; then
-            BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_CONSOLE_URL=https://nzila-os-console.delightfulisland-0d503d3c.eastus.azurecontainerapps.io"
-            BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_PARTNERS_URL=https://nzila-os-partners.delightfulisland-0d503d3c.eastus.azurecontainerapps.io"
-          fi
+          DOMAIN="delightfulisland-0d503d3c.eastus.azurecontainerapps.io"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_WEB_URL=https://nzila-os-web.${DOMAIN}"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_CONSOLE_URL=https://nzila-os-console.${DOMAIN}"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_PARTNERS_URL=https://nzila-os-partners.${DOMAIN}"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_UNION_EYES_URL=https://nzila-os-union-eyes.${DOMAIN}"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_ABR_URL=https://nzila-os-abr.${DOMAIN}"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg NEXT_PUBLIC_CFO_URL=https://nzila-os-cfo.${DOMAIN}"
 
           docker build \
             --target "$APP" \
