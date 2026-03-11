@@ -1,0 +1,25 @@
+{
+  "name": "@nzila/platform-ai-query",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./engine": "./src/queryEngine.ts",
+    "./evidence": "./src/evidenceBacked.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nzila/os-core": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "@nzila/platform-intelligence": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

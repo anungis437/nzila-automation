@@ -13,6 +13,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: 'ok',
+      service: APP,
       app: APP,
       buildInfo: { version: VERSION, commit: COMMIT },
       checks,

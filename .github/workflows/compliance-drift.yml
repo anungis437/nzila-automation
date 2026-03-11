@@ -1,0 +1,50 @@
+##
+# Compliance Drift Detection
+#
+# Detects governance drift across target apps.
+# Runs on every push to main and weekly scheduled checks.
+##
+
+name: Compliance Drift
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+      - 'packages/platform-*/**'
+  schedule:
+    - cron: '0 4 * * 1' # Weekly Monday 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance-check:
+    name: Governance Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run governance check
+        run: pnpm governance:check
+
+      - name: Upload governance report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-drift-report
+          path: governance-report.json
+          retention-days: 30

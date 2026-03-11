@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
+    "demo:seed": "tsx lib/demoSeed.ts",
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {

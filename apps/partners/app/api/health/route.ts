@@ -40,6 +40,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: allHealthy ? 'ok' : 'degraded',
+      service: APP,
       app: APP,
       buildInfo: { version: VERSION, commit: COMMIT },
       checks,
