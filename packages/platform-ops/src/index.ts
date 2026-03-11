@@ -128,6 +128,43 @@ export {
   type PilotSummaryPack,
 } from './pilot-pack'
 
+// Re-export workflow registry
+export {
+  createWorkflowRegistry,
+  DEFAULT_RETRY_CONFIG,
+  DEFAULT_SLO_TARGETS,
+  type WorkflowRegistry,
+  type WorkflowDefinition,
+  type WorkflowStatus,
+  type DangerLevel,
+  type RetryConfig,
+  type WorkflowSloTargets,
+} from './workflow-registry'
+
+// Re-export failure classification
+export {
+  classifyFailure,
+  isRetryable,
+  type ClassifiedFailure,
+  type FailureClass,
+  type FailureCategory,
+} from './failure-classification'
+
+// Re-export retry state machine
+export {
+  createRetryStateMachine,
+  type RetryStateMachine,
+  type RetryState,
+  type RetryDecision,
+} from './retry-state-machine'
+
+// Re-export dead letter queue
+export {
+  createDeadLetterQueue,
+  type DeadLetterQueue,
+  type DeadLetterEntry,
+} from './dead-letter-queue'
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface OutboxBacklog {

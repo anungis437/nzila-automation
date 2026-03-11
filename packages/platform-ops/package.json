@@ -15,7 +15,11 @@
     "./pilot-export": "./src/pilot-export.ts",
     "./digest-trends": "./src/digest-trends.ts",
     "./trend-alerts": "./src/trend-alerts.ts",
-    "./pilot-pack": "./src/pilot-pack.ts"
+    "./pilot-pack": "./src/pilot-pack.ts",
+    "./workflow-registry": "./src/workflow-registry.ts",
+    "./failure-classification": "./src/failure-classification.ts",
+    "./retry-state-machine": "./src/retry-state-machine.ts",
+    "./dead-letter-queue": "./src/dead-letter-queue.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
