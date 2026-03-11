@@ -10,6 +10,9 @@ export type GovernanceEventType =
   | 'approval_denied'
   | 'drift_detected'
   | 'remediation_applied'
+  | 'workflow_created'
+  | 'workflow_step_executed'
+  | 'recommendation_generated'
 
 export interface AuditTimelineEntry {
   id: string
@@ -34,6 +37,9 @@ export const auditTimelineEntrySchema = z.object({
     'approval_denied',
     'drift_detected',
     'remediation_applied',
+    'workflow_created',
+    'workflow_step_executed',
+    'recommendation_generated',
   ]),
   actor: z.string().min(1),
   orgId: z.string().min(1),
@@ -101,4 +107,57 @@ export const governanceStatusReportSchema = z.object({
       message: z.string(),
     }),
   ),
+})
+
+// ── Governance Status (aggregated) ──────────────────────
+
+export type PolicyEngineHealth = 'healthy' | 'degraded' | 'missing'
+export type EvidencePackHealth = 'verified' | 'degraded' | 'missing'
+export type ComplianceSnapshotHealth = 'current' | 'stale' | 'missing'
+export type AuditTimelineHealth = 'healthy' | 'degraded'
+
+export interface GovernanceStatus {
+  policy_engine: PolicyEngineHealth
+  evidence_pack: EvidencePackHealth
+  sbom_current: boolean
+  compliance_snapshot: ComplianceSnapshotHealth
+  audit_timeline: AuditTimelineHealth
+  generated_at: string
+}
+
+export const governanceStatusSchema = z.object({
+  policy_engine: z.enum(['healthy', 'degraded', 'missing']),
+  evidence_pack: z.enum(['verified', 'degraded', 'missing']),
+  sbom_current: z.boolean(),
+  compliance_snapshot: z.enum(['current', 'stale', 'missing']),
+  audit_timeline: z.enum(['healthy', 'degraded']),
+  generated_at: z.string().datetime(),
+})
+
+// ── Governance Audit Timeline Entry ─────────────────────
+
+export interface GovernanceAuditTimelineEntry {
+  timestamp: string
+  event_type: GovernanceEventType
+  actor: string
+  policy_result: 'pass' | 'fail' | 'warn'
+  commit_hash: string
+  source: string
+}
+
+export const governanceAuditTimelineEntrySchema = z.object({
+  timestamp: z.string().datetime(),
+  event_type: z.enum([
+    'policy_evaluated',
+    'compliance_check',
+    'evidence_exported',
+    'approval_granted',
+    'approval_denied',
+    'drift_detected',
+    'remediation_applied',
+  ]),
+  actor: z.string(),
+  policy_result: z.enum(['pass', 'fail', 'warn']),
+  commit_hash: z.string(),
+  source: z.string(),
 })

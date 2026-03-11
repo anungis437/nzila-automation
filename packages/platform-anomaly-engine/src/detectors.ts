@@ -34,6 +34,40 @@ export function detectPricingOutlier(
   })
 }
 
+export function detectPartnerPerformanceDrop(
+  dataPoints: MetricDataPoint[],
+  thresholdFactor = 1.5,
+): Anomaly[] {
+  // For performance drops, we invert: baseline/value instead of value/baseline
+  const anomalies: Anomaly[] = []
+
+  for (const dp of dataPoints) {
+    if (dp.baseline === 0 || dp.value === 0) continue
+
+    // Drop detection: value significantly below baseline
+    const dropFactor = dp.baseline / dp.value
+    if (dropFactor < thresholdFactor) continue
+
+    const severity = classifySeverity(dropFactor, thresholdFactor)
+
+    anomalies.push({
+      id: randomUUID(),
+      timestamp: dp.timestamp,
+      anomalyType: 'partner_performance_drop',
+      severity,
+      app: dp.app,
+      metric: dp.metric,
+      expectedValue: dp.baseline,
+      actualValue: dp.value,
+      deviationFactor: Math.round(dropFactor * 100) / 100,
+      description: `Partner performance drop in ${dp.app}: ${dp.metric} is ${dp.value} vs expected ${dp.baseline}`,
+      suggestedAction: 'Review partner contract compliance and initiate performance review',
+    })
+  }
+
+  return anomalies
+}
+
 function detectAnomaly(
   dataPoints: MetricDataPoint[],
   anomalyType: AnomalyType,

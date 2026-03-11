@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { AgentWorkflow, Recommendation } from './types'
+import { recordAuditEvent } from '@nzila/platform-governance'
 
 export function generateRecommendations(
   workflow: AgentWorkflow,
@@ -18,6 +19,7 @@ export function generateRecommendations(
         priority: 'high',
         actionable: true,
         suggestedAction: `Submit approval request for policy ${step.policyCheck.policyId}`,
+        humanReviewRequired: true,
       })
     }
 
@@ -30,6 +32,7 @@ export function generateRecommendations(
         description: `Step "${step.name}" was denied by policy ${step.policyCheck.policyId}`,
         priority: 'high',
         actionable: false,
+        humanReviewRequired: true,
       })
     }
   }
@@ -45,6 +48,23 @@ export function generateRecommendations(
       priority: 'medium',
       actionable: true,
       suggestedAction: 'Review step configuration and retry',
+      humanReviewRequired: true,
+    })
+  }
+
+  if (recommendations.length > 0) {
+    recordAuditEvent({
+      eventType: 'recommendation_generated',
+      actor: 'agent-workflow-runner',
+      orgId: workflow.orgId,
+      app: workflow.app,
+      policyResult: 'warn',
+      commitHash: 'runtime',
+      details: {
+        workflowId: workflow.id,
+        recommendationCount: recommendations.length,
+        priorities: recommendations.map((r) => r.priority),
+      },
     })
   }
 

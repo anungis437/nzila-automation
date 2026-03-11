@@ -3,7 +3,9 @@ import type {
   ComplianceLevel,
   GovernanceFinding,
   GovernanceStatusReport,
+  GovernanceStatus,
 } from './types'
+import { getAuditTimeline } from './auditTimeline'
 
 export function assessAppCompliance(app: {
   name: string
@@ -129,5 +131,24 @@ export function buildGovernanceReport(
     apps: statuses,
     driftDetected,
     findings,
+  }
+}
+
+export function getGovernanceStatus(params: {
+  policyEngineAvailable: boolean
+  evidencePackValid: boolean
+  sbomExists: boolean
+  complianceSnapshotAge?: 'current' | 'stale' | 'missing'
+}): GovernanceStatus {
+  const timeline = getAuditTimeline()
+  const hasRecentEvents = timeline.length > 0
+
+  return {
+    policy_engine: params.policyEngineAvailable ? 'healthy' : 'missing',
+    evidence_pack: params.evidencePackValid ? 'verified' : 'missing',
+    sbom_current: params.sbomExists,
+    compliance_snapshot: params.complianceSnapshotAge ?? 'missing',
+    audit_timeline: hasRecentEvents ? 'healthy' : 'degraded',
+    generated_at: new Date().toISOString(),
   }
 }

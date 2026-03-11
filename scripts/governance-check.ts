@@ -124,6 +124,11 @@ const requiredPlatformPkgs = [
   'platform-events',
   'platform-evidence-pack',
   'platform-governance',
+  'platform-intelligence',
+  'platform-ai-governance',
+  'platform-anomaly-engine',
+  'platform-agent-workflows',
+  'platform-ai-query',
 ]
 
 for (const pkg of requiredPlatformPkgs) {
@@ -136,6 +141,75 @@ for (const pkg of requiredPlatformPkgs) {
     `packages/${pkg}/src/index.ts`,
   )
 }
+
+// ── Governance artefact checks ──────────────────────────
+
+// SBOM
+const hasSbom =
+  fileExists(path.join(ROOT, 'sbom.json')) ||
+  fileExists(path.join(ROOT, 'sbom.spdx.json')) ||
+  fileExists(path.join(ROOT, 'bom.json'))
+check('platform', 'sbom-exists', hasSbom, 'Root SBOM file')
+
+// Build attestation
+const hasAttestation =
+  fileExists(path.join(ROOT, 'attestation.json')) ||
+  fileExists(path.join(ROOT, '.attestation')) ||
+  fileExists(path.join(ROOT, 'build-attestation.json'))
+check('platform', 'build-attestation', hasAttestation, 'Build attestation artefact')
+
+// Evidence pack package
+check(
+  'platform',
+  'evidence-pack-generation',
+  fileExists(path.join(ROOT, 'packages', 'platform-evidence-pack', 'src', 'orchestrator.ts')),
+  'Evidence pack orchestrator present',
+)
+
+// Procurement proof package
+check(
+  'platform',
+  'procurement-proof-validation',
+  fileExists(path.join(ROOT, 'packages', 'platform-procurement-proof', 'src', 'index.ts')),
+  'Procurement proof package present',
+)
+
+// Compliance snapshot
+const hasComplianceSnapshot =
+  fs.existsSync(path.join(ROOT, 'governance', 'reports')) ||
+  fs.existsSync(path.join(ROOT, 'packages', 'platform-compliance-snapshots', 'src', 'index.ts'))
+check('platform', 'compliance-snapshot', hasComplianceSnapshot, 'Compliance snapshot or reports')
+
+// Governance status (package has getGovernanceStatus)
+check(
+  'platform',
+  'governance-status-function',
+  fileExists(path.join(ROOT, 'packages', 'platform-governance', 'src', 'governanceStatus.ts')),
+  'Governance status function present',
+)
+
+// Audit timeline (package has buildGovernanceAuditTimeline)
+check(
+  'platform',
+  'audit-timeline-function',
+  fileExists(path.join(ROOT, 'packages', 'platform-governance', 'src', 'auditTimeline.ts')),
+  'Audit timeline function present',
+)
+
+// Governance API endpoints
+check(
+  'platform',
+  'governance-status-endpoint',
+  fileExists(path.join(ROOT, 'apps', 'web', 'app', 'api', 'governance', 'status', 'route.ts')),
+  'GET /api/governance/status endpoint',
+)
+
+check(
+  'platform',
+  'governance-timeline-endpoint',
+  fileExists(path.join(ROOT, 'apps', 'web', 'app', 'api', 'governance', 'timeline', 'route.ts')),
+  'GET /api/governance/timeline endpoint',
+)
 
 // ── Report ──────────────────────────────────────────────
 

@@ -120,7 +120,7 @@ function scaffoldNextJsApp(name: string, port: number): void {
       start: 'next start',
       lint: 'eslint',
       typecheck: 'tsc --noEmit',
-      test: 'vitest run --passWithNoTests',
+      test: 'vitest run',
       clean: 'rm -rf .next .turbo node_modules',
     },
     dependencies: {
@@ -259,7 +259,7 @@ function scaffoldFastifyService(name: string): void {
       start: 'node dist/server.js',
       lint: 'eslint src/',
       typecheck: 'tsc --noEmit',
-      test: 'vitest run --passWithNoTests',
+      test: 'vitest run',
     },
     dependencies: {
       '@nzila/os-core': 'workspace:*',

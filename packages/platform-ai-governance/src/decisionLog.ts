@@ -12,9 +12,13 @@ export function logAIDecision(params: {
   outputSummary: string
   confidence: number
   confidenceThreshold?: number
+  modelVersion?: string
+  engineVersion?: string
+  evidenceRefs?: string[]
 }): AIDecisionLogEntry {
+  // All AI outputs require human review — confidence threshold determines reviewStatus
   const threshold = params.confidenceThreshold ?? 0.7
-  const requiresHumanReview = params.confidence < threshold
+  const requiresHumanReview = true
 
   const entry: AIDecisionLogEntry = {
     id: randomUUID(),
@@ -27,7 +31,10 @@ export function logAIDecision(params: {
     outputSummary: params.outputSummary,
     confidence: params.confidence,
     requiresHumanReview,
-    reviewStatus: requiresHumanReview ? 'pending' : undefined,
+    reviewStatus: params.confidence < threshold ? 'pending' : undefined,
+    modelVersion: params.modelVersion,
+    engineVersion: params.engineVersion,
+    evidenceRefs: params.evidenceRefs,
   }
   decisionLog.push(entry)
   return entry

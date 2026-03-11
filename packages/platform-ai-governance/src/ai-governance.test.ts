@@ -123,7 +123,7 @@ describe('platform-ai-governance', () => {
       expect(decision.reviewStatus).toBe('pending')
     })
 
-    it('does not flag high-confidence decisions', () => {
+    it('does not flag high-confidence decisions for immediate review but still requires human review', () => {
       const decision = logAIDecision({
         modelId: 'm1',
         promptId: 'p1',
@@ -133,7 +133,8 @@ describe('platform-ai-governance', () => {
         outputSummary: 'Result',
         confidence: 0.95,
       })
-      expect(decision.requiresHumanReview).toBe(false)
+      expect(decision.requiresHumanReview).toBe(true)
+      expect(decision.reviewStatus).toBeUndefined()
     })
 
     it('reviews a decision', () => {
@@ -152,6 +153,24 @@ describe('platform-ai-governance', () => {
       })
       expect(reviewed?.reviewStatus).toBe('approved')
       expect(reviewed?.reviewedBy).toBe('analyst')
+    })
+
+    it('stores modelVersion, engineVersion, and evidenceRefs', () => {
+      const decision = logAIDecision({
+        modelId: 'm1',
+        promptId: 'p1',
+        app: 'cfo',
+        orgId: 'org-1',
+        inputSummary: 'Test',
+        outputSummary: 'Result',
+        confidence: 0.9,
+        modelVersion: 'gpt-4o-2025-01',
+        engineVersion: '1.2.0',
+        evidenceRefs: ['evidence-pack-001', 'audit-trail-002'],
+      })
+      expect(decision.modelVersion).toBe('gpt-4o-2025-01')
+      expect(decision.engineVersion).toBe('1.2.0')
+      expect(decision.evidenceRefs).toHaveLength(2)
     })
   })
 

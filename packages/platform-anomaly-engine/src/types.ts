@@ -6,6 +6,7 @@ export type AnomalyType =
   | 'pricing_outlier'
   | 'usage_anomaly'
   | 'compliance_deviation'
+  | 'partner_performance_drop'
 
 export type AnomalySeverity = 'low' | 'medium' | 'high' | 'critical'
 
@@ -32,6 +33,7 @@ export const anomalySchema = z.object({
     'pricing_outlier',
     'usage_anomaly',
     'compliance_deviation',
+    'partner_performance_drop',
   ]),
   severity: z.enum(['low', 'medium', 'high', 'critical']),
   app: z.string(),
@@ -59,6 +61,7 @@ export const anomalyRuleSchema = z.object({
     'pricing_outlier',
     'usage_anomaly',
     'compliance_deviation',
+    'partner_performance_drop',
   ]),
   metric: z.string(),
   thresholdFactor: z.number().positive(),

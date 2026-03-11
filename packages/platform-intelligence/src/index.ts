@@ -18,5 +18,5 @@ export {
 } from './types'
 
 export { aggregateEvent, getAggregatedEvents, clearEventStore } from './aggregator'
-export { generateCrossAppInsights } from './insights'
+export { generateCrossAppInsights, crossAppInsights } from './insights'
 export { detectOperationalSignals } from './signals'

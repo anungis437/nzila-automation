@@ -16,6 +16,7 @@ export {
   detectGrievanceSpike,
   detectFinancialIrregularity,
   detectPricingOutlier,
+  detectPartnerPerformanceDrop,
 } from './detectors'
 
 export { getDefaultRules, findRule } from './rules'

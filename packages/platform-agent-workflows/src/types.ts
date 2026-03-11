@@ -61,6 +61,8 @@ export interface Recommendation {
   priority: 'low' | 'medium' | 'high'
   actionable: boolean
   suggestedAction?: string
+  evidenceRefs?: string[]
+  humanReviewRequired: boolean
 }
 
 export const recommendationSchema = z.object({
@@ -72,4 +74,6 @@ export const recommendationSchema = z.object({
   priority: z.enum(['low', 'medium', 'high']),
   actionable: z.boolean(),
   suggestedAction: z.string().optional(),
+  evidenceRefs: z.array(z.string()).optional(),
+  humanReviewRequired: z.boolean(),
 })

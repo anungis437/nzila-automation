@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { AgentWorkflow, WorkflowStep, WorkflowStatus } from './types'
+import { recordAuditEvent } from '@nzila/platform-governance'
 
 export function createWorkflow(params: {
   name: string
@@ -8,7 +9,7 @@ export function createWorkflow(params: {
   orgId: string
   steps: Array<{ name: string }>
 }): AgentWorkflow {
-  return {
+  const workflow: AgentWorkflow = {
     id: randomUUID(),
     name: params.name,
     triggerEvent: params.triggerEvent,
@@ -22,6 +23,18 @@ export function createWorkflow(params: {
     })),
     createdAt: new Date().toISOString(),
   }
+
+  recordAuditEvent({
+    eventType: 'workflow_created',
+    actor: 'agent-workflow-runner',
+    orgId: params.orgId,
+    app: params.app,
+    policyResult: 'pass',
+    commitHash: 'runtime',
+    details: { workflowId: workflow.id, workflowName: params.name, triggerEvent: params.triggerEvent },
+  })
+
+  return workflow
 }
 
 export function executeStep(
@@ -60,10 +73,34 @@ export function executeStep(
   else if (anyFailed) status = 'failed'
   else if (anyBlocked) status = 'blocked'
 
+  const policyResult = anyBlocked || anyFailed ? 'fail' : 'pass'
+  emitStepAuditEvent(workflow, stepId, policyResult, {
+    stepStatus: updatedSteps.find((s) => s.id === stepId)?.status,
+    workflowStatus: status,
+    policyCheck: params.policyCheck,
+  })
+
   return {
     ...workflow,
     steps: updatedSteps,
     status,
     completedAt: status === 'completed' ? new Date().toISOString() : undefined,
   }
+}
+
+function emitStepAuditEvent(
+  workflow: AgentWorkflow,
+  stepId: string,
+  policyResult: 'pass' | 'fail' | 'warn',
+  details: Record<string, unknown>,
+): void {
+  recordAuditEvent({
+    eventType: 'workflow_step_executed',
+    actor: 'agent-workflow-runner',
+    orgId: workflow.orgId,
+    app: workflow.app,
+    policyResult,
+    commitHash: 'runtime',
+    details: { workflowId: workflow.id, stepId, ...details },
+  })
 }

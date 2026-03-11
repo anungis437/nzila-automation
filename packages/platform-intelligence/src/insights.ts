@@ -53,7 +53,100 @@ export function generateCrossAppInsights(
     }
   }
 
+  // UE grievance spike + CFO overtime increase -> staffing imbalance signal
+  const ueGrievances = events.filter(
+    (e) => e.app === 'union-eyes' && e.eventType === 'grievance_spike',
+  )
+  const cfoOvertime = events.filter(
+    (e) => e.app === 'cfo' && e.eventType === 'overtime_increase',
+  )
+  if (ueGrievances.length > 0 && cfoOvertime.length > 0) {
+    insights.push(
+      createInsight({
+        category: 'anomaly',
+        severity: 'critical',
+        apps: ['union-eyes', 'cfo'],
+        title: 'Staffing imbalance signal detected',
+        description:
+          'Grievance spike in UnionEyes combined with overtime increase in CFO suggests staffing imbalance',
+        dataPoints: {
+          grievanceCount: ueGrievances.length,
+          overtimeCount: cfoOvertime.length,
+        },
+        recommendations: [
+          'Review staffing levels across affected departments',
+          'Initiate workforce planning review',
+          'Check overtime approval policies',
+        ],
+      }),
+    )
+  }
+
+  // Shop Quoter quote volume drop + Web lead decline -> demand weakness signal
+  const quoteDrop = events.filter(
+    (e) => e.app === 'shop-quoter' && e.eventType === 'quote_volume_drop',
+  )
+  const leadDecline = events.filter(
+    (e) => e.app === 'web' && e.eventType === 'lead_decline',
+  )
+  if (quoteDrop.length > 0 && leadDecline.length > 0) {
+    insights.push(
+      createInsight({
+        category: 'anomaly',
+        severity: 'warning',
+        apps: ['shop-quoter', 'web'],
+        title: 'Demand weakness signal detected',
+        description:
+          'Quote volume drop in Shop Quoter combined with lead decline in Web indicates potential demand weakness',
+        dataPoints: {
+          quoteDropCount: quoteDrop.length,
+          leadDeclineCount: leadDecline.length,
+        },
+        recommendations: [
+          'Review marketing pipeline effectiveness',
+          'Analyze competitive pricing changes',
+          'Conduct demand forecast review',
+        ],
+      }),
+    )
+  }
+
+  // Partners underperformance + CFO revenue variance -> partner risk signal
+  const partnerIssues = events.filter(
+    (e) => e.app === 'partners' && e.eventType === 'performance_drop',
+  )
+  const revenueVariance = events.filter(
+    (e) => e.app === 'cfo' && e.eventType === 'revenue_variance',
+  )
+  if (partnerIssues.length > 0 && revenueVariance.length > 0) {
+    insights.push(
+      createInsight({
+        category: 'cost',
+        severity: 'warning',
+        apps: ['partners', 'cfo'],
+        title: 'Partner revenue risk detected',
+        description:
+          'Partner performance drops correlate with CFO revenue variance, indicating partner-linked revenue risk',
+        dataPoints: {
+          partnerIssueCount: partnerIssues.length,
+          revenueVarianceCount: revenueVariance.length,
+        },
+        recommendations: [
+          'Review underperforming partner contracts',
+          'Initiate partner performance review process',
+          'Evaluate revenue dependency on affected partners',
+        ],
+      }),
+    )
+  }
+
   return insights
+}
+
+export function crossAppInsights(
+  events: AggregatedEvent[],
+): CrossAppInsight[] {
+  return generateCrossAppInsights(events)
 }
 
 function createInsight(params: {

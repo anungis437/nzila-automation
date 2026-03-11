@@ -22,6 +22,13 @@ const DEFAULT_RULES: AnomalyRule[] = [
     thresholdFactor: 1.3,
     severityMap: { '1.3x': 'low', '2x': 'medium', '3x': 'high' },
   },
+  {
+    name: 'partner-performance-drop',
+    anomalyType: 'partner_performance_drop',
+    metric: 'partner_kpi',
+    thresholdFactor: 1.5,
+    severityMap: { '1.5x': 'low', '2x': 'medium', '3x': 'high' },
+  },
 ]
 
 export function getDefaultRules(): AnomalyRule[] {

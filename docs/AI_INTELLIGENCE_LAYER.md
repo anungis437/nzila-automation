@@ -11,7 +11,7 @@ The AI Intelligence Layer provides cross-application insights, natural language 
 ```
 @nzila/platform-intelligence      ← Event aggregation + cross-app insights + signals
 @nzila/platform-ai-query          ← Natural language queries with evidence-backed answers
-@nzila/platform-anomaly-engine    ← Grievance spikes, financial irregularities, pricing outliers
+@nzila/platform-anomaly-engine    ← Grievance spikes, financial irregularities, pricing outliers, partner drops
 @nzila/platform-agent-workflows   ← Event-driven recommendations, policy-engine obedient
 @nzila/platform-ai-governance     ← Model registry, prompt versioning, decision logging, review
 ```
@@ -24,6 +24,14 @@ The AI Intelligence Layer provides cross-application insights, natural language 
 - **Event Aggregation**: Collect and store events from all apps with filtering by app, org, type
 - **Cross-App Insights**: Detect patterns across multiple applications (error correlation, volume anomalies)
 - **Operational Signals**: Detect spikes, drops, threshold breaches, and trend changes against baselines
+
+### Cross-App Correlation Patterns
+
+| Pattern | Source Apps | Signal | Severity |
+|---------|-----------|--------|----------|
+| Staffing Imbalance | Union-Eyes + CFO | grievance_spike + overtime_increase | critical |
+| Demand Weakness | Shop Quoter + Web | quote_volume_drop + lead_decline | warning |
+| Partner Revenue Risk | Partners + CFO | performance_drop + revenue_variance | warning/cost |
 
 ### Signal Detection
 Signals are generated when metric deviations exceed a configurable threshold (default 20%):
@@ -51,6 +59,7 @@ Signals are generated when metric deviations exceed a configurable threshold (de
 | Grievance Spike | Union-Eyes | 2x baseline |
 | Financial Irregularity | CFO | 1.5x baseline |
 | Pricing Outlier | Shop Quoter | 1.3x baseline |
+| Partner Performance Drop | Partners | 1.5x below baseline |
 
 ### Severity Classification
 | Factor vs Threshold | Severity |
@@ -72,6 +81,8 @@ Pre-configured rules for common anomaly patterns with adjustable thresholds.
 - **Policy-Obedient Execution**: Every step can include policy checks (allow/deny/requires_approval)
 - **Blocked Step Handling**: Steps blocked by policy generate approval recommendations
 - **Recommendation Engine**: Contextual recommendations based on workflow state
+- **Audit Event Emission**: Every workflow creation, step execution, and recommendation emits a governance audit event
+- **Human Review**: All recommendations are flagged with `humanReviewRequired: true`
 
 ### Workflow States
 ```
@@ -97,7 +108,9 @@ pending → running → completed
 
 ### AI Decision Logging
 - Log every AI-assisted decision with confidence score
-- Automatic human review flagging below confidence threshold (default 0.7)
+- All decisions require human review (`requiresHumanReview: true` always)
+- Low-confidence decisions (<0.7) are flagged as `pending` for immediate review
+- Supports `modelVersion`, `engineVersion`, and `evidenceRefs` for traceability
 - Decision audit trail with review status
 
 ### Human Review

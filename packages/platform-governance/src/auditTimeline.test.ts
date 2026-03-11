@@ -3,6 +3,7 @@ import {
   recordAuditEvent,
   getAuditTimeline,
   clearAuditTimeline,
+  buildGovernanceAuditTimeline,
 } from '../src/auditTimeline'
 
 describe('auditTimeline', () => {
@@ -84,5 +85,57 @@ describe('auditTimeline', () => {
     })
     clearAuditTimeline()
     expect(getAuditTimeline()).toHaveLength(0)
+  })
+
+  it('builds governance audit timeline with structured entries', () => {
+    recordAuditEvent({
+      eventType: 'policy_evaluated',
+      actor: 'user:admin',
+      orgId: 'org-1',
+      app: 'shop-quoter',
+      policyResult: 'pass',
+      commitHash: 'abc123',
+    })
+    recordAuditEvent({
+      eventType: 'evidence_exported',
+      actor: 'system',
+      orgId: 'org-1',
+      app: 'cfo',
+      policyResult: 'pass',
+      commitHash: 'def456',
+    })
+
+    const timeline = buildGovernanceAuditTimeline({ orgId: 'org-1' })
+    expect(timeline).toHaveLength(2)
+    expect(timeline[0]).toMatchObject({
+      event_type: expect.any(String),
+      actor: expect.any(String),
+      policy_result: expect.any(String),
+      commit_hash: expect.any(String),
+      source: expect.any(String),
+    })
+  })
+
+  it('buildGovernanceAuditTimeline is deterministic in ordering', () => {
+    recordAuditEvent({
+      eventType: 'policy_evaluated',
+      actor: 'a',
+      orgId: 'org-1',
+      app: 'web',
+      policyResult: 'pass',
+      commitHash: 'c1',
+    })
+    recordAuditEvent({
+      eventType: 'compliance_check',
+      actor: 'b',
+      orgId: 'org-1',
+      app: 'web',
+      policyResult: 'warn',
+      commitHash: 'c2',
+    })
+
+    const t1 = buildGovernanceAuditTimeline()
+    const t2 = buildGovernanceAuditTimeline()
+    expect(t1.map((e) => e.timestamp)).toEqual(t2.map((e) => e.timestamp))
   })
 })

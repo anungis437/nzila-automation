@@ -1,11 +1,16 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import {
   assessAppCompliance,
   generateFindings,
   buildGovernanceReport,
+  getGovernanceStatus,
 } from '../src/governanceStatus'
+import { recordAuditEvent, clearAuditTimeline } from '../src/auditTimeline'
 
 describe('governanceStatus', () => {
+  beforeEach(() => {
+    clearAuditTimeline()
+  })
   it('returns full compliance when all checks pass', () => {
     const status = assessAppCompliance({
       name: 'shop-quoter',
@@ -93,5 +98,44 @@ describe('governanceStatus', () => {
     expect(report.driftDetected).toBe(true)
     expect(report.findings.length).toBeGreaterThan(0)
     expect(report.commitHash).toBe('abc123')
+  })
+
+  it('getGovernanceStatus returns healthy when all systems are up', () => {
+    recordAuditEvent({
+      eventType: 'compliance_check',
+      actor: 'system',
+      orgId: 'org-1',
+      app: 'web',
+      policyResult: 'pass',
+      commitHash: 'abc',
+    })
+
+    const status = getGovernanceStatus({
+      policyEngineAvailable: true,
+      evidencePackValid: true,
+      sbomExists: true,
+      complianceSnapshotAge: 'current',
+    })
+
+    expect(status.policy_engine).toBe('healthy')
+    expect(status.evidence_pack).toBe('verified')
+    expect(status.sbom_current).toBe(true)
+    expect(status.compliance_snapshot).toBe('current')
+    expect(status.audit_timeline).toBe('healthy')
+    expect(status.generated_at).toBeTruthy()
+  })
+
+  it('getGovernanceStatus returns degraded when systems are down', () => {
+    const status = getGovernanceStatus({
+      policyEngineAvailable: false,
+      evidencePackValid: false,
+      sbomExists: false,
+    })
+
+    expect(status.policy_engine).toBe('missing')
+    expect(status.evidence_pack).toBe('missing')
+    expect(status.sbom_current).toBe(false)
+    expect(status.compliance_snapshot).toBe('missing')
+    expect(status.audit_timeline).toBe('degraded')
   })
 })

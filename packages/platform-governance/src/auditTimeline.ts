@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { AuditTimelineEntry, GovernanceEventType } from './types'
+import type { AuditTimelineEntry, GovernanceEventType, GovernanceAuditTimelineEntry } from './types'
 
 const timeline: AuditTimelineEntry[] = []
 
@@ -50,4 +50,21 @@ export function getAuditTimeline(filters?: {
 
 export function clearAuditTimeline(): void {
   timeline.length = 0
+}
+
+export function buildGovernanceAuditTimeline(filters?: {
+  orgId?: string
+  app?: string
+  since?: string
+}): GovernanceAuditTimelineEntry[] {
+  const entries = getAuditTimeline(filters)
+
+  return entries.map((entry) => ({
+    timestamp: entry.timestamp,
+    event_type: entry.eventType,
+    actor: entry.actor,
+    policy_result: entry.policyResult,
+    commit_hash: entry.commitHash,
+    source: entry.app,
+  }))
 }

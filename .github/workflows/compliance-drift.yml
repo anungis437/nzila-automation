@@ -3,6 +3,7 @@
 #
 # Detects governance drift across target apps.
 # Runs on every push to main and weekly scheduled checks.
+# Requires 'governance-approved' label on PRs that change governance paths.
 ##
 
 name: Compliance Drift
@@ -13,12 +14,25 @@ on:
     paths:
       - 'apps/**'
       - 'packages/platform-*/**'
+      - 'ops/policies/**'
+      - 'governance/**'
+      - 'docs/GOVERNANCE_ARCHITECTURE.md'
+      - 'security/**'
+      - 'ops/compliance/**'
+      - 'ops/slo-policy.yml'
+  pull_request:
+    paths:
+      - 'ops/policies/**'
+      - 'governance/**'
+      - 'docs/GOVERNANCE_ARCHITECTURE.md'
+      - 'security/**'
   schedule:
     - cron: '0 4 * * 1' # Weekly Monday 04:00 UTC
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   governance-check:
@@ -46,3 +60,19 @@ jobs:
           name: governance-drift-report
           path: governance-report.json
           retention-days: 30
+
+  require-governance-approval:
+    name: Governance Approval Gate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for governance-approved label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+            if (!labels.includes('governance-approved')) {
+              core.setFailed(
+                'PR modifies governance-sensitive paths. Add the "governance-approved" label after review.'
+              );
+            }

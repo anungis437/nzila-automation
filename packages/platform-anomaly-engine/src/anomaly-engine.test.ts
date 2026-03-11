@@ -3,6 +3,7 @@ import {
   detectGrievanceSpike,
   detectFinancialIrregularity,
   detectPricingOutlier,
+  detectPartnerPerformanceDrop,
 } from '../src/detectors'
 import { getDefaultRules, findRule } from '../src/rules'
 import type { MetricDataPoint } from '../src/types'
@@ -54,18 +55,43 @@ describe('platform-anomaly-engine', () => {
       const anomalies = detectGrievanceSpike(data)
       expect(anomalies).toHaveLength(0)
     })
+
+    it('detects partner performance drop', () => {
+      const data: MetricDataPoint[] = [
+        { app: 'partners', metric: 'partner_kpi', value: 40, baseline: 100, timestamp: now },
+      ]
+      const anomalies = detectPartnerPerformanceDrop(data)
+      expect(anomalies).toHaveLength(1)
+      expect(anomalies[0].anomalyType).toBe('partner_performance_drop')
+      expect(anomalies[0].deviationFactor).toBe(2.5)
+      expect(anomalies[0].suggestedAction).toContain('partner contract compliance')
+    })
+
+    it('ignores partner performance within acceptable range', () => {
+      const data: MetricDataPoint[] = [
+        { app: 'partners', metric: 'partner_kpi', value: 90, baseline: 100, timestamp: now },
+      ]
+      const anomalies = detectPartnerPerformanceDrop(data)
+      expect(anomalies).toHaveLength(0)
+    })
   })
 
   describe('rules', () => {
     it('returns default rules', () => {
       const rules = getDefaultRules()
-      expect(rules.length).toBeGreaterThanOrEqual(3)
+      expect(rules.length).toBeGreaterThanOrEqual(4)
     })
 
     it('finds rule by name', () => {
       const rule = findRule('grievance-volume-spike')
       expect(rule).toBeTruthy()
       expect(rule!.anomalyType).toBe('grievance_spike')
+    })
+
+    it('finds partner performance drop rule', () => {
+      const rule = findRule('partner-performance-drop')
+      expect(rule).toBeTruthy()
+      expect(rule!.anomalyType).toBe('partner_performance_drop')
     })
 
     it('returns undefined for unknown rule', () => {

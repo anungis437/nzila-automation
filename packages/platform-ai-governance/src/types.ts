@@ -66,6 +66,9 @@ export interface AIDecisionLogEntry {
   reviewStatus?: 'pending' | 'approved' | 'rejected'
   reviewedBy?: string
   reviewedAt?: string
+  modelVersion?: string
+  engineVersion?: string
+  evidenceRefs?: string[]
 }
 
 export const aiDecisionLogEntrySchema = z.object({
@@ -82,6 +85,9 @@ export const aiDecisionLogEntrySchema = z.object({
   reviewStatus: z.enum(['pending', 'approved', 'rejected']).optional(),
   reviewedBy: z.string().optional(),
   reviewedAt: z.string().datetime().optional(),
+  modelVersion: z.string().optional(),
+  engineVersion: z.string().optional(),
+  evidenceRefs: z.array(z.string()).optional(),
 })
 
 // ── Human Review ────────────────────────────────────────

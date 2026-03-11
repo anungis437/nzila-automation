@@ -15,5 +15,5 @@ export {
   evidenceReferenceSchema,
 } from './types'
 
-export { classifyIntent, parseQuery, buildQueryResult } from './queryEngine'
+export { classifyIntent, parseQuery, buildQueryResult, executeQuery, getQueryLog, clearQueryLog } from './queryEngine'
 export { createEvidenceRef, validateEvidenceBacking } from './evidenceBacked'
