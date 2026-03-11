@@ -13,6 +13,7 @@ function createTestSourceRecord(overrides: Partial<SourceRecord> = {}): SourceRe
     id: 'src-1',
     tenantId: 'tenant-1',
     sourceSystem: 'quickbooks',
+    sourceCategory: 'erp',
     sourceRecordId: 'qb-inv-42',
     rawPayload: { amount: 1000, currency: 'USD' },
     ingestedAt: new Date().toISOString(),
@@ -30,13 +31,13 @@ describe('instrumentedMapSourceRecord', () => {
 
     const canonical = instrumentedMapSourceRecord({
       sourceRecord: source,
-      targetEntityType: 'policy',
+      targetEntityType: 'Policy',
       entityId: 'entity-1',
       mappingVersion: 1,
       transformFn: (raw) => ({ normalized_amount: raw.amount }),
     })
 
-    expect(canonical.entityType).toBe('policy')
+    expect(canonical.entityType).toBe('Policy')
     expect(canonical.entityId).toBe('entity-1')
     expect(canonical.sourceSystem).toBe('quickbooks')
     expect(canonical.payload).toEqual({ normalized_amount: 1000 })
@@ -48,7 +49,7 @@ describe('instrumentedMapSourceRecord', () => {
 
     const canonical = instrumentedMapSourceRecord({
       sourceRecord: source,
-      targetEntityType: 'policy',
+      targetEntityType: 'Policy',
       entityId: 'entity-2',
       mappingVersion: 2,
       transformFn: (raw) => raw,
@@ -69,7 +70,7 @@ describe('instrumentedReconcile', () => {
 
     const canonical = instrumentedMapSourceRecord({
       sourceRecord: source,
-      targetEntityType: 'policy',
+      targetEntityType: 'Policy',
       entityId: 'entity-1',
       mappingVersion: 1,
       transformFn: (raw) => raw,
@@ -88,7 +89,7 @@ describe('instrumentedReconcile', () => {
     const source1 = createTestSourceRecord({ sourceSystem: 'quickbooks', sourceRecordId: 'qb-1' })
     const canonical1 = instrumentedMapSourceRecord({
       sourceRecord: source1,
-      targetEntityType: 'policy',
+      targetEntityType: 'Policy',
       entityId: 'entity-1',
       mappingVersion: 1,
       transformFn: (raw) => raw,
@@ -99,7 +100,7 @@ describe('instrumentedReconcile', () => {
     const source2 = createTestSourceRecord({ sourceSystem: 'xero', sourceRecordId: 'xero-1' })
     const canonical2 = instrumentedMapSourceRecord({
       sourceRecord: source2,
-      targetEntityType: 'policy',
+      targetEntityType: 'Policy',
       entityId: 'entity-1',
       mappingVersion: 1,
       transformFn: (raw) => raw,
@@ -118,7 +119,7 @@ describe('instrumentedReconcile', () => {
 
     const canonical = instrumentedMapSourceRecord({
       sourceRecord: source,
-      targetEntityType: 'policy',
+      targetEntityType: 'Policy',
       entityId: 'new-entity',
       mappingVersion: 1,
       transformFn: (raw) => raw,
