@@ -1,0 +1,42 @@
+{
+  "name": "@nzila/platform-decision-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./schemas": "./src/schemas.ts",
+    "./engine": "./src/engine.ts",
+    "./rules": "./src/rules.ts",
+    "./ranking": "./src/ranking.ts",
+    "./evidence": "./src/evidence.ts",
+    "./policy": "./src/policy.ts",
+    "./audit": "./src/audit.ts",
+    "./feedback": "./src/feedback.ts",
+    "./store": "./src/store.ts",
+    "./status": "./src/status.ts",
+    "./utils": "./src/utils.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "zod": "^3.25.0",
+    "@nzila/platform-environment": "workspace:*",
+    "@nzila/platform-policy-engine": "workspace:*",
+    "@nzila/platform-governance": "workspace:*",
+    "@nzila/platform-change-management": "workspace:*",
+    "@nzila/platform-intelligence": "workspace:*",
+    "@nzila/platform-anomaly-engine": "workspace:*",
+    "@nzila/platform-observability": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.18",
+    "typescript": "^5"
+  }
+}
