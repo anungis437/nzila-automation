@@ -125,6 +125,13 @@ export default defineConfig({
       'packages/platform-anomaly-engine',
       'packages/platform-agent-workflows',
       'packages/platform-ai-governance',
+      // Change management
+      'packages/platform-change-management',
+      // Environment architecture
+      'packages/platform-environment',
+      'packages/platform-feature-flags',
+      // Decision engine
+      'packages/platform-decision-engine',
       // Control Plane
       'apps/control-plane',
     ],

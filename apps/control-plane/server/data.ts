@@ -175,3 +175,189 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
 
   return overviewSummarySchema.parse(summary) as OverviewSummary;
 }
+
+// ── Change Management ───────────────────────────────────
+
+import {
+  loadAllChanges,
+  loadChangeRecord,
+  listUpcomingChanges,
+  listChangesForEnvironment,
+  listChangesPendingPIR,
+  changeRecordSchema,
+} from "@nzila/platform-change-management";
+import type { ChangeRecord } from "@nzila/platform-change-management/types";
+
+export async function getChangeRecords(): Promise<ChangeRecord[]> {
+  try {
+    const records = loadAllChanges();
+    return z
+      .array(changeRecordSchema)
+      .parse(records) as ChangeRecord[];
+  } catch {
+    return [];
+  }
+}
+
+export async function getChangeRecordById(
+  id: string,
+): Promise<ChangeRecord | null> {
+  try {
+    const record = loadChangeRecord(id);
+    if (!record) return null;
+    return changeRecordSchema.parse(record) as ChangeRecord;
+  } catch {
+    return null;
+  }
+}
+
+export async function getUpcomingChanges(): Promise<ChangeRecord[]> {
+  try {
+    return listUpcomingChanges() as ChangeRecord[];
+  } catch {
+    return [];
+  }
+}
+
+export async function getChangeCalendarData(): Promise<{
+  staging: ChangeRecord[];
+  production: ChangeRecord[];
+  pendingPIR: ChangeRecord[];
+}> {
+  try {
+    const staging = listChangesForEnvironment("STAGING") as ChangeRecord[];
+    const production = listChangesForEnvironment("PROD") as ChangeRecord[];
+    const pendingPIR = listChangesPendingPIR() as ChangeRecord[];
+    return { staging, production, pendingPIR };
+  } catch {
+    return { staging: [], production: [], pendingPIR: [] };
+  }
+}
+
+// ── Environment Management ──────────────────────────────
+
+import {
+  getEnvironmentConfig,
+  loadLatestArtifact,
+  loadGovernanceSnapshots,
+  ALL_ENVIRONMENTS,
+} from "@nzila/platform-environment";
+import type {
+  EnvironmentName,
+  EnvironmentConfig,
+  DeploymentArtifact,
+  GovernanceSnapshot,
+} from "@nzila/platform-environment";
+import { getEnabledFlags } from "@nzila/platform-feature-flags";
+import type { FeatureFlag } from "@nzila/platform-feature-flags";
+
+export interface EnvironmentDashboardData {
+  environment: EnvironmentName;
+  config: EnvironmentConfig;
+  latestArtifact: DeploymentArtifact | null;
+  latestSnapshot: GovernanceSnapshot | null;
+  activeFlags: FeatureFlag[];
+}
+
+export async function getEnvironmentDashboard(): Promise<
+  EnvironmentDashboardData[]
+> {
+  try {
+    return ALL_ENVIRONMENTS.map((env) => {
+      const config = getEnvironmentConfig("platform", env);
+      const latestArtifact = env === "STAGING" || env === "PRODUCTION"
+        ? loadLatestArtifact()
+        : null;
+      const snapshots = loadGovernanceSnapshots(env);
+      const latestSnapshot = snapshots.length > 0 ? snapshots[0] : null;
+      const activeFlags = getEnabledFlags(env);
+      return { environment: env, config, latestArtifact, latestSnapshot, activeFlags };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export async function getEnvironmentDetail(
+  env: EnvironmentName,
+): Promise<EnvironmentDashboardData | null> {
+  try {
+    const config = getEnvironmentConfig("platform", env);
+    const latestArtifact = loadLatestArtifact();
+    const snapshots = loadGovernanceSnapshots(env);
+    const latestSnapshot = snapshots.length > 0 ? snapshots[0] : null;
+    const activeFlags = getEnabledFlags(env);
+    return { environment: env, config, latestArtifact, latestSnapshot, activeFlags };
+  } catch {
+    return null;
+  }
+}
+
+// ── Decision Engine ─────────────────────────────────────
+
+import {
+  loadAllDecisions,
+  loadDecisionRecord,
+  listOpenDecisions,
+  summariseDecisions,
+  decisionRecordSchema,
+  decisionSummarySchema,
+} from "@nzila/platform-decision-engine";
+import type {
+  DecisionRecord,
+  DecisionSummary,
+} from "@nzila/platform-decision-engine";
+
+export async function getDecisions(): Promise<DecisionRecord[]> {
+  try {
+    const records = loadAllDecisions();
+    return z
+      .array(decisionRecordSchema)
+      .parse(records) as DecisionRecord[];
+  } catch {
+    return [];
+  }
+}
+
+export async function getDecisionById(
+  id: string,
+): Promise<DecisionRecord | null> {
+  try {
+    const record = loadDecisionRecord(id);
+    if (!record) return null;
+    return decisionRecordSchema.parse(record) as DecisionRecord;
+  } catch {
+    return null;
+  }
+}
+
+export async function getOpenDecisions(): Promise<DecisionRecord[]> {
+  try {
+    return listOpenDecisions() as DecisionRecord[];
+  } catch {
+    return [];
+  }
+}
+
+export async function getDecisionSummary(): Promise<DecisionSummary> {
+  try {
+    const records = loadAllDecisions();
+    const summary = summariseDecisions(records);
+    return decisionSummarySchema.parse(summary) as DecisionSummary;
+  } catch {
+    return {
+      total: 0,
+      by_severity: { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 },
+      by_category: {
+        STAFFING: 0, RISK: 0, FINANCIAL: 0, GOVERNANCE: 0, COMPLIANCE: 0,
+        OPERATIONS: 0, PARTNER: 0, CUSTOMER: 0, DEPLOYMENT: 0, OTHER: 0,
+      },
+      by_status: {
+        GENERATED: 0, PENDING_REVIEW: 0, APPROVED: 0, REJECTED: 0,
+        DEFERRED: 0, EXECUTED: 0, EXPIRED: 0, CLOSED: 0,
+      },
+      pending_review: 0,
+      critical_open: 0,
+    };
+  }
+}

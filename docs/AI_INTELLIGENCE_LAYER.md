@@ -129,3 +129,10 @@ All AI packages integrate with the platform foundation:
 | platform-anomaly-engine | platform-events, platform-intelligence |
 | platform-agent-workflows | platform-events, platform-policy-engine |
 | platform-ai-governance | platform-events, platform-policy-engine |
+| platform-decision-engine | platform-anomaly-engine, platform-intelligence, platform-change-management, platform-policy-engine, platform-governance, platform-environment |
+
+## Decision Layer
+
+The **Decision Layer** (`@nzila/platform-decision-engine`) sits above the intelligence and anomaly engines. It transforms signals into evidence-backed, policy-aware decision recommendations that human operators review and act on.
+
+See [DECISION_LAYER_ARCHITECTURE.md](DECISION_LAYER_ARCHITECTURE.md) for full documentation.
