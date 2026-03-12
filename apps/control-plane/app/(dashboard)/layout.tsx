@@ -10,16 +10,26 @@ import {
   Bot,
   Boxes,
   FileCheck,
+  GitPullRequest,
+  Calendar,
+  Server,
+  Scale,
+  PieChart,
 } from "lucide-react";
 
 const navItems = [
   { href: "/overview", label: "Overview", icon: LayoutDashboard },
   { href: "/governance", label: "Governance", icon: Shield },
+  { href: "/decisions", label: "Decisions", icon: Scale },
+  { href: "/decision-summary", label: "Decision Summary", icon: PieChart },
+  { href: "/changes", label: "Changes", icon: GitPullRequest },
+  { href: "/change-calendar", label: "Change Calendar", icon: Calendar },
   { href: "/intelligence", label: "Intelligence", icon: Brain },
   { href: "/anomalies", label: "Anomalies", icon: AlertTriangle },
   { href: "/agents", label: "Agents", icon: Bot },
   { href: "/modules", label: "Modules", icon: Boxes },
   { href: "/procurement", label: "Procurement", icon: FileCheck },
+  { href: "/environments", label: "Environments", icon: Server },
 ] as const;
 
 export default function DashboardLayout({
