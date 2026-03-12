@@ -804,3 +804,211 @@ export const commerceZohoCredentials = pgTable('commerce_zoho_credentials', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Shop Quoter — Workflow Persistence Tables
+// Quote approvals, revisions, payment tracking, share links, timeline events
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const commerceApprovalActionEnum = pgEnum('commerce_approval_action', [
+  'ACCEPT',
+  'REQUEST_REVISION',
+])
+
+export const commerceRevisionStatusEnum = pgEnum('commerce_revision_status', [
+  'OPEN',
+  'ADDRESSED',
+  'CLOSED',
+])
+
+export const commercePaymentStatusEnum = pgEnum('commerce_payment_tracking_status', [
+  'NOT_REQUIRED',
+  'PENDING_DEPOSIT',
+  'PARTIALLY_PAID',
+  'PAID',
+  'OVERDUE',
+])
+
+export const commercePaymentEventTypeEnum = pgEnum('commerce_payment_event_type', [
+  'INVOICE_CREATED',
+  'DEPOSIT_REQUESTED',
+  'PAYMENT_RECORDED',
+  'PAYMENT_CONFIRMED',
+])
+
+export const commerceShareLinkStatusEnum = pgEnum('commerce_share_link_status', [
+  'ACTIVE',
+  'EXPIRED',
+  'REVOKED',
+  'USED',
+])
+
+// ── 29) commerce_quote_approvals ────────────────────────────────────────────
+
+export const commerceQuoteApprovals = pgTable('commerce_quote_approvals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  action: commerceApprovalActionEnum('action').notNull(),
+  customerName: text('customer_name').notNull(),
+  customerEmail: text('customer_email').notNull(),
+  message: text('message').default(''),
+  sourceIpHash: text('source_ip_hash'),
+  shareLinkId: uuid('share_link_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 30) commerce_quote_revisions ────────────────────────────────────────────
+
+export const commerceQuoteRevisions = pgTable('commerce_quote_revisions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  requestedBy: text('requested_by').notNull(),
+  requestMessage: text('request_message').notNull(),
+  status: commerceRevisionStatusEnum('status').notNull().default('OPEN'),
+  resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 31) commerce_payment_requirements ───────────────────────────────────────
+
+export const commercePaymentRequirements = pgTable('commerce_payment_requirements', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  depositRequired: boolean('deposit_required').notNull(),
+  depositPercent: numeric('deposit_percent', { precision: 5, scale: 2 }),
+  depositAmount: numeric('deposit_amount', { precision: 18, scale: 2 }),
+  dueBeforeProduction: boolean('due_before_production').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 32) commerce_payment_tracking ───────────────────────────────────────────
+
+export const commercePaymentTracking = pgTable('commerce_payment_tracking', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  status: commercePaymentStatusEnum('status').notNull().default('NOT_REQUIRED'),
+  amountDue: numeric('amount_due', { precision: 18, scale: 2 }).notNull().default('0'),
+  amountPaid: numeric('amount_paid', { precision: 18, scale: 2 }).notNull().default('0'),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 33) commerce_payment_events ─────────────────────────────────────────────
+
+export const commercePaymentEvents = pgTable('commerce_payment_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  eventType: commercePaymentEventTypeEnum('event_type').notNull(),
+  amount: numeric('amount', { precision: 18, scale: 2 }).notNull(),
+  providerRef: text('provider_ref'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 34) commerce_share_links ────────────────────────────────────────────────
+
+export const commerceShareLinks = pgTable('commerce_share_links', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  tokenHash: text('token_hash').notNull(),
+  status: commerceShareLinkStatusEnum('status').notNull().default('ACTIVE'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  accessCount: integer('access_count').notNull().default(0),
+  lastAccessedAt: timestamp('last_accessed_at', { withTimezone: true }),
+  createdBy: text('created_by').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 35) commerce_timeline_events ────────────────────────────────────────────
+
+export const commerceTimelineEvents = pgTable('commerce_timeline_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  quoteId: uuid('quote_id')
+    .notNull()
+    .references(() => commerceQuotes.id),
+  event: varchar('event', { length: 100 }).notNull(),
+  description: text('description').notNull(),
+  actor: text('actor'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Shopify Integration Tables
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const commerceShopifySyncStatusEnum = pgEnum('commerce_shopify_sync_status', [
+  'pending',
+  'synced',
+  'failed',
+  'conflict',
+])
+
+// ── 36) commerce_shopify_credentials ────────────────────────────────────────
+
+export const commerceShopifyCredentials = pgTable('commerce_shopify_credentials', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  shopDomain: varchar('shop_domain', { length: 200 }).notNull(),
+  accessToken: text('access_token').notNull(),
+  scopes: text('scopes').notNull(),
+  webhookSecret: text('webhook_secret'),
+  isActive: boolean('is_active').notNull().default(true),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 37) commerce_shopify_sync_records ───────────────────────────────────────
+
+export const commerceShopifySyncRecords = pgTable('commerce_shopify_sync_records', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  nzilaRecordId: uuid('nzila_record_id').notNull(),
+  shopifyId: text('shopify_id'),
+  syncStatus: commerceShopifySyncStatusEnum('sync_status').notNull().default('pending'),
+  lastSyncedAt: timestamp('last_synced_at', { withTimezone: true }),
+  errorMessage: text('error_message'),
+  retryCount: integer('retry_count').notNull().default(0),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})

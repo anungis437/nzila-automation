@@ -2,12 +2,18 @@
  * Shop Quoter — Policy Enforcement
  *
  * Integrates platform-policy-engine for quote generation,
- * price override, and quote export operations.
+ * price override, quote export, PO generation, and manual payment
+ * confirmation operations.
  */
 import type { PolicyEvaluationInput, PolicyDefinition } from '@nzila/platform-policy-engine'
 import { evaluatePolicy, isBlocked } from '@nzila/platform-policy-engine'
 
-export type QuoterPolicyAction = 'quote_generation' | 'price_override' | 'quote_export'
+export type QuoterPolicyAction =
+  | 'quote_generation'
+  | 'price_override'
+  | 'quote_export'
+  | 'po_generation'
+  | 'manual_payment_confirmation'
 
 const QUOTER_POLICIES: PolicyDefinition[] = [
   {
@@ -67,6 +73,62 @@ const QUOTER_POLICIES: PolicyDefinition[] = [
         conditions: [{ field: 'action', operator: 'eq', value: 'quote_export' }],
         effect: 'allow',
         severity: 'warning',
+      },
+    ],
+    metadata: {},
+  },
+  {
+    id: 'quoter-po-generation',
+    name: 'PO Generation Policy',
+    description: 'Requires payment clearance and admin/finance role for PO generation',
+    version: '1.0.0',
+    type: 'approval',
+    enabled: true,
+    scope: { resources: ['shop-quoter'] },
+    rules: [
+      {
+        id: 'po-payment-gate',
+        description: 'PO generation requires payment clearance',
+        conditions: [
+          { field: 'action', operator: 'eq', value: 'po_generation' },
+          { field: 'context.paymentCleared', operator: 'eq', value: false },
+        ],
+        effect: 'deny',
+        severity: 'critical',
+      },
+      {
+        id: 'po-role-gate',
+        description: 'PO generation requires admin or finance role',
+        conditions: [
+          { field: 'action', operator: 'eq', value: 'po_generation' },
+        ],
+        effect: 'allow',
+        severity: 'warning',
+        requireApprovers: 1,
+        approverRoles: ['admin', 'finance'],
+      },
+    ],
+    metadata: {},
+  },
+  {
+    id: 'quoter-manual-payment',
+    name: 'Manual Payment Confirmation Policy',
+    description: 'Manual payment confirmations require finance role and audit',
+    version: '1.0.0',
+    type: 'approval',
+    enabled: true,
+    scope: { resources: ['shop-quoter'] },
+    rules: [
+      {
+        id: 'manual-payment-role',
+        description: 'Manual payment confirmation requires finance role',
+        conditions: [
+          { field: 'action', operator: 'eq', value: 'manual_payment_confirmation' },
+        ],
+        effect: 'allow',
+        severity: 'critical',
+        requireApprovers: 1,
+        approverRoles: ['admin', 'finance'],
       },
     ],
     metadata: {},
