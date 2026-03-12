@@ -8,19 +8,37 @@ import {
   XCircleIcon,
   ClockIcon,
   DocumentDuplicateIcon,
+  CurrencyDollarIcon,
+  TruckIcon,
 } from '@heroicons/react/24/outline'
 import { quoteRepo, customerRepo } from '@/lib/db'
+import { getAvailableQuoteTransitions } from '@/lib/workflows/quote-state-machine'
+import { approvalRepo, revisionRepo, timelineRepo } from '@/lib/repositories/workflow-repository'
+import { paymentRequirementRepo, paymentStatusRepo } from '@/lib/repositories/workflow-repository'
+import { findShareLinksForQuote } from '@/lib/services/share-link-service'
+import type { QuoteWorkflowStatus } from '@/lib/schemas/workflow-schemas'
+import { QuoteDetailActions } from './quote-detail-actions'
 
 const statusConfig: Record<string, { color: string; label: string }> = {
   DRAFT: { color: 'bg-gray-100 text-gray-700', label: 'Draft' },
+  INTERNAL_REVIEW: { color: 'bg-blue-100 text-blue-700', label: 'Internal Review' },
+  SENT_TO_CLIENT: { color: 'bg-purple-100 text-purple-700', label: 'Sent to Client' },
+  REVISION_REQUESTED: { color: 'bg-amber-100 text-amber-700', label: 'Revision Requested' },
+  ACCEPTED: { color: 'bg-green-100 text-green-700', label: 'Accepted' },
+  DEPOSIT_REQUIRED: { color: 'bg-orange-100 text-orange-700', label: 'Deposit Required' },
+  READY_FOR_PO: { color: 'bg-indigo-100 text-indigo-700', label: 'Ready for PO' },
+  IN_PRODUCTION: { color: 'bg-cyan-100 text-cyan-700', label: 'In Production' },
+  SHIPPED: { color: 'bg-teal-100 text-teal-700', label: 'Shipped' },
+  DELIVERED: { color: 'bg-emerald-100 text-emerald-700', label: 'Delivered' },
+  CLOSED: { color: 'bg-gray-100 text-gray-600', label: 'Closed' },
+  EXPIRED: { color: 'bg-gray-100 text-gray-500', label: 'Expired' },
+  CANCELLED: { color: 'bg-gray-100 text-gray-500', label: 'Cancelled' },
+  // Legacy statuses for backward compatibility
   PRICING: { color: 'bg-blue-100 text-blue-700', label: 'Pricing' },
   READY: { color: 'bg-indigo-100 text-indigo-700', label: 'Ready' },
   SENT: { color: 'bg-purple-100 text-purple-700', label: 'Sent' },
   REVIEWING: { color: 'bg-amber-100 text-amber-700', label: 'Reviewing' },
-  ACCEPTED: { color: 'bg-green-100 text-green-700', label: 'Accepted' },
   DECLINED: { color: 'bg-red-100 text-red-700', label: 'Declined' },
-  EXPIRED: { color: 'bg-gray-100 text-gray-500', label: 'Expired' },
-  CANCELLED: { color: 'bg-gray-100 text-gray-500', label: 'Cancelled' },
 }
 
 function fmt(n: number) {
@@ -40,6 +58,17 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
 
   const status = (quote.status ?? 'draft').toUpperCase()
   const cfg = statusConfig[status] ?? statusConfig.DRAFT
+
+  // Load workflow data
+  const approvals = await approvalRepo.findByQuoteId(id)
+  const revisions = await revisionRepo.findByQuoteId(id)
+  const shareLinks = await findShareLinksForQuote(id)
+  const paymentReq = await paymentRequirementRepo.findByQuoteId(id)
+  const paymentStatus = await paymentStatusRepo.findByQuoteId(id)
+  const timeline = await timelineRepo.findByQuoteId(id)
+  const availableTransitions = getAvailableQuoteTransitions(
+    status as QuoteWorkflowStatus,
+  )
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -63,21 +92,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           <p className="text-sm text-gray-500 mt-1">{quote.title}</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-            <DocumentDuplicateIcon className="h-4 w-4" />
-            Duplicate
-          </button>
-          <button className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-            <PencilIcon className="h-4 w-4" />
-            Edit
-          </button>
-          {status === 'DRAFT' && (
-            <button className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition shadow-sm">
-              <PaperAirplaneIcon className="h-4 w-4" />
-              Send to Client
-            </button>
-          )}
+        <QuoteDetailActions quoteId={id} status={status} />
         </div>
       </div>
 
@@ -197,35 +212,126 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           {/* Status transitions */}
           <section className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
-              Actions
+              Workflow
             </h2>
             <div className="space-y-2">
-              {status === 'DRAFT' && (
-                <>
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-                    <ClockIcon className="h-4 w-4" />
-                    Start Pricing
-                  </button>
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition">
-                    <XCircleIcon className="h-4 w-4" />
-                    Cancel Quote
-                  </button>
-                </>
-              )}
-              {status === 'SENT' && (
-                <>
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition">
-                    <CheckCircleIcon className="h-4 w-4" />
-                    Mark Accepted
-                  </button>
-                  <button className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition">
-                    <XCircleIcon className="h-4 w-4" />
-                    Mark Declined
-                  </button>
-                </>
+              {availableTransitions.map((t) => (
+                <div
+                  key={`${t.from}-${t.to}`}
+                  className="text-sm text-gray-600 px-3 py-2 bg-gray-50 rounded-lg"
+                >
+                  {t.label} → <span className="font-medium">{t.to}</span>
+                </div>
+              ))}
+              {availableTransitions.length === 0 && (
+                <p className="text-sm text-gray-500">No transitions available</p>
               )}
             </div>
           </section>
+
+          {/* Payment / Deposit info */}
+          {(paymentReq || paymentStatus) && (
+            <section className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                <CurrencyDollarIcon className="inline h-4 w-4 mr-1" />
+                Payment / Deposit
+              </h2>
+              <dl className="space-y-2 text-sm">
+                {paymentReq && (
+                  <>
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Deposit Required</dt>
+                      <dd className="font-medium text-gray-900">
+                        {paymentReq.depositRequired ? 'Yes' : 'No'}
+                      </dd>
+                    </div>
+                    {paymentReq.depositPercent != null && (
+                      <div className="flex justify-between">
+                        <dt className="text-gray-500">Deposit %</dt>
+                        <dd className="font-medium text-gray-900">{paymentReq.depositPercent}%</dd>
+                      </div>
+                    )}
+                    {paymentReq.depositAmount != null && (
+                      <div className="flex justify-between">
+                        <dt className="text-gray-500">Deposit Amount</dt>
+                        <dd className="font-medium text-gray-900 font-mono">
+                          {fmt(paymentReq.depositAmount)}
+                        </dd>
+                      </div>
+                    )}
+                  </>
+                )}
+                {paymentStatus && (
+                  <>
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Payment Status</dt>
+                      <dd className="font-medium text-gray-900">{paymentStatus.status}</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Amount Due</dt>
+                      <dd className="font-medium text-gray-900 font-mono">
+                        {fmt(paymentStatus.amountDue)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Amount Paid</dt>
+                      <dd className="font-medium text-gray-900 font-mono">
+                        {fmt(paymentStatus.amountPaid)}
+                      </dd>
+                    </div>
+                  </>
+                )}
+              </dl>
+            </section>
+          )}
+
+          {/* Recent Approvals */}
+          {approvals.length > 0 && (
+            <section className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                Client Responses
+              </h2>
+              <div className="space-y-3">
+                {approvals.map((a) => (
+                  <div key={a.id} className="text-sm">
+                    <div className="flex items-center gap-2">
+                      {a.action === 'ACCEPT' ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <ClockIcon className="h-4 w-4 text-amber-500" />
+                      )}
+                      <span className="font-medium text-gray-900">{a.action === 'ACCEPT' ? 'Accepted' : 'Revision Requested'}</span>
+                    </div>
+                    <p className="text-gray-600 ml-6">by {a.customerName}</p>
+                    {a.message && <p className="text-gray-500 ml-6 mt-1 italic">{a.message}</p>}
+                    <p className="text-xs text-gray-400 ml-6 mt-1">
+                      {new Date(a.createdAt).toLocaleString('en-CA')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Open Revisions */}
+          {revisions.filter((r) => r.status === 'OPEN').length > 0 && (
+            <section className="bg-amber-50 rounded-xl border border-amber-200 p-6">
+              <h2 className="text-sm font-semibold text-amber-700 uppercase tracking-wider mb-3">
+                Open Revision Requests
+              </h2>
+              <div className="space-y-3">
+                {revisions.filter((r) => r.status === 'OPEN').map((r) => (
+                  <div key={r.id} className="text-sm">
+                    <p className="text-amber-900 font-medium">{r.requestedBy}</p>
+                    <p className="text-amber-800 mt-1">{r.requestMessage}</p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      {new Date(r.createdAt).toLocaleString('en-CA')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Notes */}
           {quote.notes && (
@@ -237,10 +343,10 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             </section>
           )}
 
-          {/* Audit trail */}
+          {/* Lifecycle Timeline */}
           <section className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
-              Audit Trail
+              Timeline
             </h2>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
@@ -253,6 +359,19 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                   </p>
                 </div>
               </div>
+              {timeline.map((event) => (
+                <div key={event.id} className="flex items-start gap-3">
+                  <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                  <div>
+                    <p className="text-sm text-gray-900 font-medium">{event.event.toUpperCase()}</p>
+                    <p className="text-xs text-gray-500">{event.description}</p>
+                    <p className="text-xs text-gray-400">
+                      {new Date(event.timestamp).toLocaleString('en-CA')}
+                      {event.actor ? ` · ${event.actor}` : ''}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
         </div>
