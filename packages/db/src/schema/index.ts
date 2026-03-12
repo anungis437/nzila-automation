@@ -18,6 +18,7 @@ export * from './nacp'
 export * from './zonga'
 export * from './platform'
 export * from './trade'
+export * from './agri'
 export * from './mobility'
 
 // Platform OS schemas (re-exported from dedicated packages)

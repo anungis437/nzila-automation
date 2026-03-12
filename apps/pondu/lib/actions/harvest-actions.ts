@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { harvestRepo } from '@nzila/agri-db'
 
 export async function recordHarvest(
   data: unknown,
@@ -24,7 +25,8 @@ export async function recordHarvest(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const harvest = await harvestRepo.recordHarvest(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +34,7 @@ export async function recordHarvest(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'harvest',
-    targetEntityId: id,
+    targetEntityId: harvest.id,
     action: 'harvest.recorded',
     label: `Recorded harvest for producer ${parsed.data.producerId}`,
     metadata: {
@@ -42,19 +44,16 @@ export async function recordHarvest(
     },
   })
 
-  // TODO: persist via agri-db HarvestRepository
-
   revalidatePath('/pondu/harvests')
 
-  return { ok: true, data: { harvestId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { harvestId: harvest.id }, error: null, auditEntries: [entry] }
 }
 
 export async function listHarvests(): Promise<
   AgriServiceResult<{ harvests: unknown[] }>
 > {
   const ctx = await resolveOrgContext()
+  const result = await harvestRepo.listHarvests({ orgId: ctx.orgId })
 
-  // TODO: read via agri-db HarvestRepository scoped to ctx.orgId
-
-  return { ok: true, data: { harvests: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { harvests: result.rows }, error: null, auditEntries: [] }
 }

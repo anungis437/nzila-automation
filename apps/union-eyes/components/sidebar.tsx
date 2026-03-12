@@ -434,7 +434,6 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/80 flex items-center justify-center bg-white/80 shadow-sm">
               {isMounted ? (
                 <UserButton
-                  afterSignOutUrl="/"
                   appearance={{
                     elements: {
                       userButtonAvatarBox: "w-8 h-8",

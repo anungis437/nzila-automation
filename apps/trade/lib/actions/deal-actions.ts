@@ -24,6 +24,9 @@ import {
   type TradeTransitionContext,
 } from '@nzila/trade-core/machines'
 import { tradeDealMachine } from '@nzila/trade-core/machines'
+import { createTradeDealRepository } from '@nzila/trade-db'
+
+const repo = createTradeDealRepository()
 
 export async function createDeal(
   data: unknown,
@@ -35,8 +38,8 @@ export async function createDeal(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
-  const refNumber = `TRD-${Date.now().toString(36).toUpperCase()}`
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -44,9 +47,9 @@ export async function createDeal(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_deal',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'deal.created',
-    label: `Created deal ${refNumber}`,
+    label: `Created deal ${row.refNumber}`,
     metadata: {
       sellerPartyId: parsed.data.sellerPartyId,
       buyerPartyId: parsed.data.buyerPartyId,
@@ -55,21 +58,11 @@ export async function createDeal(
     },
   })
 
-  // TODO: persist deal + audit entry via trade-db repository
-  // const repo = createTradeDealRepository(scopedDb)
-  // await repo.create({
-  //   ...parsed.data,
-  //   id,
-  //   orgId: ctx.orgId,
-  //   refNumber,
-  //   stage: TradeDealStage.LEAD,
-  // })
-
   revalidatePath('/trade/deals')
 
   return {
     ok: true,
-    data: { dealId: id, refNumber },
+    data: { dealId: row.id, refNumber: row.refNumber },
     error: null,
     auditEntries: [entry],
   }
@@ -85,14 +78,13 @@ export async function transitionDeal(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  // TODO: fetch current deal stage from DB
-  // const repo = createTradeDealRepository(scopedDb)
-  // const deal = await repo.findById(parsed.data.dealId, ctx.orgId)
-  // if (!deal) return { ok: false, data: null, error: 'Deal not found', auditEntries: [] }
-  // const currentStage = deal.stage
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const deal = await repo.getById({ orgId: ctx.orgId }, parsed.data.dealId)
+  if (!deal) {
+    return { ok: false, data: null, error: 'Deal not found', auditEntries: [] }
+  }
 
-  // For now, use placeholder — real impl reads from DB
-  const currentStage = TradeDealStage.LEAD
+  const currentStage = deal.stage as TradeDealStage
 
   const transitionCtx: TradeTransitionContext = {
     orgId: ctx.orgId,
@@ -117,6 +109,8 @@ export async function transitionDeal(
     }
   }
 
+  await repo.updateStage(dbCtx, parsed.data.dealId, parsed.data.toStage)
+
   const auditEntry = buildTransitionAuditEntry(result, {
     id: crypto.randomUUID(),
     orgId: ctx.orgId,
@@ -125,11 +119,6 @@ export async function transitionDeal(
     entityType: 'trade_deal',
     targetEntityId: parsed.data.dealId,
   })
-
-  // TODO: persist stage update + audit entry + emit events
-  // await repo.updateStage(parsed.data.dealId, ctx.orgId, parsed.data.toStage)
-  // for (const event of result.eventsToEmit) { await eventBus.emit(event) }
-  // for (const action of result.actionsToSchedule) { await sagaRunner.schedule(action) }
 
   revalidatePath('/trade/deals')
   revalidatePath(`/trade/deals/${parsed.data.dealId}`)
@@ -143,12 +132,12 @@ export async function transitionDeal(
 }
 
 export async function getDealTransitions(
-  _dealId: string,
+  dealId: string,
 ): Promise<TradeServiceResult<{ transitions: string[] }>> {
   const ctx = await resolveOrgContext()
 
-  // TODO: fetch current deal stage from DB
-  const currentStage = TradeDealStage.LEAD
+  const deal = await repo.getById({ orgId: ctx.orgId }, dealId)
+  const currentStage = deal ? (deal.stage as TradeDealStage) : TradeDealStage.LEAD
 
   const available = getAvailableDealTransitions(tradeDealMachine, {
     orgId: ctx.orgId,
@@ -170,30 +159,28 @@ export async function listDeals(_opts?: {
   pageSize?: number
   stage?: string
 }): Promise<TradeServiceResult<{ deals: TradeDeal[]; total: number }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  const rows = await repo.list({ orgId: ctx.orgId })
 
   return {
     ok: true,
-    data: { deals: [], total: 0 },
+    data: { deals: rows as unknown as TradeDeal[], total: rows.length },
     error: null,
     auditEntries: [],
   }
 }
 
 export async function getDeal(
-  _dealId: string,
+  dealId: string,
 ): Promise<TradeServiceResult<TradeDeal | null>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
-  // const repo = createTradeDealRepository(readonlyDb)
-  // const deal = await repo.findById(dealId, ctx.orgId)
+  const row = await repo.getById({ orgId: ctx.orgId }, dealId)
 
   return {
     ok: true,
-    data: null,
+    data: row as unknown as TradeDeal | null,
     error: null,
     auditEntries: [],
   }

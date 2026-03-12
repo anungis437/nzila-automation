@@ -41,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           signUpUrl="/sign-up"
           signInFallbackRedirectUrl="/en-CA/dashboard"
           signUpFallbackRedirectUrl="/en-CA/dashboard"
+          afterSignOutUrl="/"
         >
           <Providers
             attribute="class"

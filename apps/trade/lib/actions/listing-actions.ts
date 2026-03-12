@@ -16,6 +16,9 @@ import {
   type TradeServiceResult,
   type TradeListing,
 } from '@nzila/trade-core'
+import { createTradeListingRepository } from '@nzila/trade-db'
+
+const repo = createTradeListingRepository()
 
 export async function createListing(
   data: unknown,
@@ -27,7 +30,8 @@ export async function createListing(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -35,19 +39,15 @@ export async function createListing(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_listing',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'listing.created',
     label: `Created listing "${parsed.data.title}"`,
     metadata: { listingType: parsed.data.listingType, currency: parsed.data.currency },
   })
 
-  // TODO: persist listing + audit entry via trade-db repository
-  // const repo = createTradeListingRepository(scopedDb)
-  // await repo.create({ ...parsed.data, id, orgId: ctx.orgId })
-
   revalidatePath('/trade/listings')
 
-  return { ok: true, data: { listingId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { listingId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function updateListing(
@@ -60,6 +60,9 @@ export async function updateListing(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  await repo.update(dbCtx, parsed.data)
+
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
     orgId: ctx.orgId,
@@ -71,10 +74,6 @@ export async function updateListing(
     label: `Updated listing ${parsed.data.id}`,
     metadata: { fields: Object.keys(parsed.data).filter((k) => k !== 'id') },
   })
-
-  // TODO: persist via trade-db repository
-  // const repo = createTradeListingRepository(scopedDb)
-  // await repo.update(parsed.data.id, { ...parsed.data })
 
   revalidatePath('/trade/listings')
 
@@ -104,7 +103,7 @@ export async function addListingMedia(
     label: `Added ${parsed.data.mediaType} media to listing ${parsed.data.listingId}`,
   })
 
-  // TODO: persist via trade-db repository
+  // TODO: persist listing media (tradeListingMedia table — separate from listing repo)
 
   revalidatePath('/trade/listings')
 
@@ -117,13 +116,13 @@ export async function listListings(_opts?: {
   status?: string
   listingType?: string
 }): Promise<TradeServiceResult<{ listings: TradeListing[]; total: number }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  const rows = await repo.list({ orgId: ctx.orgId })
 
   return {
     ok: true,
-    data: { listings: [], total: 0 },
+    data: { listings: rows as unknown as TradeListing[], total: rows.length },
     error: null,
     auditEntries: [],
   }

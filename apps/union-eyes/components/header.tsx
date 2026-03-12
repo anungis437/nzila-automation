@@ -6,7 +6,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { Home, LayoutDashboard, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -19,6 +19,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -147,21 +148,21 @@ export default function Header() {
                 isActive={isActive("/")}
               />
 
-              <SignedIn>
+              {isSignedIn && (
                 <NavButton 
                   href="/en-CA/dashboard" 
                   icon={<LayoutDashboard size={18} />} 
                   label="Dashboard"
                   isActive={isActive("/en-CA/dashboard") || isActive("/fr-CA/dashboard")}
                 />
-              </SignedIn>
+              )}
             </nav>
 
             {/* Right side actions */}
             <div className="flex items-center space-x-3">
               <LanguageSwitcher />
               
-              <SignedOut>
+              {!isSignedIn && (
                 <Link href="/login?redirect_url=/dashboard">
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <Button 
@@ -186,9 +187,9 @@ export default function Header() {
                     </Button>
                   </motion.div>
                 </Link>
-              </SignedOut>
+              )}
 
-              <SignedIn>
+              {isSignedIn && (
                 <motion.div 
                   className="bg-white/80 p-0.5 rounded-full shadow-sm border border-white/80 relative w-9.5 h-9.5"
                   whileHover={{ scale: 1.05 }}
@@ -208,7 +209,6 @@ export default function Header() {
                   />
                   
                   <UserButton 
-                    afterSignOutUrl="/"
                     appearance={{
                       elements: {
                         avatarBox: "w-full h-full rounded-full",
@@ -217,7 +217,7 @@ export default function Header() {
                     }}
                   />
                 </motion.div>
-              </SignedIn>
+              )}
 
               {/* Mobile menu button */}
               <div className="md:hidden">
@@ -272,7 +272,7 @@ export default function Header() {
                   onClick={toggleMenu}
                 />
 
-                <SignedIn>
+                {isSignedIn && (
                   <MobileNavLink 
                     href="/en-CA/dashboard" 
                     icon={<LayoutDashboard size={18} />} 
@@ -280,7 +280,7 @@ export default function Header() {
                     isActive={isActive("/en-CA/dashboard") || isActive("/fr-CA/dashboard")}
                     onClick={toggleMenu}
                   />
-                </SignedIn>
+                )}
               </div>
             </motion.nav>
           )}

@@ -3,7 +3,7 @@
 
 export const dynamic = 'force-dynamic';
 import { SignIn, useUser } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+
 import { useTheme } from "next-themes";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -39,7 +39,7 @@ export default function LoginPage() {
           // Always redirect to dashboard or the specified redirect URL
           fallbackRedirectUrl={redirectUrl || "/en-CA/dashboard"}
           appearance={{ 
-            baseTheme: theme === "dark" ? dark : undefined,
+            theme: theme === "dark" ? 'dark' : undefined,
             elements: {
               formButtonPrimary: "bg-primary hover:bg-primary/90",
               card: "rounded-xl shadow-sm",

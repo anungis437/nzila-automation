@@ -105,17 +105,16 @@ export async function executeCreatorPayout(opts: {
   return { transferId: transfer.id, settledCurrency }
 }
 
-// ── Mobile Money Payout Placeholder ─────────────────────────────────────────
+// ── Mobile Money Payout (Flutterwave) ───────────────────────────────────────
 
 /**
- * Execute payout via mobile money rail.
- * This is a placeholder for future integration with:
- * - Flutterwave (pan-African mobile money)
- * - Chipper Cash (cross-border)
- * - Direct M-Pesa / MTN MoMo APIs
+ * Execute payout via mobile money rail using Flutterwave Transfers API.
  *
- * For now, logs the intent and returns a pending reference.
- * Production implementation requires Flutterwave or direct carrier API keys.
+ * Requires `FLUTTERWAVE_SECRET_KEY` environment variable.
+ * Falls back to generating a queued reference when the key is not set
+ * (dev/staging without Flutterwave credentials).
+ *
+ * @see https://developer.flutterwave.com/reference/create-a-transfer
  */
 export async function executeMobileMoneyPayout(opts: {
   creatorId: string
@@ -125,9 +124,56 @@ export async function executeMobileMoneyPayout(opts: {
   rail: 'mpesa' | 'mtn_momo' | 'airtel_money' | 'orange_money' | 'chipper_cash' | 'flutterwave'
   description?: string
 }): Promise<{ reference: string; status: 'pending' | 'queued' }> {
-  // TODO: Wire Flutterwave or direct carrier API
-  // For now, generate a reference and return pending
-  const reference = `momo_${opts.rail}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  const secretKey = process.env.FLUTTERWAVE_SECRET_KEY
+  if (!secretKey) {
+    console.warn('[zonga] FLUTTERWAVE_SECRET_KEY not set — mobile money payout queued locally')
+    const reference = `momo_${opts.rail}_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`
+    return { reference, status: 'queued' }
+  }
+
+  // Map rail to Flutterwave's bank identifiers
+  const bankMap: Record<string, string> = {
+    mpesa: 'MPS',
+    mtn_momo: 'MTN',
+    airtel_money: 'ATL',
+    orange_money: 'ORG',
+    chipper_cash: 'FLW',
+    flutterwave: 'FLW',
+  }
+
+  const reference = `momo_${opts.rail}_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`
+
+  // Zero-decimal currencies (no minor units)
+  const zeroDecimal = new Set(['UGX', 'RWF', 'XOF', 'XAF'])
+  const divisor = zeroDecimal.has(opts.currency.toUpperCase()) ? 1 : 100
+  const amount = opts.amountMinorUnits / divisor
+
+  const response = await fetch('https://api.flutterwave.com/v3/transfers', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      account_bank: bankMap[opts.rail] ?? 'MPS',
+      account_number: opts.phoneNumber,
+      amount,
+      currency: opts.currency.toUpperCase(),
+      narration: opts.description ?? `Zonga payout to ${opts.creatorId}`,
+      reference,
+      beneficiary_name: opts.creatorId,
+    }),
+  })
+
+  if (!response.ok) {
+    const body = await response.text()
+    throw new Error(`Flutterwave transfer failed (${response.status}): ${body}`)
+  }
+
+  const data = (await response.json()) as { status: string; data?: { id: number } }
+  if (data.status !== 'success') {
+    throw new Error(`Flutterwave transfer rejected: ${JSON.stringify(data)}`)
+  }
 
   return { reference, status: 'pending' }
 }

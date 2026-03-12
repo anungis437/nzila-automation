@@ -14,6 +14,9 @@ import {
   type TradeServiceResult,
   type TradeFinancingTerms,
 } from '@nzila/trade-core'
+import { createTradeFinancingRepository } from '@nzila/trade-db'
+
+const repo = createTradeFinancingRepository()
 
 export async function attachFinancing(
   data: unknown,
@@ -25,7 +28,8 @@ export async function attachFinancing(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -33,7 +37,7 @@ export async function attachFinancing(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_financing',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'financing.attached',
     label: `Attached financing to deal ${parsed.data.dealId}`,
     metadata: {
@@ -42,23 +46,22 @@ export async function attachFinancing(
     },
   })
 
-  // TODO: persist financing terms + audit entry via trade-db repository
-
   revalidatePath('/trade/deals')
 
-  return { ok: true, data: { financingId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { financingId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function getFinancingForDeal(
-  _dealId: string,
+  dealId: string,
 ): Promise<TradeServiceResult<{ financing: TradeFinancingTerms | null }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  const rows = await repo.listByDeal({ orgId: ctx.orgId }, dealId)
+  const first = rows[0] ?? null
 
   return {
     ok: true,
-    data: { financing: null },
+    data: { financing: first as unknown as TradeFinancingTerms | null },
     error: null,
     auditEntries: [],
   }

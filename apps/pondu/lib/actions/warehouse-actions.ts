@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { batchRepo, lotRepo } from '@nzila/agri-db'
 
 export async function createBatch(
   data: unknown,
@@ -24,7 +25,15 @@ export async function createBatch(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const readCtx = { orgId: ctx.orgId }
+  const lots = await Promise.all(
+    parsed.data.lotIds.map((id) => lotRepo.getLotById(readCtx, id)),
+  )
+  const lotWeights = lots
+    .filter((l): l is NonNullable<typeof l> => l !== null)
+    .map((l) => ({ lotId: l.id, weight: l.totalWeight }))
+  const batch = await batchRepo.createBatch(dbCtx, parsed.data, lotWeights)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +41,7 @@ export async function createBatch(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'batch',
-    targetEntityId: id,
+    targetEntityId: batch.id,
     action: 'batch.created',
     label: `Created batch in warehouse ${parsed.data.warehouseId}`,
     metadata: {
@@ -41,19 +50,16 @@ export async function createBatch(
     },
   })
 
-  // TODO: persist via agri-db BatchRepository
-
   revalidatePath('/pondu/warehouse')
 
-  return { ok: true, data: { batchId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { batchId: batch.id }, error: null, auditEntries: [entry] }
 }
 
 export async function listBatches(): Promise<
   AgriServiceResult<{ batches: unknown[] }>
 > {
   const ctx = await resolveOrgContext()
+  const result = await batchRepo.listBatches({ orgId: ctx.orgId })
 
-  // TODO: read via agri-db BatchRepository scoped to ctx.orgId
-
-  return { ok: true, data: { batches: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { batches: result.rows }, error: null, auditEntries: [] }
 }

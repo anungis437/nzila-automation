@@ -1,5 +1,21 @@
 import type { AgriReadContext, AgriDbContext, PaginationOpts, PaginatedResult } from '../types'
 import type { Crop, CreateCropInput } from '@nzila/agri-core'
+import { db } from '@nzila/db'
+import { agriCrops } from '@nzila/db/schema'
+import { eq, and, count } from 'drizzle-orm'
+
+function toCrop(row: typeof agriCrops.$inferSelect): Crop {
+  return {
+    id: row.id,
+    orgId: row.orgId,
+    name: row.name,
+    cropType: row.cropType,
+    unitOfMeasure: row.unitOfMeasure,
+    baselineYieldPerHectare: row.baselineYieldPerHectare ? Number(row.baselineYieldPerHectare) : null,
+    metadata: (row.metadata ?? {}) as Record<string, unknown>,
+    createdAt: row.createdAt.toISOString(),
+  }
+}
 
 export async function listCrops(
   ctx: AgriReadContext,
@@ -7,25 +23,36 @@ export async function listCrops(
 ): Promise<PaginatedResult<Crop>> {
   const limit = Math.min(opts.limit ?? 50, 200)
   const offset = opts.offset ?? 0
-  void ctx
-  return { rows: [], total: 0, limit, offset }
+  const where = eq(agriCrops.orgId, ctx.orgId)
+
+  const [rows, [{ value: total }]] = await Promise.all([
+    db.select().from(agriCrops).where(where).limit(limit).offset(offset),
+    db.select({ value: count() }).from(agriCrops).where(where),
+  ])
+
+  return { rows: rows.map(toCrop), total, limit, offset }
 }
 
 export async function getCropById(ctx: AgriReadContext, cropId: string): Promise<Crop | null> {
-  void ctx; void cropId
-  return null
+  const [row] = await db
+    .select()
+    .from(agriCrops)
+    .where(and(eq(agriCrops.orgId, ctx.orgId), eq(agriCrops.id, cropId)))
+    .limit(1)
+  return row ? toCrop(row) : null
 }
 
 export async function createCrop(ctx: AgriDbContext, values: CreateCropInput): Promise<Crop> {
-  const id = crypto.randomUUID()
-  return {
-    id,
-    orgId: ctx.orgId,
-    name: values.name,
-    cropType: values.cropType,
-    unitOfMeasure: values.unitOfMeasure,
-    baselineYieldPerHectare: values.baselineYieldPerHectare,
-    metadata: values.metadata ?? {},
-    createdAt: new Date().toISOString(),
-  }
+  const [row] = await db
+    .insert(agriCrops)
+    .values({
+      orgId: ctx.orgId,
+      name: values.name,
+      cropType: values.cropType,
+      unitOfMeasure: values.unitOfMeasure,
+      baselineYieldPerHectare: values.baselineYieldPerHectare?.toString() ?? null,
+      metadata: values.metadata ?? {},
+    })
+    .returning()
+  return toCrop(row)
 }

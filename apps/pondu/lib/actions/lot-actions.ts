@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { lotRepo, harvestRepo } from '@nzila/agri-db'
 
 export async function createLot(
   data: unknown,
@@ -24,7 +25,11 @@ export async function createLot(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const readCtx = { orgId: ctx.orgId }
+  const harvests = await harvestRepo.getHarvestsByIds(readCtx, parsed.data.harvestIds)
+  const contributions = harvests.map((h) => ({ harvestId: h.id, weight: h.quantity }))
+  const lot = await lotRepo.createLot(dbCtx, parsed.data, contributions)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +37,7 @@ export async function createLot(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'lot',
-    targetEntityId: id,
+    targetEntityId: lot.id,
     action: 'lot.created',
     label: `Created lot for crop ${parsed.data.cropId}`,
     metadata: {
@@ -41,19 +46,16 @@ export async function createLot(
     },
   })
 
-  // TODO: persist via agri-db LotRepository
-
   revalidatePath('/pondu/lots')
 
-  return { ok: true, data: { lotId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { lotId: lot.id }, error: null, auditEntries: [entry] }
 }
 
 export async function listLots(): Promise<
   AgriServiceResult<{ lots: unknown[] }>
 > {
   const ctx = await resolveOrgContext()
+  const result = await lotRepo.listLots({ orgId: ctx.orgId })
 
-  // TODO: read via agri-db LotRepository scoped to ctx.orgId
-
-  return { ok: true, data: { lots: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { lots: result.rows }, error: null, auditEntries: [] }
 }

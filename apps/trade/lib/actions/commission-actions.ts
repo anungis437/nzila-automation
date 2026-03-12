@@ -15,6 +15,9 @@ import {
   type TradeServiceResult,
   type TradeCommission,
 } from '@nzila/trade-core'
+import { createTradeCommissionRepository } from '@nzila/trade-db'
+
+const repo = createTradeCommissionRepository()
 
 export async function createCommission(
   data: unknown,
@@ -26,7 +29,8 @@ export async function createCommission(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -34,7 +38,7 @@ export async function createCommission(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_commission',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'commission.created',
     label: `Created commission for deal ${parsed.data.dealId} / party ${parsed.data.partyId}`,
     metadata: {
@@ -44,11 +48,9 @@ export async function createCommission(
     },
   })
 
-  // TODO: persist commission + audit entry via trade-db repository
-
   revalidatePath('/trade/commissions')
 
-  return { ok: true, data: { commissionId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { commissionId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function finalizeCommission(
@@ -60,6 +62,12 @@ export async function finalizeCommission(
   if (!parsed.success) {
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
+
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  await repo.finalize(dbCtx, {
+    id: parsed.data.commissionId,
+    calculatedAmount: parsed.data.calculatedAmount,
+  })
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -75,9 +83,6 @@ export async function finalizeCommission(
     },
   })
 
-  // TODO: persist finalization + audit entry
-  // Generate evidence pack (EPIC 7)
-
   revalidatePath('/trade/commissions')
 
   return {
@@ -91,19 +96,23 @@ export async function finalizeCommission(
   }
 }
 
-export async function listCommissions(_opts?: {
+export async function listCommissions(opts?: {
   page?: number
   pageSize?: number
   status?: string
   dealId?: string
 }): Promise<TradeServiceResult<{ commissions: TradeCommission[]; total: number }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  if (!opts?.dealId) {
+    return { ok: true, data: { commissions: [], total: 0 }, error: null, auditEntries: [] }
+  }
+
+  const rows = await repo.listByDeal({ orgId: ctx.orgId }, opts.dealId)
 
   return {
     ok: true,
-    data: { commissions: [], total: 0 },
+    data: { commissions: rows as unknown as TradeCommission[], total: rows.length },
     error: null,
     auditEntries: [],
   }

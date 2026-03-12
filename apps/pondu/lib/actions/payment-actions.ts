@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { paymentRepo } from '@nzila/agri-db'
 
 export async function createPayment(
   data: unknown,
@@ -24,7 +25,8 @@ export async function createPayment(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const payment = await paymentRepo.executePayment(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +34,7 @@ export async function createPayment(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'payment',
-    targetEntityId: id,
+    targetEntityId: payment.id,
     action: 'payment.created',
     label: `Created payment for producer ${parsed.data.producerId}`,
     metadata: {
@@ -42,19 +44,16 @@ export async function createPayment(
     },
   })
 
-  // TODO: persist via agri-db PaymentRepository
-
   revalidatePath('/pondu/payments')
 
-  return { ok: true, data: { paymentId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { paymentId: payment.id }, error: null, auditEntries: [entry] }
 }
 
 export async function listPayments(): Promise<
   AgriServiceResult<{ payments: unknown[] }>
 > {
   const ctx = await resolveOrgContext()
+  const result = await paymentRepo.listPaymentPlans({ orgId: ctx.orgId })
 
-  // TODO: read via agri-db PaymentRepository scoped to ctx.orgId
-
-  return { ok: true, data: { payments: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { payments: result.rows }, error: null, auditEntries: [] }
 }

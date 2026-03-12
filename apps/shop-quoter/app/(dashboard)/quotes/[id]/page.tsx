@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import {
   ArrowLeftIcon,
   PencilIcon,
@@ -8,45 +9,7 @@ import {
   ClockIcon,
   DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline'
-
-// ── Placeholder data (replace with real DB fetch by params.id) ──────────────
-
-const DEMO_QUOTE = {
-  id: 'demo-1',
-  reference: 'SQ-2026-001',
-  status: 'DRAFT' as string,
-  tier: 'Premium',
-  customer: {
-    name: 'Desjardins Assurances',
-    email: 'achats@desjardins.com',
-    phone: '514-555-0100',
-  },
-  title: 'Holiday Gift Boxes 2026',
-  boxCount: 50,
-  theme: 'Holiday',
-  notes: 'Delivery by December 15th.',
-  validUntil: '2026-03-26',
-  lines: [
-    { id: '1', description: 'Premium Chocolate Assortment', sku: 'CHOC-P-001', quantity: 50, unitCost: 28.50 },
-    { id: '2', description: 'Artisan Candle (Soy)', sku: 'CANDLE-S-002', quantity: 50, unitCost: 14.00 },
-    { id: '3', description: 'Gift Box Packaging (Large)', sku: 'BOX-L-001', quantity: 50, unitCost: 6.75 },
-    { id: '4', description: 'Personalised Card', sku: 'CARD-P-001', quantity: 50, unitCost: 2.25 },
-  ],
-  subtotal: 0,
-  gst: 0,
-  qst: 0,
-  total: 0,
-  createdAt: '2026-02-24T10:30:00Z',
-  auditTrail: [
-    { action: 'CREATED', actor: 'user:demo', timestamp: '2026-02-24T10:30:00Z', detail: 'Quote created' },
-  ],
-}
-
-// Compute totals
-DEMO_QUOTE.subtotal = DEMO_QUOTE.lines.reduce((s, l) => s + l.quantity * l.unitCost, 0)
-DEMO_QUOTE.gst = DEMO_QUOTE.subtotal * 0.05
-DEMO_QUOTE.qst = (DEMO_QUOTE.subtotal + DEMO_QUOTE.gst) * 0.09975
-DEMO_QUOTE.total = DEMO_QUOTE.subtotal + DEMO_QUOTE.gst + DEMO_QUOTE.qst
+import { quoteRepo, customerRepo } from '@/lib/db'
 
 const statusConfig: Record<string, { color: string; label: string }> = {
   DRAFT: { color: 'bg-gray-100 text-gray-700', label: 'Draft' },
@@ -65,10 +28,18 @@ function fmt(n: number) {
 }
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: _id } = await params
-  // TODO: fetch real quote by id via quoteRepo.findById(_id)
-  const quote = DEMO_QUOTE
-  const cfg = statusConfig[quote.status] ?? statusConfig.DRAFT
+  const { id } = await params
+
+  const quote = await quoteRepo.findById(id)
+  if (!quote) notFound()
+
+  // Resolve customer details
+  const customer = quote.customerId
+    ? await customerRepo.findById(quote.customerId)
+    : null
+
+  const status = (quote.status ?? 'draft').toUpperCase()
+  const cfg = statusConfig[status] ?? statusConfig.DRAFT
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -101,7 +72,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             <PencilIcon className="h-4 w-4" />
             Edit
           </button>
-          {quote.status === 'DRAFT' && (
+          {status === 'DRAFT' && (
             <button className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition shadow-sm">
               <PaperAirplaneIcon className="h-4 w-4" />
               Send to Client
@@ -121,15 +92,15 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Company</p>
-                <p className="font-medium text-gray-900">{quote.customer.name}</p>
+                <p className="font-medium text-gray-900">{customer?.name ?? '—'}</p>
               </div>
               <div>
                 <p className="text-gray-500">Email</p>
-                <p className="font-medium text-gray-900">{quote.customer.email}</p>
+                <p className="font-medium text-gray-900">{customer?.email ?? '—'}</p>
               </div>
               <div>
                 <p className="text-gray-500">Phone</p>
-                <p className="font-medium text-gray-900">{quote.customer.phone}</p>
+                <p className="font-medium text-gray-900">{customer?.phone ?? '—'}</p>
               </div>
             </div>
           </section>
@@ -208,11 +179,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Theme</dt>
-                <dd className="font-medium text-gray-900">{quote.theme}</dd>
+                <dd className="font-medium text-gray-900">{quote.theme ?? '—'}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Valid Until</dt>
-                <dd className="font-medium text-gray-900">{quote.validUntil}</dd>
+                <dd className="font-medium text-gray-900">{quote.validUntilDays} days</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Created</dt>
@@ -229,7 +200,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               Actions
             </h2>
             <div className="space-y-2">
-              {quote.status === 'DRAFT' && (
+              {status === 'DRAFT' && (
                 <>
                   <button className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
                     <ClockIcon className="h-4 w-4" />
@@ -241,7 +212,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                   </button>
                 </>
               )}
-              {quote.status === 'SENT' && (
+              {status === 'SENT' && (
                 <>
                   <button className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition">
                     <CheckCircleIcon className="h-4 w-4" />
@@ -272,18 +243,16 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               Audit Trail
             </h2>
             <div className="space-y-3">
-              {quote.auditTrail.map((entry, idx) => (
-                <div key={idx} className="flex items-start gap-3">
-                  <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-400 shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-900 font-medium">{entry.action}</p>
-                    <p className="text-xs text-gray-500">{entry.detail}</p>
-                    <p className="text-xs text-gray-400">
-                      {new Date(entry.timestamp).toLocaleString('en-CA')} · {entry.actor}
-                    </p>
-                  </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                <div>
+                  <p className="text-sm text-gray-900 font-medium">CREATED</p>
+                  <p className="text-xs text-gray-500">Quote created</p>
+                  <p className="text-xs text-gray-400">
+                    {new Date(quote.createdAt).toLocaleString('en-CA')} · {quote.createdBy}
+                  </p>
                 </div>
-              ))}
+              </div>
             </div>
           </section>
         </div>

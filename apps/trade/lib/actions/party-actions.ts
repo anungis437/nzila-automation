@@ -15,6 +15,9 @@ import {
   type TradeServiceResult,
   type TradeParty,
 } from '@nzila/trade-core'
+import { createTradePartyRepository } from '@nzila/trade-db'
+
+const repo = createTradePartyRepository()
 
 export async function createParty(
   data: unknown,
@@ -26,7 +29,8 @@ export async function createParty(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -34,19 +38,15 @@ export async function createParty(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_party',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'party.created',
     label: `Created party ${parsed.data.name}`,
     metadata: { role: parsed.data.role, country: parsed.data.country },
   })
 
-  // TODO: persist party + audit entry via trade-db repository
-  // const repo = createTradePartyRepository(scopedDb)
-  // await repo.create({ ...parsed.data, id, orgId: ctx.orgId })
-
   revalidatePath('/trade/parties')
 
-  return { ok: true, data: { partyId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { partyId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function updateParty(
@@ -58,6 +58,9 @@ export async function updateParty(
   if (!parsed.success) {
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
+
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  await repo.update(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -71,10 +74,6 @@ export async function updateParty(
     metadata: { fields: Object.keys(parsed.data).filter((k) => k !== 'id') },
   })
 
-  // TODO: persist via trade-db repository
-  // const repo = createTradePartyRepository(scopedDb)
-  // await repo.update(parsed.data.id, { ...parsed.data, orgId: ctx.orgId })
-
   revalidatePath('/trade/parties')
 
   return { ok: true, data: { partyId: parsed.data.id }, error: null, auditEntries: [entry] }
@@ -85,15 +84,13 @@ export async function listParties(_opts?: {
   pageSize?: number
   role?: string
 }): Promise<TradeServiceResult<{ parties: TradeParty[]; total: number }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
-  // const repo = createTradePartyRepository(readonlyDb)
-  // const result = await repo.findAll({ orgId: ctx.orgId, ...opts })
+  const rows = await repo.list({ orgId: ctx.orgId })
 
   return {
     ok: true,
-    data: { parties: [], total: 0 },
+    data: { parties: rows as unknown as TradeParty[], total: rows.length },
     error: null,
     auditEntries: [],
   }

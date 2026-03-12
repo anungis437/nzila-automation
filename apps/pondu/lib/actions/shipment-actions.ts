@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { shipmentRepo } from '@nzila/agri-db'
 
 export async function createShipment(
   data: unknown,
@@ -24,7 +25,8 @@ export async function createShipment(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const shipment = await shipmentRepo.createShipment(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +34,7 @@ export async function createShipment(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'shipment',
-    targetEntityId: id,
+    targetEntityId: shipment.id,
     action: 'shipment.created',
     label: `Created shipment for batch ${parsed.data.batchId} → ${parsed.data.destination.country}`,
     metadata: {
@@ -41,11 +43,9 @@ export async function createShipment(
     },
   })
 
-  // TODO: persist via agri-db ShipmentRepository
-
   revalidatePath('/pondu/shipments')
 
-  return { ok: true, data: { shipmentId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { shipmentId: shipment.id }, error: null, auditEntries: [entry] }
 }
 
 export async function recordMilestone(
@@ -53,6 +53,13 @@ export async function recordMilestone(
   milestone: { event: string; location?: string },
 ): Promise<AgriServiceResult<{ ok: boolean }>> {
   const ctx = await resolveOrgContext()
+
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  await shipmentRepo.addMilestone(dbCtx, {
+    shipmentId,
+    milestone: milestone.event,
+    notes: milestone.location ?? null,
+  })
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -66,8 +73,6 @@ export async function recordMilestone(
     metadata: milestone,
   })
 
-  // TODO: persist milestone + transition ShipmentFSM
-
   revalidatePath('/pondu/shipments')
 
   return { ok: true, data: { ok: true }, error: null, auditEntries: [entry] }
@@ -77,8 +82,7 @@ export async function listShipments(): Promise<
   AgriServiceResult<{ shipments: unknown[] }>
 > {
   const ctx = await resolveOrgContext()
+  const result = await shipmentRepo.listShipments({ orgId: ctx.orgId })
 
-  // TODO: read via agri-db ShipmentRepository scoped to ctx.orgId
-
-  return { ok: true, data: { shipments: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { shipments: result.rows }, error: null, auditEntries: [] }
 }

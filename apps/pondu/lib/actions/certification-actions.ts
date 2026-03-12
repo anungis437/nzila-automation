@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { certificationRepo } from '@nzila/agri-db'
 
 export async function uploadCertification(
   data: unknown,
@@ -24,7 +25,9 @@ export async function uploadCertification(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const contentForHash = JSON.stringify(parsed.data)
+  const cert = await certificationRepo.createCertification(dbCtx, parsed.data, contentForHash)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +35,7 @@ export async function uploadCertification(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'certification',
-    targetEntityId: id,
+    targetEntityId: cert.id,
     action: 'certification.uploaded',
     label: `Uploaded ${parsed.data.certificationType} certification`,
     metadata: {
@@ -41,19 +44,16 @@ export async function uploadCertification(
     },
   })
 
-  // TODO: persist via agri-db CertificationRepository
-
   revalidatePath('/pondu/certifications')
 
-  return { ok: true, data: { certificationId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { certificationId: cert.id }, error: null, auditEntries: [entry] }
 }
 
-export async function listCertifications(): Promise<
-  AgriServiceResult<{ certifications: unknown[] }>
-> {
+export async function listCertifications(
+  lotId: string,
+): Promise<AgriServiceResult<{ certifications: unknown[] }>> {
   const ctx = await resolveOrgContext()
+  const certifications = await certificationRepo.listCertifications({ orgId: ctx.orgId }, lotId)
 
-  // TODO: read via agri-db CertificationRepository scoped to ctx.orgId
-
-  return { ok: true, data: { certifications: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { certifications }, error: null, auditEntries: [] }
 }

@@ -25,6 +25,7 @@ import { createQboClient } from '@nzila/qbo/client'
 import { getValidToken, isAccessTokenExpired } from '@nzila/qbo/oauth'
 import type { QboTokenSet } from '@nzila/qbo/types'
 import { createHash } from 'crypto'
+import { uploadBuffer } from '@nzila/blob'
 import { createLogger } from '@nzila/os-core'
 
 const logger = createLogger('qbo:sync')
@@ -149,9 +150,15 @@ export async function POST(req: NextRequest) {
     const reportJson = JSON.stringify(report)
     const sha256 = createHash('sha256').update(reportJson).digest('hex')
 
-    // TODO(blob): store reportJson in Azure Blob Storage and get documentId
-    // For now we use sha256 as a placeholder document ID until blob integration is wired
-    const documentId = sha256
+    // Store report JSON in Azure Blob Storage
+    const blobPath = `qbo-reports/${orgId}/${reportType}/${syncRun.id}.json`
+    const { blobPath: storedPath } = await uploadBuffer({
+      container: 'documents',
+      blobPath,
+      buffer: Buffer.from(reportJson, 'utf-8'),
+      contentType: 'application/json',
+    })
+    const documentId = storedPath
 
     const [reportRow] = await platformDb
       .insert(qboReports)

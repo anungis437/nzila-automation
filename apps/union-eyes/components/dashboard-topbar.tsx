@@ -199,7 +199,7 @@ setNotificationCount(0);
                 {user?.publicMetadata?.role ? String(user.publicMetadata.role).replace('_', ' ') : 'Member'}
               </p>
             </div>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@
  */
 import { quoteRepo, customerRepo } from '@/lib/db'
 import type { CustomerRecord } from '@/lib/db'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { calculateQuebecTaxes } from '@nzila/pricing-engine'
 import { transitionQuote } from '@/lib/quote-machine'
 import { auditQuoteTransition } from '@/lib/evidence'
@@ -48,6 +49,8 @@ export async function createQuoteAction(
   formData: CreateQuoteFormData,
 ): Promise<ActionResult<{ id: string; reference: string }>> {
   try {
+    const ctx = await resolveOrgContext()
+
     // 1. Resolve or create customer
     let customer: CustomerRecord | null = null
     if (formData.clientEmail) {
@@ -55,7 +58,7 @@ export async function createQuoteAction(
     }
     if (!customer) {
       customer = await customerRepo.create({
-        orgId: 'default', // TODO: pull from Clerk org
+        orgId: ctx.orgId,
         name: formData.clientName,
         email: formData.clientEmail || null,
         phone: formData.clientPhone || null,
@@ -74,7 +77,7 @@ export async function createQuoteAction(
 
     // 3. Create quote via repository
     const quote = await quoteRepo.create({
-      orgId: 'default',
+      orgId: ctx.orgId,
       title: formData.title,
       tier: formData.tier,
       customerId: customer.id,
@@ -132,6 +135,7 @@ export interface ImportResult {
 export async function importLegacyRecordsAction(
   records: LegacyRecord[],
 ): Promise<ActionResult<ImportResult>> {
+  const ctx = await resolveOrgContext()
   const start = Date.now()
   const failures: ImportResult['failures'] = []
   const warnings: ImportResult['warnings'] = []
@@ -149,7 +153,7 @@ export async function importLegacyRecordsAction(
       }
 
       await quoteRepo.create({
-        orgId: 'default',
+        orgId: ctx.orgId,
         title: record.title,
         tier,
         customerId: record.client_id,
@@ -212,10 +216,12 @@ export async function updateQuoteStatusAction(
     if (!quote) return { ok: false, error: `Quote ${quoteId} not found` }
 
     // ── State machine: validate transition ──────────────────────────
+    const ctx = await resolveOrgContext()
+
     const transition = transitionQuote(
       quote.status as Parameters<typeof transitionQuote>[0],
       newStatus,
-      { orgId: quoteId, actorId: 'server-action', role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
+      { orgId: ctx.orgId, actorId: ctx.actorId, role: ctx.role as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
       quoteId,
     )
     if (!transition.ok) {
@@ -233,11 +239,11 @@ export async function updateQuoteStatusAction(
         quoteId,
         fromStatus: quote.status,
         toStatus: newStatus,
-        userId: 'server-action',
-        orgId: quoteId,
+        userId: ctx.actorId,
+        orgId: ctx.orgId,
       })
       logTransition(
-        { orgId: quoteId },
+        { orgId: ctx.orgId },
         'quote',
         quote.status,
         newStatus,

@@ -14,6 +14,9 @@ import {
   type TradeServiceResult,
   type TradeDocument,
 } from '@nzila/trade-core'
+import { createTradeDocumentRepository } from '@nzila/trade-db'
+
+const repo = createTradeDocumentRepository()
 
 export async function uploadDocument(
   data: unknown,
@@ -25,7 +28,8 @@ export async function uploadDocument(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -33,7 +37,7 @@ export async function uploadDocument(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_document',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'document.uploaded',
     label: `Uploaded ${parsed.data.docType} for deal ${parsed.data.dealId}`,
     metadata: {
@@ -43,23 +47,21 @@ export async function uploadDocument(
     },
   })
 
-  // TODO: persist document + audit entry via trade-db repository
-
   revalidatePath('/trade/deals')
 
-  return { ok: true, data: { documentId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { documentId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function listDocumentsForDeal(
-  _dealId: string,
+  dealId: string,
 ): Promise<TradeServiceResult<{ documents: TradeDocument[] }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  const rows = await repo.listByDeal({ orgId: ctx.orgId }, dealId)
 
   return {
     ok: true,
-    data: { documents: [] },
+    data: { documents: rows as unknown as TradeDocument[] },
     error: null,
     auditEntries: [],
   }

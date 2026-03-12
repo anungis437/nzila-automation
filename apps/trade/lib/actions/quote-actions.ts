@@ -15,6 +15,9 @@ import {
   type TradeServiceResult,
   type TradeQuote,
 } from '@nzila/trade-core'
+import { createTradeQuoteRepository } from '@nzila/trade-db'
+
+const repo = createTradeQuoteRepository()
 
 export async function createQuote(
   data: unknown,
@@ -26,10 +29,8 @@ export async function createQuote(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
-  const total = (
-    parseFloat(parsed.data.unitPrice) * parsed.data.quantity
-  ).toFixed(2)
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -37,31 +38,21 @@ export async function createQuote(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_quote',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'quote.created',
     label: `Created quote for deal ${parsed.data.dealId}`,
     metadata: {
       dealId: parsed.data.dealId,
       unitPrice: parsed.data.unitPrice,
       quantity: parsed.data.quantity,
-      total,
+      total: row.total,
       currency: parsed.data.currency,
     },
   })
 
-  // TODO: persist quote + audit entry via trade-db repository
-  // const repo = createTradeQuoteRepository(scopedDb)
-  // await repo.create({
-  //   ...parsed.data,
-  //   id,
-  //   orgId: ctx.orgId,
-  //   total,
-  //   status: TradeQuoteStatus.DRAFT,
-  // })
-
   revalidatePath('/trade/deals')
 
-  return { ok: true, data: { quoteId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { quoteId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function transitionQuote(
@@ -73,6 +64,11 @@ export async function transitionQuote(
   if (!parsed.success) {
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
+
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const updates: { status?: string; acceptedAt?: Date | null } = { status: parsed.data.toStatus }
+  if (parsed.data.toStatus === 'accepted') updates.acceptedAt = new Date()
+  await repo.update(dbCtx, { id: parsed.data.quoteId, ...updates })
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -86,9 +82,6 @@ export async function transitionQuote(
     metadata: parsed.data.metadata ?? {},
   })
 
-  // TODO: persist status change + audit entry
-  // If toStatus === 'accepted', generate evidence pack (EPIC 7)
-
   revalidatePath('/trade/deals')
 
   return {
@@ -100,15 +93,15 @@ export async function transitionQuote(
 }
 
 export async function listQuotesForDeal(
-  _dealId: string,
+  dealId: string,
 ): Promise<TradeServiceResult<{ quotes: TradeQuote[] }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  const rows = await repo.listByDeal({ orgId: ctx.orgId }, dealId)
 
   return {
     ok: true,
-    data: { quotes: [] },
+    data: { quotes: rows as unknown as TradeQuote[] },
     error: null,
     auditEntries: [],
   }

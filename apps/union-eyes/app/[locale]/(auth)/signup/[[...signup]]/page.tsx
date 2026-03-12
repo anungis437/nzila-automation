@@ -3,7 +3,7 @@
 
 export const dynamic = 'force-dynamic';
 import { SignUp, useUser } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+
 import { useTheme } from "next-themes";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
@@ -26,7 +26,7 @@ export default function SignUpPage() {
   const { theme } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { isLoaded, signUp } = useSignUp();
+  const { signUp } = useSignUp();
   const { isSignedIn, isLoaded: userLoaded } = useUser();
   
   // States for profile claiming
@@ -98,7 +98,7 @@ setClaimResult({
   // Handle redirect after signup completes
   useEffect(() => {
     const checkAndClaimProfile = async () => {
-if (isLoaded && signUp?.status === 'complete') {
+if (signUp && signUp?.status === 'complete') {
 setSignupComplete(true);
         
         // Only attempt to claim if we have both email and userId
@@ -119,7 +119,7 @@ router.push("/dashboard");
     };
     
     checkAndClaimProfile();
-  }, [isLoaded, signUp?.status, signUp?.createdUserId, email, token, router, handleProfileClaiming]);
+  }, [signUp, signUp?.status, signUp?.createdUserId, email, token, router, handleProfileClaiming]);
 
   // Don't render SignUp if already signed in or still loading
   if (!userLoaded || isSignedIn) {
@@ -148,7 +148,7 @@ router.push("/dashboard");
         <SignUp 
           fallbackRedirectUrl="/en-CA/dashboard"
           appearance={{ 
-            baseTheme: theme === "dark" ? dark : undefined,
+            theme: theme === "dark" ? 'dark' : undefined,
             elements: {
               rootBox: "w-full",
               card: "shadow-md rounded-lg"

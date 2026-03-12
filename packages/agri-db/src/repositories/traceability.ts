@@ -1,23 +1,64 @@
 import type { AgriReadContext, AgriDbContext } from '../types'
 import type { TraceabilityChain, TraceabilityEntityType } from '@nzila/agri-core'
+import { db } from '@nzila/db'
+import { agriTraceabilityLinks } from '@nzila/db/schema'
+import { eq, and, or } from 'drizzle-orm'
+
+function toLink(row: typeof agriTraceabilityLinks.$inferSelect): TraceabilityChain {
+  return {
+    id: row.id,
+    orgId: row.orgId,
+    sourceType: row.sourceType,
+    sourceId: row.sourceId,
+    targetType: row.targetType,
+    targetId: row.targetId,
+    linkMetadata: (row.linkMetadata ?? {}) as Record<string, unknown>,
+    createdAt: row.createdAt.toISOString(),
+  }
+}
 
 export async function listTraceabilityLinks(
   ctx: AgriReadContext,
   sourceType: string,
   sourceId: string,
 ): Promise<TraceabilityChain[]> {
-  void ctx; void sourceType; void sourceId
-  return []
+  const rows = await db
+    .select()
+    .from(agriTraceabilityLinks)
+    .where(
+      and(
+        eq(agriTraceabilityLinks.orgId, ctx.orgId),
+        eq(agriTraceabilityLinks.sourceType, sourceType as typeof agriTraceabilityLinks.$inferSelect.sourceType),
+        eq(agriTraceabilityLinks.sourceId, sourceId),
+      ),
+    )
+  return rows.map(toLink)
 }
 
 export async function getFullChain(
   ctx: AgriReadContext,
   entityType: string,
-  orgId: string,
+  entityId: string,
 ): Promise<TraceabilityChain[]> {
-  void ctx; void entityType; void orgId
-  // TODO: recursive query to build full chain
-  return []
+  const rows = await db
+    .select()
+    .from(agriTraceabilityLinks)
+    .where(
+      and(
+        eq(agriTraceabilityLinks.orgId, ctx.orgId),
+        or(
+          and(
+            eq(agriTraceabilityLinks.sourceType, entityType as typeof agriTraceabilityLinks.$inferSelect.sourceType),
+            eq(agriTraceabilityLinks.sourceId, entityId),
+          ),
+          and(
+            eq(agriTraceabilityLinks.targetType, entityType as typeof agriTraceabilityLinks.$inferSelect.targetType),
+            eq(agriTraceabilityLinks.targetId, entityId),
+          ),
+        ),
+      ),
+    )
+  return rows.map(toLink)
 }
 
 export async function createTraceabilityLink(
@@ -28,15 +69,16 @@ export async function createTraceabilityLink(
   targetId: string,
   metadata: Record<string, unknown> = {},
 ): Promise<TraceabilityChain> {
-  const id = crypto.randomUUID()
-  return {
-    id,
-    orgId: ctx.orgId,
-    sourceType,
-    sourceId,
-    targetType,
-    targetId,
-    linkMetadata: metadata,
-    createdAt: new Date().toISOString(),
-  }
+  const [row] = await db
+    .insert(agriTraceabilityLinks)
+    .values({
+      orgId: ctx.orgId,
+      sourceType,
+      sourceId,
+      targetType,
+      targetId,
+      linkMetadata: metadata,
+    })
+    .returning()
+  return toLink(row)
 }

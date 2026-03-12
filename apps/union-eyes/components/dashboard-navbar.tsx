@@ -190,7 +190,6 @@ export default function DashboardNavbar({ profile, onMenuClick: _onMenuClick }: 
 
           {/* User Menu */}
           <UserButton
-            afterSignOutUrl="/"
             appearance={{
               elements: {
                 avatarBox: "h-9 w-9",

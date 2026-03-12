@@ -1,9 +1,10 @@
 /**
- * Server-side data access — wraps platform packages and falls back to demo seed.
+ * Server-side data access — wraps platform packages with seed fallback.
  *
  * Every function returns zod-validated data.
- * In production these will call live platform package APIs;
- * for demo / dev they return deterministic seed data.
+ * Uses live platform package APIs where possible (in-memory event stores
+ * populated during app lifecycle). Falls back to deterministic seed data
+ * when the live layer has no events yet (first boot / dev).
  */
 import "server-only";
 
@@ -17,8 +18,19 @@ import {
   seedModules,
   seedProcurement,
 } from "@/lib/demoSeed";
-import { governanceStatusSchema, governanceAuditTimelineEntrySchema } from "@nzila/platform-governance";
-import { crossAppInsightSchema, operationalSignalSchema } from "@nzila/platform-intelligence";
+import {
+  governanceStatusSchema,
+  governanceAuditTimelineEntrySchema,
+  getGovernanceStatus as liveGovernanceStatus,
+  buildGovernanceAuditTimeline,
+} from "@nzila/platform-governance";
+import {
+  crossAppInsightSchema,
+  operationalSignalSchema,
+  generateCrossAppInsights,
+  getAggregatedEvents,
+  detectOperationalSignals,
+} from "@nzila/platform-intelligence";
 import { anomalySchema } from "@nzila/platform-anomaly-engine";
 import { recommendationSchema } from "@nzila/platform-agent-workflows";
 import { moduleStatusSchema, overviewSummarySchema, procurementSummarySchema } from "@/types";
@@ -35,11 +47,30 @@ import { z } from "zod";
 // ── Governance ──────────────────────────────────────────
 
 export async function getGovernanceStatusData(): Promise<GovernanceStatus> {
+  // Try live governance status from in-memory audit timeline
+  try {
+    const live = liveGovernanceStatus({
+      policyEngineAvailable: true,
+      evidencePackAvailable: true,
+      complianceSnapshotAvailable: true,
+    });
+    const parsed = governanceStatusSchema.safeParse(live);
+    if (parsed.success) return parsed.data as GovernanceStatus;
+  } catch { /* fall through to seed */ }
+
   const raw = seedGovernanceStatus();
   return governanceStatusSchema.parse(raw) as GovernanceStatus;
 }
 
 export async function getGovernanceTimeline(): Promise<GovernanceAuditTimelineEntry[]> {
+  // Try live audit timeline
+  try {
+    const live = buildGovernanceAuditTimeline({});
+    if (live.length > 0) {
+      return z.array(governanceAuditTimelineEntrySchema).parse(live) as GovernanceAuditTimelineEntry[];
+    }
+  } catch { /* fall through to seed */ }
+
   const raw = seedGovernanceTimeline();
   return z.array(governanceAuditTimelineEntrySchema).parse(raw) as GovernanceAuditTimelineEntry[];
 }
@@ -47,11 +78,38 @@ export async function getGovernanceTimeline(): Promise<GovernanceAuditTimelineEn
 // ── Intelligence ────────────────────────────────────────
 
 export async function getInsights(): Promise<CrossAppInsight[]> {
+  // Try live cross-app insights from aggregated events
+  try {
+    const events = getAggregatedEvents({});
+    if (events.length > 0) {
+      const live = generateCrossAppInsights(events);
+      const parsed = z.array(crossAppInsightSchema).safeParse(live);
+      if (parsed.success && parsed.data.length > 0) return parsed.data as CrossAppInsight[];
+    }
+  } catch { /* fall through to seed */ }
+
   const raw = seedInsights();
   return z.array(crossAppInsightSchema).parse(raw) as CrossAppInsight[];
 }
 
 export async function getSignals(): Promise<OperationalSignal[]> {
+  // Try live operational signals from aggregated events
+  try {
+    const events = getAggregatedEvents({});
+    if (events.length > 0) {
+      const metrics = events.map((e) => ({
+        app: e.app,
+        metric: e.eventType,
+        value: 1,
+        baseline: 0,
+        timestamp: e.timestamp,
+      }));
+      const live = detectOperationalSignals(metrics);
+      const parsed = z.array(operationalSignalSchema).safeParse(live);
+      if (parsed.success && parsed.data.length > 0) return parsed.data as OperationalSignal[];
+    }
+  } catch { /* fall through to seed */ }
+
   const raw = seedSignals();
   return z.array(operationalSignalSchema).parse(raw) as OperationalSignal[];
 }
@@ -107,7 +165,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       governance.evidence_pack === "verified",
     governanceCompliant:
       governance.compliance_snapshot === "current" && governance.sbom_current,
-    intelligenceActive: true,
+    intelligenceActive: getAggregatedEvents({}).length > 0,
     activeAnomalies: anomalies.length,
     totalModules: modules.length,
     healthyModules,

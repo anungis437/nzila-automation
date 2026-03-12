@@ -1,0 +1,543 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/APPS/nzila-automation[39m
+
+No test files found, exiting with code 1
+
+filter: tooling/contract-tests/
+
+ abr  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ cfo  
+
+include: lib/**/*.test.ts, tests/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ console  
+
+include: lib/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ orchestrator-api  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ partners  
+
+include: lib/**/*.test.ts, tests/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ union-eyes  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**, e2e/**
+
+ shop-quoter-app  
+
+include: lib/**/*.test.ts, tests/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ web  
+
+include: lib/**/*.test.ts, tests/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ nacp-exams  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ zonga  
+
+include: **/*.test.{ts,tsx}
+exclude:  **/node_modules/**, **/.git/**
+
+ pondu  
+
+include: lib/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ cora  
+
+include: lib/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ ai-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ ai-sdk  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ blob  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ db  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**
+
+ ml-core  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ ml-sdk  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/pricing-engine  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-state  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-audit  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-db  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-events  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-evidence  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-governance  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/commerce-services  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ commerce-integration-tests  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ commerce-observability  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/nacp-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/zonga-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/shop-quoter  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ os-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ payments-stripe  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-export  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-metrics  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-performance  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-isolation  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-proof  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/platform-ops  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ data-lifecycle  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ qbo  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ fx  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ tax  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ tools-runtime  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ ui  
+
+include: src/**/*.test.{ts,tsx}
+exclude:  **/node_modules/**, **/.git/**
+
+ integrations-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ integrations-db  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ integrations-runtime  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ comms-email  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ comms-sms  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ comms-push  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ chatops-slack  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ chatops-teams  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ crm-hubspot  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ webhooks  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/agri-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ agri-db  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ agri-events  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/agri-intelligence  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/agri-traceability  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/agri-adapters  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-cost  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-deploy  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-policy-engine  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-procurement-proof  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-marketplace  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-assurance  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-rfp-generator  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-utils  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-rum  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ ai-registry  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-ontology  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-entity-graph  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-event-fabric  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-knowledge-registry  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-data-fabric  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-decision-graph  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-context-orchestrator  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-semantic-search  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-governed-ai  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-reasoning-engine  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/platform-observability  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ mobility-core  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ mobility-programs  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ mobility-compliance  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ mobility-ai  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/mobility-family  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/mobility-case-engine  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ integrations-hubspot  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ integrations-m365  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ integrations-whatsapp  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/org  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ mobility  
+
+include: **/*.test.ts, **/*.test.tsx
+exclude:  **/node_modules/**, **/.git/**
+
+ mobility-client-portal  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ trade  
+
+include: lib/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-admin  
+
+include: lib/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/platform-validation  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ openapi-gen  
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+
+ contract-tests  
+
+include: **/*.test.ts
+exclude:  **/node_modules/**, **/services/financial-service/**
+
+ platform-governance  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-intelligence  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-ai-query  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-anomaly-engine  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-agent-workflows  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ platform-ai-governance  
+
+include: src/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+ @nzila/control-plane  
+
+include: **/*.test.{ts,tsx}
+exclude:  node_modules, .next, e2e
+

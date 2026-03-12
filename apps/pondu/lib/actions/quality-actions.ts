@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { qualityRepo } from '@nzila/agri-db'
 
 export async function recordInspection(
   data: unknown,
@@ -24,7 +25,13 @@ export async function recordInspection(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  await qualityRepo.updateInspectionGrade(
+    dbCtx,
+    parsed.data.inspectionId,
+    parsed.data.grade,
+    parsed.data.score,
+  )
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,7 +39,7 @@ export async function recordInspection(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'quality_inspection',
-    targetEntityId: id,
+    targetEntityId: parsed.data.inspectionId,
     action: 'quality.inspected',
     label: `Quality inspection for lot ${parsed.data.lotId} — grade ${parsed.data.grade}`,
     metadata: {
@@ -42,20 +49,17 @@ export async function recordInspection(
     },
   })
 
-  // TODO: persist via agri-db QualityRepository + transition LotQualityFSM
-
   revalidatePath('/pondu/quality')
   revalidatePath('/pondu/lots')
 
-  return { ok: true, data: { inspectionId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { inspectionId: parsed.data.inspectionId }, error: null, auditEntries: [entry] }
 }
 
-export async function listInspections(): Promise<
-  AgriServiceResult<{ inspections: unknown[] }>
-> {
+export async function listInspections(
+  lotId: string,
+): Promise<AgriServiceResult<{ inspections: unknown[] }>> {
   const ctx = await resolveOrgContext()
+  const inspections = await qualityRepo.listInspections({ orgId: ctx.orgId }, lotId)
 
-  // TODO: read via agri-db QualityRepository scoped to ctx.orgId
-
-  return { ok: true, data: { inspections: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { inspections }, error: null, auditEntries: [] }
 }

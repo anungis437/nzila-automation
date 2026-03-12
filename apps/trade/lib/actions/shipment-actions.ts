@@ -15,6 +15,9 @@ import {
   type TradeServiceResult,
   type TradeShipment,
 } from '@nzila/trade-core'
+import { createTradeShipmentRepository } from '@nzila/trade-db'
+
+const repo = createTradeShipmentRepository()
 
 export async function createShipment(
   data: unknown,
@@ -26,7 +29,8 @@ export async function createShipment(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const row = await repo.create(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -34,7 +38,7 @@ export async function createShipment(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'trade_shipment',
-    targetEntityId: id,
+    targetEntityId: row.id,
     action: 'shipment.created',
     label: `Created shipment ${parsed.data.originCountry} → ${parsed.data.destinationCountry}`,
     metadata: {
@@ -45,11 +49,9 @@ export async function createShipment(
     },
   })
 
-  // TODO: persist shipment + audit entry via trade-db repository
-
   revalidatePath('/trade/shipments')
 
-  return { ok: true, data: { shipmentId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { shipmentId: row.id }, error: null, auditEntries: [entry] }
 }
 
 export async function updateShipmentMilestone(
@@ -61,6 +63,15 @@ export async function updateShipmentMilestone(
   if (!parsed.success) {
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
+
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const existing = await repo.getById({ orgId: ctx.orgId }, parsed.data.shipmentId)
+  const milestones = [...((existing?.milestones ?? []) as Record<string, unknown>[]), {
+    name: parsed.data.milestoneName,
+    completedAt: parsed.data.completedAt,
+    recordedAt: new Date().toISOString(),
+  }]
+  await repo.update(dbCtx, { id: parsed.data.shipmentId, milestones })
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -77,9 +88,6 @@ export async function updateShipmentMilestone(
     },
   })
 
-  // TODO: persist milestone update + audit entry
-  // If all milestones complete, consider auto-transitioning deal stage
-
   revalidatePath('/trade/shipments')
 
   return {
@@ -90,19 +98,24 @@ export async function updateShipmentMilestone(
   }
 }
 
-export async function listShipments(_opts?: {
+export async function listShipments(opts?: {
   page?: number
   pageSize?: number
   status?: string
   dealId?: string
 }): Promise<TradeServiceResult<{ shipments: TradeShipment[]; total: number }>> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
-  // TODO: read via trade-db repository scoped to ctx.orgId
+  // listByDeal requires a dealId; if none provided, return empty
+  if (!opts?.dealId) {
+    return { ok: true, data: { shipments: [], total: 0 }, error: null, auditEntries: [] }
+  }
+
+  const rows = await repo.listByDeal({ orgId: ctx.orgId }, opts.dealId)
 
   return {
     ok: true,
-    data: { shipments: [], total: 0 },
+    data: { shipments: rows as unknown as TradeShipment[], total: rows.length },
     error: null,
     auditEntries: [],
   }

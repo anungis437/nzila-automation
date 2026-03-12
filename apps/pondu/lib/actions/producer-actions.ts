@@ -13,6 +13,7 @@ import {
   buildActionAuditEntry,
   type AgriServiceResult,
 } from '@nzila/agri-core'
+import { producerRepo } from '@nzila/agri-db'
 
 export async function createProducer(
   data: unknown,
@@ -24,7 +25,8 @@ export async function createProducer(
     return { ok: false, data: null, error: parsed.error.message, auditEntries: [] }
   }
 
-  const id = crypto.randomUUID()
+  const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
+  const producer = await producerRepo.createProducer(dbCtx, parsed.data)
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),
@@ -32,25 +34,22 @@ export async function createProducer(
     actorId: ctx.actorId,
     role: ctx.role,
     entityType: 'producer',
-    targetEntityId: id,
+    targetEntityId: producer.id,
     action: 'producer.created',
     label: `Registered producer ${parsed.data.name}`,
     metadata: { name: parsed.data.name },
   })
 
-  // TODO: persist via agri-db ProducerRepository
-
   revalidatePath('/pondu/producers')
 
-  return { ok: true, data: { producerId: id }, error: null, auditEntries: [entry] }
+  return { ok: true, data: { producerId: producer.id }, error: null, auditEntries: [entry] }
 }
 
 export async function listProducers(): Promise<
   AgriServiceResult<{ producers: unknown[] }>
 > {
   const ctx = await resolveOrgContext()
+  const result = await producerRepo.listProducers({ orgId: ctx.orgId })
 
-  // TODO: read via agri-db ProducerRepository scoped to ctx.orgId
-
-  return { ok: true, data: { producers: [] }, error: null, auditEntries: [] }
+  return { ok: true, data: { producers: result.rows }, error: null, auditEntries: [] }
 }
