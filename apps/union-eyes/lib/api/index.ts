@@ -22,10 +22,18 @@ async function fetchAPI<T>(
   init?: RequestInit
 ): Promise<T> {
   try {
+    // Mutation methods require Idempotency-Key header (enforced by middleware in non-dev)
+    const method = (init?.method ?? 'GET').toUpperCase();
+    const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
+    const idempotencyHeaders: Record<string, string> = isMutation
+      ? { 'Idempotency-Key': `${endpoint}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }
+      : {};
+
     const response = await fetch(endpoint, {
       ...init,
       headers: {
         'Content-Type': 'application/json',
+        ...idempotencyHeaders,
         ...init?.headers,
       },
     });

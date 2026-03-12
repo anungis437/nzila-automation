@@ -236,6 +236,7 @@ export function OrganizationProvider({ children }: OrganizationProviderProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Idempotency-Key': `org-switch-${newOrganizationId}-${Date.now()}`,
         },
         credentials: 'include',
         body: JSON.stringify({ organizationId: newOrganizationId }),

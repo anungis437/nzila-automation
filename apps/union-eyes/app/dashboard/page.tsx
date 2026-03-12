@@ -19,6 +19,7 @@ import {
   Users, FileText, DollarSign, AlertCircle, 
   TrendingUp, Calendar, Award, ArrowRight
 } from 'lucide-react';
+import { useOrganization } from '@/contexts/organization-context';
 
 interface DashboardStats {
   totalMembers: number;
@@ -40,6 +41,7 @@ interface RecentActivity {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { organization } = useOrganization();
   const [stats, setStats] = useState<DashboardStats>({
     totalMembers: 0,
     activeMembers: 0,
@@ -83,8 +85,9 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">
-          {/* eslint-disable-next-line react/no-unescaped-entities */}
-          Welcome back! Here's an overview of your union management system.
+          {organization
+            ? `Viewing metrics for ${organization.name}`
+            : 'Welcome back! Here\'s an overview of your union management system.'}
         </p>
       </div>
 

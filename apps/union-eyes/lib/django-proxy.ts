@@ -79,8 +79,13 @@ export async function djangoProxy(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // Forward the current org so Django can scope queries automatically
-  if (orgId) {
+  // Forward the current org so Django can scope queries automatically.
+  // Priority: selected org from cookie (custom multi-tenancy) > Clerk native orgId
+  const selectedOrgId = req.cookies.get('selected_org_id')?.value
+    || req.cookies.get('selected_organization_id')?.value;
+  if (selectedOrgId) {
+    headers['X-Organization-Id'] = selectedOrgId;
+  } else if (orgId) {
     headers['X-Organization-Id'] = orgId;
   }
 
