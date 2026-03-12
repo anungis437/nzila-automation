@@ -89,8 +89,8 @@ const QUOTE_STATUS_TO_DEAL_STAGE: Record<string, string> = {
   expired: 'Closed Lost',
 }
 
-// Prepared for Deal sync - to be used in syncDeals()
-function _mapQuoteToZohoDeal(
+// Field mapping: commerce_quotes <-> Zoho Deals
+function mapQuoteToZohoDeal(
   quote: typeof commerceQuotes.$inferSelect,
   contactId?: string,
 ): Partial<ZohoDeal> {
@@ -104,8 +104,8 @@ function _mapQuoteToZohoDeal(
   }
 }
 
-// Prepared for Deal sync - to be used in syncDeals()
-function _mapZohoDealToQuote(deal: ZohoDeal): Partial<typeof commerceQuotes.$inferInsert> {
+// Field mapping: Zoho Deals -> commerce_quotes
+function mapZohoDealToQuote(deal: ZohoDeal): Partial<typeof commerceQuotes.$inferInsert> {
   // Reverse map stage to status
   const statusEntry = Object.entries(QUOTE_STATUS_TO_DEAL_STAGE).find(
     ([_, stage]) => stage === deal.Stage,
@@ -447,6 +447,298 @@ export class ZohoSyncService {
     }
 
     return result
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Deal Sync (commerce_quotes <-> Zoho Deals)
+  // ───────────────────────────────────────────────────────────────────────────
+
+  async syncDeals(options: SyncOptions = {}): Promise<SyncResult> {
+    const { direction = 'bidirectional', dryRun = false } = options
+    const config = await this.getSyncConfig('deals')
+
+    const result: SyncResult = {
+      configId: config?.id ?? '',
+      recordsProcessed: 0,
+      recordsCreated: 0,
+      recordsUpdated: 0,
+      recordsFailed: 0,
+      conflicts: [],
+      errors: [],
+      startedAt: new Date(),
+      status: 'in_progress',
+    }
+
+    if (!config?.isActive) {
+      logger.info('Deal sync disabled, skipping', { orgId: this.orgId })
+      result.status = 'completed'
+      return result
+    }
+
+    const lastSync = await this.getLastSuccessfulSync('deals')
+
+    try {
+      if (direction === 'nzila_to_zoho' || direction === 'bidirectional') {
+        const pushResult = await this.pushDealsToZoho(lastSync, dryRun)
+        result.recordsCreated += pushResult.recordsCreated
+        result.recordsUpdated += pushResult.recordsUpdated
+        result.recordsProcessed += pushResult.recordsProcessed
+        result.conflicts.push(...pushResult.conflicts)
+        result.errors.push(...pushResult.errors)
+      }
+
+      if (direction === 'zoho_to_nzila' || direction === 'bidirectional') {
+        const pullResult = await this.pullDealsFromZoho(lastSync, dryRun)
+        result.recordsCreated += pullResult.recordsCreated
+        result.recordsUpdated += pullResult.recordsUpdated
+        result.recordsProcessed += pullResult.recordsProcessed
+        result.conflicts.push(...pullResult.conflicts)
+        result.errors.push(...pullResult.errors)
+      }
+
+      if (!dryRun) {
+        await this.recordSyncRun('deals', 'success', result)
+      }
+      result.status = 'completed'
+      result.completedAt = new Date()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown sync error'
+      result.errors.push({
+        recordId: '',
+        operation: 'update',
+        errorCode: 'SYNC_ERROR',
+        errorMessage: message,
+        retryable: true,
+      })
+      result.status = 'failed'
+      if (!dryRun) {
+        await this.recordSyncRun('deals', 'failed', result, message)
+      }
+    }
+
+    return result
+  }
+
+  private async pushDealsToZoho(
+    lastSync: Date | null,
+    dryRun: boolean,
+  ): Promise<SyncResult> {
+    const result: SyncResult = {
+      configId: '',
+      recordsProcessed: 0,
+      recordsCreated: 0,
+      recordsUpdated: 0,
+      recordsFailed: 0,
+      conflicts: [],
+      errors: [],
+      startedAt: new Date(),
+      status: 'in_progress',
+    }
+
+    const whereConditions = [eq(commerceQuotes.orgId, this.orgId)]
+    if (lastSync) {
+      whereConditions.push(gte(commerceQuotes.updatedAt, lastSync))
+    }
+
+    const quotes = await db
+      .select()
+      .from(commerceQuotes)
+      .where(and(...whereConditions))
+
+    logger.info('Pushing deals to Zoho', { count: quotes.length, orgId: this.orgId })
+
+    for (const quote of quotes) {
+      try {
+        const zohoDealId = await this.getZohoDealIdForQuote(quote.id)
+        // Resolve linked Zoho contact ID for the customer
+        const contactZohoId = quote.customerId
+          ? await this.getZohoIdForLocal('contacts', quote.customerId)
+          : null
+        const dealData = mapQuoteToZohoDeal(quote, contactZohoId ?? undefined)
+
+        if (dryRun) {
+          result.recordsProcessed++
+          if (zohoDealId) result.recordsUpdated++
+          else result.recordsCreated++
+          continue
+        }
+
+        if (zohoDealId) {
+          await this.crmClient.updateDeal(zohoDealId, dealData)
+          result.recordsUpdated++
+        } else {
+          const newDeal = await this.crmClient.createDeal(dealData)
+          await this.linkDealRecord(quote.id, newDeal.id)
+          result.recordsCreated++
+        }
+        result.recordsProcessed++
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        result.recordsFailed++
+        result.recordsProcessed++
+        result.errors.push({
+          recordId: quote.id,
+          operation: 'update',
+          errorCode: 'PUSH_ERROR',
+          errorMessage: `Failed to push deal for quote ${quote.id}: ${message}`,
+          retryable: true,
+        })
+      }
+    }
+
+    return result
+  }
+
+  private async pullDealsFromZoho(
+    lastSync: Date | null,
+    dryRun: boolean,
+  ): Promise<SyncResult> {
+    const result: SyncResult = {
+      configId: '',
+      recordsProcessed: 0,
+      recordsCreated: 0,
+      recordsUpdated: 0,
+      recordsFailed: 0,
+      conflicts: [],
+      errors: [],
+      startedAt: new Date(),
+      status: 'in_progress',
+    }
+
+    let page = 1
+    const perPage = 200
+    let hasMore = true
+
+    while (hasMore) {
+      const response = await this.crmClient.getDeals(page, perPage)
+      const deals = response.data ?? []
+
+      if (deals.length < perPage) hasMore = false
+
+      for (const deal of deals) {
+        if (lastSync && deal.Modified_Time) {
+          const modifiedTime = new Date(deal.Modified_Time)
+          if (modifiedTime < lastSync) {
+            result.recordsProcessed++
+            continue
+          }
+        }
+
+        try {
+          const localId = await this.getLocalQuoteIdForZohoDeal(deal.id)
+          const quoteData = mapZohoDealToQuote(deal)
+
+          if (dryRun) {
+            result.recordsProcessed++
+            if (localId) result.recordsUpdated++
+            else result.recordsCreated++
+            continue
+          }
+
+          if (localId) {
+            const [existingQuote] = await db
+              .select()
+              .from(commerceQuotes)
+              .where(eq(commerceQuotes.id, localId))
+              .limit(1)
+
+            if (existingQuote && deal.Modified_Time) {
+              const remoteModified = new Date(deal.Modified_Time)
+              if (existingQuote.updatedAt && existingQuote.updatedAt > remoteModified) {
+                const conflict: SyncConflict = {
+                  syncRecordId: '',
+                  nzilaRecordId: localId,
+                  zohoRecordId: deal.id,
+                  nzilaData: existingQuote as unknown as Record<string, unknown>,
+                  zohoData: deal as unknown as Record<string, unknown>,
+                  conflictFields: ['updatedAt'],
+                }
+                result.conflicts.push(conflict)
+                result.recordsProcessed++
+                continue
+              }
+            }
+
+            await db
+              .update(commerceQuotes)
+              .set({ ...quoteData, updatedAt: new Date() })
+              .where(eq(commerceQuotes.id, localId))
+            result.recordsUpdated++
+          } else {
+            const [newQuote] = await db
+              .insert(commerceQuotes)
+              .values({
+                orgId: this.orgId,
+                ref: `ZOHO-${deal.id.slice(0, 8)}`,
+                status: quoteData.status ?? 'draft',
+                total: quoteData.total ?? '0',
+                notes: quoteData.notes,
+                currency: 'CAD',
+                metadata: { zohoDealId: deal.id, dealName: deal.Deal_Name },
+              })
+              .returning()
+            await this.linkDealRecord(newQuote.id, deal.id)
+            result.recordsCreated++
+          }
+          result.recordsProcessed++
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unknown error'
+          result.recordsFailed++
+          result.recordsProcessed++
+          result.errors.push({
+            recordId: deal.id,
+            operation: 'update',
+            errorCode: 'PULL_ERROR',
+            errorMessage: `Failed to pull deal ${deal.id}: ${message}`,
+            retryable: true,
+          })
+        }
+      }
+
+      page++
+    }
+
+    return result
+  }
+
+  private async getZohoDealIdForQuote(quoteId: string): Promise<string | null> {
+    const [quote] = await db
+      .select({ metadata: commerceQuotes.metadata })
+      .from(commerceQuotes)
+      .where(eq(commerceQuotes.id, quoteId))
+      .limit(1)
+    const metadata = quote?.metadata as { zohoDealId?: string } | null
+    return metadata?.zohoDealId ?? null
+  }
+
+  private async getLocalQuoteIdForZohoDeal(zohoDealId: string): Promise<string | null> {
+    const quotes = await db
+      .select({ id: commerceQuotes.id, metadata: commerceQuotes.metadata })
+      .from(commerceQuotes)
+      .where(eq(commerceQuotes.orgId, this.orgId))
+
+    for (const q of quotes) {
+      const metadata = q.metadata as { zohoDealId?: string } | null
+      if (metadata?.zohoDealId === zohoDealId) return q.id
+    }
+    return null
+  }
+
+  private async linkDealRecord(quoteId: string, zohoDealId: string): Promise<void> {
+    const [quote] = await db
+      .select({ metadata: commerceQuotes.metadata })
+      .from(commerceQuotes)
+      .where(eq(commerceQuotes.id, quoteId))
+      .limit(1)
+
+    const existingMetadata = (quote?.metadata ?? {}) as Record<string, unknown>
+    await db
+      .update(commerceQuotes)
+      .set({
+        metadata: { ...existingMetadata, zohoDealId },
+        updatedAt: new Date(),
+      })
+      .where(eq(commerceQuotes.id, quoteId))
   }
 
   // ───────────────────────────────────────────────────────────────────────────
