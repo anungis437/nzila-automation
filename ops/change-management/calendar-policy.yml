@@ -1,0 +1,24 @@
+# Change Management Calendar Policy
+# Defines freeze periods and restricted deployment windows.
+#
+# Freeze periods block non-EMERGENCY changes for specified environments.
+# Restricted hours limit deployments to business hours (optional).
+
+freeze_periods:
+  - name: "End of Financial Year Freeze"
+    start: "2026-06-28T00:00:00.000Z"
+    end: "2026-07-02T23:59:59.000Z"
+    environments:
+      - PROD
+
+  - name: "Holiday Freeze"
+    start: "2026-12-20T00:00:00.000Z"
+    end: "2027-01-03T23:59:59.000Z"
+    environments:
+      - STAGING
+      - PROD
+
+restricted_hours:
+  weekdays_only: true
+  start_hour: 8
+  end_hour: 18

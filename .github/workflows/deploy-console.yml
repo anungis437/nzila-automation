@@ -42,6 +42,12 @@ jobs:
             turbo-deploy-console-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             turbo-deploy-console-${{ runner.os }}-
 
+      - name: Governance check
+        run: pnpm governance:check
+
+      - name: Change window validation
+        run: node --import tsx scripts/validate-change-window.ts --env=STAGING --service=console --commit=${{ github.sha }}
+
       - name: Run contract tests (fail closed)
         id: contract_tests
         run: pnpm contract:test
