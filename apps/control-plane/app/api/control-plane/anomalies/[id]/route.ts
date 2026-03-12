@@ -1,21 +1,27 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAnomalyById } from "@/server/data";
+import { requireApiAuth, handleAuthError } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-  const anomaly = await getAnomalyById(id);
+  try {
+    await requireApiAuth(request);
+    const { id } = await params;
+    const anomaly = await getAnomalyById(id);
 
-  if (!anomaly) {
-    return NextResponse.json(
-      { ok: false, error: "Anomaly not found" },
-      { status: 404 }
-    );
+    if (!anomaly) {
+      return NextResponse.json(
+        { ok: false, error: "Anomaly not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ ok: true, data: anomaly });
+  } catch (error) {
+    return handleAuthError(error);
   }
-
-  return NextResponse.json({ ok: true, data: anomaly });
 }

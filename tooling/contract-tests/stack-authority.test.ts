@@ -43,6 +43,7 @@ const DJANGO_AUTHORITATIVE_APPS = ['union-eyes', 'abr']
 const TS_AUTHORITATIVE_APPS = [
   'console',
   'cfo',
+  'control-plane',
   'cora',
   'mobility',
   'mobility-client-portal',
