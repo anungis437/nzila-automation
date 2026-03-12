@@ -30,7 +30,8 @@ const logger = createLogger('rfp-generator')
  *   5. Integrations & Data Flow
  *   6. Hosting & Sovereignty
  *   7. Disaster Recovery
- *   8. Verification Appendix
+ *   8. Decision Layer
+ *   9. Verification Appendix
  */
 export function generateRfpResponse(input: RfpGeneratorInput): RfpResponse {
   const { orgId, generatedBy, procurementPack, assuranceDashboard } = input
@@ -45,6 +46,7 @@ export function generateRfpResponse(input: RfpGeneratorInput): RfpResponse {
     generateIntegrationSection(assuranceDashboard),
     generateHostingSovereigntySection(procurementPack),
     generateDisasterRecoverySection(procurementPack),
+    generateDecisionLayerSection(),
     generateVerificationAppendix(procurementPack),
   ]
 
@@ -331,6 +333,55 @@ function generateHostingSovereigntySection(
   return { section: 'hosting_sovereignty', title: '6. Hosting & Sovereignty', answers }
 }
 
+function generateDecisionLayerSection(): RfpSectionResponse {
+  const answers: RfpAnswer[] = [
+    {
+      section: 'decision_layer',
+      question: 'How does the Decision Layer generate recommendations?',
+      answer: `The Decision Layer uses a rule-based pipeline with 8 decision rules covering staffing, risk, ` +
+        `financial, governance, compliance, operations, partner, and deployment domains. Each rule evaluates ` +
+        `anomalies, insights, and signals from the platform's Intelligence and Anomaly engines. ` +
+        `Every recommendation includes evidence references, a confidence score, and a policy context. ` +
+        `No recommendation is auto-executed — all require human review and approval.`,
+      evidenceRefs: ['decision-layer:rules', 'decision-layer:pipeline'],
+      confidenceLevel: 'high',
+    },
+    {
+      section: 'decision_layer',
+      question: 'What governance controls exist for AI-generated decisions?',
+      answer: `Five immutable principles govern all decisions: no autonomous execution, evidence-backed only, ` +
+        `policy-filtered, fully auditable, and exportable. Every decision record contains a ` +
+        `review_required flag, required_approvals list, and policy_context with explicit execution_allowed ` +
+        `status and reasons. HIGH and CRITICAL decisions always require named approvals. ` +
+        `The system cannot override, suppress, or auto-execute any decision.`,
+      evidenceRefs: ['decision-layer:governance', 'decision-layer:policy-context'],
+      confidenceLevel: 'high',
+    },
+    {
+      section: 'decision_layer',
+      question: 'How is the decision audit trail maintained?',
+      answer: `Every state transition (generated, viewed, approved, rejected, deferred, executed, expired) ` +
+        `produces a DecisionAuditEntry with actor, timestamp, and detail. Audit entries are persisted ` +
+        `alongside decision records. Export packs include the full audit trail with SHA-256 integrity ` +
+        `hashes for tamper detection. The lifecycle is fully traceable from detection to resolution.`,
+      evidenceRefs: ['decision-layer:audit', 'decision-layer:export'],
+      confidenceLevel: 'high',
+    },
+    {
+      section: 'decision_layer',
+      question: 'Can decisions be exported for external review?',
+      answer: `Yes. Decision export packs contain the complete decision record, evidence references, ` +
+        `policy context, governance status snapshot, and related change records. Each pack includes ` +
+        `a SHA-256 output hash for integrity verification. Packs can be exported via the Control Plane ` +
+        `UI or programmatically via the platform API.`,
+      evidenceRefs: ['decision-layer:export', 'decision-layer:hash'],
+      confidenceLevel: 'high',
+    },
+  ]
+
+  return { section: 'decision_layer', title: '8. Decision Layer', answers }
+}
+
 function generateVerificationAppendix(
   pack: RfpGeneratorInput['procurementPack'],
 ): RfpSectionResponse {
@@ -366,5 +417,5 @@ function generateVerificationAppendix(
     },
   ]
 
-  return { section: 'verification', title: '8. Verification Appendix', answers }
+  return { section: 'verification', title: '9. Verification Appendix', answers }
 }
