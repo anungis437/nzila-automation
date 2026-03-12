@@ -1,0 +1,38 @@
+{
+  "extends": "@nzila/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": true,
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./*"],
+      "@nzila/os-core": ["../../packages/os-core/src/index.ts"],
+      "@nzila/platform-governance": ["../../packages/platform-governance/src/index.ts"],
+      "@nzila/platform-governance/types": ["../../packages/platform-governance/src/types.ts"],
+      "@nzila/platform-governance/status": ["../../packages/platform-governance/src/governanceStatus.ts"],
+      "@nzila/platform-governance/audit-timeline": ["../../packages/platform-governance/src/auditTimeline.ts"],
+      "@nzila/platform-observability": ["../../packages/platform-observability/src/index.ts"],
+      "@nzila/platform-observability/health": ["../../packages/platform-observability/src/health.ts"],
+      "@nzila/platform-intelligence": ["../../packages/platform-intelligence/src/index.ts"],
+      "@nzila/platform-intelligence/types": ["../../packages/platform-intelligence/src/types.ts"],
+      "@nzila/platform-ai-query": ["../../packages/platform-ai-query/src/index.ts"],
+      "@nzila/platform-ai-query/types": ["../../packages/platform-ai-query/src/types.ts"],
+      "@nzila/platform-anomaly-engine": ["../../packages/platform-anomaly-engine/src/index.ts"],
+      "@nzila/platform-anomaly-engine/types": ["../../packages/platform-anomaly-engine/src/types.ts"],
+      "@nzila/platform-agent-workflows": ["../../packages/platform-agent-workflows/src/index.ts"],
+      "@nzila/platform-agent-workflows/types": ["../../packages/platform-agent-workflows/src/types.ts"],
+      "@nzila/platform-ai-governance": ["../../packages/platform-ai-governance/src/index.ts"],
+      "@nzila/platform-ai-governance/types": ["../../packages/platform-ai-governance/src/types.ts"],
+      "@nzila/platform-procurement-proof": ["../../packages/platform-procurement-proof/src/index.ts"],
+      "@nzila/platform-procurement-proof/types": ["../../packages/platform-procurement-proof/src/types.ts"],
+      "@nzila/platform-evidence-pack": ["../../packages/platform-evidence-pack/src/index.ts"],
+      "@nzila/platform-evidence-pack/types": ["../../packages/platform-evidence-pack/src/types.ts"],
+      "@nzila/platform-compliance-snapshots": ["../../packages/platform-compliance-snapshots/src/index.ts"],
+      "@nzila/platform-compliance-snapshots/types": ["../../packages/platform-compliance-snapshots/src/types.ts"],
+      "@nzila/platform-policy-engine": ["../../packages/platform-policy-engine/src/index.ts"],
+      "@nzila/ui": ["../../packages/ui/src"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next", ".turbo", "dist"]
+}

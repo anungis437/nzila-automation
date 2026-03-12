@@ -22,6 +22,7 @@
     "build:zonga": "turbo build --filter=@nzila/zonga...",
     "build:nacp-exams": "turbo build --filter=@nzila/nacp-exams...",
     "build:shop-quoter": "turbo build --filter=@nzila/shop-quoter-app...",
+    "build:control-plane": "turbo build --filter=@nzila/control-plane...",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
