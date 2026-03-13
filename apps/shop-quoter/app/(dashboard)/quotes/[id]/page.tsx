@@ -2,14 +2,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
   ArrowLeftIcon,
-  PencilIcon,
-  PaperAirplaneIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ClockIcon,
-  DocumentDuplicateIcon,
   CurrencyDollarIcon,
-  TruckIcon,
 } from '@heroicons/react/24/outline'
 import { quoteRepo, customerRepo } from '@/lib/db'
 import { getAvailableQuoteTransitions } from '@/lib/workflows/quote-state-machine'
@@ -62,7 +57,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   // Load workflow data
   const approvals = await approvalRepo.findByQuoteId(id)
   const revisions = await revisionRepo.findByQuoteId(id)
-  const shareLinks = await findShareLinksForQuote(id)
+  const _shareLinks = await findShareLinksForQuote(id)
   const paymentReq = await paymentRequirementRepo.findByQuoteId(id)
   const paymentStatus = await paymentStatusRepo.findByQuoteId(id)
   const timeline = await timelineRepo.findByQuoteId(id)
@@ -93,7 +88,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <QuoteDetailActions quoteId={id} status={status} />
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
