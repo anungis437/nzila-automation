@@ -147,11 +147,11 @@ describe('generateRfpResponse', () => {
     }
 
     const response = generateRfpResponse(input)
-    expect(response.sections).toHaveLength(8)
-    expect(response.totalQuestions).toBeGreaterThanOrEqual(8)
+    expect(response.sections).toHaveLength(9)
+    expect(response.totalQuestions).toBeGreaterThanOrEqual(9)
     expect(response.totalAnswered).toBe(response.totalQuestions)
 
-    // Check all 8 sections present in order
+    // Check all 9 sections present in order
     const sectionNames = response.sections.map((s) => s.section)
     expect(sectionNames).toEqual([
       'security',
@@ -161,6 +161,7 @@ describe('generateRfpResponse', () => {
       'integration',
       'hosting_sovereignty',
       'disaster_recovery',
+      'decision_layer',
       'verification',
     ])
   })
@@ -202,7 +203,8 @@ describe('renderRfpMarkdown', () => {
     expect(md).toContain('## 3. Evidence & Auditability')
     expect(md).toContain('## 5. Integrations & Data Flow')
     expect(md).toContain('## 6. Hosting & Sovereignty')
-    expect(md).toContain('## 8. Verification Appendix')
+    expect(md).toContain('## 8. Decision Layer')
+    expect(md).toContain('## 9. Verification Appendix')
     expect(md).toContain('**Evidence:**')
   })
 })
