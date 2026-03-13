@@ -303,7 +303,7 @@ if (warnings.length > 0) {
 }
 
 if (errors.length > 0) {
-  process.stderr.write('  See docs/ARCHITECTURAL_LAYERS.md for guidance.\n\n')
+  process.stderr.write('  See docs/architecture/ARCHITECTURAL_LAYERS.md for guidance.\n\n')
   process.exit(1)
 } else {
   process.stdout.write('  ✓ All architectural layer boundaries are clean\n\n')

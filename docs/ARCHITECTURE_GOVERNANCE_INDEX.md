@@ -8,17 +8,17 @@
 
 | Document | Purpose |
 |---|---|
-| [ARCHITECTURAL_LAYERS.md](ARCHITECTURAL_LAYERS.md) | Four-layer dependency model: Apps → Platform Services → Shared Packages → Infrastructure |
-| [APP_LIFECYCLE_MATRIX.md](APP_LIFECYCLE_MATRIX.md) | App maturity tiering: PRODUCTION / PILOT / INCUBATING / EXPERIMENTAL |
-| [PLATFORM_SURFACE_RESPONSIBILITIES.md](PLATFORM_SURFACE_RESPONSIBILITIES.md) | Control Plane vs Console vs Platform Admin vs App Admin boundaries |
-| [PLATFORM_VS_APP_DECISION_RULE.md](PLATFORM_VS_APP_DECISION_RULE.md) | Decision framework: when a capability belongs in platform vs app |
-| [PACKAGE_OWNERSHIP.md](PACKAGE_OWNERSHIP.md) | Package registry: owner, category, stability, allowed dependents |
-| [PACKAGE_LIFECYCLE_POLICY.md](PACKAGE_LIFECYCLE_POLICY.md) | Create, graduate, deprecate, and remove packages |
-| [DOMAIN_VS_AUDIT_MODEL.md](DOMAIN_VS_AUDIT_MODEL.md) | Rules separating domain state from audit/evidence stores |
-| [AI_PLATFORM_CONTRACT.md](AI_PLATFORM_CONTRACT.md) | Canonical AI output schemas and prohibited patterns |
-| [CONTROL_PLANE_PRINCIPLES.md](CONTROL_PLANE_PRINCIPLES.md) | Control Plane route buckets (HEALTH/ATTENTION/ACTION) |
-| [ARCHITECTURAL_BOUNDARIES.md](ARCHITECTURAL_BOUNDARIES.md) | Dependency direction rules and vertical isolation |
-| [APP_GOLD_STANDARD.md](APP_GOLD_STANDARD.md) | Structural requirements for production-ready apps |
+| [ARCHITECTURAL_LAYERS.md](architecture/ARCHITECTURAL_LAYERS.md) | Four-layer dependency model: Apps → Platform Services → Shared Packages → Infrastructure |
+| [APP_LIFECYCLE_MATRIX.md](governance/APP_LIFECYCLE_MATRIX.md) | App maturity tiering: PRODUCTION / PILOT / INCUBATING / EXPERIMENTAL |
+| [PLATFORM_SURFACE_RESPONSIBILITIES.md](governance/PLATFORM_SURFACE_RESPONSIBILITIES.md) | Control Plane vs Console vs Platform Admin vs App Admin boundaries |
+| [PLATFORM_VS_APP_DECISION_RULE.md](governance/PLATFORM_VS_APP_DECISION_RULE.md) | Decision framework: when a capability belongs in platform vs app |
+| [PACKAGE_OWNERSHIP.md](governance/PACKAGE_OWNERSHIP.md) | Package registry: owner, category, stability, allowed dependents |
+| [PACKAGE_LIFECYCLE_POLICY.md](governance/PACKAGE_LIFECYCLE_POLICY.md) | Create, graduate, deprecate, and remove packages |
+| [DOMAIN_VS_AUDIT_MODEL.md](architecture/DOMAIN_VS_AUDIT_MODEL.md) | Rules separating domain state from audit/evidence stores |
+| [AI_PLATFORM_CONTRACT.md](architecture/AI_PLATFORM_CONTRACT.md) | Canonical AI output schemas and prohibited patterns |
+| [CONTROL_PLANE_PRINCIPLES.md](architecture/CONTROL_PLANE_PRINCIPLES.md) | Control Plane route buckets (HEALTH/ATTENTION/ACTION) |
+| [ARCHITECTURAL_BOUNDARIES.md](architecture/ARCHITECTURAL_BOUNDARIES.md) | Dependency direction rules and vertical isolation |
+| [APP_GOLD_STANDARD.md](governance/APP_GOLD_STANDARD.md) | Structural requirements for production-ready apps |
 
 ## Platform Registry (Machine-Readable)
 
