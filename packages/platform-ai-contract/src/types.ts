@@ -24,6 +24,9 @@ export interface AIOutputBase {
 
   /** ISO 8601 timestamp of output generation */
   generated_at: string
+
+  /** Allow additional fields */
+  [key: string]: unknown
 }
 
 /** Cross-app intelligence, trend detection, and operational signals */
