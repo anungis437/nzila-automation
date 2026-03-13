@@ -43,10 +43,16 @@ describe('@nzila/zonga-core — enums', () => {
   it('ReleaseStatus has all expected values', () => {
     const values = Object.values(ReleaseStatus)
     expect(values).toContain('draft')
+    expect(values).toContain('submitted')
+    expect(values).toContain('under_review')
     expect(values).toContain('scheduled')
+    expect(values).toContain('published')
     expect(values).toContain('released')
+    expect(values).toContain('held')
+    expect(values).toContain('rejected')
+    expect(values).toContain('archived')
     expect(values).toContain('withdrawn')
-    expect(values).toHaveLength(4)
+    expect(values).toHaveLength(10)
   })
 
   it('RevenueType has all expected values', () => {
