@@ -6,8 +6,8 @@
  * Next.js server actions for invoicing and financial reporting.
  */
 
-import { auth } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import {
   createInvoiceFromOrder,
   getInvoice,
@@ -47,20 +47,15 @@ export async function createInvoiceFromOrderAction(input: {
   dueDate?: string
   notes?: string
 }): Promise<ActionResult<InvoiceWithDetails>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId, actorId } = await resolveOrgContext()
 
     const data = await createInvoiceFromOrder({
       orgId,
       orderId: input.orderId,
       dueDate: input.dueDate ? new Date(input.dueDate) : undefined,
       notes: input.notes,
-      userId,
+      userId: actorId,
     })
 
     revalidatePath('/invoices')
@@ -78,12 +73,8 @@ export async function createInvoiceFromOrderAction(input: {
 export async function getInvoiceAction(
   invoiceId: string,
 ): Promise<ActionResult<InvoiceWithDetails>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const data = await getInvoice(invoiceId)
     if (!data) {
       return { success: false, error: 'Invoice not found' }
@@ -105,13 +96,8 @@ export async function listInvoicesAction(filter?: {
   dateTo?: string
   overdue?: boolean
 }): Promise<ActionResult<InvoiceWithDetails[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId } = await resolveOrgContext()
 
     const invoices = await listInvoices({
       orgId,
@@ -134,12 +120,8 @@ export async function listInvoicesAction(filter?: {
 export async function issueInvoiceAction(
   invoiceId: string,
 ): Promise<ActionResult<typeof commerceInvoices.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const invoice = await issueInvoice(invoiceId)
 
     revalidatePath('/invoices')
@@ -157,12 +139,8 @@ export async function issueInvoiceAction(
 export async function sendInvoiceAction(
   invoiceId: string,
 ): Promise<ActionResult<typeof commerceInvoices.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const invoice = await sendInvoice(invoiceId)
 
     revalidatePath('/invoices')
@@ -181,12 +159,8 @@ export async function voidInvoiceAction(
   invoiceId: string,
   reason?: string,
 ): Promise<ActionResult<typeof commerceInvoices.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const invoice = await voidInvoice(invoiceId, reason)
 
     revalidatePath('/invoices')
@@ -212,12 +186,8 @@ export async function recordPaymentAction(input: {
   reference?: string
   paidAt?: string
 }): Promise<ActionResult<typeof commercePayments.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const payment = await recordPayment({
       invoiceId: input.invoiceId,
       amount: input.amount,
@@ -242,12 +212,8 @@ export async function recordPaymentAction(input: {
 export async function getPaymentsByInvoiceAction(
   invoiceId: string,
 ): Promise<ActionResult<(typeof commercePayments.$inferSelect)[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const payments = await getPaymentsByInvoice(invoiceId)
 
     return { success: true, data: payments }
@@ -267,13 +233,8 @@ export async function getFinancialSummaryAction(input?: {
   from?: string
   to?: string
 }): Promise<ActionResult<FinancialSummary>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId } = await resolveOrgContext()
 
     // Default to current year if not specified
     const now = new Date()
@@ -292,13 +253,8 @@ export async function getFinancialSummaryAction(input?: {
 }
 
 export async function getAgingReportAction(): Promise<ActionResult<AgingReport>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId } = await resolveOrgContext()
 
     const report = await getAgingReport(orgId)
 
@@ -315,13 +271,8 @@ export async function getRevenueRecognitionAction(input?: {
   from?: string
   to?: string
 }): Promise<ActionResult<RevenueRecognition>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId } = await resolveOrgContext()
 
     const now = new Date()
     const from = input?.from ? new Date(input.from) : new Date(now.getFullYear(), 0, 1)

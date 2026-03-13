@@ -7,6 +7,7 @@
  * Renders within the customer quote portal page.
  */
 import { useState } from 'react'
+import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 interface QuoteApprovalFormProps {
   token: string
@@ -67,7 +68,7 @@ export function QuoteApprovalForm({ token, quoteRef }: QuoteApprovalFormProps) {
         <h2 className="text-xl font-bold text-green-900 mb-2">Response Submitted</h2>
         <p className="text-green-700">
           Thank you! Your response to quote {quoteRef} has been recorded.
-          The ShopMoiCa team will be in touch.
+          The {SHOPMOICA_BRANDING.displayName} team will be in touch.
         </p>
       </section>
     )

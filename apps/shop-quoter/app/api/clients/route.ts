@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { customerRepo } from '@/lib/db'
 
@@ -11,7 +11,7 @@ import { customerRepo } from '@/lib/db'
 export async function GET(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.clients.list', { 'http.method': 'GET' }, async () => {
-    const authResult = await authenticateUser()
+    const authResult = await authenticateOrgUser()
     if (!authResult.ok) return authResult.response
     try {
       const clients = await customerRepo.findAll()
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.clients.create', { 'http.method': 'POST' }, async () => {
-    const authResult = await authenticateUser()
+    const authResult = await authenticateOrgUser()
     if (!authResult.ok) return authResult.response
     try {
       const body = await request.json()
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     const client = await customerRepo.create({
-      orgId: body.orgId ?? 'default',
+      orgId: authResult.orgId,
       name: body.name,
       email: body.email ?? null,
       phone: body.phone ?? null,

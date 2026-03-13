@@ -12,6 +12,7 @@ import {
 import { createInvoiceAction } from '@/app/actions/invoices'
 import { getCustomersAction } from '@/app/actions/customers'
 import { getOrdersAction, getOrderLinesAction } from '@/app/actions/orders'
+import { SHOPMOICA_PAYMENT_POLICY } from '@nzila/platform-commerce-org/defaults'
 
 interface InvoiceLineItem {
   id: string
@@ -159,9 +160,9 @@ export default function NewInvoicePage() {
     }
   }
 
-  // Calculate due date (Net 30 by default)
+  // Calculate due date based on org payment terms
   const today = new Date()
-  const dueDate = new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0]
+  const dueDate = new Date(today.setDate(today.getDate() + SHOPMOICA_PAYMENT_POLICY.defaultPaymentTermsDays)).toISOString().split('T')[0]
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -265,6 +266,7 @@ export default function NewInvoicePage() {
               <select
                 id="paymentTerms"
                 name="paymentTerms"
+                defaultValue={SHOPMOICA_PAYMENT_POLICY.defaultPaymentTerms}
                 className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
                 <option value="Net 30">Net 30</option>

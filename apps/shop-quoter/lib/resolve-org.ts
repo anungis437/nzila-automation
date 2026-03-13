@@ -10,6 +10,8 @@
 import { auth } from '@clerk/nextjs/server'
 import type { OrgContext } from '@nzila/commerce-core/types'
 import { OrgRole } from '@nzila/commerce-core/enums'
+import type { OrgCommerceConfig } from '@nzila/platform-commerce-org/types'
+import { getOrgCommerceConfig } from '@nzila/platform-commerce-org/service'
 
 /**
  * Resolve org context from Clerk auth.
@@ -37,6 +39,23 @@ export async function resolveOrgContext(): Promise<OrgContext> {
     permissions: derivePermissions(role),
     requestId: crypto.randomUUID(),
   }
+}
+
+/**
+ * Composite context: OrgContext + full OrgCommerceConfig.
+ *
+ * Use this when a server action or API handler needs both authentication
+ * AND the org's commerce configuration (settings, policies, branding, etc.).
+ */
+export interface OrgCommerceContext {
+  ctx: OrgContext
+  config: OrgCommerceConfig
+}
+
+export async function resolveOrgCommerceContext(): Promise<OrgCommerceContext> {
+  const ctx = await resolveOrgContext()
+  const config = await getOrgCommerceConfig(ctx.orgId)
+  return { ctx, config }
 }
 
 function mapClerkRole(clerkRole: string | undefined | null): OrgRole {

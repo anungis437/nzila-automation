@@ -9,6 +9,11 @@ import {
   BellIcon,
   PaintBrushIcon,
 } from '@heroicons/react/24/outline'
+import {
+  SHOPMOICA_SETTINGS,
+  SHOPMOICA_QUOTE_POLICY,
+  SHOPMOICA_BRANDING,
+} from '@nzila/platform-commerce-org/defaults'
 
 const tabs = [
   { id: 'general', label: 'General', icon: CogIcon },
@@ -127,7 +132,7 @@ function GeneralSettings() {
             </label>
             <input
               type="number"
-              defaultValue={30}
+              defaultValue={SHOPMOICA_SETTINGS.quoteValidityDays}
               min={7}
               max={90}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
@@ -149,10 +154,10 @@ function GeneralSettings() {
           <span className="text-sm text-gray-600">Prefix:</span>
           <input
             type="text"
-            defaultValue="SQ"
+            defaultValue={SHOPMOICA_SETTINGS.quotePrefix}
             className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono"
           />
-          <span className="text-sm text-gray-500">Preview: SQ-2026-001</span>
+          <span className="text-sm text-gray-500">Preview: {SHOPMOICA_SETTINGS.quotePrefix}-2026-001</span>
         </div>
       </SettingsCard>
     </>
@@ -170,7 +175,7 @@ function OrgSettings() {
           <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
           <input
             type="text"
-            defaultValue="Nzila Ventures SENC"
+            defaultValue={SHOPMOICA_BRANDING.companyLegalName}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
           />
         </div>
@@ -202,7 +207,7 @@ function OrgSettings() {
           <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
           <textarea
             rows={2}
-            defaultValue="Montréal, QC, Canada"
+            defaultValue={SHOPMOICA_BRANDING.address}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none"
           />
         </div>
@@ -227,7 +232,7 @@ function PricingSettings() {
           <label className="block text-sm font-medium text-gray-700 mb-1">GST Rate (%)</label>
           <input
             type="number"
-            defaultValue={5}
+            defaultValue={SHOPMOICA_SETTINGS.taxConfig.taxes[0]?.rate ? SHOPMOICA_SETTINGS.taxConfig.taxes[0].rate * 100 : 5}
             step={0.001}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             disabled
@@ -238,7 +243,7 @@ function PricingSettings() {
           <label className="block text-sm font-medium text-gray-700 mb-1">QST Rate (%)</label>
           <input
             type="number"
-            defaultValue={9.975}
+            defaultValue={SHOPMOICA_SETTINGS.taxConfig.taxes[1]?.rate ? SHOPMOICA_SETTINGS.taxConfig.taxes[1].rate * 100 : 9.975}
             step={0.001}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             disabled
@@ -254,7 +259,7 @@ function PricingSettings() {
           <div className="flex items-center gap-1">
             <input
               type="number"
-              defaultValue={15}
+              defaultValue={SHOPMOICA_QUOTE_POLICY.marginFloors.budget}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
             <span className="text-sm text-gray-500">%</span>
@@ -265,7 +270,7 @@ function PricingSettings() {
           <div className="flex items-center gap-1">
             <input
               type="number"
-              defaultValue={25}
+              defaultValue={SHOPMOICA_QUOTE_POLICY.marginFloors.standard}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
             <span className="text-sm text-gray-500">%</span>
@@ -276,7 +281,7 @@ function PricingSettings() {
           <div className="flex items-center gap-1">
             <input
               type="number"
-              defaultValue={35}
+              defaultValue={SHOPMOICA_QUOTE_POLICY.marginFloors.premium}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
             <span className="text-sm text-gray-500">%</span>

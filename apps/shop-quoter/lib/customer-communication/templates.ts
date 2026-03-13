@@ -9,6 +9,7 @@
  * placeholders are left unresolved.
  */
 import { z } from 'zod'
+import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 // ── Template Types ─────────────────────────────────────────────────────────
 
@@ -35,14 +36,14 @@ const QuoteSentData = z.object({
   totalFormatted: z.string().min(1),
   validUntil: z.string().min(1),
   portalUrl: z.string().url(),
-  companyName: z.string().default('ShopMoiCa.ca'),
+  companyName: z.string().default(SHOPMOICA_BRANDING.companyName),
 })
 
 const RevisionRequestedAckData = z.object({
   customerName: z.string().min(1),
   quoteRef: z.string().min(1),
   revisionMessage: z.string().min(1),
-  companyName: z.string().default('ShopMoiCa.ca'),
+  companyName: z.string().default(SHOPMOICA_BRANDING.companyName),
 })
 
 const DepositRequestData = z.object({
@@ -52,7 +53,7 @@ const DepositRequestData = z.object({
   totalFormatted: z.string().min(1),
   depositPercent: z.number().min(0).max(100),
   paymentInstructions: z.string().default('Please reply to this email with your preferred payment method.'),
-  companyName: z.string().default('ShopMoiCa.ca'),
+  companyName: z.string().default(SHOPMOICA_BRANDING.companyName),
 })
 
 const PaymentReceivedData = z.object({
@@ -60,7 +61,7 @@ const PaymentReceivedData = z.object({
   quoteRef: z.string().min(1),
   amountReceived: z.string().min(1),
   remainingBalance: z.string().min(1),
-  companyName: z.string().default('ShopMoiCa.ca'),
+  companyName: z.string().default(SHOPMOICA_BRANDING.companyName),
 })
 
 const OrderInProductionData = z.object({
@@ -68,7 +69,7 @@ const OrderInProductionData = z.object({
   quoteRef: z.string().min(1),
   orderRef: z.string().min(1),
   estimatedCompletion: z.string().optional(),
-  companyName: z.string().default('ShopMoiCa.ca'),
+  companyName: z.string().default(SHOPMOICA_BRANDING.companyName),
 })
 
 const ShippedNoticeData = z.object({
@@ -78,7 +79,7 @@ const ShippedNoticeData = z.object({
   carrier: z.string().optional(),
   trackingNumber: z.string().optional(),
   estimatedDelivery: z.string().optional(),
-  companyName: z.string().default('ShopMoiCa.ca'),
+  companyName: z.string().default(SHOPMOICA_BRANDING.companyName),
 })
 
 // ── Template Renderers ─────────────────────────────────────────────────────

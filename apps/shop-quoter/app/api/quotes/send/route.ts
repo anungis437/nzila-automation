@@ -12,10 +12,11 @@ import { attemptQuoteTransition } from '@/lib/workflows/quote-state-machine'
 import { createShareLink } from '@/lib/services/share-link-service'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { recordTimelineEvent } from '@/lib/repositories/workflow-repository'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 
 const SendInput = z.object({
   quoteId: z.string().uuid(),
-  expiresInDays: z.number().int().min(1).max(90).default(7),
+  expiresInDays: z.number().int().min(1).max(90).default(SHOPMOICA_SETTINGS.shareLinkExpiryDays),
 })
 
 export async function POST(request: NextRequest) {

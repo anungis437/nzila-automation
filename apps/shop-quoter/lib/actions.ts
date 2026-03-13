@@ -9,8 +9,8 @@
  */
 import { quoteRepo, customerRepo } from '@/lib/db'
 import type { CustomerRecord } from '@/lib/db'
-import { resolveOrgContext } from '@/lib/resolve-org'
-import { calculateQuebecTaxes } from '@nzila/pricing-engine'
+import { resolveOrgCommerceContext } from '@/lib/resolve-org'
+import { calculateTaxes } from '@nzila/platform-commerce-org/pricing'
 import { transitionQuote } from '@/lib/quote-machine'
 import { auditQuoteTransition } from '@/lib/evidence'
 import { logTransition } from '@/lib/commerce-telemetry'
@@ -49,7 +49,7 @@ export async function createQuoteAction(
   formData: CreateQuoteFormData,
 ): Promise<ActionResult<{ id: string; reference: string }>> {
   try {
-    const ctx = await resolveOrgContext()
+    const { ctx, config } = await resolveOrgCommerceContext()
 
     // 1. Resolve or create customer
     let customer: CustomerRecord | null = null
@@ -67,13 +67,15 @@ export async function createQuoteAction(
       })
     }
 
-    // 2. Calculate totals using @nzila/pricing-engine
+    // 2. Calculate totals using org-scoped tax config
     const subtotal = formData.lines.reduce(
       (sum, l) => sum + l.quantity * l.unitCost,
       0,
     )
-    const taxes = calculateQuebecTaxes(subtotal)
-    const { gst, qst, total } = taxes
+    const taxResult = calculateTaxes(subtotal, config.settings)
+    const gst = Number(taxResult.taxes[0]?.amount ?? '0')
+    const qst = Number(taxResult.taxes[1]?.amount ?? '0')
+    const total = Number(taxResult.totalWithTax)
 
     // 3. Create quote via repository
     const quote = await quoteRepo.create({
@@ -135,7 +137,7 @@ export interface ImportResult {
 export async function importLegacyRecordsAction(
   records: LegacyRecord[],
 ): Promise<ActionResult<ImportResult>> {
-  const ctx = await resolveOrgContext()
+  const { ctx } = await resolveOrgCommerceContext()
   const start = Date.now()
   const failures: ImportResult['failures'] = []
   const warnings: ImportResult['warnings'] = []
@@ -216,7 +218,7 @@ export async function updateQuoteStatusAction(
     if (!quote) return { ok: false, error: `Quote ${quoteId} not found` }
 
     // ── State machine: validate transition ──────────────────────────
-    const ctx = await resolveOrgContext()
+    const { ctx } = await resolveOrgCommerceContext()
 
     const transition = transitionQuote(
       quote.status as Parameters<typeof transitionQuote>[0],

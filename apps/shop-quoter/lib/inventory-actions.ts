@@ -6,7 +6,7 @@
  * Next.js server actions for product and inventory management.
  */
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { revalidatePath } from 'next/cache'
 import {
   createProduct,
@@ -47,15 +47,10 @@ interface ActionResult<T> {
 export async function createProductAction(
   input: Omit<CreateProductInput, 'orgId'>,
 ): Promise<ActionResult<ProductWithInventory>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
-    const data = await createProduct({ ...input, orgId })
+    const data = await createProduct({ ...input, orgId: ctx.orgId })
 
     revalidatePath('/products')
     revalidatePath('/inventory')
@@ -72,10 +67,7 @@ export async function createProductAction(
 export async function getProductAction(
   productId: string,
 ): Promise<ActionResult<ProductWithInventory>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     const data = await getProduct(productId)
@@ -95,15 +87,10 @@ export async function getProductAction(
 export async function getProductBySkuAction(
   sku: string,
 ): Promise<ActionResult<ProductWithInventory>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
-    const data = await getProductBySku(orgId, sku)
+    const data = await getProductBySku(ctx.orgId, sku)
     if (!data) {
       return { success: false, error: 'Product not found' }
     }
@@ -125,15 +112,10 @@ export async function listProductsAction(filter?: {
   lowStock?: boolean
   tags?: string[]
 }): Promise<ActionResult<ProductWithInventory[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
-    const products = await listProducts({ orgId, ...filter })
+    const products = await listProducts({ orgId: ctx.orgId, ...filter })
 
     return { success: true, data: products }
   } catch (error) {
@@ -148,10 +130,7 @@ export async function updateProductAction(
   productId: string,
   input: UpdateProductInput,
 ): Promise<ActionResult<typeof commerceProducts.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     const product = await updateProduct(productId, input)
@@ -173,10 +152,7 @@ export async function updateProductAction(
 }
 
 export async function deleteProductAction(productId: string): Promise<ActionResult<boolean>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     await deleteProduct(productId)
@@ -207,18 +183,13 @@ export async function recordStockMovementAction(input: {
   costPerUnit?: number
   notes?: string
 }): Promise<ActionResult<typeof commerceStockMovements.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
     const movement = await recordStockMovement({
       ...input,
-      orgId,
-      userId,
+      orgId: ctx.orgId,
+      userId: ctx.actorId,
     })
 
     revalidatePath('/inventory')
@@ -239,10 +210,7 @@ export async function reserveStockAction(input: {
   referenceType?: string
   referenceId?: string
 }): Promise<ActionResult<boolean>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     await reserveStock(input.productId, input.quantity, input.referenceType, input.referenceId)
@@ -263,10 +231,7 @@ export async function releaseReservationAction(input: {
   productId: string
   quantity: number
 }): Promise<ActionResult<boolean>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     await releaseReservation(input.productId, input.quantity)
@@ -287,10 +252,7 @@ export async function getStockHistoryAction(
   productId: string,
   limit?: number,
 ): Promise<ActionResult<(typeof commerceStockMovements.$inferSelect)[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     const history = await getStockHistory(productId, limit)
@@ -305,15 +267,10 @@ export async function getStockHistoryAction(
 }
 
 export async function getInventorySnapshotAction(): Promise<ActionResult<InventorySnapshot>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
-    const snapshot = await getInventorySnapshot(orgId)
+    const snapshot = await getInventorySnapshot(ctx.orgId)
 
     return { success: true, data: snapshot }
   } catch (error) {
@@ -325,15 +282,10 @@ export async function getInventorySnapshotAction(): Promise<ActionResult<Invento
 }
 
 export async function getLowStockProductsAction(): Promise<ActionResult<ProductWithInventory[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
-    const products = await getLowStockProducts(orgId)
+    const products = await getLowStockProducts(ctx.orgId)
 
     return { success: true, data: products }
   } catch (error) {

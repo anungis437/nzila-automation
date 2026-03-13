@@ -18,6 +18,7 @@ import {
 } from '@nzila/db'
 import { logger } from '../logger'
 import { ZohoCrmClient } from './crm-client'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 import type { ZohoContact, ZohoDeal, SyncResult, SyncConflict } from './types'
 import { ZOHO_MODULE_MAPPING } from './types'
 
@@ -670,10 +671,12 @@ export class ZohoSyncService {
               .values({
                 orgId: this.orgId,
                 ref: `ZOHO-${deal.id.slice(0, 8)}`,
+                customerId: quoteData.customerId ?? '',
+                createdBy: 'zoho-sync',
                 status: quoteData.status ?? 'draft',
                 total: quoteData.total ?? '0',
                 notes: quoteData.notes,
-                currency: 'CAD',
+                currency: SHOPMOICA_SETTINGS.currency,
                 metadata: { zohoDealId: deal.id, dealName: deal.Deal_Name },
               })
               .returning()

@@ -2,7 +2,8 @@
  * Financial Reporting Service
  *
  * Handles invoicing, payments, and financial analytics.
- * Ported from legacy shop_quoter_tool_v1 mandate-financial-reporting-service.ts.
+ * Org-aware: uses OrgCommerceSettings for invoice prefix and
+ * OrgPaymentPolicy for payment terms.
  */
 
 import { and, eq, desc, sql, gte, lte, inArray, or } from 'drizzle-orm'
@@ -16,6 +17,8 @@ import {
   commercePayments,
 } from '@nzila/db'
 import { logger } from './logger'
+import type { OrgCommerceSettings, OrgPaymentPolicy } from '@nzila/platform-commerce-org/types'
+import { SHOPMOICA_SETTINGS, SHOPMOICA_PAYMENT_POLICY } from '@nzila/platform-commerce-org/defaults'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -108,9 +111,10 @@ export interface InvoiceAging {
 // Reference Number Generation
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function generateInvoiceRef(orgId: string): Promise<string> {
+async function generateInvoiceRef(orgId: string, settings?: OrgCommerceSettings): Promise<string> {
   const year = new Date().getFullYear()
-  const prefix = `INV-${year}-`
+  const invoicePrefix = settings?.invoicePrefix ?? SHOPMOICA_SETTINGS.invoicePrefix
+  const prefix = `${invoicePrefix}-${year}-`
 
   const [latest] = await db
     .select({ ref: commerceInvoices.ref })
@@ -121,7 +125,7 @@ async function generateInvoiceRef(orgId: string): Promise<string> {
 
   let nextNum = 1
   if (latest?.ref) {
-    const match = latest.ref.match(/INV-\d{4}-(\d+)/)
+    const match = latest.ref.match(new RegExp(`${invoicePrefix}-\\d{4}-(\\d+)`))
     if (match) {
       nextNum = parseInt(match[1], 10) + 1
     }
@@ -134,7 +138,11 @@ async function generateInvoiceRef(orgId: string): Promise<string> {
 // Invoice Management
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function createInvoiceFromOrder(input: CreateInvoiceInput): Promise<InvoiceWithDetails> {
+export async function createInvoiceFromOrder(
+  input: CreateInvoiceInput,
+  orgSettings?: OrgCommerceSettings,
+  orgPaymentPolicy?: OrgPaymentPolicy,
+): Promise<InvoiceWithDetails> {
   logger.info('Creating invoice from order', { orgId: input.orgId, orderId: input.orderId })
 
   // Get order with lines
@@ -157,8 +165,9 @@ export async function createInvoiceFromOrder(input: CreateInvoiceInput): Promise
     throw new Error(`Customer ${order.customerId} not found`)
   }
 
-  const ref = await generateInvoiceRef(input.orgId)
-  const dueDate = input.dueDate ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Default NET 30
+  const ref = await generateInvoiceRef(input.orgId, orgSettings)
+  const paymentTermsDays = orgPaymentPolicy?.defaultPaymentTermsDays ?? SHOPMOICA_PAYMENT_POLICY.defaultPaymentTermsDays
+  const dueDate = input.dueDate ?? new Date(Date.now() + paymentTermsDays * 24 * 60 * 60 * 1000)
 
   // Create invoice
   const [invoice] = await db

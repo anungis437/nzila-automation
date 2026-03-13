@@ -10,6 +10,8 @@ import { db, commerceSuppliers, commercePurchaseOrders } from '@nzila/db'
 import { logger } from './logger'
 import { ZohoBooksClient } from './zoho/books-client'
 import type { ZohoVendor } from './zoho/types'
+import type { OrgPaymentPolicy } from '@nzila/platform-commerce-org/types'
+import { SHOPMOICA_PAYMENT_POLICY } from '@nzila/platform-commerce-org/defaults'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -36,6 +38,7 @@ export interface CreateSupplierInput {
   leadTimeDays?: number
   notes?: string
   tags?: string[]
+  orgPaymentPolicy?: OrgPaymentPolicy
 }
 
 export interface UpdateSupplierInput {
@@ -87,8 +90,8 @@ export async function createSupplier(
       email: input.email ?? null,
       phone: input.phone ?? null,
       address: input.address ?? null,
-      paymentTerms: input.paymentTerms ?? 'NET 30',
-      leadTimeDays: input.leadTimeDays ?? 14,
+      paymentTerms: input.paymentTerms ?? input.orgPaymentPolicy?.defaultPaymentTerms ?? SHOPMOICA_PAYMENT_POLICY.defaultPaymentTerms,
+      leadTimeDays: input.leadTimeDays ?? input.orgPaymentPolicy?.defaultLeadTimeDays ?? SHOPMOICA_PAYMENT_POLICY.defaultLeadTimeDays,
       notes: input.notes ?? null,
       tags: input.tags ?? [],
       status: 'active',
@@ -334,7 +337,7 @@ export async function syncSupplierFromZoho(
         email: zohoVendor.email ?? null,
         phone: zohoVendor.phone ?? null,
         address,
-        paymentTerms: zohoVendor.payment_terms ? `NET ${zohoVendor.payment_terms}` : 'NET 30',
+        paymentTerms: zohoVendor.payment_terms ? `NET ${zohoVendor.payment_terms}` : SHOPMOICA_PAYMENT_POLICY.defaultPaymentTerms,
         zohoVendorId: zohoVendor.vendor_id,
         status: 'active' as const,
       })

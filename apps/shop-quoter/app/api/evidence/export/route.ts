@@ -5,7 +5,7 @@
  * Includes workflow audit events and policy checks.
  */
 import { NextResponse } from 'next/server'
-import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { WorkflowAuditEvent } from '@/lib/schemas/workflow-schemas'
 
@@ -17,7 +17,7 @@ const BUILD_TS = process.env.BUILD_TIMESTAMP ?? new Date().toISOString()
 export async function GET(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.evidence.export', { 'http.method': 'GET' }, async () => {
-      const auth = await authenticateUser()
+      const auth = await authenticateOrgUser()
       if (!auth.ok) return auth.response
 
       return NextResponse.json({

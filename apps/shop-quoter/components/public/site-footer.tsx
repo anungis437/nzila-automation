@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 const footerSections = [
   {
@@ -74,7 +75,7 @@ export function SiteFooter() {
           <div className="col-span-2">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-electric font-poppins text-sm font-bold text-white">
-                SQ
+                {SHOPMOICA_BRANDING.logoInitials}
               </div>
               <span className="font-poppins text-lg font-semibold text-navy">
                 Shop Quoter
@@ -121,7 +122,7 @@ export function SiteFooter() {
       <div className="border-t border-slate-100">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 sm:flex-row">
           <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} Nzila Ventures Inc. All rights reserved.
+            © {new Date().getFullYear()} {SHOPMOICA_BRANDING.companyLegalName}. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-3">
             {trustBadges.map((badge) => (

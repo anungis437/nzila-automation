@@ -19,6 +19,7 @@ import type {
 } from '@/lib/schemas/workflow-schemas'
 import { logger } from '@/lib/logger'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ export async function createShareLink(
 ): Promise<ShareLinkCreateResult> {
   const parsed = z.object({
     quoteId: z.string().uuid(),
-    expiresInDays: z.number().int().min(1).max(90).default(7),
+    expiresInDays: z.number().int().min(1).max(90).default(SHOPMOICA_SETTINGS.shareLinkExpiryDays),
     createdBy: z.string().min(1),
   }).parse(input)
 

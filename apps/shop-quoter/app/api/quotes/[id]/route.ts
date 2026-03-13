@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { quoteRepo } from '@/lib/db'
 import { transitionQuote } from '@/lib/quote-machine'
@@ -18,12 +18,18 @@ export async function GET(
 ) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.get', { 'http.method': 'GET' }, async () => {
-    const authResult = await authenticateUser()
+    const authResult = await authenticateOrgUser()
     if (!authResult.ok) return authResult.response
     const { id } = await params
     try {
       const quote = await quoteRepo.findById(id)
       if (!quote) {
+        return NextResponse.json(
+          { ok: false, error: 'Quote not found' },
+          { status: 404 },
+        )
+      }
+      if (quote.orgId !== authResult.orgId) {
         return NextResponse.json(
           { ok: false, error: 'Quote not found' },
           { status: 404 },
@@ -46,9 +52,9 @@ export async function PATCH(
 ) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.update', { 'http.method': 'PATCH' }, async () => {
-    const authResult = await authenticateUser()
+    const authResult = await authenticateOrgUser()
     if (!authResult.ok) return authResult.response
-    const { userId } = authResult
+    const { userId, orgId } = authResult
     const { id } = await params
     try {
       const body = await request.json()
@@ -66,7 +72,7 @@ export async function PATCH(
       const transition = transitionQuote(
         existing.status as Parameters<typeof transitionQuote>[0],
         body.status,
-        { orgId: id, actorId: userId, role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
+        { orgId, actorId: userId, role: 'admin' as Parameters<typeof transitionQuote>[2]['role'], meta: {} },
         id,
       )
       if (!transition.ok) {
@@ -85,10 +91,10 @@ export async function PATCH(
           fromStatus: existing.status,
           toStatus: body.status,
           userId,
-          orgId: id,
+          orgId,
         })
         logTransition(
-          { orgId: id },
+          { orgId },
           'quote',
           existing.status,
           body.status,

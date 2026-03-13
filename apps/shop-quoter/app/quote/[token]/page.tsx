@@ -10,9 +10,10 @@ import { validateShareLink } from '@/lib/services/share-link-service'
 import { quoteRepo, customerRepo } from '@/lib/db'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { QuoteApprovalForm } from './approval-form'
+import { SHOPMOICA_SETTINGS, SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 function fmt(n: number) {
-  return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(n)
+  return new Intl.NumberFormat(SHOPMOICA_SETTINGS.locale, { style: 'currency', currency: SHOPMOICA_SETTINGS.currency }).format(n)
 }
 
 export default async function CustomerQuotePage({
@@ -78,9 +79,9 @@ export default async function CustomerQuotePage({
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SM</span>
+              <span className="text-white font-bold text-sm">{SHOPMOICA_BRANDING.logoInitials}</span>
             </div>
-            <span className="font-semibold text-gray-900">ShopMoiCa</span>
+            <span className="font-semibold text-gray-900">{SHOPMOICA_BRANDING.displayName}</span>
           </div>
           <span className="text-sm text-gray-500">Quote {quote.reference}</span>
         </div>
@@ -116,7 +117,7 @@ export default async function CustomerQuotePage({
             <div className="text-right">
               <p className="text-sm text-gray-500">Valid until</p>
               <p className="font-medium text-gray-900">
-                {validUntil.toLocaleDateString('en-CA', {
+                {validUntil.toLocaleDateString(SHOPMOICA_SETTINGS.locale, {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
@@ -176,11 +177,11 @@ export default async function CustomerQuotePage({
                 <span className="font-mono">{fmt(quote.subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>GST (5%)</span>
+                <span>{SHOPMOICA_SETTINGS.taxConfig.taxes[0]?.label ?? 'Tax 1'}</span>
                 <span className="font-mono">{fmt(quote.gst)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>QST (9.975%)</span>
+                <span>{SHOPMOICA_SETTINGS.taxConfig.taxes[1]?.label ?? 'Tax 2'}</span>
                 <span className="font-mono">{fmt(quote.qst)}</span>
               </div>
               <div className="border-t border-gray-300 pt-1 flex justify-between font-bold text-gray-900 text-base">
@@ -210,7 +211,7 @@ export default async function CustomerQuotePage({
       {/* Footer */}
       <footer className="border-t border-gray-200 mt-12">
         <div className="max-w-4xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} ShopMoiCa. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {SHOPMOICA_BRANDING.displayName}. All rights reserved.</p>
           <p className="mt-1">This is a secure, time-limited quote link.</p>
         </div>
       </footer>

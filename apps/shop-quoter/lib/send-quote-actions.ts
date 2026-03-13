@@ -13,6 +13,7 @@ import { attemptQuoteTransition } from '@/lib/workflows/quote-state-machine'
 import { createShareLink, findShareLinksForQuote } from '@/lib/services/share-link-service'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { recordTimelineEvent } from '@/lib/repositories/workflow-repository'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 import type { ActionResult } from '@/lib/actions'
 
 // ── Submit for Internal Review ─────────────────────────────────────────────
@@ -40,7 +41,7 @@ export async function submitForReviewAction(
       quoteId,
       event: 'internal_review',
       description: 'Quote submitted for internal review',
-      actor: ctx.userId,
+      actor: ctx.actorId,
     })
 
     return { ok: true, data: { status: 'INTERNAL_REVIEW' } }
@@ -54,7 +55,7 @@ export async function submitForReviewAction(
 
 const SendQuoteInput = z.object({
   quoteId: z.string().uuid(),
-  expiresInDays: z.number().int().min(1).max(90).default(7),
+  expiresInDays: z.number().int().min(1).max(90).default(SHOPMOICA_SETTINGS.shareLinkExpiryDays),
 })
 
 export async function sendQuoteToClientAction(
@@ -82,7 +83,7 @@ export async function sendQuoteToClientAction(
       {
         quoteId: parsed.quoteId,
         expiresInDays: parsed.expiresInDays,
-        createdBy: ctx.userId,
+        createdBy: ctx.actorId,
       },
       ctx.orgId,
     )
@@ -95,7 +96,7 @@ export async function sendQuoteToClientAction(
       quoteId: parsed.quoteId,
       event: 'sent_to_client',
       description: 'Quote sent to client via secure link',
-      actor: ctx.userId,
+      actor: ctx.actorId,
       metadata: { shareLinkId: link.id },
     })
 
@@ -104,7 +105,7 @@ export async function sendQuoteToClientAction(
       event: 'quote_sent_to_client',
       quoteId: parsed.quoteId,
       orgId: ctx.orgId,
-      userId: ctx.userId,
+      userId: ctx.actorId,
       metadata: {
         shareLinkId: link.id,
         fromStatus: current,
@@ -126,7 +127,7 @@ export async function sendQuoteToClientAction(
 
 export async function getQuoteShareLinksAction(
   quoteId: string,
-): Promise<ActionResult<{ links: ReturnType<typeof findShareLinksForQuote> }>> {
+): Promise<ActionResult<{ links: Awaited<ReturnType<typeof findShareLinksForQuote>> }>> {
   const links = await findShareLinksForQuote(quoteId)
   return { ok: true, data: { links } }
 }

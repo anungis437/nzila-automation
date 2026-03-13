@@ -16,6 +16,7 @@ import {
 } from '@nzila/db'
 import { logger } from '../logger'
 import { ShopifyClient } from './client'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 import type {
   ShopifyCustomer,
   ShopifyOrder,
@@ -82,7 +83,7 @@ function mapShopifyOrderToQuote(
 ): Partial<typeof commerceQuotes.$inferInsert> {
   return {
     ref: `SHOP-${order.order_number}`,
-    customerId,
+    customerId: customerId ?? undefined,
     status: (FINANCIAL_STATUS_MAP[order.financial_status] ?? 'draft') as 'draft',
     currency: order.currency,
     subtotal: order.subtotal_price,
@@ -277,9 +278,10 @@ export class ShopifySyncService {
               .values({
                 orgId: this.orgId,
                 ref: quoteData.ref ?? `SHOP-${order.order_number}`,
-                customerId: quoteData.customerId,
+                customerId: quoteData.customerId ?? '',
+                createdBy: 'shopify-sync',
                 status: quoteData.status ?? 'draft',
-                currency: quoteData.currency ?? 'CAD',
+                currency: quoteData.currency ?? SHOPMOICA_SETTINGS.currency,
                 subtotal: quoteData.subtotal ?? '0',
                 taxTotal: quoteData.taxTotal ?? '0',
                 total: quoteData.total ?? '0',

@@ -93,7 +93,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <QuoteDetailActions quoteId={id} status={status} />
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -6,7 +6,7 @@
  * Next.js server actions for supplier management.
  */
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { revalidatePath } from 'next/cache'
 import {
   createSupplier,
@@ -38,16 +38,10 @@ interface ActionResult<T> {
 export async function createSupplierAction(
   input: Omit<CreateSupplierInput, 'orgId'>,
 ): Promise<ActionResult<typeof commerceSuppliers.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    // In production, get orgId from user's organization
-    const orgId = userId // Replace with actual entity lookup
-
-    const supplier = await createSupplier({ ...input, orgId })
+    const supplier = await createSupplier({ ...input, orgId: ctx.orgId })
 
     revalidatePath('/suppliers')
 
@@ -63,10 +57,7 @@ export async function createSupplierAction(
 export async function getSupplierAction(
   supplierId: string,
 ): Promise<ActionResult<SupplierWithStats>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     const data = await getSupplier(supplierId)
@@ -88,15 +79,10 @@ export async function listSuppliersAction(filter?: {
   search?: string
   tags?: string[]
 }): Promise<ActionResult<SupplierWithStats[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const ctx = await resolveOrgContext()
 
   try {
-    const orgId = userId // Replace with actual entity lookup
-
-    const suppliers = await listSuppliers({ orgId, ...filter })
+    const suppliers = await listSuppliers({ orgId: ctx.orgId, ...filter })
 
     return { success: true, data: suppliers }
   } catch (error) {
@@ -111,10 +97,7 @@ export async function updateSupplierAction(
   supplierId: string,
   input: UpdateSupplierInput,
 ): Promise<ActionResult<typeof commerceSuppliers.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     const supplier = await updateSupplier(supplierId, input)
@@ -135,10 +118,7 @@ export async function updateSupplierAction(
 }
 
 export async function deleteSupplierAction(supplierId: string): Promise<ActionResult<boolean>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     await deleteSupplier(supplierId)
@@ -155,10 +135,7 @@ export async function deleteSupplierAction(supplierId: string): Promise<ActionRe
 }
 
 export async function syncSupplierToZohoAction(_supplierId: string): Promise<ActionResult<string>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  await resolveOrgContext()
 
   try {
     // Note: In production, initialize ZohoBooksClient with proper credentials

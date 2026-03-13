@@ -9,6 +9,7 @@ import { attemptQuoteTransition } from '@/lib/workflows/quote-state-machine'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { recordTimelineEvent } from '@/lib/repositories/workflow-repository'
 import { quoteRepo } from '@/lib/db'
+import type { QuoteLine } from '@/lib/db'
 import { createPurchaseOrder, type CreatePOInput } from '@/lib/po-service'
 import { createOrder, type CreateOrderInput } from '@/lib/production-service'
 import { logger } from '@/lib/logger'
@@ -38,7 +39,7 @@ export async function createPurchaseOrderFromQuote(
   // Step 1 — Evaluate readiness
   const readiness = await evaluatePOReadiness(quoteId)
   if (!readiness.ready) {
-    logger.warn({ quoteId, blockers: readiness.blockers }, 'PO readiness check failed')
+    logger.warn('PO readiness check failed', { quoteId, blockers: readiness.blockers })
     emitWorkflowAuditEvent({
       event: 'quote_blocked_by_payment_policy',
       quoteId,
@@ -58,19 +59,19 @@ export async function createPurchaseOrderFromQuote(
       orgId,
       customerId: quote.customerId,
       quoteId,
-      lines: (quote.lines ?? []).map((l: Record<string, unknown>) => ({
-        productId: String(l.productId ?? ''),
-        description: String(l.description ?? l.title ?? ''),
-        sku: l.sku as string | undefined,
-        quantity: Number(l.quantity ?? 1),
-        unitPrice: Number(l.unitPrice ?? l.price ?? 0),
-        discount: l.discount ? Number(l.discount) : undefined,
+      lines: (quote.lines ?? []).map((l: QuoteLine) => ({
+        productId: l.id,
+        description: l.description,
+        sku: l.sku,
+        quantity: l.quantity,
+        unitPrice: l.unitCost,
+        discount: undefined,
       })),
-      notes: `Created from quote ${quote.ref ?? quoteId}`,
+      notes: `Created from quote ${quote.reference ?? quoteId}`,
       userId,
     }
 
-    const order = await createOrder(orderInput)
+    const orderResult = await createOrder(orderInput)
 
     // Step 3 — Create PO from order
     const poInput: CreatePOInput = {
@@ -82,13 +83,13 @@ export async function createPurchaseOrderFromQuote(
         sku: l.sku,
         quantity: l.quantity,
         unitCost: l.unitPrice,
-        orderId: order.id,
+        orderId: orderResult.order.id,
       })),
-      notes: `PO for order from quote ${quote.ref ?? quoteId}`,
+      notes: `PO for order from quote ${quote.reference ?? quoteId}`,
       createdBy: userId,
     }
 
-    const po = await createPurchaseOrder(poInput)
+    const poResult = await createPurchaseOrder(poInput)
 
     // Step 4 — Transition quote to IN_PRODUCTION
     const transition = attemptQuoteTransition('READY_FOR_PO', 'IN_PRODUCTION')
@@ -100,9 +101,9 @@ export async function createPurchaseOrderFromQuote(
     await recordTimelineEvent({
       quoteId,
       event: 'po_created',
-      description: `PO ${po.ref ?? po.id} created from quote. Order: ${order.ref ?? order.id}`,
+      description: `PO ${poResult.po.ref ?? poResult.po.id} created from quote. Order: ${orderResult.order.ref ?? orderResult.order.id}`,
       actor: userId,
-      metadata: { orderId: order.id, poId: po.id },
+      metadata: { orderId: orderResult.order.id, poId: poResult.po.id },
     })
 
     emitWorkflowAuditEvent({
@@ -110,14 +111,14 @@ export async function createPurchaseOrderFromQuote(
       quoteId,
       orgId,
       userId,
-      metadata: { orderId: order.id, poId: po.id },
+      metadata: { orderId: orderResult.order.id, poId: poResult.po.id },
     })
 
-    logger.info({ quoteId, orderId: order.id, poId: po.id }, 'PO created from quote')
-    return { ok: true, orderId: order.id, poId: po.id }
+    logger.info('PO created from quote', { quoteId, orderId: orderResult.order.id, poId: poResult.po.id })
+    return { ok: true, orderId: orderResult.order.id, poId: poResult.po.id }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    logger.error({ quoteId, error: msg }, 'Failed to create PO from quote')
+    logger.error('Failed to create PO from quote', { quoteId, error: msg })
     return { ok: false, error: msg }
   }
 }

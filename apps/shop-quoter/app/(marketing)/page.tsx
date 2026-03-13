@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
+import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 const stats = [
   { value: "5,000+", label: "Quotes Created" },
@@ -15,7 +16,7 @@ const features = [
   {
     title: "Smart Quoting",
     description:
-      "Create tiered proposals (Budget / Standard / Premium) with automatic Quebec GST/QST calculations and margin tracking.",
+      "Create tiered proposals (Budget / Standard / Premium) with automatic tax calculations and margin tracking.",
     icon: "📋",
   },
   {
@@ -93,7 +94,7 @@ export default function MarketingPage() {
 
           <ScrollReveal delay={0.2}>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 md:text-xl">
-              Create tiered proposals, calculate Quebec taxes automatically, and
+              Create tiered proposals, calculate taxes automatically, and
               track every decision with an evidence-first audit trail powered by
               AI.
             </p>
@@ -190,7 +191,7 @@ export default function MarketingPage() {
                   every quote tells a trustworthy story.
                 </p>
                 <p className="mt-4 font-poppins font-semibold text-electric">
-                  Built in Quebec for Canadian commerce.
+                  Built for modern commerce.
                 </p>
               </div>
             </ScrollReveal>
@@ -208,7 +209,7 @@ export default function MarketingPage() {
                 <div className="absolute bottom-6 left-6 right-6 rounded-xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-electric font-poppins text-sm font-bold text-white">
-                      SQ
+                      {SHOPMOICA_BRANDING.logoInitials}
                     </div>
                     <div>
                       <div className="font-poppins text-sm font-semibold text-white">

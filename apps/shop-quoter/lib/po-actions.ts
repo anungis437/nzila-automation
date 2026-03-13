@@ -6,7 +6,7 @@
 
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { revalidatePath } from 'next/cache'
 import {
   createPurchaseOrder,
@@ -45,7 +45,6 @@ interface POLineInput {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function createPOAction(input: {
-  orgId: string
   supplierId: string
   lines: POLineInput[]
   expectedDeliveryDate?: string
@@ -54,20 +53,17 @@ export async function createPOAction(input: {
   shippingCost?: number
 }): Promise<ActionResult<POWithLines>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    const ctx = await resolveOrgContext()
 
     const poInput: CreatePOInput = {
-      orgId: input.orgId,
+      orgId: ctx.orgId,
       supplierId: input.supplierId,
       lines: input.lines,
       expectedDeliveryDate: input.expectedDeliveryDate ? new Date(input.expectedDeliveryDate) : undefined,
       notes: input.notes,
       currency: input.currency,
       shippingCost: input.shippingCost,
-      createdBy: userId,
+      createdBy: ctx.actorId,
     }
 
     const result = await createPurchaseOrder(poInput)
@@ -88,10 +84,7 @@ export async function createPOAction(input: {
 
 export async function getPOAction(poId: string): Promise<ActionResult<POWithLines | null>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    await resolveOrgContext()
 
     const result = await getPurchaseOrder(poId)
     return { success: true, data: result }
@@ -106,7 +99,6 @@ export async function getPOAction(poId: string): Promise<ActionResult<POWithLine
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function listPOsAction(filter: {
-  orgId: string
   status?: POStatus | POStatus[]
   supplierId?: string
   fromDate?: string
@@ -114,13 +106,10 @@ export async function listPOsAction(filter: {
   search?: string
 }): Promise<ActionResult<POWithLines[]>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    const ctx = await resolveOrgContext()
 
     const result = await listPurchaseOrders({
-      orgId: filter.orgId,
+      orgId: ctx.orgId,
       status: filter.status,
       supplierId: filter.supplierId,
       fromDate: filter.fromDate ? new Date(filter.fromDate) : undefined,
@@ -150,10 +139,7 @@ export async function updatePOAction(
   },
 ): Promise<ActionResult<POWithLines | null>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    await resolveOrgContext()
 
     const updateInput: UpdatePOInput = {
       lines: input.lines,
@@ -181,10 +167,7 @@ export async function updatePOAction(
 
 export async function sendPOAction(poId: string): Promise<ActionResult<POWithLines | null>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    await resolveOrgContext()
 
     const result = await sendPurchaseOrder(poId)
 
@@ -204,10 +187,7 @@ export async function sendPOAction(poId: string): Promise<ActionResult<POWithLin
 
 export async function cancelPOAction(poId: string): Promise<ActionResult<POWithLines | null>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    await resolveOrgContext()
 
     const result = await cancelPurchaseOrder(poId)
 
@@ -231,15 +211,12 @@ export async function receivePOLineAction(input: {
   notes?: string
 }): Promise<ActionResult<{ lineId: string; quantityReceived: number }>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    const ctx = await resolveOrgContext()
 
     const line = await receivePOLine({
       lineId: input.lineId,
       quantityReceived: input.quantityReceived,
-      receivedBy: userId,
+      receivedBy: ctx.actorId,
       notes: input.notes,
     })
 
@@ -261,18 +238,14 @@ export async function receivePOLineAction(input: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getPOSummaryAction(input: {
-  orgId: string
   fromDate?: string
   toDate?: string
 }): Promise<ActionResult<POSummary>> {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return { success: false, error: 'Unauthorized' }
-    }
+    const ctx = await resolveOrgContext()
 
     const result = await getPOSummary(
-      input.orgId,
+      ctx.orgId,
       input.fromDate ? new Date(input.fromDate) : undefined,
       input.toDate ? new Date(input.toDate) : undefined,
     )
