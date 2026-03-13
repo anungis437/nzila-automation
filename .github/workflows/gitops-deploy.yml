@@ -38,7 +38,8 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '22'
+
   ACR_NAME: nzilastagingacr
 
 jobs:
@@ -118,7 +119,7 @@ jobs:
     name: Build Images
     strategy:
       matrix:
-        app: [web, console, partners, union-eyes, abr, orchestrator-api, cfo]
+        app: [web, console, partners, union-eyes, orchestrator-api, cfo]
 
     steps:
       - uses: actions/checkout@v4
@@ -229,7 +230,7 @@ jobs:
           fi
 
           # Update each Container App with the newly built image
-          ALL_APPS=(web console partners union-eyes abr orchestrator-api cfo)
+          ALL_APPS=(web console partners union-eyes orchestrator-api cfo)
           FAILED=()
 
           for APP in "${ALL_APPS[@]}"; do
