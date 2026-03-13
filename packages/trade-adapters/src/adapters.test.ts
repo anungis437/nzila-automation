@@ -14,6 +14,7 @@ function vehicle(overrides: Partial<LegacyEExportsVehicle> = {}): LegacyEExports
     make: 'Volkswagen',
     model: 'Golf',
     year: 2024,
+    title: '2024 Volkswagen Golf',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-06-01T00:00:00Z',
     ...overrides,
