@@ -16,6 +16,7 @@
 Business applications under `apps/`.
 
 Examples:
+
 - `union-eyes` — union case management and governance
 - `shop-quoter` — commerce quoting and supplier operations
 - `zonga` — creator/media marketplace and moderation
@@ -39,6 +40,7 @@ Examples:
 Reusable platform capabilities under `platform/` and approved `platform-*` packages.
 
 Examples:
+
 - `platform-governance` — governance engine and policy integration
 - `platform-intelligence` — AI intelligence layer
 - `platform-ai-query` — structured AI query interface
@@ -57,6 +59,7 @@ Examples:
 Reusable libraries under `packages/`.
 
 Examples:
+
 - `db` — database client and query utilities
 - `blob` — blob/object storage abstraction
 - `org` — organisation context and isolation primitives
@@ -76,6 +79,7 @@ Examples:
 Scripts, tooling, ops, and infrastructure adapters.
 
 Examples:
+
 - `scripts/` — CI checks, seed scripts, validation utilities
 - `tooling/` — contract tests, security scanners, build helpers
 - `ops/` — operational policies, runbooks, change records

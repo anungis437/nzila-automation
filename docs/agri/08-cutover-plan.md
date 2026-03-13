@@ -89,6 +89,7 @@
 ### Idempotency
 
 All imports are idempotent:
+
 - Use natural keys for dedup (producer name + org, lot ref + org, etc.)
 - Upsert semantics — re-running import updates existing records
 - Migration audit events include `migration_run_id` for traceability

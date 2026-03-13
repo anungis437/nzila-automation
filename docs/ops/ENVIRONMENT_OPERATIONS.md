@@ -17,6 +17,7 @@ pnpm env:health STAGING
 ```
 
 Health checks verify:
+
 - Environment config files exist and have correct values
 - CI/CD workflow files are present
 - Artifact directory is ready
@@ -32,6 +33,7 @@ pnpm staging:seed
 ```
 
 Produces seed files in `ops/seed/`:
+
 - `organizations.json` — 5 seed organizations
 - `users.json` — 10 seed users
 - `policies.json` — 8 seed policies
@@ -48,6 +50,7 @@ pnpm governance:snapshot STAGING abc1234 sha256:digest sha256:sbom CHG-001
 ```
 
 Arguments:
+
 1. Environment (STAGING or PRODUCTION)
 2. Commit SHA
 3. Artifact digest
@@ -65,6 +68,7 @@ pnpm rollback STAGING sha256:abc123...
 ```
 
 The script:
+
 1. Verifies the target artifact exists in `ops/artifacts/`
 2. Prints artifact details (commit, build time, workflow, SBOM)
 3. Records a rollback audit record in `ops/rollbacks/`

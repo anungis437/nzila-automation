@@ -21,6 +21,7 @@
 ## 2. Escalation Paths
 
 ### SEV-1 — Critical
+
 1. **T+0 min** — On-call engineer acknowledges alert
 2. **T+5 min** — Incident commander assigned, war-room channel created
 3. **T+15 min** — Engineering lead + security lead notified
@@ -28,17 +29,20 @@
 5. **T+60 min** — External comms drafted (if customer-facing)
 
 ### SEV-2 — High
+
 1. **T+0 min** — On-call engineer acknowledges
 2. **T+15 min** — Team lead notified
 3. **T+60 min** — Engineering lead notified if unresolved
 4. **T+4 hr** — Escalate to SEV-1 if unresolved
 
 ### SEV-3 — Medium
+
 1. **T+0 min** — On-call engineer triages
 2. **T+1 hr** — Assigned to relevant team
 3. **T+24 hr** — Team lead review if unresolved
 
 ### SEV-4 — Low
+
 1. Logged and prioritised in next sprint planning
 
 ---

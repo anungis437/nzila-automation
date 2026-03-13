@@ -126,7 +126,7 @@ spec:
 
 - [ ] App starts on assigned port
 - [ ] Clerk authentication redirects work
-- [ ] OTel traces appear in Jaeger (http://localhost:16686)
+- [ ] OTel traces appear in Jaeger (<http://localhost:16686>)
 - [ ] App appears in Backstage catalog
 
 ## Next Steps

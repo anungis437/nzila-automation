@@ -51,30 +51,35 @@ Each app exports evidence via `GET /api/evidence/export`:
 ## Evidence Categories
 
 ### 1. Software Supply Chain
+
 - **SBOM**: CycloneDX Software Bill of Materials
 - **Dependency Audit**: Vulnerability scanning via Snyk and Trivy
 - **Build Attestation**: Cryptographic attestation of build artifacts
 - **Reproducible Builds**: Evidence of deterministic build output
 
 ### 2. Security Controls
+
 - **Policy Engine**: All sensitive operations enforced through platform-policy-engine
 - **Approval Workflows**: Threshold-based approvals for high-value operations
 - **Audit Trail**: Complete record of policy evaluations and decisions
 - **Secret Scanning**: Automated detection of credentials in code
 
 ### 3. Operational Maturity
+
 - **Health Endpoints**: Every app exposes /api/health
 - **Metrics Collection**: Standardized metrics (request_count, error_rate, latency_ms)
 - **Observability**: Structured logging and tracing
 - **SLO Monitoring**: Service level objective tracking
 
 ### 4. Testing & Quality
+
 - **Unit Tests**: Vitest-based test suites (no `--passWithNoTests`)
 - **E2E Tests**: Playwright end-to-end specifications
 - **Contract Tests**: Cross-package API contract validation
 - **Type Safety**: Full TypeScript coverage with strict mode
 
 ### 5. Governance
+
 - **Compliance Checks**: 6-point app compliance validation
 - **Drift Detection**: Automated compliance drift via CI/CD
 - **Governance Timeline**: Timestamped audit of all governance events
@@ -105,19 +110,23 @@ Each app exports evidence via `GET /api/evidence/export`:
 ## CI/CD Integration
 
 ### Evidence Collection (Daily)
+
 - SBOM generation
 - Policy evaluation snapshot
 - Health endpoint verification
 - Metrics collection
 
 ### Compliance Reporting (Weekly)
+
 - SOC 2 Type II evidence compilation
 - ISO 27001 control mapping
 - Governance compliance report
 - Drift detection summary
 
 ### Procurement Pack Generation
+
 ```bash
 pnpm validate:pack
 ```
+
 Generates a complete procurement evidence package suitable for enterprise vendor assessment.

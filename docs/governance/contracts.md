@@ -54,6 +54,7 @@ governance/exceptions/
 ## Violation Output
 
 When a rule fails, the output includes:
+
 - **Rule ID** — e.g. `TS_STRICT_001`
 - **File path** — relative from repo root
 - **Line number** (where applicable)
@@ -61,6 +62,7 @@ When a rule fails, the output includes:
 - **Remediation guidance** — suggested fix
 
 Example:
+
 ```
 [ARCH_LAYER_001] apps/web/app/api/users/route.ts:5
   Value: @nzila/db/schema (direct schema import)

@@ -36,6 +36,7 @@
 **Console page:** `/console`
 
 **Key points:**
+
 - Multi-tenant architecture — your data is isolated.
 - Your org has its own scoped view of everything.
 - Quick navigation to all operational areas.
@@ -49,6 +50,7 @@
 **Console page:** `/system-health`
 
 **Key points:**
+
 - Real-time DB health, outbox backlogs, worker saturation.
 - All metrics are live — not static dashboards.
 - Automated daily health digests with anomaly detection.
@@ -63,6 +65,7 @@
 **Console page:** `/performance` → `/performance/regressions`
 
 **Key points:**
+
 - P50/P95/P99 latency, error rate, throughput — org-scoped.
 - Regressions dashboard: top regressions, slowest routes, error spikes.
 - SLO gate prevents regressions from reaching your environment.
@@ -77,6 +80,7 @@
 **Console page:** `/governance` → `/audit-insights` → `/audit-graph`
 
 **Key points:**
+
 - Every mutation is audit-logged with hash-chain integrity.
 - Tamper-evident — you can verify the chain hasn't been broken.
 - Full audit graph showing relationships between events.
@@ -91,6 +95,7 @@
 **Console page:** `/integrations`
 
 **Key points:**
+
 - Pre-built adapters for Stripe, QuickBooks, HubSpot, etc.
 - Per-provider health monitoring and SLA tracking.
 - DLQ management with automatic retry.
@@ -105,6 +110,7 @@
 **Console page:** `/proof-pack`
 
 **Key points:**
+
 - All evidence from this demo is bundled here.
 - SHA-256 hashed, tamper-evident, 7-year retention.
 - Exportable for your compliance team.
@@ -119,6 +125,7 @@
 **Console page:** `/deployment-profile`
 
 **Key points:**
+
 - Three deployment profiles: Managed, Sovereign, Hybrid.
 - Choose based on your data residency and control requirements.
 - Pilot can convert to production with the same org and data.

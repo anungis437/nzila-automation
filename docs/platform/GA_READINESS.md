@@ -129,6 +129,7 @@ Union Eyes is a Next.js 16 companion app consuming `@nzila/os-core` for evidence
 ## Section 3 — ABR Insights (`tech-repo-scaffold/django-backbone`)
 
 ABR Insights is the strictest NzilaOS vertical:
+
 - `requiresDualControl: true`
 - `requiresConfidentialReporting: true`
 - Org-scoped identity vault with AES-256-GCM encryption

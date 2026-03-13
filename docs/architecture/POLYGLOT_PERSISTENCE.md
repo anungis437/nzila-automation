@@ -123,12 +123,14 @@ However, usage is app-specific with no shared abstraction.
 through a single, governed interface with mandatory TTLs and org-scoped key prefixes.
 
 **Use Cases**:
+
 - Session caching for Clerk tokens
 - Rate limiting per-org
 - Real-time UI updates (presence, notifications)
 - Temporary computation results
 
 **Integration**:
+
 ```typescript
 // packages/redis/src/index.ts
 import { createClient, type RedisClientType } from 'redis';
@@ -156,6 +158,7 @@ PostgreSQL `TSVECTOR` is currently used in Django apps but does not scale to cro
 faceted search or analytics aggregations.
 
 **Use Cases**:
+
 - Case document search
 - Product catalog search
 - Analytics aggregations
@@ -166,6 +169,7 @@ and filtered aliases (e.g., `cases-org-{orgId}`), rather than index-per-tenant w
 creates operational overhead at scale.
 
 **Integration**:
+
 ```typescript
 // packages/search/src/index.ts  (published as @nzila/search)
 export interface SearchableDocument {
@@ -201,6 +205,7 @@ export async function ensureOrgAlias(client: Client, orgId: string, docType: str
 ### 4.3 Phase 3: Standardize pgvector Usage Across Apps (High Value)
 
 **Current State**: pgvector is **already implemented**:
+
 - `packages/db/src/schema/ai.ts` defines the `ai_embeddings` table with `org_id`, `app_key`,
   `source_id`, `chunk_id`, `chunk_text`, and an `embedding` column (text placeholder, migrated
   to `vector(1536)` via `packages/db/migrations/ai-control-plane-pgvector.sql`)
@@ -212,6 +217,7 @@ export async function ensureOrgAlias(client: Client, orgId: string, docType: str
 not introduce pgvector from scratch.
 
 **Use Cases**:
+
 - Clause precedent matching (union-eyes, abr)
 - Case similarity search
 - RAG (Retrieval-Augmented Generation)
@@ -219,6 +225,7 @@ not introduce pgvector from scratch.
 - Cross-app knowledge retrieval
 
 **Existing Schema** (already in `packages/db/src/schema/ai.ts`):
+
 ```typescript
 export const aiEmbeddings = pgTable('ai_embeddings', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -234,6 +241,7 @@ export const aiEmbeddings = pgTable('ai_embeddings', {
 ```
 
 **Remaining Work**:
+
 1. Expose a high-level `@nzila/ai-core` API for apps to embed + query without touching raw SQL
 2. Add Django-side embedding helpers for union-eyes/abr to write embeddings via the shared table
 3. Add contract test to ensure all embedding writes go through the governed pipeline
@@ -243,6 +251,7 @@ export const aiEmbeddings = pgTable('ai_embeddings', {
 **Rationale**: Audit logs, metrics, and analytics have time-series characteristics.
 
 **Use Cases**:
+
 - Audit event queries by time range
 - Usage metrics aggregation
 - Performance monitoring
@@ -386,20 +395,20 @@ describe('Polyglot Authority Invariants', () => {
 
 ### 7.2 Short-Term (1-2 Quarters)
 
-3. **Add Elasticsearch** for search capabilities
+1. **Add Elasticsearch** for search capabilities
    - Requires new indexing pipelines
    - Start with shop-quoter product search as pilot
    - Use shared-index + filtered-alias tenant isolation
 
-4. **Standardize pgvector** across apps
+2. **Standardize pgvector** across apps
    - Expose high-level embedding API from `@nzila/ai-core`
    - Add Django-side helpers for union-eyes/abr
    - Contract test `STACK_POLYGLOT_004` for governed embedding writes
 
 ### 7.3 Long-Term (Future)
 
-5. **Evaluate TimescaleDB** for time-series workloads
-6. **Consider document database** if JSON-heavy schemas grow
+1. **Evaluate TimescaleDB** for time-series workloads
+2. **Consider document database** if JSON-heavy schemas grow
 
 ---
 

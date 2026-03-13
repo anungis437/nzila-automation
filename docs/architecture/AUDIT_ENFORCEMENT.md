@@ -70,6 +70,7 @@ Event N: hash = SHA256({ payload, previousHash: Event[N-1].hash })
 ```
 
 This ensures:
+
 - Tamper evidence: any modification breaks the chain
 - Append-only: deletions are detectable
 - Verifiable: `verifyEntityAuditChain(orgId)` validates the full chain
@@ -77,6 +78,7 @@ This ensures:
 ## Database Enforcement
 
 The `audit_events` table has:
+
 - `prevent_audit_mutation` trigger — blocks UPDATE/DELETE at DB level
 - No CASCADE deletes from parent tables
 - `hash` column required (NOT NULL)

@@ -10,6 +10,7 @@
 ## Sprint Goal
 
 Promote the repo from **CONDITIONAL YES** to **UNCONDITIONAL YES** by closing:
+
 1. ❌ FAIL: Rate limiting on Next.js apps (REM-01)
 2. 🟡 SOFT PASS (Critical): Runtime Org isolation test harness (REM-02)
 3. 🟡 SOFT PASS (Critical): Privilege escalation regression tests (REM-03)

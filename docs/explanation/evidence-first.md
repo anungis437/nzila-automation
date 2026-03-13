@@ -3,12 +3,14 @@
 ## The Problem
 
 Enterprise platforms need audit trails that are:
+
 - **Tamper-evident** — You can detect if someone modified a log after the fact
 - **Complete** — Every state mutation is recorded
 - **Queryable** — Auditors can trace any decision back to its evidence
 - **Compliant** — Meets SOC 2 Type II, ISO 27001 evidence requirements
 
 Traditional audit logging (append rows to a table) fails because:
+
 - Rows can be silently deleted or modified
 - No chain of custody between entries
 - No way to verify completeness
@@ -22,6 +24,7 @@ entry_hash = SHA-256(payload + previous_hash)
 ```
 
 This creates an append-only chain where:
+
 - **Tampering is detectable**: Changing any entry breaks the hash chain
 - **Completeness is verifiable**: Missing entries create gaps in the chain
 - **Non-repudiation**: Each entry includes actor, timestamp, and org context
@@ -55,6 +58,7 @@ import { logAiRequest } from '@nzila/ai-core/logging';
 
 The compliance pipeline (`.github/workflows/compliance.yml`) runs daily evidence
 collection that:
+
 1. Snapshots current policy files with SHA-256 hashes
 2. Verifies OTel instrumentation coverage across all 12 apps
 3. Validates evidence chain integrity
@@ -62,6 +66,7 @@ collection that:
 ## Design Decision: Why Not Blockchain?
 
 A blockchain is overkill for our use case:
+
 - Our evidence chain is within a single organization
 - We don't need Byzantine fault tolerance
 - SHA-256 hash chaining provides the same tamper-evidence

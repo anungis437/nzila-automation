@@ -55,7 +55,8 @@
 | Release Train | `.github/workflows/release-train.yml` | tag push `v*` + manual | ✅ Active — 4-gate release |
 | Playbook Runner | `.github/workflows/nzila-playbook-runner.yml` | `workflow_dispatch` | ✅ Active |
 
-### CI enforces:
+### CI enforces
+
 - `--frozen-lockfile` on install
 - lint + typecheck as required jobs
 - contract tests as required job
@@ -81,11 +82,13 @@
 ## 4. Current Test Strategy
 
 ### Unit Tests
+
 - Framework: **Vitest ^4.0.18** (workspace-wide)
 - Configs in: `apps/web`, `apps/console`, `apps/partners`, `packages/ui`, `packages/ai-core`, `packages/ai-sdk`, `packages/ml-sdk`, `packages/payments-stripe`, `packages/qbo`, `packages/tools-runtime`
 - CI job: `pnpm test` via Turbo
 
 ### Contract Tests (Architectural Enforcement)
+
 - Location: `tooling/contract-tests/`
 - 10+ test suites enforcing repo invariants:
   - `invariants.test.ts` — no shadow AI/ML imports, evidence generators in os-core, `authorize()` on routes
@@ -98,9 +101,11 @@
   - `alerting-integrity.test.ts`, `migration-policy.test.ts`, `no-duplicate-evidence-generator.test.ts`
 
 ### E2E Tests
+
 - **None** — no Playwright or Cypress setup detected
 
 ### Python Tests
+
 - ML scripts under `tooling/ml/` — validated via CI Python syntax check
 - `packages/automation/` — pytest (task defined in VS Code)
 
@@ -109,11 +114,13 @@
 ## 5. TypeScript & Lint Enforcement
 
 ### TypeScript
+
 - **`strict: true`** ✅ enforced via `packages/config/tsconfig.base.json`
 - Target: ES2022, Module: ESNext, `isolatedModules: true`, `forceConsistentCasingInFileNames: true`
 - All apps/packages extend the base config
 
 ### ESLint
+
 - Apps use `eslint-config-next/core-web-vitals` + `typescript`
 - Custom rules enforced:
   - `noShadowAi` — prevents direct AI provider imports in apps
@@ -121,6 +128,7 @@
 - CI runs `pnpm lint` as required check
 
 ### Prettier
+
 - `format:check` available; not confirmed as CI-required step
 
 ---
@@ -128,12 +136,14 @@
 ## 6. Org Boundary (Org Isolation)
 
 ### Current Mechanism
+
 - **Application-layer isolation** via `authorize()` from `@nzila/os-core/policy`
 - `org_members` table gates user → entity access (roles: admin, editor, viewer)
 - `partner_entities` gates partner → entity relationships
 - Every API route must call `authorize()` (enforced by `api-authz-coverage.test.ts`)
 
 ### Known Issues
+
 - **No database-level RLS** — all isolation is application-layer
 - Union Eyes passes `orgId` as URL parameter — code comment says "in production, derive from session instead" ⚠️
 - No dedicated cross-org boundary tests (only auth coverage tests)

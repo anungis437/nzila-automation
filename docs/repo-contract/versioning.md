@@ -22,12 +22,13 @@ All packages in `packages/` use [Semantic Versioning](https://semver.org/).
 ## Package Dependency Rules
 
 - `packages/*` may depend on other `packages/*` but NOT on `apps/*`
-- `apps/*` may depend on `packages/*` 
+- `apps/*` may depend on `packages/*`
 - `tooling/*` may depend on `packages/*` (dev/test only)
 
 ## Release Gating
 
 Every release tag (`v*`) triggers `.github/workflows/release-train.yml` which:
+
 1. Generates evidence pack artifact
 2. Runs AI eval harness
 3. Generates SBOM
@@ -36,5 +37,6 @@ Every release tag (`v*`) triggers `.github/workflows/release-train.yml` which:
 ## Contract Test Enforcement
 
 `tooling/contract-tests/sdk-contracts.test.ts` fails if:
+
 - SDK exports drift from their declared types
 - API endpoint signatures change without a version bump

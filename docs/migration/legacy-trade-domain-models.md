@@ -18,6 +18,7 @@
 ## 1. Architecture Overview
 
 ### trade-os (General Trade Platform)
+
 - **Base**: Django ORM with custom `BaseModel` (provides `id`, `created_date`, `updated_date`)
 - **Money**: Custom `MoneyField` storing amounts in cents (`BigIntegerField`), with `to_cents()`/`from_cents()` helpers
 - **DB**: PostgreSQL (SearchVectorField, GinIndex for full-text search)
@@ -27,6 +28,7 @@
 - **Accounting**: Double-entry `LedgerEntry` model (debit/credit pairs)
 
 ### eexports (Canadian Vehicle Export Platform)
+
 - **Base**: Standard Django `models.Model` with `created_at`/`updated_at` (auto_now_add/auto_now)
 - **Money**: Native `DecimalField` (max_digits=10-12, decimal_places=2), CAD primary currency
 - **Users**: Custom `AbstractUser` with role field (admin/dealer/broker/buyer)
@@ -42,6 +44,7 @@
 ### 2.1 deals/models.py (1151 lines)
 
 #### `Deal`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal_number | CharField(unique) | Auto-generated |
@@ -72,6 +75,7 @@
 **Methods**: `can_transition_to(new_status)`, `transition_status(new_status, user)`. Auto-creates `DealCommission` on delivery.
 
 #### `DealItem`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -86,6 +90,7 @@
 | notes | TextField | |
 
 #### `DealPricing`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | OneToOne → Deal | |
@@ -99,6 +104,7 @@
 | total_price_cents | MoneyField | Auto-calculated on save |
 
 #### `ReferralAgreement`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | referrer_org | FK → Organization | |
@@ -110,6 +116,7 @@
 | valid_from / valid_until | DateField | |
 
 #### `DealCommission`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -122,6 +129,7 @@
 | payout_reference | CharField | |
 
 #### `DealMilestone`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -134,6 +142,7 @@
 | notes | TextField | |
 
 #### `MilestonePayment`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | milestone | FK → DealMilestone | |
@@ -148,6 +157,7 @@
 ### 2.2 listings/models.py (508 lines)
 
 #### `Listing`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | supplier_org | FK → Organization | |
@@ -170,6 +180,7 @@
 | published_at | DateTimeField | |
 
 #### `PriceBreak`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | listing | FK → Listing | |
@@ -178,6 +189,7 @@
 | | | Unique: listing + min_quantity |
 
 #### `ListingInventory`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | listing | FK → Listing | |
@@ -186,6 +198,7 @@
 | priority | IntegerField | |
 
 #### `ListingImage`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | listing | FK → Listing | |
@@ -195,6 +208,7 @@
 | is_primary | BooleanField | |
 
 #### `Offer`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | listing | FK → Listing | |
@@ -215,6 +229,7 @@
 ### 2.3 shipments/models.py (983 lines)
 
 #### `Shipment`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -236,6 +251,7 @@
 **STATUS_CHOICES**: `pending → in_transit → customs_clearance → out_for_delivery → delivered → delayed → cancelled`
 
 #### `ShipmentMilestone`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | shipment | FK → Shipment | |
@@ -246,6 +262,7 @@
 | recorded_by | FK → User | |
 
 #### `ShipmentItem`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | shipment | FK → Shipment | |
@@ -256,6 +273,7 @@
 | notes | TextField | |
 
 #### `ShipmentPartnerAssignment`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | shipment | FK → Shipment | |
@@ -269,6 +287,7 @@
 | escalation tracking fields | Various | |
 
 #### `PartnerAttestation`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | assignment | FK → ShipmentPartnerAssignment | |
@@ -288,6 +307,7 @@
 ### 2.4 organizations/models.py (1221 lines)
 
 #### `Organization`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | name | CharField | |
@@ -309,6 +329,7 @@
 **STATUS_CHOICES**: `active / inactive / suspended / pending_verification`
 
 #### `OrganizationMembership`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | organization | FK → Organization | |
@@ -320,6 +341,7 @@
 | invited_by | FK → User | |
 
 #### `VerificationRequest`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | organization | FK → Organization | |
@@ -331,9 +353,11 @@
 | document_ids | JSONField | |
 
 #### `OrganizationScore`
+
 Historical scoring snapshot — FK → Organization, all supplier/buyer metrics as DecimalFields.
 
 #### `OrganizationDocument`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | organization | FK → Organization | |
@@ -345,6 +369,7 @@ Historical scoring snapshot — FK → Organization, all supplier/buyer metrics 
 | verification fields | Various | |
 
 #### `ExecutionPartner`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | organization | OneToOne → Organization | |
@@ -356,9 +381,11 @@ Historical scoring snapshot — FK → Organization, all supplier/buyer metrics 
 | total_assignments / total_completions | IntegerField | |
 
 #### `CorridorPartner`
+
 FK → Corridor + FK → ExecutionPartner. Fields: product_categories(JSON), is_primary, sla_config(JSON), fee_structure(JSON), performance tracking.
 
 #### `PartnerPerformanceMetric`
+
 FK → ExecutionPartner. Monthly rollup — assignment volume, SLA metrics, quality metrics, exception tracking.
 
 ---
@@ -366,6 +393,7 @@ FK → ExecutionPartner. Monthly rollup — assignment volume, SLA metrics, qual
 ### 2.5 brokers/models.py (772 lines)
 
 #### `BrokerFirmProfile`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | organization | FK → Organization | |
@@ -382,9 +410,11 @@ FK → ExecutionPartner. Monthly rollup — assignment volume, SLA metrics, qual
 | status | CharField | pending / active / suspended / terminated |
 
 #### `BrokerAssignment`
+
 FK → Corridor + FK → BrokerFirmProfile. `assignment_type`: primary / backup / client_provided. UniqueConstraint on active per type.
 
 #### `ImportClearanceCase`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | corridor | FK → Corridor | |
@@ -404,12 +434,15 @@ FK → Corridor + FK → BrokerFirmProfile. `assignment_type`: primary / backup 
 | doc_completeness_pct | DecimalField | |
 
 #### `ClearanceDocument`
+
 FK → ImportClearanceCase + FK → Document. Types: commercial_invoice / packing_list / bill_of_lading / certificate_of_origin / import_permit / phytosanitary_cert / inspection_cert / sds / other. Status: missing / requested / submitted / approved / rejected.
 
 #### `ClearanceException`
+
 FK → ImportClearanceCase. Exception types, severity (low/medium/high), status (open/in_progress/escalated/resolved/closed), SLA tracking.
 
 #### `BrokerServiceEvent`
+
 FK → ImportClearanceCase. Time-tracking events with event_type, minutes_spent, actor, billable flag, rate_cad_per_hour.
 
 ---
@@ -417,6 +450,7 @@ FK → ImportClearanceCase. Time-tracking events with event_type, minutes_spent,
 ### 2.6 documents/models.py
 
 #### `DocumentType`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | code | CharField(unique) | |
@@ -429,9 +463,11 @@ FK → ImportClearanceCase. Time-tracking events with event_type, minutes_spent,
 | is_active | BooleanField | |
 
 #### `DocumentPack`
+
 OneToOne → Deal. Status: `incomplete / complete / verified`. Has `update_status()`.
 
 #### `Document`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | document_pack | FK → DocumentPack | |
@@ -445,6 +481,7 @@ OneToOne → Deal. Status: `incomplete / complete / verified`. Has `update_statu
 | rejection_reason | TextField | |
 
 #### `MediaFile`
+
 Generic polymorphic via `entity_type` + `org_id`. File types: image / video / pdf / other.
 
 ---
@@ -452,6 +489,7 @@ Generic polymorphic via `entity_type` + `org_id`. File types: image / video / pd
 ### 2.7 finance/models.py (2888 lines)
 
 #### `Invoice`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -464,9 +502,11 @@ Generic polymorphic via `entity_type` + `org_id`. File types: image / video / pd
 | status | CharField | draft / sent / paid / overdue / cancelled |
 
 #### `InvoiceLineItem`
+
 FK → Invoice. Fields: description, quantity, unit_price_cents, total_cents.
 
 #### `Payment`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -483,6 +523,7 @@ FK → Invoice. Fields: description, quantity, unit_price_cents, total_cents.
 Creates double-entry `LedgerEntry` on completion.
 
 #### `EscrowAccount`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | OneToOne → Deal | |
@@ -494,6 +535,7 @@ Creates double-entry `LedgerEntry` on completion.
 Methods: `deposit()`, `release()` — both create `LedgerEntry` pairs.
 
 #### `EscrowTransaction`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | escrow_account | FK → EscrowAccount | |
@@ -509,12 +551,15 @@ Methods: `deposit()`, `release()` — both create `LedgerEntry` pairs.
 | webhook_data | JSONField | |
 
 #### `PartnerFee`
+
 FK → EscrowTransaction + FK → ExecutionPartner. Fields: fee_amount_cents, fee_percentage, fee_currency, status (pending/deducted/paid_out/failed), payout tracking.
 
 #### `EscrowEvent`
+
 FK → Deal. Event types: deposit_received / funds_released / funds_returned / funds_held. Links to Payment.
 
 #### `ExchangeRate`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | base_currency / target_currency | CharField(3) | |
@@ -527,9 +572,11 @@ FK → Deal. Event types: deposit_received / funds_released / funds_returned / f
 Class methods: `get_latest_rate()`, `convert()`, `get_supported_currencies()`.
 
 #### `CurrencyPreference`
+
 OneToOne → User. `preferred_currency` CharField(3).
 
 #### `PaymentProvider`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | name | CharField | |
@@ -542,6 +589,7 @@ OneToOne → User. `preferred_currency` CharField(3).
 | config | JSONField | |
 
 #### `PaymentIntent`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | escrow_transaction | OneToOne → EscrowTransaction | |
@@ -556,6 +604,7 @@ OneToOne → User. `preferred_currency` CharField(3).
 | error_message | TextField | |
 
 #### `FeeRule`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | name | CharField(unique) | |
@@ -572,6 +621,7 @@ OneToOne → User. `preferred_currency` CharField(3).
 Method: `calculate_fee(amount)` with tiered support.
 
 #### `PayoutSchedule`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | seller | FK → Organization | |
@@ -591,6 +641,7 @@ Method: `calculate_fee(amount)` with tiered support.
 | retry_count | IntegerField | |
 
 #### `LedgerEntry`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | entry_type | CharField | credit / debit |
@@ -612,6 +663,7 @@ Method: `calculate_fee(amount)` with tiered support.
 Class method: `validate_transaction_balance()` — ensures debits == credits.
 
 #### `KYCVerification`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | user | FK → User (nullable) | |
@@ -626,9 +678,11 @@ Class method: `validate_transaction_balance()` — ensures debits == credits.
 | expiry_date | DateTimeField | |
 
 #### `KYCDocument`
+
 FK → KYCVerification. Document types: passport / national_id / drivers_license / residence_permit / selfie / proof_of_address / business_license / certificate_of_incorporation / tax_certificate / memorandum / articles / director_id / shareholder_registry. Status: pending / approved / rejected / expired.
 
 #### `AMLRiskProfile`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | user | OneToOne → User (nullable) | |
@@ -645,6 +699,7 @@ FK → KYCVerification. Document types: passport / national_id / drivers_license
 | requires_enhanced_due_diligence | BooleanField | |
 
 #### `AMLTransaction`
+
 Compliance-monitored transactions. Fields: transaction_reference(unique), sender/recipient user/org FKs, amount_cents, risk_flags(JSON), risk_score, status (pending/cleared/flagged/under_investigation/reported), SAR filing details.
 
 ---
@@ -652,6 +707,7 @@ Compliance-monitored transactions. Fields: transaction_reference(unique), sender
 ### 2.8 leads/models.py
 
 #### `Lead`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | contact_name / email / phone / company / position | CharField | |
@@ -669,9 +725,11 @@ Compliance-monitored transactions. Fields: transaction_reference(unique), sender
 | loss_reason | CharField | |
 
 #### `LeadActivity`
+
 FK → Lead. Activity types: call / email / meeting / note / task / follow_up. Outcome: positive / neutral / negative.
 
 #### `LeadConversion`
+
 OneToOne → Lead, FK → Deal. Fields: conversion_date, days_to_convert, activities_count, conversion_notes.
 
 ---
@@ -679,6 +737,7 @@ OneToOne → Lead, FK → Deal. Fields: conversion_date, days_to_convert, activi
 ### 2.9 orders/models.py (799 lines)
 
 #### `Order`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | buyer_org | FK → Organization | |
@@ -691,15 +750,19 @@ OneToOne → Lead, FK → Deal. Fields: conversion_date, days_to_convert, activi
 | escalation_reason | CharField | |
 
 #### `OrderItem`
+
 FK → Order + FKs to Product, ProductVariant, Listing, supplier_org. Fields: quantity, unit_price_cents, subtotal_cents, fulfillment_status (pending/processing/fulfilled/shipped/delivered/cancelled).
 
 #### `OrderPayment`
+
 FK → Order. Payment methods: stripe / bank_transfer / escrow / wallet / other. Status: pending / processing / completed / failed / refunded.
 
 #### `OrderFulfillment`
+
 FK → Order + FK → supplier_org + FK → Shipment. M2M → OrderItem. Fields: fulfillment_number(unique), status (pending/picking/packing/ready_to_ship/shipped/cancelled).
 
 #### `ReturnRequest`
+
 FK → Order. M2M → OrderItem. Fields: rma_number(unique), reason (defective/wrong_item/not_as_described/damaged/change_of_mind/other), status (requested/approved/rejected/in_transit/received/inspected/refunded/closed), refund_amount_cents.
 
 ---
@@ -707,6 +770,7 @@ FK → Order. M2M → OrderItem. Fields: rma_number(unique), reason (defective/w
 ### 2.10 rfq/models.py (695 lines)
 
 #### `RFQ`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | buyer_org | FK → Organization | |
@@ -721,9 +785,11 @@ FK → Order. M2M → OrderItem. Fields: rma_number(unique), reason (defective/w
 | accepted_quote | FK → Quote (nullable) | |
 
 #### `RFQLine`
+
 FK → RFQ + FKs to Product, ProductVariant. Fields: line_number, description, quantity_requested, unit_of_measure, target_price_cents, target_currency, specifications(JSON).
 
 #### `Quote`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | rfq | FK → RFQ | |
@@ -736,6 +802,7 @@ FK → RFQ + FKs to Product, ProductVariant. Fields: line_number, description, q
 | converted_to_deal | OneToOne → Deal (nullable) | |
 
 #### `QuoteLine`
+
 FK → Quote + FK → RFQLine. Fields: unit_price_cents, currency, quantity_offered, lead_time_days, moq, incoterm (EXW/FOB/CIF/DDP).
 
 ---
@@ -743,6 +810,7 @@ FK → Quote + FK → RFQLine. Fields: unit_price_cents, currency, quantity_offe
 ### 2.11 corridors/models.py
 
 #### `Corridor`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | name | CharField | |
@@ -753,9 +821,11 @@ FK → Quote + FK → RFQLine. Fields: unit_price_cents, currency, quantity_offe
 | description / notes | TextField | |
 
 #### `CorridorTemplate`
+
 FK → Corridor. Product categories (vehicles-focused: cars/motorcycles/trucks/buses/agricultural_equipment/construction_equipment/electronics/machinery/food_products/textiles/other). Fields: required_documents(JSON), required_qc_checklists(M2M), customs_requirements, estimated_transit_days, estimated_customs_days.
 
 #### `CorridorRequirement`
+
 FK → Corridor. Requirement types: document / inspection / compliance / certification / other. Fields: title, description, is_mandatory, applies_to_categories(JSON), sort_order.
 
 ---
@@ -763,6 +833,7 @@ FK → Corridor. Requirement types: document / inspection / compliance / certifi
 ### 2.12 monetization/models.py (687 lines)
 
 #### `PricingPlan`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | name / slug | CharField | |
@@ -773,6 +844,7 @@ FK → Corridor. Requirement types: document / inspection / compliance / certifi
 | display_order | IntegerField | |
 
 #### `Subscription`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | organization | FK → Organization | |
@@ -786,15 +858,19 @@ FK → Corridor. Requirement types: document / inspection / compliance / certifi
 | cancel_at_period_end | BooleanField | |
 
 #### `CorridorFeeOverride`
+
 FK → Organization + FK → Corridor. Fields: fee_type, override_amount_cents, is_percentage, reason, valid_from/until.
 
 #### `PremiumPlacementRule`
+
 FK → Corridor. Pricing models: fixed / auction / cpm. Fields: product_category, placement_type, reserve_price_cents, duration_days, max_slots.
 
 #### `PromotionCredit`
+
 FK → Organization + FK → User. Fields: amount_cents, remaining_cents, reason, promotion_code, expires_at.
 
 #### `ListingPlacement`
+
 FK → Listing + FK → PremiumPlacementRule + FK → Organization. Status: pending / active / paused / expired / cancelled. Fields: bid_amount_cents, impressions, clicks.
 
 ---
@@ -804,6 +880,7 @@ FK → Listing + FK → PremiumPlacementRule + FK → Organization. Status: pend
 ### 3.1 accounts/models.py — User
 
 #### `User` (extends AbstractUser)
+
 | Field | Type | Notes |
 |-------|------|-------|
 | role | CharField | admin / dealer / broker / buyer |
@@ -839,6 +916,7 @@ FK → Listing + FK → PremiumPlacementRule + FK → Organization. Status: pend
 ### 3.2 vehicles/models.py (590 lines)
 
 #### `Vehicle`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | dealer | FK → User (role=dealer) | |
@@ -860,9 +938,11 @@ FK → Listing + FK → PremiumPlacementRule + FK → Organization. Status: pend
 | lien_checked / lien_status | BooleanField / CharField | PPSA lien search |
 
 #### `VehicleImage`
+
 FK → Vehicle. Supports image + video. Fields: media_type, caption, is_primary, order, duration_seconds, thumbnail.
 
 #### `Offer`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | vehicle | FK → Vehicle | |
@@ -875,9 +955,11 @@ FK → Vehicle. Supports image + video. Fields: media_type, caption, is_primary,
 | valid_until | DateTimeField | |
 
 #### `VehicleInspectionSlot`
+
 FK → Vehicle. Fields: date, start_time, end_time, is_available, max_attendees.
 
 #### `InspectionAppointment`
+
 FK → VehicleInspectionSlot + FK → User(buyer). Status: pending / confirmed / completed / cancelled / no_show. Fields: contact_phone, contact_email, number_of_people, buyer_notes, dealer_notes, vehicle_rating, dealer_rating, interested_in_purchase.
 
 ---
@@ -885,6 +967,7 @@ FK → VehicleInspectionSlot + FK → User(buyer). Status: pending / confirmed /
 ### 3.3 deals/models.py (642 lines) + financial_models.py (777 lines)
 
 #### `Lead`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | buyer | FK → User (role=buyer) | |
@@ -898,6 +981,7 @@ FK → VehicleInspectionSlot + FK → User(buyer). Status: pending / confirmed /
 Method: `is_stalled()` — no update in 7 days.
 
 #### `Deal`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | lead | OneToOne → Lead (nullable) | |
@@ -915,9 +999,11 @@ Method: `is_stalled()` — no update in 7 days.
 Methods: `create_financial_terms()`, `create_standard_payment_schedule()`, `setup_financing()`, `get_payment_status_summary()`, `process_payment()`, `is_stalled()`.
 
 #### `Document`
+
 FK → Deal. Types: title / id / payment_proof / export_permit / customs / other. Status: pending / verified / rejected.
 
 #### `DealFinancialTerms`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | OneToOne → Deal | |
@@ -938,6 +1024,7 @@ FK → Deal. Types: title / id / payment_proof / export_permit / customs / other
 | deposit_refundable / refund_percentage | BooleanField / DecimalField | |
 
 #### `PaymentMilestone`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal_financial_terms | FK → DealFinancialTerms | |
@@ -952,6 +1039,7 @@ FK → Deal. Types: title / id / payment_proof / export_permit / customs / other
 | reminder_sent | BooleanField | |
 
 #### `FinancingOption`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | OneToOne → Deal | |
@@ -968,6 +1056,7 @@ FK → Deal. Types: title / id / payment_proof / export_permit / customs / other
 Method: `generate_installment_schedule()` — creates monthly `FinancingInstallment` records.
 
 #### `FinancingInstallment`
+
 FK → FinancingOption. Fields: installment_number, due_date, amount_due, principal_amount, interest_amount, late_fee, amount_paid, remaining_balance, status (pending/paid/late/defaulted), days_late. Late fee calculation at 5% default.
 
 ---
@@ -975,6 +1064,7 @@ FK → FinancingOption. Fields: installment_number, due_date, amount_due, princi
 ### 3.4 commissions/models.py (800 lines)
 
 #### `BrokerTier`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | broker | OneToOne → User | |
@@ -992,6 +1082,7 @@ Tier rates: starter=3%, bronze=3.5%, silver=4%, gold=4.5%, platinum=5%, diamond=
 Thresholds: 5/10/20/40/80 deals/month.
 
 #### `DealerTier`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | dealer | OneToOne → User | |
@@ -1007,9 +1098,11 @@ Tier rates: standard=5%, preferred=5.5%, elite=6%, premier=6.5%.
 Market bonuses: major province +0.5%, maritime +0.75%, rural +1%, First Nations +1.5%.
 
 #### `BonusTransaction`
+
 FK → User. Types: welcome / first_deal / fast_start / certification / referral / achievement / milestone. Status: pending / approved / paid / cancelled.
 
 #### `Commission`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | FK → Deal | |
@@ -1025,6 +1118,7 @@ FK → User. Types: welcome / first_deal / fast_start / certification / referral
 Signal: `post_save` on Deal → auto-creates broker + dealer commissions with tier-based rates on completion.
 
 #### `InterestRate` (in commissions module)
+
 Province + credit_tier + rate_percentage. Used for financing rate management.
 
 ---
@@ -1032,6 +1126,7 @@ Province + credit_tier + rate_percentage. Used for financing rate management.
 ### 3.5 shipments/models.py (954 lines) + tracking_models.py
 
 #### `Shipment`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | deal | OneToOne → Deal | |
@@ -1078,12 +1173,15 @@ Province + credit_tier + rate_percentage. Used for financing rate management.
 | vessel_name / voyage_number / imo_vessel_number | Various | |
 
 #### `ShipmentUpdate`
+
 FK → Shipment. ISO 18602-compliant updates: iso_message_type (IFTSTA/GATELOC/CUSCAR/CONTRL/APERAK), iso_message_xml, verification_method (visual/rfid/gps/document/surveyor/customs), GPS coords.
 
 #### `ShipmentMilestone` (tracking_models.py)
+
 FK → Shipment. Types: pickup / departed_origin / in_transit / arrived_port / customs_clearance / out_for_delivery / delivered. Fields: title, description, location, lat/long, completed_at, is_completed, order.
 
 #### `ShipmentPhoto` (tracking_models.py)
+
 FK → Shipment. Types: loading / in_transit / arrival / customs / delivery / damage / other. Fields: photo, caption, description, location, lat/long, taken_at, uploaded_by.
 
 ---
@@ -1091,6 +1189,7 @@ FK → Shipment. Types: loading / in_transit / arrival / customs / delivery / da
 ### 3.6 documents/models.py
 
 #### `ExportDocument`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | vehicle | FK → Vehicle | |
@@ -1101,6 +1200,7 @@ FK → Shipment. Types: loading / in_transit / arrival / customs / delivery / da
 | expires_at | DateTimeField | |
 
 #### `ExportChecklist`
+
 OneToOne → Vehicle. Boolean checklist: title_verified, lien_checked, insurance_confirmed, payment_cleared, inspection_completed, cbsa_form_generated, title_guide_provided, export_ready. Method: `check_completion()`, `get_completion_percentage()`.
 
 ---
@@ -1108,12 +1208,15 @@ OneToOne → Vehicle. Boolean checklist: title_verified, lien_checked, insurance
 ### 3.7 financing/models.py
 
 #### `InterestRate`
+
 Credit tiers: excellent(750+) / good(650-749) / fair(600-649) / poor(550-599) / bad(<550). Loan terms: 12-84 months. Per-tier annual rate + loan term.
 
 #### `LoanScenario`
+
 FK → User + FK → Vehicle. Full financing calculator: vehicle_price, down_payment, trade_in_value, loan_term_months, credit_tier, province. Calculates: PST/GST/HST by province, loan_amount, monthly_payment, total_interest, total_cost. Provincial tax rates hardcoded for all 13 provinces/territories.
 
 #### `TradeInEstimate`
+
 FK → User. Vehicle trade-in value estimation (mock KBB Canada). Three values: trade_in_value, private_party_value, retail_value. Depreciation algorithm: 20% year 1, 15% subsequent, mileage/condition/provincial adjustments.
 
 ---
@@ -1121,12 +1224,15 @@ FK → User. Vehicle trade-in value estimation (mock KBB Canada). Three values: 
 ### 3.8 payments/models.py
 
 #### `Currency`
+
 Fields: code(unique, ISO 4217), name, symbol, exchange_rate_to_usd, is_active, is_african, country, stripe_supported.
 
 #### `PaymentMethod`
+
 FK → User. Types: card / bank_account / mobile_money / crypto / cash / interac_etransfer. Card details (last4, brand, exp), bank details, mobile money (M-Pesa, MTN), Interac e-Transfer (email, security Q&A).
 
 #### `Payment`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | user | FK → User | |
@@ -1144,15 +1250,19 @@ FK → User. Types: card / bank_account / mobile_money / crypto / cash / interac
 | invoice | FK → Invoice | |
 
 #### `Invoice`
+
 FK → User + FK → Deal + FK → Shipment. Fields: invoice_number(unique), subtotal, tax_rate/amount, discount_amount, total, amount_paid, currency, issue_date, due_date, paid_date, pdf_file. Status: draft / sent / paid / partially_paid / overdue / canceled.
 
 #### `InvoiceItem`
+
 FK → Invoice. Fields: description, quantity, unit_price, amount, order.
 
 #### `Transaction`
+
 FK → User + FK → Payment + FK → Invoice. Audit trail. Types: payment / refund / commission / fee / adjustment / transfer. Tracks balance_before / balance_after. Reference number (unique).
 
 #### `ExchangeRateLog`
+
 FK → Currency. Fields: rate_to_usd, source, timestamp.
 
 ---
@@ -1160,6 +1270,7 @@ FK → Currency. Fields: rate_to_usd, source, timestamp.
 ### 3.9 inspections/models.py (560 lines)
 
 #### `ThirdPartyInspector`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | name / company | CharField | |
@@ -1177,6 +1288,7 @@ FK → Currency. Fields: rate_to_usd, source, timestamp.
 | is_active / is_verified | BooleanField | |
 
 #### `InspectionReport`
+
 | Field | Type | Notes |
 |-------|------|-------|
 | vehicle | FK → Vehicle | |
@@ -1194,6 +1306,7 @@ FK → Currency. Fields: rate_to_usd, source, timestamp.
 | payment_status | CharField | pending / paid / refunded |
 
 #### `InspectorReview`
+
 FK → ThirdPartyInspector + FK → User + OneToOne → InspectionReport. Rating: 1-5 overall + professionalism / thoroughness / communication / value sub-ratings. Helpful votes. Auto-updates inspector rating on save.
 
 ---
@@ -1224,6 +1337,7 @@ FK → ThirdPartyInspector + FK → User + OneToOne → InspectionReport. Rating
 ## 5. Canonical Model Recommendations
 
 ### Core Entities (Merge Both)
+
 1. **Tenant/Organization** — trade-os `Organization` as base, absorb eexports dealer/broker profiles
 2. **User + Membership** — trade-os `OrganizationMembership` + eexports role/consent fields
 3. **Deal** — Unified FSM combining both apps' statuses; support both single-item and multi-item
@@ -1232,35 +1346,40 @@ FK → ThirdPartyInspector + FK → User + OneToOne → InspectionReport. Rating
 6. **Corridor** — Keep from trade-os; make it configurable per product type
 
 ### Financial (Merge Both)
+
 7. **MoneyField** — Standardize on cents storage (trade-os pattern)
-8. **Currency + ExchangeRate** — Merge both; use trade-os `ExchangeRate` with eexports `Currency` metadata
-9. **Invoice + InvoiceLineItem** — Merge patterns; org-to-org + user-facing
-10. **Payment** — Unified with double-entry ledger (trade-os), add eexports payment methods
-11. **EscrowAccount + EscrowTransaction** — Keep from trade-os
-12. **FinancingOption + Installment** — Port from eexports
-13. **PaymentMilestone** — Merge DealMilestone (trade-os) + PaymentMilestone (eexports)
-14. **Commission** — Unified with tier support from eexports + org-level from trade-os
-15. **FeeRule + PayoutSchedule** — Keep from trade-os
+2. **Currency + ExchangeRate** — Merge both; use trade-os `ExchangeRate` with eexports `Currency` metadata
+3. **Invoice + InvoiceLineItem** — Merge patterns; org-to-org + user-facing
+4. **Payment** — Unified with double-entry ledger (trade-os), add eexports payment methods
+5. **EscrowAccount + EscrowTransaction** — Keep from trade-os
+6. **FinancingOption + Installment** — Port from eexports
+7. **PaymentMilestone** — Merge DealMilestone (trade-os) + PaymentMilestone (eexports)
+8. **Commission** — Unified with tier support from eexports + org-level from trade-os
+9. **FeeRule + PayoutSchedule** — Keep from trade-os
 
 ### Logistics (Merge Both)
+
 16. **Shipment** — Base from trade-os; add ISO/regulatory fields from eexports as optional
-17. **ShipmentMilestone** — Merge both milestone models
-18. **ShipmentPartnerAssignment + PartnerAttestation** — Keep from trade-os
-19. **ShipmentUpdate/Photo** — Absorb eexports tracking into trade-os milestone system
+2. **ShipmentMilestone** — Merge both milestone models
+3. **ShipmentPartnerAssignment + PartnerAttestation** — Keep from trade-os
+4. **ShipmentUpdate/Photo** — Absorb eexports tracking into trade-os milestone system
 
 ### Documentation & Compliance
+
 20. **DocumentType + Document** — trade-os catalog + eexports CBSA types
-21. **ExportChecklist** — Port from eexports as configurable checklist
-22. **KYC/AML** — Keep trade-os models; add PIPEDA consent from eexports
-23. **Inspection** — Port eexports inspector/report models; integrate with trade-os partner system
+2. **ExportChecklist** — Port from eexports as configurable checklist
+3. **KYC/AML** — Keep trade-os models; add PIPEDA consent from eexports
+4. **Inspection** — Port eexports inspector/report models; integrate with trade-os partner system
 
 ### Commercial
+
 24. **Listing + PriceBreak** — Keep from trade-os
-25. **RFQ + Quote** — Keep from trade-os
-26. **Order + Fulfillment** — Keep from trade-os
-27. **Lead + LeadActivity** — Merge; trade-os is more complete
+2. **RFQ + Quote** — Keep from trade-os
+3. **Order + Fulfillment** — Keep from trade-os
+4. **Lead + LeadActivity** — Merge; trade-os is more complete
 
 ### Platform
+
 28. **PricingPlan + Subscription** — Keep from trade-os
-29. **BrokerTier + DealerTier** — Port from eexports as configurable tier system
-30. **BrokerFirmProfile + ImportClearanceCase** — Keep from trade-os
+2. **BrokerTier + DealerTier** — Port from eexports as configurable tier system
+3. **BrokerFirmProfile + ImportClearanceCase** — Keep from trade-os

@@ -35,6 +35,7 @@ Immutable, SHA-256 hash-chained compliance snapshots for audit readiness. Each s
 ```
 
 Each chain entry stores:
+
 - `snapshotHash`: SHA-256 of the canonical snapshot JSON
 - `previousHash`: Hash of the prior entry (null for genesis)
 - Breaking any link invalidates all subsequent entries
@@ -58,23 +59,27 @@ Each chain entry stores:
 ## Modules
 
 ### Collector
+
 - Fetches compliance controls from configured sources via `CollectorPorts`
 - Computes summary statistics: compliant, non-compliant, partial, not-assessed
 - Calculates compliance score: `(compliant + partial × 0.5) / assessed × 100`
 - Validates snapshot against Zod schema
 
 ### Hash Chain
+
 - `computeSnapshotHash(snapshot)`: Deterministic SHA-256 via canonical JSON (sorted keys)
 - `SnapshotChain.append(snapshot)`: Links to previous entry's hash
 - `SnapshotChain.verify(orgId)`: Validates entire chain linkage
 - Genesis entry has `previousHash: null`
 
 ### Generator
+
 - Orchestrates: collect → persist → chain → status update
 - Auto-increments version per org
 - Returns both snapshot and chain entry
 
 ### Verifier
+
 - **Snapshot verification**: Recompute hash, match against chain entry
 - **Chain verification**: Validate all links + recompute individual hashes
 - Detects: missing snapshots, tampered content, broken chain links
@@ -86,6 +91,7 @@ $$\text{score} = \frac{\text{compliant} + 0.5 \times \text{partial}}{\text{total
 ## Test Coverage
 
 29 tests across 4 test files:
+
 - Collector: 6 tests (summary computation, collection, metadata, empty controls)
 - Chain: 10 tests (hashing, genesis, linkage, verification, tampering)
 - Generator: 6 tests (lifecycle, versioning, chaining, retrieval)

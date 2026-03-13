@@ -2,7 +2,7 @@
 
 Owner: Aubert
 
-### 1. **Purpose**
+## 1. Purpose
 
 This strategy defines Nzila Ventures' **investment thesis** for technology exploration and capital deployment beyond the 2025–2026 roadmap. It ensures our tech bets support:
 

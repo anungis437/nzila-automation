@@ -55,6 +55,7 @@ Every platform event carries:
 ## Validation
 
 All events are validated against Zod schemas before emission. Schema enforces:
+
 - UUID format for `id`, `orgId`, `correlationId`
 - Non-empty `type` from the allowed category set
 - ISO 8601 datetime for `occurredAt`

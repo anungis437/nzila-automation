@@ -7,6 +7,7 @@
 The Decision Layer sits above events, insights, anomalies and policies, and below human operators. It transforms platform signals into **evidence-backed recommendations** that humans review, approve, and act on.
 
 **Key principles:**
+
 - **Recommendation-first** — no autonomous mutation of business data
 - **Every decision must include** confidence score, evidence refs, and review requirement
 - **Auditable** — full lifecycle audit trail from generation to closure

@@ -31,6 +31,7 @@ Organization (org)
 ## Canonical Tables (all org-scoped)
 
 ### agri_producers
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -46,6 +47,7 @@ Organization (org)
 | updated_at | timestamp | |
 
 ### agri_crops
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -58,6 +60,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_harvests
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -72,6 +75,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_lots
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -85,6 +89,7 @@ Organization (org)
 | updated_at | timestamp | |
 
 ### agri_lot_contributions
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -95,6 +100,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_quality_inspections
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -109,6 +115,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_batches
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -123,6 +130,7 @@ Organization (org)
 | updated_at | timestamp | |
 
 ### agri_warehouses
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -134,6 +142,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_batch_allocations
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -144,6 +153,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_shipments
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -159,6 +169,7 @@ Organization (org)
 | updated_at | timestamp | |
 
 ### agri_shipment_milestones
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -171,6 +182,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_payment_plans
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -183,6 +195,7 @@ Organization (org)
 | updated_at | timestamp | |
 
 ### agri_payments
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -197,6 +210,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_certifications
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -212,6 +226,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_traceability_links
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -226,6 +241,7 @@ Organization (org)
 ## Intelligence Tables (Cora-writable)
 
 ### agri_forecasts
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -240,6 +256,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_price_signals
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -253,6 +270,7 @@ Organization (org)
 | created_at | timestamp | |
 
 ### agri_risk_scores
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
@@ -268,6 +286,7 @@ Organization (org)
 ## Indexes
 
 All tables include:
+
 - `(org_id)` — primary isolation index
 - `(org_id, created_at)` — time-ordered queries
 - `(org_id, status)` — status filtering (where applicable)

@@ -119,6 +119,7 @@ DROP FUNCTION IF EXISTS prevent_audit_mutation();
 ```
 
 **Before doing this:**  
+
 1. Log a security incident — removing audit immutability is a **auditable security event**
 2. Get approval from CTO and @nzila/security
 3. Record in `ops/change-management/` with justification

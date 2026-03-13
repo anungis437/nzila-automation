@@ -175,6 +175,7 @@ pnpm validate:pack
 ```
 
 This checks:
+
 1. **Schema validation** — every section conforms to `ProcurementSectionSchema`
 2. **Timestamp consistency** — all timestamps are ISO 8601 UTC (no milliseconds)
 3. **Manifest integrity** — recalculates SHA-256 hashes and compares

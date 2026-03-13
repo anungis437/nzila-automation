@@ -36,6 +36,7 @@
 
 All ~58 packages export raw TypeScript source via `"main": "./src/index.ts"`.
 Consumer apps (Next.js) transpile them at build time. This eliminates:
+
 - Separate `tsc` compilation per package
 - Watch mode rebuild cascades
 - Stale `dist/` artifacts
@@ -63,6 +64,7 @@ while still maximizing throughput.
 ### 4. Cache-Scoped `inputs`
 
 `turbo.json` declares explicit `inputs` per task type:
+
 - **build**: `src/**`, `app/**`, `components/**`, `lib/**`, config files
 - **lint/typecheck**: source files + configs
 - **test**: source + test files
@@ -123,6 +125,7 @@ The CI workflow caches `node_modules/.cache/turbo` between runs. On repeat pushe
 to the same branch, cached packages skip entirely (~30s total vs ~12 min).
 
 Cache keys:
+
 - `turbo-build-{os}-{lockfile-hash}-{commit-sha}` (exact match)
 - `turbo-build-{os}-{lockfile-hash}-` (same deps, different code)
 - `turbo-build-{os}-` (fallback)
@@ -130,6 +133,7 @@ Cache keys:
 ## Deploy Workflows
 
 Each deploy workflow:
+
 1. Runs **pre-deploy gates** (contract tests + SLO gate)
 2. Builds a **Docker image** using the multi-stage Dockerfile
 3. The Dockerfile uses `TURBO_FILTER` build-arg to build only the target app

@@ -38,6 +38,7 @@ const sealed = draft.seal()
 
 Calling `draft.seal()` a second time throws `SealOnceViolationError`.
 After sealing:
+
 - `draft.addArtifact()` → throws `DraftMutationError`
 - `draft.seal()` → throws `SealOnceViolationError`
 - The returned `SealedEvidencePack` is `Object.freeze()`-ed
@@ -64,6 +65,7 @@ npx tsx packages/os-core/src/evidence/verify-pack.ts <pack-index.json> \
 ```
 
 Checks:
+
 1. Seal integrity (digest + Merkle root)
 2. HMAC signature (if key provided)
 3. Artifact file hashes (if `--artifacts-dir` provided)

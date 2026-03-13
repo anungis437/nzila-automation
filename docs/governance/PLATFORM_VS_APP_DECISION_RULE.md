@@ -10,7 +10,7 @@
 
 ## Decision Framework
 
-### Put it in PLATFORM if it is:
+### Put it in PLATFORM if it is
 
 - **Cross-app** — used or usable by multiple applications
 - **Governance-related** — policy enforcement, compliance, audit integration
@@ -21,14 +21,14 @@
 - **Likely to be reused** across domains or verticals
 - **Required for control-plane visibility** — governance signals, health metrics
 
-### Put it in a SHARED PACKAGE if it is:
+### Put it in a SHARED PACKAGE if it is
 
 - **A utility or abstraction** used by multiple packages or apps
 - **Domain-shared logic** used across apps within the same vertical (e.g., `commerce-core`)
 - **Infrastructure abstraction** (database client, blob storage, config resolution)
 - **Not a service** — it's a library, not a running capability
 
-### Put it in an APP if it is:
+### Put it in an APP if it is
 
 - **Deeply domain-specific** — only relevant to one vertical's workflows
 - **Primarily product workflow logic** — user-facing domain behaviour
@@ -116,6 +116,7 @@ A short Architecture Decision Record (ADR) is required when:
 Use the ADR template at `templates/architecture-decision-record.md`.
 
 The ADR does not need to be long. It must capture:
+
 - Why the capability exists
 - Why it belongs where it was placed (platform vs app vs package)
 - What reuse is expected

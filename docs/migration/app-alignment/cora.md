@@ -12,21 +12,26 @@ compliance status, risk scores, and retention enforcement events.
 ## Alignment Checklist (to follow at creation time)
 
 ### INV-01: No Shadow AI
+
 - [ ] All AI/LLM calls through `@nzila/ai-sdk`
 - [ ] ESLint no-shadow-ai rule active at scaffold
 
 ### INV-02: No Shadow ML
+
 - [ ] ML signals accessed via `@nzila/ml-sdk` only
 
 ### INV-03: Evidence SSoT
+
 - [ ] Evidence generation via `@nzila/os-core/evidence/generate-evidence-index`
 - [ ] CORA may READ evidence packs but not generate them independently
 
 ### INV-04: RBAC via Policy Engine
+
 - [ ] All API routes use `authorize()` with `ConsoleRole` or new `CoraRole` extension
 - [ ] Compliance-sensitive routes require `requiredScopes: ['admin:retention:read']`
 
 ### INV-05: No DEFAULT_ENTITY_ID
+
 - [ ] Entity context sourced from session only
 
 ---

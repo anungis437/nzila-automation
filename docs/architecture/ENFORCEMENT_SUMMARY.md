@@ -85,6 +85,7 @@ npx nzila create-vertical billing
 ```
 
 Generates a complete app skeleton with:
+
 - Scoped DAL + withAudit pre-wired in `lib/api-guards.ts`
 - ESLint with all 3 shadow rules (db, ai, ml)
 - Clerk middleware with rate limiting

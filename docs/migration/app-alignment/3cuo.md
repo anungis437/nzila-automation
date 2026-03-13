@@ -13,22 +13,27 @@ recommendations.
 ## Alignment Checklist (to follow at creation time)
 
 ### INV-01: No Shadow AI
+
 - [ ] All recommendation AI calls through `@nzila/ai-sdk`
 - [ ] Financial model inference routes use `@nzila/ai-sdk` control plane
 - [ ] ESLint no-shadow-ai rule active at scaffold
 
 ### INV-02: No Shadow ML
+
 - [ ] Optimisation model outputs via `@nzila/ml-sdk`
 - [ ] No direct `mlScores*` table queries
 
 ### INV-03: Evidence SSoT
+
 - [ ] Model runs produce evidence artifacts via `@nzila/os-core/evidence/collectors/ai-evals`
 
 ### INV-04: RBAC via Policy Engine
+
 - [ ] All routes use `authorize()` — optimisation scenarios are entity-scoped
 - [ ] New roles (`3cuo:analyst`, `3cuo:viewer`) defined in `ConsoleRole` or extension
 
 ### INV-05: No DEFAULT_ENTITY_ID
+
 - [ ] All scenario computations are tied to an explicit entity ID
 
 ---

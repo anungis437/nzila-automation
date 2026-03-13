@@ -37,27 +37,35 @@ apps/<app-name>/
 ## Required Endpoints
 
 ### GET /api/health
+
 Returns service health status with service name.
+
 ```json
 { "status": "healthy", "service": "<app-name>" }
 ```
 
 ### GET /api/metrics
+
 Returns operational metrics: `request_count`, `error_rate`, `latency_ms`.
 
 ### GET /api/evidence/export
+
 Returns evidence pack: app metadata, git commit, SBOM, policy check results.
 
 ## Required Integrations
 
 ### Policy Engine
+
 Every app must integrate `@nzila/platform-policy-engine` via a `lib/policy-enforcement.ts` module:
+
 - Define app-specific policies
 - Enforce threshold-based approvals
 - Log all policy evaluations
 
 ### Evidence Pack
+
 Export endpoint must return:
+
 - App name and version
 - Git commit hash
 - Build timestamp
@@ -96,6 +104,7 @@ Run `pnpm governance:check` to validate all apps against this standard.
 ## Reference: Union-Eyes
 
 Union-Eyes is the gold standard with:
+
 - 150+ library files
 - 19+ test files
 - 3 E2E playwright specs

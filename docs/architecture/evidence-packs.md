@@ -41,23 +41,27 @@ Orchestrated evidence pack export with tamper-verification. Builds on the existi
 ## Modules
 
 ### Orchestrator
+
 - **createPack**: Zod validation, auto pack ID generation, artifact attachment
 - **sealPack**: SHA-256 digest over canonicalized pack index + Merkle root over artifact hashes
 - **getPack / listPacks**: Query by org
 - **updateStatus**: Lifecycle state transitions
 
 ### Exporter
+
 - **JSON export**: Pretty-printed pack index with metadata
 - **ZIP bundle**: Base64-encoded artifact content, error isolation per artifact
 - Requires sealed pack (rejects draft packs)
 
 ### Verifier
+
 - Recomputes pack digest from canonical JSON
 - Recomputes Merkle root from artifact SHA-256 hashes
 - Verifies individual artifact integrity
 - Returns per-artifact verification details
 
 ### Retention Manager
+
 4 retention classes with configurable policies:
 
 | Class | Default Retention | Archive | Delete |
@@ -79,6 +83,7 @@ Orchestrated evidence pack export with tamper-verification. Builds on the existi
 ## Test Coverage
 
 22 tests across 4 test files:
+
 - Orchestrator: 8 tests (create, seal, lifecycle, validation)
 - Verifier: 4 tests (valid pack, tampered digest, tampered artifact, missing seal)
 - Exporter: 3 tests (JSON export, ZIP bundle, reject unsealed)

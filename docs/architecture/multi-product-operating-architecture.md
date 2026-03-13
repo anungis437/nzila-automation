@@ -6,7 +6,7 @@ Owner: Aubert
 
 ---
 
-### 🔍 Executive Summary
+## 🔍 Executive Summary
 
 Nzila Ventures is a **mission-aligned, multi-product platform** supporting innovations across caretech (Memora, OptivaCare, NeuroBridge) and edtech (MyLearning Companion). Each venture addresses a unique need, but all benefit from a **shared operational spine** — enabling speed, scale, and trust without duplicating effort.
 

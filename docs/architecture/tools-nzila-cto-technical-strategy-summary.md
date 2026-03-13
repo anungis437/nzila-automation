@@ -2,7 +2,7 @@
 
 Owner: Aubert
 
-### 🔧 1. Guiding Principles for Nzila’s Technology
+## 🔧 1. Guiding Principles for Nzila's Technology
 
 Nzila’s tech backbone is intentionally **modular, ethical, and fast to iterate**, anchored by five enduring principles:
 
@@ -55,7 +55,7 @@ Nzila operates on a **shared services + vertical pod** model:
 | **Companion API SDK** | External usage for partners | 2028 |
 
 > Companion logic is always auditable, user-controlled, and tied to Nzila’s [Ethical AI Charter].
-> 
+>
 
 ---
 

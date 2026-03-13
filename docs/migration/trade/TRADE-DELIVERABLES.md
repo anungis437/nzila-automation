@@ -7,11 +7,14 @@
 ## 1. PR List with Acceptance Criteria
 
 ### PR 1 — EPIC 0: Canonical Domain Map & Vertical Strategy
+
 **Files:**
+
 - `docs/migrations/trade/canonical-domain-map.md`
 - `docs/migrations/trade/cars-vertical-scope.md`
 
 **Acceptance Criteria:**
+
 - [x] `canonical-domain-map.md` defines core vs vertical boundaries
 - [x] `cars-vertical-scope.md` documents what stays in trade-cars
 - [x] No code — documentation only
@@ -19,7 +22,9 @@
 ---
 
 ### PR 2 — EPIC 1: Unified App Scaffold
+
 **Files:**
+
 - `apps/trade/package.json`
 - `apps/trade/tsconfig.json`
 - `packages/trade-core/package.json`, `tsconfig.json`, `eslint.config.mjs`
@@ -29,6 +34,7 @@
 - `pnpm-workspace.yaml` (updated)
 
 **Acceptance Criteria:**
+
 - [x] `pnpm install` resolves all workspace packages
 - [x] All 4 packages + app compile (TS strict)
 - [x] ESLint flat config on all packages — 0 errors
@@ -37,7 +43,9 @@
 ---
 
 ### PR 3 — EPIC 2: Data Layer (Drizzle Schema + Repositories)
+
 **Files:**
+
 - `packages/db/src/schema/trade.ts` (420 lines — 14 tables, 12 pgEnums)
 - `packages/trade-db/src/repositories/*.ts` (8 repository interfaces)
 - `packages/trade-db/src/types.ts` (TradeDbContext, TradeReadContext)
@@ -45,6 +53,7 @@
 - `packages/trade-db/src/repositories/cross-org.test.ts`
 
 **Acceptance Criteria:**
+
 - [x] 14 tables: `trade_parties`, `trade_listings`, `trade_listing_media`, `trade_deals`, `trade_quotes`, `trade_financing_terms`, `trade_shipments`, `trade_documents`, `trade_commissions`, `trade_evidence_artifacts`, `trade_vehicle_listings`, `trade_vehicle_docs`
 - [x] 12 pgEnums covering roles, statuses, stages, doc types
 - [x] Every table scoped by `org_id` FK → `entities.id`
@@ -55,7 +64,9 @@
 ---
 
 ### PR 4 — EPIC 3: Core Workflows (FSM + Server Actions)
+
 **Files:**
+
 - `packages/trade-core/src/enums.ts` (205 lines — 16 const enums)
 - `packages/trade-core/src/types/index.ts` (240 lines — branded IDs, domain types)
 - `packages/trade-core/src/schemas/index.ts` (205 lines — Zod schemas)
@@ -68,6 +79,7 @@
 - `apps/trade/lib/actions/*.ts` (8 server action files)
 
 **Acceptance Criteria:**
+
 - [x] Deal FSM: `lead → qualified → quoted → accepted → funded → shipped → delivered → closed`
 - [x] Cancellation from any non-terminal stage
 - [x] Role-based guards: buyer/seller/broker/agent/admin
@@ -80,7 +92,9 @@
 ---
 
 ### PR 5 — EPIC 4: Cars Vertical Module
+
 **Files:**
+
 - `packages/trade-cars/src/types.ts`
 - `packages/trade-cars/src/schemas.ts`
 - `packages/trade-cars/src/helpers/duty-calculator.ts`
@@ -92,6 +106,7 @@
 - `packages/trade-adapters/src/legacy-eexports/index.ts` (157 lines)
 
 **Acceptance Criteria:**
+
 - [x] Vehicle types extend core listing — no core dependency leakage
 - [x] Duty calculator: ZAF 25%+15%VAT, NGA 35%+7.5%VAT, KEN 25%+16%VAT, +6 more
 - [x] Shipping lane estimator with known routes + fallback
@@ -103,7 +118,9 @@
 ---
 
 ### PR 6 — EPIC 5: Unified UI Experience
+
 **Files:**
+
 - `apps/trade/app/trade/layout.tsx`
 - `apps/trade/app/trade/page.tsx` (Dashboard)
 - `apps/trade/app/trade/parties/page.tsx`
@@ -115,6 +132,7 @@
 - `apps/trade/app/trade/commissions/page.tsx`
 
 **Acceptance Criteria:**
+
 - [x] 8 routes covering full deal lifecycle
 - [x] Deal Room (`deals/[id]`) — tabbed view: overview, quotes, financing, shipment, documents, commission
 - [x] All pages are `async` server components calling server actions
@@ -124,10 +142,13 @@
 ---
 
 ### PR 7 — EPIC 6: Integrations (Event Emitter)
+
 **Files:**
+
 - `apps/trade/lib/events/trade-event-emitter.ts` (169 lines)
 
 **Acceptance Criteria:**
+
 - [x] Event handler registry with typed payloads
 - [x] `emitTradeEvent()` dispatches via `@nzila/integrations-runtime`
 - [x] Integration helpers: `sendTradeEmail()`, `sendTradeSms()`, `sendTradeSlack()`, `syncTradeToHubSpot()`
@@ -136,10 +157,13 @@
 ---
 
 ### PR 8 — EPIC 7: Evidence + Export
+
 **Files:**
+
 - `apps/trade/lib/evidence/trade-evidence-packs.ts` (250 lines)
 
 **Acceptance Criteria:**
+
 - [x] `buildQuoteAcceptancePack()` — for quoted→accepted transition
 - [x] `buildShipmentDocsPack()` — for funded→shipped transition
 - [x] `buildCommissionSettlementPack()` — for delivered→closed transition
@@ -149,7 +173,9 @@
 ---
 
 ### PR 9 — EPIC 8: Contract Tests
+
 **Files:**
+
 - `tooling/contract-tests/trade-contracts.test.ts` (71 tests — consolidated)
 - `tooling/contract-tests/trade-actions.test.ts` (40 tests)
 - `tooling/contract-tests/trade-fsm.test.ts` (14 tests)
@@ -158,6 +184,7 @@
 - `tooling/contract-tests/trade-cars-boundary.test.ts` (38 tests)
 
 **Acceptance Criteria:**
+
 - [x] **TRADE_SERVER_ACTIONS_ORG_REQUIRED_001** — all server actions call `resolveOrgContext()`
 - [x] **TRADE_FSM_ENFORCED_002** — all deal-stage mutations call `attemptDealTransition()`
 - [x] **TRADE_INTEGRATIONS_DISPATCHER_ONLY_003** — no direct provider SDK imports
@@ -168,13 +195,16 @@
 ---
 
 ### PR 10 — EPIC 9: Migration + Cutover
+
 **Files:**
+
 - `scripts/migrations/trade/import-tradeos-core.ts` (451 lines)
 - `scripts/migrations/trade/import-eexports-vehicles.ts`
 - `scripts/migrations/trade/reconciliation-report.ts`
 - `scripts/migrations/trade/README.md`
 
 **Acceptance Criteria:**
+
 - [x] Trade-OS import: 7 migration runners (parties, listings, deals, quotes, financing, shipments, documents, commissions)
 - [x] eExports import: vehicle listings + vehicle docs + vehicle deals
 - [x] Django model → Drizzle type mappings with stage/role/status conversion
@@ -233,6 +263,7 @@ pnpm drizzle-kit generate --schema=packages/db/src/schema/trade.ts --out=package
 This script walks through the complete happy path from org setup to commission settlement.
 
 ### Prerequisites
+
 ```bash
 # 1. Run trade schema migration
 pnpm drizzle-kit push --schema=packages/db/src/schema/trade.ts

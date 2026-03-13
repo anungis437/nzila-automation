@@ -59,9 +59,11 @@ A new package is justified **only** when:
 2. Add `deprecation_note` explaining the reason and successor.
 3. If a replacement exists, set `replacement_for` on the **new** package.
 4. Add a console warning in the package's barrel `index.ts`:
+
    ```ts
    console.warn('[DEPRECATED] @nzila/<pkg> is deprecated. Use @nzila/<replacement> instead.')
    ```
+
 5. Open a tracking issue with label `lifecycle:deprecation`.
 6. Consumers have **two release cycles** (or 60 days) to migrate.
 

@@ -40,6 +40,7 @@ congowave_app_v1-main/
 ## 2. Tech Stack
 
 ### Frontend
+
 | Layer | Technology | Version |
 |-------|-----------|---------|
 | Framework | Next.js (App Router, Turbopack) | 16.1.4 |
@@ -63,6 +64,7 @@ congowave_app_v1-main/
 | Linting | ESLint 9 + eslint-config-next | — |
 
 ### Backend
+
 | Layer | Technology | Version |
 |-------|-----------|---------|
 | Framework | Django | 5.0.1 |
@@ -77,6 +79,7 @@ congowave_app_v1-main/
 | Payments | Stripe (server-side) | — |
 
 ### Infrastructure
+
 | Concern | Tooling |
 |---------|---------|
 | Containers | Docker Compose (dev, prod, scaling, microservices) |
@@ -113,23 +116,27 @@ congowave_app_v1-main/
 ## 4. Data Model — Key Entities
 
 ### User
+
 - UUID PK, email-based login, roles: `listener | artist | organizer | admin`
 - `stripe_customer_id`, `preferred_currency` (CAD default), `detected_country`
 - `is_verified`, `is_staff`, `profile_image`, `bio`
 
 ### Organization
+
 - Types: `artist | musician | painter | pastor | venue | church | label | promoter`
 - KYC verification (`verification_status`, `id_document_url`)
 - `follower_count`, `average_rating`, `total_reviews`
 - Social links (JSON), location (JSON), specialties, languages
 
 ### Content
+
 - **Release** — Album/EP/Single/Compilation with `cover_art_url`, `upc`, `release_date`
 - **Track** — Belongs to Organization & optional Release; `audio_file_url` (Azure Blob), `cover_art_url`, `artists` (JSON), `featuring` (JSON), `genre`, `mood`, `language`, `duration_seconds`, `isrc`, `tags` (ArrayField), `lyrics`, `synced_lyrics` (JSON), `play_count`, visibility/status
 - **Video** — Org-owned, `video_url`, `thumbnail_url`, `view_count`, `is_premium`
 - **Playlist** — User-created, ordered tracks
 
 ### Events & Ticketing
+
 - **Event** — Org-organized, typed (concert/festival/service/…), venue geo, lineup, capacity, waitlist
 - **TicketType** — Price tiers per event; quantity management
 - **Order** — Contains OrderItems → TicketTypes; statuses include `pending → paid → completed`
@@ -137,6 +144,7 @@ congowave_app_v1-main/
 - **PromoCode** — Percentage or fixed discount, usage limits
 
 ### Payments & Revenue
+
 - **Payment** — Stripe-backed, `payment_intent_id`, fraud scoring, idempotency key
 - **Refund** — Linked to Payment + Order, reason-coded
 - **Tip** — From user to org (optionally linked to Track or Event)
@@ -147,15 +155,18 @@ congowave_app_v1-main/
 - **PaymentAuditEvent** — Immutable audit log
 
 ### Royalties
+
 - **RightsHolder** — Stripe Connect onboarding, tax ID, role (artist/songwriter/producer/…)
 - **TrackRights** — Per-track split percentages, rights types (mechanical, performance, sync, master)
 - **RoyaltyStatement** — Monthly calculated statements per rights holder
 
 ### Analytics
+
 - TrackPlay, EventView, VideoView, SearchQuery, TicketScan
 - DailyMetric (aggregated), UserEngagement
 
 ### ML
+
 - Recommendation, FraudDetection, MLModel, UserBehaviorProfile
 
 ---
@@ -206,6 +217,7 @@ congowave_app_v1-main/
 ## 8. Risky Patterns & Technical Debt
 
 ### High Risk
+
 | Pattern | Detail |
 |---------|--------|
 | **Tokens in sessionStorage** | Access + refresh tokens stored in `sessionStorage` — vulnerable to XSS. Should use httpOnly cookies. |
@@ -215,6 +227,7 @@ congowave_app_v1-main/
 | **`print()` in Celery tasks** | Background tasks use `print()` instead of `logger` for error reporting (discovery, royalties) |
 
 ### Medium Risk
+
 | Pattern | Detail |
 |---------|--------|
 | **31 `console.log/warn/error`** calls in frontend | Should be replaced with structured logger or removed |
@@ -227,6 +240,7 @@ congowave_app_v1-main/
 | **`eslint --max-warnings=300`** | 300 lint warnings tolerated — indicates significant unresolved lint issues |
 
 ### Low Risk
+
 | Pattern | Detail |
 |---------|--------|
 | **Type alias proliferation** | Many `// Alias` fields on types (e.g., `capacity` ↔ `total_capacity`, `date` ↔ `start_datetime`) — signals unstable backend contract |

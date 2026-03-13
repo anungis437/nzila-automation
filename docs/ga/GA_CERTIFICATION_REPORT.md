@@ -26,6 +26,7 @@ Then run: `pnpm contract-tests` — all must pass before proceeding.
 Expected baseline: ≥ 290 tests pass, 0 fail.
 
 Contract test run output:
+
 ```
 (paste output here)
 ```
@@ -37,6 +38,7 @@ Contract test run output:
 **Objective:** Prove that Org B cannot read Org A's data via HTTP.
 
 **Method:**
+
 1. Seed Org A resource via test fixture (`tooling/contract-tests/fixtures/orgs.ts`)
 2. Issue GET request to that resource using Org B's session headers
 3. Confirm response is 403 (or 404 if enumeration protection is active)
@@ -53,6 +55,7 @@ Contract test run output:
 | Pass / Fail | ___ |
 
 **Evidence (paste test output):**
+
 ```
 (paste here)
 ```
@@ -64,6 +67,7 @@ Contract test run output:
 **Objective:** Prove that a `console:admin` session cannot invoke a `console:super_admin`-only action.
 
 **Method:**
+
 1. Call a `SUPER_ADMIN`-scoped route with `console:admin` session token
 2. Confirm response is 403
 3. Confirm an `AUTHORIZATION_DENIED` audit event was emitted
@@ -79,6 +83,7 @@ Contract test run output:
 | Pass / Fail | ___ |
 
 **Evidence (paste test output):**
+
 ```
 (paste here)
 ```
@@ -102,6 +107,7 @@ Contract test run output:
 | Pass / Fail | ___ |
 
 **Evidence:**
+
 ```
 (paste here)
 ```
@@ -113,6 +119,7 @@ Contract test run output:
 **Objective:** Confirm Next.js apps return 429 under load.
 
 **Method:**
+
 1. Set `ARCJET_ENV=test` with a very low bucket capacity (e.g., 3 requests/minute for test run)
 2. Issue 5 rapid requests to a protected console API route
 3. Confirm ≥ 1 response is `429 Too Many Requests`
@@ -127,6 +134,7 @@ Contract test run output:
 | Pass / Fail | ___ |
 
 **Evidence:**
+
 ```
 (paste here)
 ```
@@ -138,6 +146,7 @@ Contract test run output:
 **Objective:** Confirm CI fails when a CRITICAL vulnerability is introduced.
 
 **Method:**
+
 1. On a scratch branch, add a known-vulnerable package pinned to a CRITICAL version
 2. Push branch
 3. Confirm `dependency-audit` CI job fails with exit 1
@@ -158,6 +167,7 @@ Contract test run output:
 **Objective:** Confirm that all security-critical CI jobs are required checks on `main`.
 
 **Method:**
+
 1. Navigate to repo Settings → Branches → main → Branch protection rules
 2. Capture the list of required status checks
 
@@ -176,6 +186,7 @@ Contract test run output:
 | Dismiss stale reviews on push | ☐ |
 
 **Evidence (screenshot or `gh api` output):**
+
 ```
 (paste here)
 ```
@@ -196,6 +207,7 @@ Contract test run output:
 | 5 Red team simulation — all 6 sections | PASS / FAIL |
 
 **`pnpm contract-tests` final run:**
+
 - Total: ___ tests
 - Passed: ___
 - Failed: 0

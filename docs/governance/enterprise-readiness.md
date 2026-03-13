@@ -16,7 +16,7 @@
 | 6  | Observability             | [Platform Observability](../packages/platform-observability/)         | Complete   |
 | 7  | Disaster Recovery         | [disaster-recovery.md](disaster-recovery.md)                          | Complete   |
 | 8  | Incident Response         | [incident-response.md](incident-response.md)                         | Complete   |
-| 9  | Verification Procedures   | [Verification](#verification-procedures)                              | Complete   |
+| 9  | Verification Procedures   | [Verification](#9-verification-procedures)                              | Complete   |
 
 ---
 

@@ -9,30 +9,37 @@ The governance architecture ensures every application in the Nzila OS ecosystem 
 ## Core Packages
 
 ### @nzila/platform-policy-engine
+
 Central policy evaluation engine. All sensitive operations must pass through policy checks before execution.
 
 **Key capabilities:**
+
 - Policy definition (YAML-based rules)
 - Policy evaluation (allow/deny/requires_approval)
 - Threshold-based approval workflows
 - Audit trail for all policy decisions
 
 ### @nzila/platform-governance
+
 Governance control plane for compliance validation and drift detection.
 
 **Key capabilities:**
+
 - Audit timeline (timestamped governance events)
 - App compliance assessment (6-point check)
 - Governance findings with severity classification
 - Compliance drift detection
 
 ### @nzila/platform-evidence-pack
+
 Evidence collection and export for procurement and audit purposes.
 
 ### @nzila/platform-observability
+
 Metrics, logging, and monitoring infrastructure.
 
 ### @nzila/platform-events
+
 Event bus for cross-app communication and audit logging.
 
 ## Compliance Framework
@@ -57,6 +64,7 @@ Event bus for cross-app communication and audit logging.
 ## Governance Workflows
 
 ### Policy Evaluation Flow
+
 ```
 Operation Request → Policy Engine → Evaluate Rules → Decision
                                                        ├── Allow → Execute
@@ -65,6 +73,7 @@ Operation Request → Policy Engine → Evaluate Rules → Decision
 ```
 
 ### Compliance Drift Detection
+
 ```
 Push to main → CI Workflow → governance:check → Report
                                                   ├── Pass → Continue
@@ -72,6 +81,7 @@ Push to main → CI Workflow → governance:check → Report
 ```
 
 ### Evidence Collection
+
 ```
 Schedule (daily) → Collect SBOM → Run Policy Checks → Generate Evidence Pack → Store
 ```
@@ -79,6 +89,7 @@ Schedule (daily) → Collect SBOM → Run Policy Checks → Generate Evidence Pa
 ## Audit Timeline
 
 Every governance event is recorded with:
+
 - Unique ID
 - ISO 8601 timestamp
 - Event type (policy_evaluated, compliance_check, drift_detected, etc.)
@@ -100,12 +111,14 @@ Every governance event is recorded with:
 ## CI/CD Integration
 
 ### compliance-drift.yml
+
 - Triggers on push to main (apps/ and packages/platform-* paths)
 - Weekly scheduled check (Monday 04:00 UTC)
 - Runs `pnpm governance:check`
 - Uploads report artifact on failure
 
 ### compliance.yml
+
 - Daily evidence collection (05:00 UTC)
 - Weekly compliance reports (Sunday 06:00 UTC)
 - SOC 2 Type II + ISO 27001 validation

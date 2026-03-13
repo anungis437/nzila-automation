@@ -53,10 +53,12 @@ Every Control Plane page, card, or widget must belong to exactly one bucket:
 ## Route Governance
 
 Every Control Plane route must be documented in:
+
 - `apps/control-plane/docs/ROUTE_GOVERNANCE.md` (human-readable)
 - `apps/control-plane/route.meta.json` (machine-readable)
 
 New routes require:
+
 1. Assigned bucket (HEALTH / ATTENTION / ACTION)
 2. Named primary user / persona
 3. Clear actionability description

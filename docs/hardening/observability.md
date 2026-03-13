@@ -38,11 +38,13 @@ Azure Monitor / OpenTelemetry Collector
 All services accept the W3C `traceparent` and `tracestate` headers. This is automatic with the OTLP SDK.
 
 **Fastify**: Add `@opentelemetry/instrumentation-fastify` to the orchestrator:
+
 ```typescript
 import { FastifyInstrumentation } from '@opentelemetry/instrumentation-fastify'
 ```
 
 **Next.js**: Use `instrumentation.ts` at app root:
+
 ```typescript
 // apps/console/instrumentation.ts
 export async function register() {
@@ -56,6 +58,7 @@ export async function register() {
 ### Outgoing Requests
 
 Downstream `fetch()` calls must propagate trace context. Use the fetch instrumentation auto-injector:
+
 ```typescript
 import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch'
 ```
@@ -85,7 +88,7 @@ All health endpoints (`/api/health`, `/health`) should emit a `health.check` spa
 
 | Alert | Threshold | Severity |
 |-------|-----------|----------|
-| Error rate > 5% over 5 min | `traces | where resultCode >= 500` | P2 |
+| Error rate > 5% over 5 min | `traces \| where resultCode >= 500` | P2 |
 | p95 latency > 2s for 5 min | `performanceCounters` | P3 |
 | Audit chain verification failed | Custom event: `audit.chain_broken` | P1 |
 | Rate limit hit > 100 times in 1 min | Custom event: `rate_limit.exceeded` | P3 |

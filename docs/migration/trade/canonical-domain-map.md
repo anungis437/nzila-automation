@@ -220,6 +220,7 @@ lead → qualified → quoted → accepted → funded → shipped → delivered 
 ## Audit Trail
 
 Every mutation produces an `AuditEntry` following the `@nzila/commerce-audit` pattern:
+
 - `entityType`: `trade_deal`, `trade_quote`, `trade_listing`, etc.
 - `action`: `created`, `updated`, `transitioned`, `deleted`
 - Hash-chained for integrity verification via `@nzila/os-core`

@@ -62,6 +62,7 @@ The following checks run on every `git commit`:
 The custom config (`.gitleaks.toml`) extends the default Gitleaks ruleset with:
 
 ### Custom Rules
+
 - **Clerk secret keys** (`sk_live_*`) — production Clerk tokens
 - **Stripe secret keys** (`sk_live_*`) and webhook secrets (`whsec_*`)
 - **Azure Key Vault URIs** with embedded SAS tokens
@@ -69,11 +70,13 @@ The custom config (`.gitleaks.toml`) extends the default Gitleaks ruleset with:
 - **QuickBooks Online client secrets**
 
 ### Allowlisted Paths
+
 - CI workflow files (contain placeholder env vars like `sk_test_placeholder`)
 - `.env.example` and `.env.test` files
 - Lock files, snapshots, and documentation
 
 ### Allowlisted Patterns
+
 - `sk_test_placeholder`, `pk_test_placeholder` — CI test fixtures
 - `postgresql://postgres:postgres@localhost` — local dev DB
 
@@ -89,18 +92,21 @@ Both must pass for PRs to merge.
 ## What to Do If a Secret Is Detected
 
 ### In pre-commit (local)
+
 1. **Do not force-push past the hook.**
 2. Remove the secret from the staged file.
 3. If it was a real credential: **rotate it immediately** via Azure Key Vault.
 4. Re-stage and commit.
 
 ### In CI
+
 1. The PR will be blocked — the secret-scan job will fail.
 2. Remove the secret, push a fixup commit.
 3. If the secret was a real credential: follow the [Incident Response playbook](../../ops/incident-response/README.md).
 4. Report to `security@nzila.app`.
 
 ### If a Real Secret Was Exposed
+
 1. **Rotate the credential immediately** — do not wait for PR review.
 2. File a P2 incident per the IR playbook.
 3. Audit access logs for the compromised credential.

@@ -39,6 +39,7 @@ The platform enforces strict organisational isolation at every layer:
 - **Runtime guarantees:** `authorizeOrgAccess()` in `os-core/policy` checks `org_members` table membership
 
 **Evidence Artifacts:**
+
 - `tooling/contract-tests/org-isolation.test.ts` — 5 structural invariants
 - `tooling/contract-tests/org-isolation-runtime.test.ts` — Runtime scope verification
 - `tooling/contract-tests/org-isolation-stress.test.ts` — Multi-org concurrent stress (0 cross-org leaks)
@@ -79,6 +80,7 @@ The platform computes a weighted composite operational confidence score (0–100
 ### 3.2 Health Digests
 
 Automated health digest snapshots with:
+
 - Delta computation across time windows
 - Anomaly detection with severity classification
 - ChatOps dispatch (Slack, Teams) via `@nzila/platform-ops/health-alerts`
@@ -86,6 +88,7 @@ Automated health digest snapshots with:
 ### 3.3 Failure Simulation
 
 Production-safe failure simulation with:
+
 - Feature-flagged activation (environment-gated)
 - Latency injection, error rate amplification, integration failure simulation
 - Safety guards: `canActivateSimulation()`, `isSimulationEnvironmentAllowed()`
@@ -151,6 +154,7 @@ The platform maintains **129+ architectural contract tests** in `tooling/contrac
 ### 5.3 Continuous Enforcement
 
 All governance checks run on every CI push:
+
 - `pnpm lint` — ESLint across all packages + apps
 - `pnpm typecheck` — TypeScript strict mode
 - `pnpm test` — Unit tests across all packages
@@ -174,6 +178,7 @@ The platform includes a deterministic synthetic load harness that exercises the 
 | Spike | 500 | 1,000 | 30s |
 
 **Key Metrics:**
+
 - P95 degradation measured across all phases
 - Degradation ratio bounded to 3.0x maximum
 - P95 budget: 500ms (configurable)
@@ -195,6 +200,7 @@ Simulates N organisations operating concurrently with isolation verification:
 **Module:** `@nzila/platform-performance/scale-report`
 
 Generates a structured JSON + Markdown scale report for procurement and executive review:
+
 - Executive summary with pass/fail verdict
 - Per-phase breakdown (concurrency, RPS, P50/P95/P99, error rate)
 - Degradation analysis with interpretation
@@ -229,6 +235,7 @@ Generates a structured JSON + Markdown scale report for procurement and executiv
 Five new platform packages delivered end-to-end with 154 unit tests and 59 contract tests:
 
 ### 8.1 Platform Event Bus (`@nzila/platform-events`)
+
 - 25 canonical event categories across all verticals
 - Typed bus with wildcard subscriptions and error isolation
 - Zod-validated event envelopes with full W3C traceability
@@ -236,6 +243,7 @@ Five new platform packages delivered end-to-end with 154 unit tests and 59 contr
 - **Tests:** 22 unit + 9 contract
 
 ### 8.2 Integration Control Plane (`@nzila/platform-integrations-control-plane`)
+
 - Provider registry with health aggregation per org
 - HMAC-SHA256 webhook verification with timing-safe comparison and replay protection
 - DLQ management: inspect, replay, purge
@@ -243,6 +251,7 @@ Five new platform packages delivered end-to-end with 154 unit tests and 59 contr
 - **Tests:** 30 unit + 12 contract
 
 ### 8.3 Platform Observability (`@nzila/platform-observability`)
+
 - W3C Trace Context: `traceparent` parsing/emission, correlation ID propagation
 - Prometheus-compatible metrics: Counter, Gauge, Histogram with text exposition
 - Lightweight span/trace API compatible with OpenTelemetry concepts
@@ -250,6 +259,7 @@ Five new platform packages delivered end-to-end with 154 unit tests and 59 contr
 - **Tests:** 51 unit + 11 contract
 
 ### 8.4 Evidence Pack Export (`@nzila/platform-evidence-pack`)
+
 - Pack lifecycle: draft → sealed → exported → verified → expired
 - SHA-256 digest + Merkle root cryptographic sealing
 - Multi-format export: JSON, ZIP bundle with per-artifact error isolation
@@ -257,6 +267,7 @@ Five new platform packages delivered end-to-end with 154 unit tests and 59 contr
 - **Tests:** 22 unit + 13 contract
 
 ### 8.5 Compliance Snapshots (`@nzila/platform-compliance-snapshots`)
+
 - Immutable SHA-256 hash-chained compliance snapshots
 - 9 control families: access, change-mgmt, incident-response, dr-bcp, integrity, sdlc, retention, data-governance, security-operations
 - Compliance score: `(compliant + 0.5×partial) / assessed × 100`
@@ -266,6 +277,7 @@ Five new platform packages delivered end-to-end with 154 unit tests and 59 contr
 ### Cross-Cutting Guarantees
 
 All 5 packages enforce:
+
 - **"org" nomenclature** — zero "tenant" references in source code
 - **Strict TypeScript** — no `any`, no `as any`, no `@ts-ignore`
 - **Zod validation** — all external boundaries schema-validated

@@ -46,6 +46,7 @@
 > **Note**: UE also has `django_celery_beat` and `django_celery_results` for async task processing.
 
 **Django middleware stack**:
+
 - `ClerkJWTMiddleware` — validates Clerk tokens
 - `OrganizationIsolationMiddleware` — enforces org scoping
 - `AuditLogMiddleware` — automatic audit logging
@@ -117,24 +118,29 @@
 ## 5. Existing Documented Rules (Source of Truth)
 
 ### From `ARCHITECTURE.md`
+
 - "Apps Consume, Not Bypass" — apps use `@nzila/ai-sdk` and `@nzila/ml-sdk`, never provider SDKs directly.
 - "Entitlements as Data" — via `partner_entities` rows, no hardcoded IDs.
 
 ### From `docs/architecture/ORG_ISOLATION.md`
+
 - **4-Layer Enforcement**: DB FK → Scoped DAL → Contract Tests → ESLint
 - `createScopedDb(orgId)` is the canonical way to access org-scoped data
 - `rawDb` from `@nzila/db/raw` is **blocked by ESLint** in `apps/*`
 
 ### From `docs/architecture/VERTICAL_SCAFFOLDING.md`
+
 - `nzila create-vertical` generates governance-complete apps
 - Every scaffolded vertical includes: Clerk middleware, `createScopedDb`, `withAudit`, no-shadow-db ESLint
 
 ### From `docs/architecture/ENFORCEMENT_SUMMARY.md`
+
 - 5-layer enforcement: Schema → Runtime DAL → Boot-time → Lint → CI
 - 384 contract tests + 27 unit tests
 - INV-06 through INV-14 codify structural invariants
 
 ### From `docs/platform/APP_ADOPTION_GUIDE.md`
+
 - Required deps: `@nzila/os-core` + `@nzila/db`
 - Required CI: contract tests, evidence collection, lint, typecheck
 
@@ -156,6 +162,7 @@ UE has the most significant stack fragmentation:
 ### Moderate Fragmentation: `abr`
 
 ABR has the same Django backend structure but the TS layer is thinner:
+
 - Django backend has 10 apps with its own ORM models
 - TS layer has `@nzila/db` as a dependency but no `django-proxy.ts` and minimal direct TS DB queries
 - No clear boundary documentation
@@ -163,6 +170,7 @@ ABR has the same Django backend structure but the TS layer is thinner:
 ### Low Fragmentation: Platform-Aligned Apps
 
 These apps follow the canonical NzilaOS pattern:
+
 - **console** — Reference implementation. `createScopedDb` + `platformDb` + `getUserRole()`.
 - **cfo** — Console-aligned. Same patterns.
 - **partners** — Console-aligned with partner-specific entitlement gates.

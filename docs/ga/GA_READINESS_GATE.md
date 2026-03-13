@@ -25,9 +25,9 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-# SECTION 1 — CRITICAL SECURITY GATES
+## SECTION 1 — CRITICAL SECURITY GATES
 
-## 1.1 Org Isolation Enforcement
+### 1.1 Org Isolation Enforcement
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -43,7 +43,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-## 1.2 Privilege Escalation Protection
+### 1.2 Privilege Escalation Protection
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -57,7 +57,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-## 1.3 Audit Immutability & Coverage
+### 1.3 Audit Immutability & Coverage
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -76,7 +76,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-## 1.4 CI Security Enforcement
+### 1.4 CI Security Enforcement
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -91,9 +91,9 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-# SECTION 2 — HIGH PRIORITY OPERABILITY GATES
+## SECTION 2 — HIGH PRIORITY OPERABILITY GATES
 
-## 2.1 Rate Limiting & Abuse Protection
+### 2.1 Rate Limiting & Abuse Protection
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -107,7 +107,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-## 2.2 Observability Readiness
+### 2.2 Observability Readiness
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -127,9 +127,9 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-# SECTION 3 — DATA & CONSISTENCY GATES
+## SECTION 3 — DATA & CONSISTENCY GATES
 
-## 3.1 Concurrency & Idempotency
+### 3.1 Concurrency & Idempotency
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -141,7 +141,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-## 3.2 Migration & Rollback Safety
+### 3.2 Migration & Rollback Safety
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -153,7 +153,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-# SECTION 4 — RELEASE DISCIPLINE
+## SECTION 4 — RELEASE DISCIPLINE
 
 | Item | Status | Evidence / Blocker |
 |------|--------|--------------------|
@@ -169,7 +169,7 @@ Section 2 ❌ items → **Controlled rollout only**.
 
 ---
 
-# SECTION 5 — FINAL RED TEAM SIMULATION
+## SECTION 5 — FINAL RED TEAM SIMULATION
 
 **Status: NOT YET EXECUTED**
 
@@ -188,7 +188,7 @@ This simulation must be run before the GA Certification Report (`docs/ga/GA_CERT
 
 ---
 
-# CURRENT DECISION MATRIX
+## CURRENT DECISION MATRIX
 
 | Section | Gate | Status | Effect |
 |---------|------|--------|--------|
@@ -210,7 +210,7 @@ This simulation must be run before the GA Certification Report (`docs/ga/GA_CERT
 
 ---
 
-# GA UNLOCK PATH
+## GA UNLOCK PATH
 
 ### Code & Infrastructure — ✅ COMPLETE
 
@@ -227,18 +227,18 @@ This simulation must be run before the GA Certification Report (`docs/ga/GA_CERT
 
 All Section 1 and Section 2 gates are ✅ **passing** as of commit `2e1c224`. 345 tests green.
 
-### Remaining to GA sign-off
+### Remaining to GA Sign-off
 
 | Item | Time | Unblocks |
 |------|------|----------|
 | Execute red team simulation (§5.1–5.6) | 1–2 hours | Section 5 |
 | Sign `GA_CERTIFICATION_REPORT.md` | 15 min | Final decision |
 
-### Achievable GA date: **today** — red team simulation + CTO sign-off only
+### Achievable GA Date
 
 ---
 
-# EXECUTIVE SUMMARY TEMPLATE
+## EXECUTIVE SUMMARY TEMPLATE
 
 > Complete this section at sign-off.
 

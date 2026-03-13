@@ -9,6 +9,7 @@ each serving a different user need.
 ## Documentation Map
 
 ### [Tutorials](tutorials/README.md)
+
 **Learning-oriented** — Walk through practical exercises to get started.
 
 | Tutorial | Audience | Time |
@@ -17,6 +18,7 @@ each serving a different user need.
 | [Adding AI to an App](tutorials/adding-ai.md) | Developer | 20 min |
 
 ### [How-To Guides](how-to/README.md)
+
 **Task-oriented** — Step-by-step instructions for specific goals.
 
 | Guide | Category |
@@ -25,6 +27,7 @@ each serving a different user need.
 | [Create Model Card](how-to/create-model-card.md) | AI Governance |
 
 ### [Reference](reference/README.md)
+
 **Information-oriented** — Technical descriptions of the system.
 
 | Reference | Scope |
@@ -32,6 +35,7 @@ each serving a different user need.
 | [Package Catalogue](reference/packages.md) | All packages |
 
 ### [Explanation](explanation/README.md)
+
 **Understanding-oriented** — Discuss concepts and design decisions.
 
 | Topic | Domain |
@@ -40,6 +44,7 @@ each serving a different user need.
 | [AI Risk Management](explanation/ai-risk-management.md) | AI Governance |
 
 ### [Runbooks](../ops/runbooks/README.md)
+
 **Operational** — Incident response and operational procedures.
 
 All runbooks are consolidated in [`ops/runbooks/`](../ops/runbooks/):
@@ -128,36 +133,47 @@ Deployment, incident response, and operational procedures.
 ## Domain-Specific Documentation
 
 ### [Decision Layer](decision-layer/)
+
 AI decision engine capabilities, value models, and vertical implementations.
 
 ### [Commerce](commerce/)
+
 Commerce domain model, ADRs, IRAP design, and MEIE deliverables.
 
 ### [Agri](agri/)
+
 Agricultural vertical specification (modules 00–08).
 
 ### [Pilot](pilot/)
+
 Pilot runbook and operational procedures for tenant rollouts.
 
 ### [Migration](migration/)
+
 Legacy migration guides, enforcement upgrades, rollback procedures, and app alignment.
 
 ### [Hardening](hardening/)
+
 Security hardening baseline, build reproducibility, logging, observability, and secrets.
 
 ### [Stress Test](stress-test/)
+
 Enterprise stress test results and remediation plans.
 
 ### [GA](ga/)
+
 General availability readiness gates and certification reports.
 
 ### [Platform](platform/)
+
 Platform-level GA readiness and feature assessments.
 
 ### [Repo Contract](repo-contract/)
+
 Repository invariants, versioning policy, and structural contracts.
 
 ### [Backlog](backlog/)
+
 Active backlog items and technical debt.
 
 ---

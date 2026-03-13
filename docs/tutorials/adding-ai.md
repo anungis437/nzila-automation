@@ -12,6 +12,7 @@
 
 > **NEVER import directly from `@nzila/ai-core`, OpenAI, Azure OpenAI, or Anthropic SDKs.**  
 > All AI access MUST go through `@nzila/ai-sdk`. This ensures:
+>
 > - PII redaction is enforced
 > - Budget limits are checked
 > - All requests are audit-logged with hash-chained evidence

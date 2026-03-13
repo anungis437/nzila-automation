@@ -21,6 +21,7 @@ The AI Intelligence Layer provides cross-application insights, natural language 
 **Purpose:** Aggregate events across all apps and generate operational insights.
 
 ### Capabilities
+
 - **Event Aggregation**: Collect and store events from all apps with filtering by app, org, type
 - **Cross-App Insights**: Detect patterns across multiple applications (error correlation, volume anomalies)
 - **Operational Signals**: Detect spikes, drops, threshold breaches, and trend changes against baselines
@@ -34,7 +35,9 @@ The AI Intelligence Layer provides cross-application insights, natural language 
 | Partner Revenue Risk | Partners + CFO | performance_drop + revenue_variance | warning/cost |
 
 ### Signal Detection
+
 Signals are generated when metric deviations exceed a configurable threshold (default 20%):
+
 - **Spike**: >50% above baseline
 - **Drop**: >50% below baseline
 - **Threshold Breach**: 20-50% deviation
@@ -44,6 +47,7 @@ Signals are generated when metric deviations exceed a configurable threshold (de
 **Purpose:** Enable natural language queries against platform data with evidence-backed answers.
 
 ### Capabilities
+
 - **Intent Classification**: status, comparison, trend, anomaly, compliance
 - **Query Parsing**: Structured query objects with org/actor context
 - **Evidence-Backed Answers**: Results include references to events, metrics, policies, and audit entries
@@ -54,6 +58,7 @@ Signals are generated when metric deviations exceed a configurable threshold (de
 **Purpose:** Detect domain-specific anomalies across the platform.
 
 ### Detectors
+
 | Detector | Domain | Default Threshold |
 |----------|--------|-------------------|
 | Grievance Spike | Union-Eyes | 2x baseline |
@@ -62,6 +67,7 @@ Signals are generated when metric deviations exceed a configurable threshold (de
 | Partner Performance Drop | Partners | 1.5x below baseline |
 
 ### Severity Classification
+
 | Factor vs Threshold | Severity |
 |---------------------|----------|
 | ≥3x | Critical |
@@ -70,6 +76,7 @@ Signals are generated when metric deviations exceed a configurable threshold (de
 | <1.5x | Low |
 
 ### Default Rules
+
 Pre-configured rules for common anomaly patterns with adjustable thresholds.
 
 ## @nzila/platform-agent-workflows
@@ -77,6 +84,7 @@ Pre-configured rules for common anomaly patterns with adjustable thresholds.
 **Purpose:** Event-driven workflow orchestration with policy engine integration.
 
 ### Capabilities
+
 - **Workflow Creation**: Define multi-step workflows triggered by events
 - **Policy-Obedient Execution**: Every step can include policy checks (allow/deny/requires_approval)
 - **Blocked Step Handling**: Steps blocked by policy generate approval recommendations
@@ -85,6 +93,7 @@ Pre-configured rules for common anomaly patterns with adjustable thresholds.
 - **Human Review**: All recommendations are flagged with `humanReviewRequired: true`
 
 ### Workflow States
+
 ```
 pending → running → completed
                   → failed
@@ -96,17 +105,20 @@ pending → running → completed
 **Purpose:** Govern AI model usage, prompt evolution, and decision quality.
 
 ### Model Registry
+
 - Register AI models with version, provider, capabilities, and risk level
 - Approval workflow for production deployment
 - Audit trail for model changes
 
 ### Prompt Versioning
+
 - Version-controlled prompt templates
 - Automatic deactivation of previous versions
 - Change reason tracking
 - Full version history
 
 ### AI Decision Logging
+
 - Log every AI-assisted decision with confidence score
 - All decisions require human review (`requiresHumanReview: true` always)
 - Low-confidence decisions (<0.7) are flagged as `pending` for immediate review
@@ -114,6 +126,7 @@ pending → running → completed
 - Decision audit trail with review status
 
 ### Human Review
+
 - Flag decisions for human review with priority levels
 - Resolution tracking
 - Pending review queue

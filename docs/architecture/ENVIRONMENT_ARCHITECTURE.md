@@ -94,6 +94,7 @@ envMetricName('api.request_count')
 ## Control Plane
 
 The `/environments` dashboard shows:
+
 - Per-environment cards with config, latest artifact, governance snapshot, feature flags
 - Deployment history and artifact viewer components
 - Health check status

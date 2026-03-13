@@ -66,6 +66,7 @@ A decision's `review_required` flag is set `true` when:
 | LOW | None |
 
 Rules may specify additional approval roles:
+
 - `arbitration-risk` → `legal-compliance`, `platform-admin`
 - `budget-variance` → `finance-admin`
 - `deployment-risk` → `platform-admin`, `service-owner`

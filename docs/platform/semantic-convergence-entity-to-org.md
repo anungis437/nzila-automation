@@ -44,11 +44,13 @@ Canonical terminology: **org**, **orgId**, **/orgs** routes, **OrgContext**.
 ### 2. Variable / identifier usage (`entityId` as org)
 
 ~300 files across:
+
 - **apps/**: cfo, console, nacp-exams, partners, shop-quoter, trade, union-eyes, zonga
 - **packages/**: ai-core, ai-sdk, commerce-*, db, fx, ml-*, nacp-core, org, os-core, payments-stripe, platform-*, shop-quoter, tax, tools-runtime, trade-*, zonga-core
 - **tooling/**: ai-evals, contract-tests, ml, scripts, security
 
 Key patterns:
+
 - `resolveOrgContext()` returns `{ entityId: orgId }` (nacp, zonga, trade)
 - `requireEntityAccess(entityId)` in console api-guards
 - `authorizeEntityAccess(ctx, entityId)` in os-core
@@ -64,6 +66,7 @@ Key patterns:
 ### 4. Database tables/columns with `entity_id` as org scope
 
 **154 org-scoped tables** across all schema files use:
+
 ```typescript
 entityId: uuid('entity_id').notNull().references(() => entities.id)
 ```
@@ -71,6 +74,7 @@ entityId: uuid('entity_id').notNull().references(() => entities.id)
 Tables defined in: `packages/db/src/schema/{entities,governance,operations,equity,finance,payments,ai,ml,ue,tax,nacp,zonga,commerce,platform,trade,partners}.ts`
 
 **3 entity-domain tables** (table names contain "entity"):
+
 - `entities` — root org/tenant table (id IS the org)
 - `entityMembers` — console access membership
 - `entityRoles` — governance roles

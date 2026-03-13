@@ -48,7 +48,7 @@ structurally enforced, developer-proof, multi-layer guarantees.
 
 ## Migration Steps for Existing Code
 
-### For existing API routes (optional, recommended):
+### For existing API routes (optional, recommended)
 
 ```diff
 - import { db } from '@nzila/db'
@@ -71,7 +71,7 @@ structurally enforced, developer-proof, multi-layer guarantees.
   }
 ```
 
-### For new verticals:
+### For new verticals
 
 ```bash
 nzila create-vertical my-vertical

@@ -110,6 +110,7 @@ All security and compliance evidence is bundled in the **Proof Pack**, accessibl
 - Incident response plan
 
 Each artifact is:
+
 - SHA-256 hashed for tamper evidence
 - Stored with 7-year retention
 - Org-scoped and exportable

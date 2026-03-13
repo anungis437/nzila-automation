@@ -47,11 +47,13 @@ For apps where **Django is authoritative**:
 ### 2.1. TS layer MUST NOT perform domain mutations
 
 The TS (Next.js) layer may:
+
 - **Read** from `@nzila/db` for UI rendering, caching, or dashboards
 - **Forward** mutations to Django via `djangoProxy()` (UE) or equivalent
 - **Use** `withRLSContext` for org-scoped reads
 
 The TS layer MUST NOT:
+
 - Insert, update, or delete domain rows via Drizzle
 - Bypass Django by writing directly to shared tables
 - Maintain its own shadow schema that conflicts with Django models
@@ -59,6 +61,7 @@ The TS layer MUST NOT:
 ### 2.2. Auth & Org Isolation
 
 Django-authoritative apps enforce auth and org isolation in **both** layers:
+
 - Django: `ClerkJWTMiddleware` → `OrganizationIsolationMiddleware` → `AuditLogMiddleware`
 - TS: `auth()` / `requireAuth()` / `requireAdmin()` → Clerk JWT
 
@@ -86,6 +89,7 @@ For apps where **TS/Drizzle is authoritative**:
 ### 3.1. Canonical DB Access
 
 All domain queries and mutations MUST go through:
+
 - `createScopedDb(orgId)` — for org-scoped tables
 - `createAuditedScopedDb({orgId, actorId})` — for audited mutations  
 - `platformDb` — for platform-level (non-org-scoped) tables
@@ -95,6 +99,7 @@ Direct `db` imports from `@nzila/db` are restricted by ESLint (`no-shadow-db`).
 ### 3.2. No Django Backend
 
 These apps have no Django component. Domain logic lives in:
+
 - Server actions (`'use server'` files)
 - API routes (`app/api/`)
 - Shared packages (`@nzila/*`)
@@ -156,10 +161,12 @@ Each exception has an owner, justification, and expiry date.
 ## Appendix: Django App Inventory
 
 ### Union Eyes (12 Django apps)
+
 `ai_core`, `analytics`, `auth_core`, `bargaining`, `billing`,
 `compliance`, `content`, `core`, `grievances`, `notifications`,
 `services`, `unions`
 
 ### ABR (10 Django apps)
+
 `ai_core`, `analytics`, `auth_core`, `billing`, `compliance`,
 `content`, `core`, `notifications`, `services`, `apps.core`

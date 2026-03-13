@@ -103,7 +103,7 @@
 |----|------|------|-------------|
 | E08-a | Rate limiting — orchestrator | `apps/orchestrator-api/src/index.ts` L34 | `@fastify/rate-limit` — `max: 200, timeWindow: '1 minute'`, 429 response builder |
 | E08-b | Helmet — orchestrator | `apps/orchestrator-api/src/index.ts` L22 | `@fastify/helmet` with `hsts: { maxAge: 63072000 }`, `frameAncestors: 'none'` |
-| E08-c | **GAP** — No rate limiting in Next.js apps | `apps/console/`, `apps/partners/`, `apps/web/` | grep for `rateLimit|upstash|arcjet` returned 0 results in app source |
+| E08-c | **GAP** — No rate limiting in Next.js apps | `apps/console/`, `apps/partners/`, `apps/web/` | grep for `rateLimit\|upstash\|arcjet` returned 0 results in app source |
 | E08-d | Security headers — web | `apps/web/next.config.ts` | HSTS, X-Frame-Options: SAMEORIGIN, X-Content-Type-Options: nosniff, CSP, Referrer-Policy, Permissions-Policy |
 | E08-e | Security headers — console | `apps/console/next.config.ts` | HSTS, X-Frame-Options: DENY (stronger), CSP scoped to `https://clerk.nzila.app` |
 
@@ -119,7 +119,7 @@
 | E09-d | OpenTelemetry bootstrap | `packages/os-core/src/telemetry/otel.ts` | `initOtel()` with `NodeSDK`, `OTLPTraceExporter`, auto-instrumentations |
 | E09-e | Telemetry coverage tests | `tooling/contract-tests/telemetry-coverage.test.ts` | 12/12 tests pass |
 | E09-f | Health route — orchestrator | `apps/orchestrator-api/src/routes/health.js` | Registered at app startup |
-| E09-g | **GAP** — No health route in console/partners/web | — | `Get-ChildItem apps/ -Recurse -Filter "route.ts" | Where-Object { $_.FullName -match "health" }` → empty |
+| E09-g | **GAP** — No health route in console/partners/web | — | `Get-ChildItem apps/ -Recurse -Filter "route.ts" \| Where-Object { $_.FullName -match "health" }` → empty |
 
 ---
 

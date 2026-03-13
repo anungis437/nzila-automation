@@ -159,6 +159,7 @@ Customer Browser → Nzila CDN → Azure App Service (Customer Sub)
 ## Console Integration
 
 The deploy profile is visible in `Console → Deploy Profile`:
+
 - Shows current profile for the org.
 - Links to profile-specific documentation.
 - Displays infrastructure health for the selected profile.

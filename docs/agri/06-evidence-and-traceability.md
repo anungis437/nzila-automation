@@ -69,6 +69,7 @@ Producer (who grew it)
 ```
 
 Each link is recorded in `agri_traceability_links` with:
+
 - Source type + ID
 - Target type + ID
 - Link metadata (timestamps, actors, conditions)

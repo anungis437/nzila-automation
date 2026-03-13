@@ -15,6 +15,7 @@
 **Purpose**: Executive/operator shell for cross-platform health, governance, and action.
 
 **Scope**:
+
 - Platform-wide health summaries (aggregated, not raw data)
 - Governance posture and compliance state
 - Intelligence signals and anomaly triage
@@ -27,6 +28,7 @@
 **Primary users**: Platform operators, executives, governance leads
 
 **Bucket model**:
+
 - **HEALTH** — Is the platform healthy? (environments, governance, architecture, modules)
 - **ATTENTION** — What needs attention? (anomalies, decisions, intelligence, changes)
 - **ACTION** — What can I act on? (approvals, exports, review queues, agent recommendations)
@@ -40,6 +42,7 @@
 **Purpose**: Operator/developer tool shell for diagnostics and deeper system interaction.
 
 **Scope**:
+
 - System diagnostics and operational debugging
 - Lower-level operational tooling
 - Database and infrastructure inspection
@@ -50,6 +53,7 @@
 **Primary users**: Developers, DevOps engineers, platform operators (technical)
 
 **Key distinction from Control Plane**:
+
 - Console is for **technical investigation**, not executive summary
 - Console surfaces **detailed operational data**, not aggregated health
 - Console supports **direct interaction** with system internals
@@ -61,6 +65,7 @@
 **Purpose**: Platform configuration and governance administration.
 
 **Scope**:
+
 - Policy configuration and rule management
 - Registry and configuration metadata editing
 - Global platform settings
@@ -71,6 +76,7 @@
 **Primary users**: Platform administrators, governance administrators
 
 **Key distinction from Control Plane**:
+
 - Platform Admin is for **configuration changes**, not monitoring
 - Platform Admin is concerned with **how the platform is configured**, not its runtime state
 - Platform Admin manages **rules and policies**, not operational responses
@@ -95,6 +101,7 @@
 **Primary users**: Domain operators, business users, vertical-specific admins
 
 **Key distinction**:
+
 - These surfaces belong **inside their respective apps**
 - They manage **domain-specific workflows**, not platform-wide concerns
 - They are **not visible** in Control Plane unless they surface governance-relevant signals
@@ -103,7 +110,7 @@
 
 ## Prohibited Patterns
 
-### Control Plane must NOT:
+### Control Plane must NOT
 
 1. **Become a dumping ground for all app admin UIs**
    - App-local admin features (e.g., "manage shop-quoter suppliers") do not belong in Control Plane
@@ -116,7 +123,7 @@
 3. **Host raw data tables**
    - Control Plane is summary-first. Raw tables and data exploration belong in Console or the app.
 
-### Console must NOT:
+### Console must NOT
 
 1. **Duplicate Control Plane executive summaries**
    - Console does not need its own "platform health" dashboard
@@ -126,7 +133,7 @@
    - Configuration changes belong in Platform Admin, not Console
    - Console is for investigation and diagnostics
 
-### Platform Admin must NOT:
+### Platform Admin must NOT
 
 1. **Swallow every domain setting**
    - Domain-specific configuration (e.g., "set quote expiry for shop-quoter") belongs in the app
@@ -136,7 +143,7 @@
    - Platform Admin does not need health dashboards
    - That belongs in Control Plane
 
-### App Admin must NOT:
+### App Admin must NOT
 
 1. **Implement platform-wide governance UIs**
    - If it's cross-app governance, it belongs in Control Plane

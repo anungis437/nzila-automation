@@ -114,6 +114,7 @@ The `/decision-summary` page exposes these metrics as live cards:
 ## Integration with Procurement Evidence
 
 The value metrics feed directly into procurement packs:
+
 - `collectProcurementPack()` includes decision summary statistics
 - Export packs contain full audit trails and evidence chains
 - RFP responses reference measurable outcomes from the value model

@@ -12,6 +12,7 @@ The legacy shop quoter has **zero multi-tenancy support**. Out of 31 source file
 records globally. Every Supabase client is initialized with a single project URL.
 
 The NzilaOS Commerce Engine requires **full org-scoped isolation** where:
+
 - Every entity belongs to exactly one organisation
 - Every query is filtered by `org_id` at the database level (RLS)
 - Every API request is scoped by the authenticated user's org membership
@@ -107,6 +108,7 @@ interface OrgMembership {
 ### 4.1 Commerce Entities
 
 Every entity below requires an `org_id` column with:
+
 - NOT NULL constraint
 - Foreign key to `organisations.id`
 - Included in RLS policy
@@ -275,6 +277,7 @@ async function orgMiddleware(req: Request, res: Response, next: Next) {
 ### 6.2 Service Layer — Eliminate Singletons
 
 **Current (legacy):**
+
 ```typescript
 // ❌ Singleton — no org context
 class ZohoSyncService {
@@ -287,6 +290,7 @@ class ZohoSyncService {
 ```
 
 **Target (NzilaOS):**
+
 ```typescript
 // ✅ Org-scoped — created per-request
 class ZohoSyncService {
@@ -313,12 +317,14 @@ function createZohoSyncService(org: OrgContext): ZohoSyncService {
 ### 6.3 Query Pattern Changes
 
 **Current (legacy):**
+
 ```typescript
 // ❌ No org filtering
 const { data } = await supabase.from('quotes').select('*');
 ```
 
 **Target (NzilaOS):**
+
 ```typescript
 // ✅ RLS handles filtering automatically after set_org_context()
 // Application code doesn't need explicit WHERE org_id = ...

@@ -69,8 +69,9 @@ All integrations are dispatched via `@nzila/integrations-runtime` dispatcher. No
 ## Cora Event Consumption
 
 Cora does not directly subscribe to Pondu events. Instead:
+
 1. Cora reads operational data from `agri-db` (read-only scoped queries)
-2. Cora computes metrics via `agri-intelligence` 
+2. Cora computes metrics via `agri-intelligence`
 3. Cora writes results to intelligence tables (`agri_forecasts`, `agri_price_signals`, `agri_risk_scores`)
 
 This keeps Cora fully decoupled from Pondu's write path.

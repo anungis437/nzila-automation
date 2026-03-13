@@ -62,6 +62,7 @@ it('batch allocation across orgs is rejected', ...)
 ## Audit Trail
 
 Every mutation produces an audit event:
+
 - Actor ID, org ID, correlation ID
 - Table name, action (insert/update/delete)
 - Timestamp

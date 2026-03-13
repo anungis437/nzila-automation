@@ -22,6 +22,7 @@
 ### PII Handling
 
 All PII must be:
+
 - Encrypted in transit (TLS 1.2+)
 - Encrypted at rest (Azure Blob + AES-256)
 - Org-scoped (never visible to other tenants)

@@ -27,6 +27,7 @@ Correlation IDs, structured tracing, Prometheus-compatible metrics, and health-c
 ## Modules
 
 ### Correlation Context
+
 - **Trace ID**: 32-char hex, generated or extracted from `x-trace-id` header
 - **Span ID**: 16-char hex, generated or extracted from `traceparent`
 - **Request ID**: UUID v4
@@ -36,6 +37,7 @@ Correlation IDs, structured tracing, Prometheus-compatible metrics, and health-c
 - **Child contexts**: `createChildContext()` sets `parentSpanId`
 
 ### Metrics
+
 - **Counter**: Monotonically increasing, supports `inc(delta)`, `get()`, `reset()`
 - **Gauge**: Bi-directional, supports `set(value)`, `inc()`, `dec()`
 - **Histogram**: Observation-based, supports `observe(value)`, `percentile(fraction)`, `count()`, `sum()`
@@ -43,6 +45,7 @@ Correlation IDs, structured tracing, Prometheus-compatible metrics, and health-c
 - **Prometheus**: `renderPrometheus()` text exposition format with `# HELP` and `# TYPE` annotations
 
 ### Span/Trace
+
 - Lightweight `Span` class compatible with OpenTelemetry concepts
 - Auto-generated `spanId`/`traceId`
 - Attributes, events, error recording
@@ -50,6 +53,7 @@ Correlation IDs, structured tracing, Prometheus-compatible metrics, and health-c
 - `trace(operation, fn)` helper for automatic span lifecycle
 
 ### Health Checker
+
 - Register named health checks with `addCheck()`
 - Critical vs non-critical distinction
 - Configurable timeout per check
@@ -67,6 +71,7 @@ Correlation IDs, structured tracing, Prometheus-compatible metrics, and health-c
 ## Test Coverage
 
 51 tests across 4 test files:
+
 - Correlation: 12 tests (trace ID extraction, W3C traceparent, org ID, child context)
 - Metrics: 20 tests (counter, gauge, histogram, registry, Prometheus rendering)
 - Span: 12 tests (lifecycle, attributes, events, errors, children, trace helper)

@@ -31,29 +31,34 @@ Admin/ops surface over the existing integrations infrastructure. Provides provid
 ## Modules
 
 ### Provider Registry
+
 - Register/unregister integration providers per org
 - Health aggregation across all org providers
 - Status tracking: `active`, `inactive`, `degraded`, `error`
 - Port-based persistence (DI-friendly)
 
 ### Webhook Verification
+
 - **HMAC-SHA256** signature verification with timing-safe comparison
 - **Replay protection**: configurable timestamp tolerance window
 - **Prefix normalization**: handles `sha256=`, `v1=` prefixed signatures
 - Outbound webhook signing via `computeHmacSha256`
 
 ### DLQ Manager
+
 - Inspect failed integration messages
 - Replay individual or batch entries
 - Purge expired entries
 - Per-org isolation
 
 ### Rate Limiter
+
 - Sliding window per org + provider
 - Configurable max requests and window size
 - Automatic cleanup of expired windows
 
 ### Dashboard
+
 - `buildDashboardSummary()` aggregates registry + DLQ + rate limit state
 - Single API for console surface consumption
 
@@ -69,6 +74,7 @@ Admin/ops surface over the existing integrations infrastructure. Provides provid
 ## Test Coverage
 
 30 tests across 4 test files:
+
 - Registry: 7 tests (CRUD, health aggregation)
 - Webhook verification: 9 tests (HMAC, replay, prefixes, timing-safe)
 - DLQ: 7 tests (add, replay, purge, inspect)

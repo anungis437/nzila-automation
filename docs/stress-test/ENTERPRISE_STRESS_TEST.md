@@ -79,11 +79,11 @@
 | C. DB queries scoped to entity | Static analysis | `org-isolation.test.ts` L108 | ✅ PASS | ✅ PASS |
 | D. `os-core authorize()` checks entity membership | Static analysis | `org-isolation.test.ts` L143 | ✅ PASS | ✅ PASS |
 | E. `org_members` table enforced at DB layer | Static analysis | `org-isolation.test.ts` L157 | ✅ PASS | ✅ PASS |
-| F. Cross-org HTTP READ blocked at runtime | **Missing** — no integration/supertest test that GETs OrgA data with OrgB credentials | ❌ ABSENT | 🟡 SOFT PASS |
-| G. Cross-org HTTP WRITE blocked at runtime | **Missing** — no supertest/Playwright test for mutation with wrong org session | ❌ ABSENT | 🟡 SOFT PASS |
-| H. Missing org context → 401/403 (HTTP level) | **Missing** — no runtime test for unauthenticated requests to protected routes | ❌ ABSENT | 🟡 SOFT PASS |
-| I. Forged `orgId` in body/query ignored | Static pattern matched but no runtime validation test | ❌ ABSENT | 🟡 SOFT PASS |
-| J. Error responses do not leak org existence | **Not tested** — no enumeration-safety assertion | ❌ ABSENT | 🟡 SOFT PASS |
+| F. Cross-org HTTP READ blocked at runtime | **Missing** | No integration/supertest test that GETs OrgA data with OrgB credentials | ❌ ABSENT | 🟡 SOFT PASS |
+| G. Cross-org HTTP WRITE blocked at runtime | **Missing** | No supertest/Playwright test for mutation with wrong org session | ❌ ABSENT | 🟡 SOFT PASS |
+| H. Missing org context → 401/403 (HTTP level) | **Missing** | No runtime test for unauthenticated requests to protected routes | ❌ ABSENT | 🟡 SOFT PASS |
+| I. Forged `orgId` in body/query ignored | Static | Pattern matched but no runtime validation test | ❌ ABSENT | 🟡 SOFT PASS |
+| J. Error responses do not leak org existence | **Not tested** | No enumeration-safety assertion | ❌ ABSENT | 🟡 SOFT PASS |
 
 **Phase 1 Verdict: 🟡 SOFT PASS** — Architectural guarantees are solid (static analysis + centralized engine). Runtime HTTP-level isolation proofs are absent. This must be closed before declaring prod-ready for regulated customers.
 
@@ -116,9 +116,9 @@
 
 | Test | Status | Verdict |
 |------|--------|---------|
-| Org admin cannot perform platform admin (`SUPER_ADMIN`) actions | **Not tested** — no explicit test asserting 403 when console:admin calls super_admin-only route | ❌ ABSENT | 🟡 SOFT PASS |
-| User cannot self-elevate roles/scopes via API | **Not tested** — no test posting `role: "console:super_admin"` via body and verifying it is ignored | ❌ ABSENT | 🟡 SOFT PASS |
-| Attempted escalation produces audit event | No test that a 403 from `authorize()` causes an `AUDIT_ACTIONS.MEMBER_ROLE_CHANGE` emit | ❌ ABSENT | 🟡 SOFT PASS |
+| Org admin cannot perform platform admin (`SUPER_ADMIN`) actions | **Not tested** — no explicit test asserting 403 when console:admin calls super_admin-only route | 🟡 SOFT PASS |
+| User cannot self-elevate roles/scopes via API | **Not tested** — no test posting `role: "console:super_admin"` via body and verifying it is ignored | 🟡 SOFT PASS |
+| Attempted escalation produces audit event | No test that a 403 from `authorize()` causes an `AUDIT_ACTIONS.MEMBER_ROLE_CHANGE` emit | 🟡 SOFT PASS |
 
 **Phase 2 Verdict: 🟡 SOFT PASS** — Deny-by-default and centralization are excellent. Privilege escalation regression tests are missing.
 
@@ -244,7 +244,7 @@ CSP `unsafe-inline` / `unsafe-eval` are noted in code comments as required by Ne
 | Control | Evidence | Verdict |
 |---------|---------|---------|
 | `/health` in orchestrator-api | `apps/orchestrator-api/src/routes/health.js` registered at startup | ✅ PASS |
-| `/health` or `/ready` in Next.js apps (console, partners, web) | **Not found** — no `app/api/health/route.ts` in console or partners | ❌ ABSENT | 🟡 SOFT PASS |
+| `/health` or `/ready` in Next.js apps (console, partners, web) | **Not found** — no `app/api/health/route.ts` in console or partners | 🟡 SOFT PASS |
 | Meaningful dependency checks in health probe | Not verified (orchestrator health route not inspected in detail) | 🟡 SOFT PASS |
 
 **Phase 6 Verdict: 🟡 SOFT PASS** — Core observability (structured logs, correlation IDs, redaction, OTel) is solid. Health endpoints absent in Next.js apps.
@@ -304,6 +304,7 @@ CSP `unsafe-inline` / `unsafe-eval` are noted in code comments as required by Ne
 > **Verdict: Deployable to enterprise pilots with explicit risk acceptance on rate limiting. Not unconditionally enterprise-ready.**
 
 Rules applied:
+
 - ANY Critical FAIL → NO … **0 Critical FAILs** → rule not triggered
 - >3 FAILs overall → NO … **1 FAIL** → rule not triggered
 - Result: **YES** with mandatory pre-GA hardening list below

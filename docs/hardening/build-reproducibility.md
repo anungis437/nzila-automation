@@ -17,6 +17,7 @@ This document specifies how the Nzila monorepo achieves reproducible builds and 
 ### 1. Locked Dependencies (`pnpm-lock.yaml`)
 
 All CI jobs run `pnpm install --frozen-lockfile`, which errors if the lockfile is out of sync with `package.json`. This prevents:
+
 - "Works on my machine" dependency drift
 - Silent upgrades to dependencies with breaking changes
 
@@ -27,6 +28,7 @@ All CI jobs run `pnpm install --frozen-lockfile`, which errors if the lockfile i
 All `Dockerfile` base images are pinned to a specific version tag (e.g., `node:22.13.1-alpine3.21`) rather than a floating tag (e.g., `node:22-alpine`). This prevents unexpected OS-level changes between builds.
 
 **To update the base image:**
+
 ```bash
 # Search for the specific digest on Docker Hub or via:
 docker manifest inspect node:22.13.1-alpine3.21 --verbose
@@ -38,6 +40,7 @@ docker manifest inspect node:22.13.1-alpine3.21 --verbose
 ### 3. Turbo Cache (Build Caching)
 
 Turborepo caches build outputs based on input hashes. The cache key covers:
+
 - Source files
 - Environment variables listed in `turbo.json#globalDependencies`
 - All transitive dependencies
