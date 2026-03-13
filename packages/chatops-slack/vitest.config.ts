@@ -5,6 +5,5 @@ export default defineProject({
     name: 'chatops-slack',
     environment: 'node',
     include: ['src/**/*.test.ts'],
-    passWithNoTests: true,
   },
 })
