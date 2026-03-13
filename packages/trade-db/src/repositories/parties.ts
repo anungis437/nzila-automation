@@ -98,7 +98,7 @@ export function createTradePartyRepository(): TradePartyRepository {
         country: input.country,
         metadata: input.metadata ?? {},
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async update(ctx, input) {
       const updates: Record<string, unknown> = { updatedAt: new Date() }
@@ -111,7 +111,7 @@ export function createTradePartyRepository(): TradePartyRepository {
       if (input.metadata !== undefined) updates.metadata = input.metadata
       if (input.status !== undefined) updates.status = input.status
       const [row] = await db.update(tradeParties).set(updates).where(and(eq(tradeParties.orgId, ctx.orgId), eq(tradeParties.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

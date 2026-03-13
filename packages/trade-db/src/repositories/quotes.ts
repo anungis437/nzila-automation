@@ -76,7 +76,7 @@ export function createTradeQuoteRepository(): TradeQuoteRepository {
         unitPrice: input.unitPrice, quantity: input.quantity, total,
         currency: input.currency, validUntil: input.validUntil ?? null,
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async update(ctx, input) {
       const updates: Record<string, unknown> = { updatedAt: new Date() }
@@ -84,7 +84,7 @@ export function createTradeQuoteRepository(): TradeQuoteRepository {
       if (input.terms !== undefined) updates.terms = input.terms
       if (input.acceptedAt !== undefined) updates.acceptedAt = input.acceptedAt
       const [row] = await db.update(tradeQuotes).set(updates).where(and(eq(tradeQuotes.orgId, ctx.orgId), eq(tradeQuotes.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

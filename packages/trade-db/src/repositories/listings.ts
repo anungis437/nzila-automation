@@ -82,7 +82,7 @@ export function createTradeListingRepository(): TradeListingRepository {
         currency: input.currency, askingPrice: input.askingPrice,
         quantity: input.quantity ?? 1, metadata: input.metadata ?? {},
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async update(ctx, input) {
       const updates: Record<string, unknown> = { updatedAt: new Date() }
@@ -94,7 +94,7 @@ export function createTradeListingRepository(): TradeListingRepository {
       if (input.status !== undefined) updates.status = input.status
       if (input.metadata !== undefined) updates.metadata = input.metadata
       const [row] = await db.update(tradeListings).set(updates).where(and(eq(tradeListings.orgId, ctx.orgId), eq(tradeListings.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }
