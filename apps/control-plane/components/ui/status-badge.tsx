@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
-  status: "healthy" | "degraded" | "offline" | "unknown" | "verified" | "current" | "stale" | "missing" | "valid" | "expired" | "unsigned" | "failed";
+  status: "healthy" | "degraded" | "offline" | "unknown" | "verified" | "current" | "stale" | "missing" | "valid" | "expired" | "unsigned" | "failed" | "warning" | "critical";
   label?: string;
   className?: string;
 }
@@ -17,6 +17,8 @@ const statusColors: Record<string, string> = {
   missing: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   expired: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+  warning: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+  critical: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   unsigned: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
   unknown: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
 };

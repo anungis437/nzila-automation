@@ -3,11 +3,12 @@ import { cn } from "@/lib/utils";
 interface PageHeaderProps {
   title: string;
   description?: string;
+  icon?: React.ReactNode;
   className?: string;
   actions?: React.ReactNode;
 }
 
-export function PageHeader({ title, description, className, actions }: PageHeaderProps) {
+export function PageHeader({ title, description, icon, className, actions }: PageHeaderProps) {
   return (
     <div className={cn("flex items-center justify-between mb-8", className)}>
       <div>
