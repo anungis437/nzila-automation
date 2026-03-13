@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { SendRequest } from '@nzila/integrations-core'
 import { slackAdapter } from './adapter'
 
 const mockFetch = vi.fn()
@@ -7,6 +8,10 @@ vi.stubGlobal('fetch', mockFetch)
 beforeEach(() => {
   mockFetch.mockReset()
 })
+
+function req(overrides: Partial<SendRequest> = {}): SendRequest {
+  return { orgId: 'org-1', channel: 'chatops', to: '', correlationId: 'corr-1', body: 'hello', ...overrides }
+}
 
 describe('slackAdapter', () => {
   it('exposes provider and channel', () => {
@@ -19,28 +24,29 @@ describe('slackAdapter', () => {
 
     it('posts to webhook and returns ok', async () => {
       mockFetch.mockResolvedValueOnce({ ok: true })
-      const result = await slackAdapter.send({ to: '', body: 'hello' }, creds)
+      const result = await slackAdapter.send(req(), creds)
       expect(result.ok).toBe(true)
       expect(mockFetch).toHaveBeenCalledWith(creds.webhookUrl, expect.objectContaining({ method: 'POST' }))
     })
 
     it('formats subject as bold prefix', async () => {
       mockFetch.mockResolvedValueOnce({ ok: true })
-      await slackAdapter.send({ to: '', subject: 'Alert', body: 'details' }, creds)
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body)
+      await slackAdapter.send(req({ subject: 'Alert', body: 'details' }), creds)
+      const callArgs = mockFetch.mock.calls[0] as [string, RequestInit]
+      const body = JSON.parse(callArgs[1].body as string)
       expect(body.text).toBe('*Alert*\ndetails')
     })
 
     it('returns error on non-ok response', async () => {
       mockFetch.mockResolvedValueOnce({ ok: false, status: 403 })
-      const result = await slackAdapter.send({ to: '', body: 'x' }, creds)
+      const result = await slackAdapter.send(req(), creds)
       expect(result.ok).toBe(false)
       expect(result.error).toContain('403')
     })
 
     it('returns error on fetch failure', async () => {
       mockFetch.mockRejectedValueOnce(new Error('network'))
-      const result = await slackAdapter.send({ to: '', body: 'x' }, creds)
+      const result = await slackAdapter.send(req(), creds)
       expect(result.ok).toBe(false)
       expect(result.error).toBe('network')
     })
@@ -51,7 +57,7 @@ describe('slackAdapter', () => {
 
     it('uses Slack Web API when botToken and to are provided', async () => {
       mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true, ts: '123.456' }) })
-      const result = await slackAdapter.send({ to: '#general', body: 'hi' }, creds)
+      const result = await slackAdapter.send(req({ to: '#general' }), creds)
       expect(result.ok).toBe(true)
       expect(result.providerMessageId).toBe('123.456')
       expect(mockFetch).toHaveBeenCalledWith('https://slack.com/api/chat.postMessage', expect.objectContaining({
@@ -61,7 +67,7 @@ describe('slackAdapter', () => {
 
     it('returns error when Slack API returns not ok', async () => {
       mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: false, error: 'channel_not_found' }) })
-      const result = await slackAdapter.send({ to: '#nope', body: 'hi' }, creds)
+      const result = await slackAdapter.send(req({ to: '#nope' }), creds)
       expect(result.ok).toBe(false)
       expect(result.error).toBe('channel_not_found')
     })
@@ -94,7 +100,7 @@ describe('slackAdapter', () => {
 
   describe('parseCredentials (via send)', () => {
     it('throws on missing webhookUrl', async () => {
-      await expect(slackAdapter.send({ to: '', body: 'x' }, {})).rejects.toThrow('Missing Slack webhookUrl')
+      await expect(slackAdapter.send(req(), {})).rejects.toThrow('Missing Slack webhookUrl')
     })
   })
 })
