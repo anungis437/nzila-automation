@@ -131,6 +131,7 @@ describe('SCHEMA_LIFECYCLE_DRIFT_001 — Schema-to-Manifest Drift Detection', ()
       platform: ['Platform', 'platform', 'Metrics'],
       trade: ['Trade', 'trade'],
       mobility: ['Mobility', 'mobility'],
+      agri: ['Agri', 'agri', 'Producer', 'Harvest', 'Traceability'],
     }
 
     const schemaFiles = [...new Set(tables.map((t) => t.schemaFile))]
@@ -181,7 +182,7 @@ describe('SCHEMA_LIFECYCLE_DRIFT_001 — Schema-to-Manifest Drift Detection', ()
       'payment', 'stripe', 'commerce', 'ai_', 'ml_', 'ue_', 'partner',
       'deal', 'commission', 'certification', 'asset', 'api_credential',
       'automation', 'tax', 'indirect_tax', 'nacp', 'zonga', 'platform',
-      'trade', 'gtm', 'mobility',
+      'trade', 'gtm', 'mobility', 'agri',
     ]
 
     const uncoveredTables: string[] = []

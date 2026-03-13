@@ -38,7 +38,7 @@ export async function listTraceabilityLinks(
 export async function getFullChain(
   ctx: AgriReadContext,
   entityType: string,
-  entityId: string,
+  targetEntityId: string,
 ): Promise<TraceabilityChain[]> {
   const rows = await db
     .select()
@@ -49,11 +49,11 @@ export async function getFullChain(
         or(
           and(
             eq(agriTraceabilityLinks.sourceType, entityType as typeof agriTraceabilityLinks.$inferSelect.sourceType),
-            eq(agriTraceabilityLinks.sourceId, entityId),
+            eq(agriTraceabilityLinks.sourceId, targetEntityId),
           ),
           and(
             eq(agriTraceabilityLinks.targetType, entityType as typeof agriTraceabilityLinks.$inferSelect.targetType),
-            eq(agriTraceabilityLinks.targetId, entityId),
+            eq(agriTraceabilityLinks.targetId, targetEntityId),
           ),
         ),
       ),
@@ -80,5 +80,5 @@ export async function createTraceabilityLink(
       linkMetadata: metadata,
     })
     .returning()
-  return toLink(row)
+  return toLink(row!)
 }

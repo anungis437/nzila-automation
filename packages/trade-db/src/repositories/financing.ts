@@ -63,14 +63,14 @@ export function createTradeFinancingRepository(): TradeFinancingRepository {
         orgId: ctx.orgId, dealId: input.dealId,
         terms: input.terms, provider: input.provider ?? null,
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async update(ctx, input) {
       const updates: Record<string, unknown> = { updatedAt: new Date() }
       if (input.status !== undefined) updates.status = input.status
       if (input.terms !== undefined) updates.terms = input.terms
       const [row] = await db.update(tradeFinancingTerms).set(updates).where(and(eq(tradeFinancingTerms.orgId, ctx.orgId), eq(tradeFinancingTerms.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

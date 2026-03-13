@@ -34,6 +34,9 @@ describe('resolveServiceConfig', () => {
 
   beforeEach(() => {
     delete process.env.ENVIRONMENT
+    delete process.env.CI
+    delete process.env.GITHUB_EVENT_NAME
+    delete process.env.GITHUB_REF
   })
 
   afterEach(() => {

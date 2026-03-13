@@ -1,0 +1,13 @@
+{
+  "owner": "platform",
+  "category": "PLATFORM_CORE",
+  "stability": "STABLE",
+  "allowed_dependents": [
+    "apps/*",
+    "packages/platform-*"
+  ],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}

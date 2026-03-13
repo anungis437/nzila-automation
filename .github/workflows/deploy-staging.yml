@@ -34,9 +34,11 @@ jobs:
         run: node --import tsx scripts/validate-change-window.ts --env=STAGING --service=all --commit=${{ github.sha }}
 
       - name: Contract tests
+        id: contract_tests
         run: pnpm contract:test
 
       - name: SLO gate
+        id: slo_gate
         run: node --import tsx scripts/slo-gate.ts --env=staging
 
   build-artifact:

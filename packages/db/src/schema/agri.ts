@@ -390,7 +390,7 @@ export const agriEvidenceArtifacts = pgTable('agri_evidence_artifacts', {
     .notNull()
     .references(() => orgs.id),
   evidenceType: agriEvidenceTypeEnum('evidence_type').notNull(),
-  entityId: uuid('entity_id').notNull(),
+  targetEntityId: uuid('entity_id').notNull(),
   packDigest: text('pack_digest').notNull(),
   artifactsMerkleRoot: text('artifacts_merkle_root').notNull(),
   metadata: jsonb('metadata').default({}),

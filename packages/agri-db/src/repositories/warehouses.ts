@@ -24,7 +24,7 @@ export async function listWarehouses(
   const offset = opts.offset ?? 0
   const where = eq(agriWarehouses.orgId, ctx.orgId)
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriWarehouses).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriWarehouses).where(where),
   ])
@@ -51,5 +51,5 @@ export async function createWarehouse(ctx: AgriDbContext, values: CreateWarehous
       capacity: values.capacity?.toString() ?? null,
     })
     .returning()
-  return toWarehouse(row)
+  return toWarehouse(row!)
 }

@@ -450,6 +450,40 @@ export const APP_MANIFESTS: DataLifecycleManifest[] = [
     residency: { type: 'managed', regions: ['southafricanorth', 'westeurope'], orgSelectable: true, description: 'Managed hosting with regional compliance' },
     backup: { frequency: 'daily', provider: 'Azure Backup', location: 'Same region', encryptedAtRest: true, backupRetention: '30 days', rtoHours: 4, rpoHours: 2 },
   },
+
+  // ── Agri (Pondu) ──────────────────────────────────────────────────
+  {
+    appId: 'agri',
+    appName: 'Agri Supply Chain Platform',
+    version: '1.0.0',
+    lastUpdated: '2026-03-13',
+    dataCategories: [
+      { name: 'Agri Producer Records', description: 'Producers, cooperatives, and crop registrations', containsPii: true, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Agri Supply Chain', description: 'Harvests, lots, inspections, warehouses, batches, allocations', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Agri Logistics', description: 'Shipments, milestones, and delivery tracking', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Agri Payments', description: 'Payment plans, payments, and financial records', containsPii: false, containsFinancial: true, storageEngine: 'PostgreSQL' },
+      { name: 'Agri Certifications', description: 'Certifications, traceability links, and evidence artifacts', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
+      { name: 'Agri Analytics', description: 'Forecasts, price signals, and risk scores', containsPii: false, containsFinancial: false, storageEngine: 'PostgreSQL' },
+    ],
+    retentionSchedules: [
+      { category: 'Agri Producer Records', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Agricultural regulatory compliance' },
+      { category: 'Agri Supply Chain', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Supply chain traceability requirements' },
+      { category: 'Agri Logistics', retentionClass: '3_YEARS', retentionPeriod: '3 years', legalBasis: 'Logistics operational records' },
+      { category: 'Agri Payments', retentionClass: '7_YEARS', retentionPeriod: '7 years', legalBasis: 'Financial record keeping' },
+      { category: 'Agri Certifications', retentionClass: 'PERMANENT', retentionPeriod: 'Permanent', legalBasis: 'Certification and traceability — permanent record' },
+      { category: 'Agri Analytics', retentionClass: '3_YEARS', retentionPeriod: '3 years', legalBasis: 'Analytics data — no long-term regulatory requirement' },
+    ],
+    deletionPolicies: [
+      { category: 'Agri Producer Records', method: 'soft_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: true },
+      { category: 'Agri Supply Chain', method: 'soft_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: true },
+      { category: 'Agri Logistics', method: 'hard_delete', verification: 'audit_log', authorizedRoles: ['platform_admin'], reversible: false },
+      { category: 'Agri Payments', method: 'retention_expiry', verification: 'deletion_certificate', authorizedRoles: [], reversible: false },
+      { category: 'Agri Certifications', method: 'retention_expiry', verification: 'deletion_certificate', authorizedRoles: [], reversible: false },
+      { category: 'Agri Analytics', method: 'hard_delete', verification: 'automated_scan', authorizedRoles: ['platform_admin'], reversible: false },
+    ],
+    residency: { type: 'managed', regions: ['southafricanorth', 'westeurope'], orgSelectable: true, description: 'Managed hosting with org-selectable region' },
+    backup: { frequency: 'daily', provider: 'Azure Backup', location: 'Same region', encryptedAtRest: true, backupRetention: '30 days', rtoHours: 4, rpoHours: 2 },
+  },
 ]
 
 // ── Manifest Generation ─────────────────────────────────────────────────────

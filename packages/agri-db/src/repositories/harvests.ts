@@ -31,7 +31,7 @@ export async function listHarvests(
   if (opts.season) conditions.push(eq(agriHarvests.season, opts.season))
   const where = and(...conditions)!
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriHarvests).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriHarvests).where(where),
   ])
@@ -71,5 +71,5 @@ export async function recordHarvest(ctx: AgriDbContext, values: RecordHarvestInp
       notes: values.notes,
     })
     .returning()
-  return toHarvest(row)
+  return toHarvest(row!)
 }

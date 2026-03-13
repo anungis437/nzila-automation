@@ -1,0 +1,13 @@
+{
+  "owner": "ai-platform",
+  "category": "DOMAIN_SHARED",
+  "stability": "EVOLVING",
+  "allowed_dependents": [
+    "apps/mobility*",
+    "packages/mobility-*"
+  ],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}

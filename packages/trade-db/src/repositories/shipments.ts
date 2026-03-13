@@ -87,7 +87,7 @@ export function createTradeShipmentRepository(): TradeShipmentRepository {
         estimatedDeparture: input.estimatedDeparture ?? null,
         estimatedArrival: input.estimatedArrival ?? null,
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async update(ctx, input) {
       const updates: Record<string, unknown> = { updatedAt: new Date() }
@@ -98,7 +98,7 @@ export function createTradeShipmentRepository(): TradeShipmentRepository {
       if (input.actualDeparture !== undefined) updates.actualDeparture = input.actualDeparture
       if (input.actualArrival !== undefined) updates.actualArrival = input.actualArrival
       const [row] = await db.update(tradeShipments).set(updates).where(and(eq(tradeShipments.orgId, ctx.orgId), eq(tradeShipments.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

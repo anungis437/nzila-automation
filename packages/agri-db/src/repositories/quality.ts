@@ -57,7 +57,7 @@ export async function createInspection(
       inspectedAt: new Date(),
     })
     .returning()
-  return toInspection(row)
+  return toInspection(row!)
 }
 
 export async function updateInspectionGrade(

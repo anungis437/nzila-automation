@@ -162,9 +162,9 @@ describe('RFP new sections', () => {
     expect(md).toContain('MANIFEST')
   })
 
-  it('generates 8 total sections', () => {
+  it('generates 9 total sections', () => {
     const response = generateCanadaRfp()
-    expect(response.sections).toHaveLength(8)
+    expect(response.sections).toHaveLength(9)
   })
 
   it('privacy section includes PIPEDA + Québec Law 25 question', () => {

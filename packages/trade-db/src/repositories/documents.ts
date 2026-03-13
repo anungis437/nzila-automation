@@ -61,7 +61,7 @@ export function createTradeDocumentRepository(): TradeDocumentRepository {
         title: input.title, storageKey: input.storageKey,
         contentHash: input.contentHash, uploadedBy: ctx.actorId,
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

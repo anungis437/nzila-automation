@@ -63,7 +63,7 @@ export async function listForecasts(
   if (opts.forecastType)
     conditions.push(eq(agriForecasts.forecastType, opts.forecastType as typeof agriForecasts.$inferSelect.forecastType))
   const where = and(...conditions)!
-  const [rows, [{ total }]] = await Promise.all([
+  const [rows, [{ total } = { total: 0 }]] = await Promise.all([
     db.select().from(agriForecasts).where(where).limit(limit).offset(offset),
     db.select({ total: count() }).from(agriForecasts).where(where),
   ])
@@ -84,7 +84,7 @@ export async function saveForecast(ctx: AgriDbContext, forecast: Omit<AgriForcas
       computedAt: new Date(forecast.computedAt),
     })
     .returning()
-  return toForecast(row)
+  return toForecast(row!)
 }
 
 // ─── Price Signals ───
@@ -99,7 +99,7 @@ export async function listPriceSignals(
   if (opts.cropType) conditions.push(eq(agriPriceSignals.cropType, opts.cropType))
   if (opts.market) conditions.push(eq(agriPriceSignals.market, opts.market))
   const where = and(...conditions)!
-  const [rows, [{ total }]] = await Promise.all([
+  const [rows, [{ total } = { total: 0 }]] = await Promise.all([
     db.select().from(agriPriceSignals).where(where).limit(limit).offset(offset),
     db.select({ total: count() }).from(agriPriceSignals).where(where),
   ])
@@ -119,7 +119,7 @@ export async function savePriceSignal(ctx: AgriDbContext, signal: Omit<PriceSign
       observedAt: new Date(signal.observedAt),
     })
     .returning()
-  return toPriceSignal(row)
+  return toPriceSignal(row!)
 }
 
 // ─── Risk Scores ───
@@ -135,7 +135,7 @@ export async function listRiskScores(
   if (opts.riskType)
     conditions.push(eq(agriRiskScores.riskType, opts.riskType as typeof agriRiskScores.$inferSelect.riskType))
   const where = and(...conditions)!
-  const [rows, [{ total }]] = await Promise.all([
+  const [rows, [{ total } = { total: 0 }]] = await Promise.all([
     db.select().from(agriRiskScores).where(where).limit(limit).offset(offset),
     db.select({ total: count() }).from(agriRiskScores).where(where),
   ])
@@ -155,5 +155,5 @@ export async function saveRiskScore(ctx: AgriDbContext, score: Omit<RiskScore, '
       computedAt: new Date(score.computedAt),
     })
     .returning()
-  return toRiskScore(row)
+  return toRiskScore(row!)
 }

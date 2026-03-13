@@ -87,7 +87,7 @@ export function createTradeDealRepository(): TradeDealRepository {
         currency: input.currency, notes: input.notes ?? null,
         metadata: input.metadata ?? {},
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async update(ctx, input) {
       const updates: Record<string, unknown> = { updatedAt: new Date() }
@@ -96,11 +96,11 @@ export function createTradeDealRepository(): TradeDealRepository {
       if (input.notes !== undefined) updates.notes = input.notes
       if (input.metadata !== undefined) updates.metadata = input.metadata
       const [row] = await db.update(tradeDeals).set(updates).where(and(eq(tradeDeals.orgId, ctx.orgId), eq(tradeDeals.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async updateStage(ctx, id, stage) {
       const [row] = await db.update(tradeDeals).set({ stage: stage as typeof tradeDeals.$inferInsert.stage, updatedAt: new Date() }).where(and(eq(tradeDeals.orgId, ctx.orgId), eq(tradeDeals.id, id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

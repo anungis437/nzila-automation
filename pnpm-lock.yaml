@@ -1495,9 +1495,6 @@ importers:
       '@clerk/nextjs':
         specifier: ^7.0.4
         version: 7.0.4(next@16.1.6(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@clerk/shared':
-        specifier: ^4.3.0
-        version: 4.3.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@google-cloud/vision':
         specifier: ^5.3.4
         version: 5.3.4
@@ -3430,6 +3427,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/platform-ai-contract: {}
+
   packages/platform-ai-governance:
     dependencies:
       '@nzila/os-core':
@@ -3521,6 +3520,8 @@ importers:
       vitest:
         specifier: ^4.0.0
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/platform-commerce-org: {}
 
   packages/platform-compliance-snapshots:
     dependencies:

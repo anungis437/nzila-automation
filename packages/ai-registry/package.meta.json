@@ -1,0 +1,13 @@
+{
+  "owner": "ai-platform",
+  "category": "PLATFORM_CORE",
+  "stability": "EVOLVING",
+  "allowed_dependents": [
+    "packages/platform-ai-*",
+    "apps/control-plane"
+  ],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}

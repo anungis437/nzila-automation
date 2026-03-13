@@ -91,7 +91,7 @@ export async function setPaymentRequirement(
     metadata: { depositRequired: parsed.depositRequired, percent: parsed.depositPercent },
   })
 
-  logger.info({ quoteId: parsed.quoteId, depositRequired: parsed.depositRequired }, 'Payment requirement set')
+  logger.info('Payment requirement set', { quoteId: parsed.quoteId, depositRequired: parsed.depositRequired })
   return requirement
 }
 
@@ -150,7 +150,7 @@ export async function recordPayment(
     metadata: { eventType: input.eventType, amount: input.amount, newStatus },
   })
 
-  logger.info({ quoteId: input.quoteId, newStatus, totalPaid }, 'Payment recorded')
+  logger.info('Payment recorded', { quoteId: input.quoteId, newStatus, totalPaid })
   return { newStatus }
 }
 

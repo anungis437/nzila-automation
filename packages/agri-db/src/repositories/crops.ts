@@ -25,7 +25,7 @@ export async function listCrops(
   const offset = opts.offset ?? 0
   const where = eq(agriCrops.orgId, ctx.orgId)
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriCrops).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriCrops).where(where),
   ])
@@ -54,5 +54,5 @@ export async function createCrop(ctx: AgriDbContext, values: CreateCropInput): P
       metadata: values.metadata ?? {},
     })
     .returning()
-  return toCrop(row)
+  return toCrop(row!)
 }

@@ -60,7 +60,7 @@ export async function startProduction(
     metadata: { orderId },
   })
 
-  logger.info({ quoteId, orderId }, 'Production started')
+  logger.info('Production started', { quoteId, orderId })
   return { ok: true, newStatus: 'IN_PRODUCTION' }
 }
 
@@ -102,7 +102,7 @@ export async function markShipped(
     metadata: trackingInfo ?? {},
   })
 
-  logger.info({ quoteId }, 'Order shipped')
+  logger.info('Order shipped', { quoteId })
   return { ok: true, newStatus: 'SHIPPED' }
 }
 
@@ -140,7 +140,7 @@ export async function markDelivered(
     metadata: {},
   })
 
-  logger.info({ quoteId }, 'Order delivered')
+  logger.info('Order delivered', { quoteId })
   return { ok: true, newStatus: 'DELIVERED' }
 }
 
@@ -178,6 +178,6 @@ export async function closeQuote(
     metadata: {},
   })
 
-  logger.info({ quoteId }, 'Quote closed')
+  logger.info('Quote closed', { quoteId })
   return { ok: true, newStatus: 'CLOSED' }
 }

@@ -68,7 +68,7 @@ export function createTradeCommissionRepository(): TradeCommissionRepository {
         partyId: input.partyId, policy: input.policy,
         currency: input.currency,
       }).returning()
-      return toRow(row)
+      return toRow(row!)
     },
     async finalize(ctx, input) {
       const [row] = await db.update(tradeCommissions).set({
@@ -76,7 +76,7 @@ export function createTradeCommissionRepository(): TradeCommissionRepository {
         status: 'finalized' as typeof tradeCommissions.$inferInsert.status,
         finalizedAt: new Date(), updatedAt: new Date(),
       }).where(and(eq(tradeCommissions.orgId, ctx.orgId), eq(tradeCommissions.id, input.id))).returning()
-      return toRow(row)
+      return toRow(row!)
     },
   }
 }

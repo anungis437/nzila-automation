@@ -43,7 +43,7 @@ export async function listShipments(
   if (opts.status) conditions.push(eq(agriShipments.status, opts.status as typeof agriShipments.$inferSelect.status))
   const where = and(...conditions)!
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriShipments).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriShipments).where(where),
   ])
@@ -85,7 +85,7 @@ export async function createShipment(ctx: AgriDbContext, values: CreateShipmentI
       plannedArrival: values.plannedArrival ? new Date(values.plannedArrival) : null,
     })
     .returning()
-  return toShipment(row)
+  return toShipment(row!)
 }
 
 export async function addMilestone(ctx: AgriDbContext, values: UpdateMilestoneInput): Promise<ShipmentMilestone> {
@@ -100,7 +100,7 @@ export async function addMilestone(ctx: AgriDbContext, values: UpdateMilestoneIn
       notes: values.notes,
     })
     .returning()
-  return toMilestone(row)
+  return toMilestone(row!)
 }
 
 export async function updateShipmentStatus(ctx: AgriDbContext, shipmentId: string, status: string): Promise<void> {

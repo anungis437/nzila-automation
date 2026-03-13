@@ -15,6 +15,7 @@ import {
   Server,
   Scale,
   PieChart,
+  Landmark,
 } from "lucide-react";
 
 const navItems = [
@@ -30,6 +31,7 @@ const navItems = [
   { href: "/modules", label: "Modules", icon: Boxes },
   { href: "/procurement", label: "Procurement", icon: FileCheck },
   { href: "/environments", label: "Environments", icon: Server },
+  { href: "/architecture", label: "Architecture", icon: Landmark },
 ] as const;
 
 export default function DashboardLayout({

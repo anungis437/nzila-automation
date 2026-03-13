@@ -212,6 +212,43 @@ packages:
     tier: utility
     description: "Shared low-level utilities"
 
+  # ── Anti-entropy hardening packages ─────────────────────────────────────────
+  platform-ai-contract:
+    owner: "@nzila/ai"
+    steward: null
+    tier: utility
+    description: "AI contract tests and validation"
+
+  platform-change-management:
+    owner: "@nzila/governance"
+    steward: null
+    tier: service
+    description: "Change enablement and release management"
+
+  platform-commerce-org:
+    owner: "@nzila/commerce"
+    steward: null
+    tier: service
+    description: "Org-scoped commerce configuration"
+
+  platform-decision-engine:
+    owner: "@nzila/governance"
+    steward: null
+    tier: foundational
+    description: "Decision review workflow engine"
+
+  platform-environment:
+    owner: "@nzila/ops"
+    steward: null
+    tier: utility
+    description: "Environment detection and configuration"
+
+  platform-feature-flags:
+    owner: "@nzila/platform"
+    steward: null
+    tier: utility
+    description: "Feature flag management"
+
   # ── AI & intelligence ─────────────────────────────────────────────────────
   platform-intelligence:
     owner: "@nzila/ai"

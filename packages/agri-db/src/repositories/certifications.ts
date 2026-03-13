@@ -62,5 +62,5 @@ export async function createCertification(
       metadata: values.metadata,
     })
     .returning()
-  return toCert(row)
+  return toCert(row!)
 }

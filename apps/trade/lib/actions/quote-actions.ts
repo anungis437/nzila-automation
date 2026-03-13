@@ -30,7 +30,10 @@ export async function createQuote(
   }
 
   const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
-  const row = await repo.create(dbCtx, parsed.data)
+  const row = await repo.create(dbCtx, {
+    ...parsed.data,
+    validUntil: parsed.data.validUntil ? new Date(parsed.data.validUntil) : null,
+  })
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),

@@ -30,7 +30,11 @@ export async function createShipment(
   }
 
   const dbCtx = { orgId: ctx.orgId, actorId: ctx.actorId }
-  const row = await repo.create(dbCtx, parsed.data)
+  const row = await repo.create(dbCtx, {
+    ...parsed.data,
+    estimatedDeparture: parsed.data.estimatedDeparture ? new Date(parsed.data.estimatedDeparture) : null,
+    estimatedArrival: parsed.data.estimatedArrival ? new Date(parsed.data.estimatedArrival) : null,
+  })
 
   const entry = buildActionAuditEntry({
     id: crypto.randomUUID(),

@@ -333,6 +333,7 @@ export async function seedDemo() {
   }
 
   logger.info(
+    'Shop Quoter demo data seeded to database',
     {
       org: org.name,
       users: users.length,
@@ -340,12 +341,11 @@ export async function seedDemo() {
       quotes: quotes.length,
       timelines: timelines.length,
     },
-    'Shop Quoter demo data seeded to database',
   )
 
   return { org, users, customers, quotes, timelines, analytics }
 }
 
 if (process.argv[1]?.includes('demoSeed')) {
-  seedDemo().catch((err) => logger.error({ error: err }, 'Demo seed failed'))
+  seedDemo().catch((err) => logger.error('Demo seed failed', { error: err }))
 }

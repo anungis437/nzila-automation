@@ -43,7 +43,7 @@ export async function listPaymentPlans(
   if (opts.status) conditions.push(eq(agriPaymentPlans.status, opts.status as typeof agriPaymentPlans.$inferSelect.status))
   const where = and(...conditions)!
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriPaymentPlans).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriPaymentPlans).where(where),
   ])
@@ -78,7 +78,7 @@ export async function createPaymentPlan(ctx: AgriDbContext, values: GeneratePaym
       currency: values.currency,
     })
     .returning()
-  return toPlan(row)
+  return toPlan(row!)
 }
 
 export async function executePayment(ctx: AgriDbContext, values: ExecutePaymentInput): Promise<Payment> {
@@ -95,5 +95,5 @@ export async function executePayment(ctx: AgriDbContext, values: ExecutePaymentI
       executedAt: new Date(),
     })
     .returning()
-  return toPayment(row)
+  return toPayment(row!)
 }

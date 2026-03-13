@@ -1,0 +1,109 @@
+{
+  "description": "Machine-readable route governance manifest for the Control Plane",
+  "routes": [
+    {
+      "path": "/overview",
+      "name": "Overview",
+      "bucket": "HEALTH",
+      "primary_user": "platform-operator",
+      "actionability": "View platform health summary",
+      "source": "aggregated"
+    },
+    {
+      "path": "/governance",
+      "name": "Governance",
+      "bucket": "HEALTH",
+      "primary_user": "platform-operator",
+      "actionability": "Review governance posture, export compliance reports",
+      "source": "@nzila/platform-governance"
+    },
+    {
+      "path": "/environments",
+      "name": "Environments",
+      "bucket": "HEALTH",
+      "primary_user": "platform-operator",
+      "actionability": "View environment status, trigger health checks",
+      "source": "@nzila/platform-environment"
+    },
+    {
+      "path": "/changes",
+      "name": "Changes",
+      "bucket": "ATTENTION",
+      "primary_user": "platform-operator",
+      "actionability": "Review pending changes, approve/reject",
+      "source": "@nzila/platform-change-management"
+    },
+    {
+      "path": "/change-calendar",
+      "name": "Change Calendar",
+      "bucket": "HEALTH",
+      "primary_user": "platform-operator",
+      "actionability": "View change schedule, identify conflicts",
+      "source": "@nzila/platform-change-management"
+    },
+    {
+      "path": "/decisions",
+      "name": "Decisions",
+      "bucket": "ATTENTION",
+      "primary_user": "platform-operator",
+      "actionability": "Review pending decisions, approve/escalate",
+      "source": "@nzila/platform-decision-engine"
+    },
+    {
+      "path": "/decision-summary",
+      "name": "Decision Summary",
+      "bucket": "ATTENTION",
+      "primary_user": "platform-operator",
+      "actionability": "View decision trends, identify bottlenecks",
+      "source": "@nzila/platform-decision-engine"
+    },
+    {
+      "path": "/intelligence",
+      "name": "Intelligence",
+      "bucket": "ATTENTION",
+      "primary_user": "platform-operator",
+      "actionability": "Review AI insights, triage signals",
+      "source": "@nzila/platform-intelligence"
+    },
+    {
+      "path": "/anomalies",
+      "name": "Anomalies",
+      "bucket": "ATTENTION",
+      "primary_user": "platform-operator",
+      "actionability": "Triage anomalies, acknowledge/investigate",
+      "source": "@nzila/platform-anomaly-engine"
+    },
+    {
+      "path": "/agents",
+      "name": "Agents",
+      "bucket": "ACTION",
+      "primary_user": "platform-operator",
+      "actionability": "Review agent recommendations, approve/dismiss",
+      "source": "@nzila/platform-agent-workflows"
+    },
+    {
+      "path": "/modules",
+      "name": "Modules",
+      "bucket": "HEALTH",
+      "primary_user": "platform-operator",
+      "actionability": "View module status, feature coverage",
+      "source": "module-registry"
+    },
+    {
+      "path": "/procurement",
+      "name": "Procurement",
+      "bucket": "ACTION",
+      "primary_user": "platform-operator",
+      "actionability": "Generate procurement packs, validate evidence",
+      "source": "@nzila/platform-procurement-proof"
+    },
+    {
+      "path": "/architecture",
+      "name": "Architecture",
+      "bucket": "HEALTH",
+      "primary_user": "platform-operator",
+      "actionability": "View architecture health, package ownership, contract status",
+      "source": "architecture-checks"
+    }
+  ]
+}

@@ -41,7 +41,7 @@ export async function listBatches(
   if (opts.status) conditions.push(eq(agriBatches.status, opts.status as typeof agriBatches.$inferSelect.status))
   const where = and(...conditions)!
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriBatches).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriBatches).where(where),
   ])
@@ -92,14 +92,14 @@ export async function createBatch(
     await db.insert(agriBatchAllocations).values(
       lotWeights.map((l) => ({
         orgId: ctx.orgId,
-        batchId: row.id,
+        batchId: row!.id,
         lotId: l.lotId,
         weight: l.weight.toString(),
       })),
     )
   }
 
-  return toBatch(row)
+  return toBatch(row!)
 }
 
 export async function allocateBatchToShipment(

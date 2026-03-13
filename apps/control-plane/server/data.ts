@@ -51,8 +51,8 @@ export async function getGovernanceStatusData(): Promise<GovernanceStatus> {
   try {
     const live = liveGovernanceStatus({
       policyEngineAvailable: true,
-      evidencePackAvailable: true,
-      complianceSnapshotAvailable: true,
+      evidencePackValid: true,
+      sbomExists: true,
     });
     const parsed = governanceStatusSchema.safeParse(live);
     if (parsed.success) return parsed.data as GovernanceStatus;
@@ -100,9 +100,8 @@ export async function getSignals(): Promise<OperationalSignal[]> {
       const metrics = events.map((e) => ({
         app: e.app,
         metric: e.eventType,
-        value: 1,
-        baseline: 0,
-        timestamp: e.timestamp,
+        currentValue: 1,
+        baselineValue: 0,
       }));
       const live = detectOperationalSignals(metrics);
       const parsed = z.array(operationalSignalSchema).safeParse(live);
