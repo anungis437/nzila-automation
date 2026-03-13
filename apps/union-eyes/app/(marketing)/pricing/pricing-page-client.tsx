@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -195,7 +196,7 @@ export default function PricingPageClient({
               <span className="text-gray-500 ml-2 text-base">{l.forever}</span>
             </div>
             <Button variant="outline" className="w-full py-4 text-base font-medium h-auto rounded-lg" asChild>
-              <a href="/sign-up">{l.getStarted}</a>
+              <Link href="/sign-up">{l.getStarted}</Link>
             </Button>
             <BenefitList items={freeBenefits} whatsIncluded={l.whatsIncluded} />
           </CardContent>
