@@ -258,6 +258,10 @@ export function OrganizationProvider({ children }: OrganizationProviderProps) {
       document.cookie = `selected_organization_id=${newOrganizationId}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Strict; Secure`; // 1 year
       // Legacy cookie — deprecated, read-only fallback in middleware
       document.cookie = `selected_tenant_id=${newOrganizationId}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Strict; Secure`;
+      // Server-side org resolution reads slug cookie
+      if (data.organization?.slug) {
+        document.cookie = `active-organization=${data.organization.slug}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Strict; Secure`; // 30 days
+      }
 
       // Update state
       setOrganizationId(newOrganizationId);
@@ -297,17 +301,10 @@ export function OrganizationProvider({ children }: OrganizationProviderProps) {
     };
   }, [authLoaded, userId, loadUserOrganizations]);
 
-  // Set API cookie when organization changes
-  useEffect(() => {
-    if (organization && organizationId) {
-      // Set both slug and ID cookies for backward compatibility
-      document.cookie = `active-organization=${organization.slug}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Strict; Secure`; // 30 days
-      document.cookie = `selected_org_id=${organizationId}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Strict; Secure`; // 1 year — primary
-      document.cookie = `selected_organization_id=${organizationId}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Strict; Secure`; // 1 year
-      // Legacy cookie — deprecated, read-only fallback in middleware
-      document.cookie = `selected_tenant_id=${organizationId}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Strict; Secure`;
-    }
-  }, [organization, organizationId]);
+  // NOTE: Cookies are written only in switchOrganization() (explicit user action).
+  // Previously this useEffect wrote cookies on every org change including initial
+  // load, which caused stale cookies to self-reinforce (e.g. CAPE org persisting
+  // on staging even though Nzila was the primary org in the database).
 
   const value: OrganizationContextValue = {
     organizationId,
