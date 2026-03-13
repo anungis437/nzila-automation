@@ -22,6 +22,9 @@ import {
   commerceStockMovements,
 } from '@nzila/db'
 import { logger } from './logger'
+import type { OrgCommerceSettings } from '@nzila/platform-commerce-org/types'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
+import { calculateTaxes } from '@nzila/platform-commerce-org/pricing'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -56,6 +59,7 @@ export interface CreateOrderInput {
   quoteId?: string
   lines: OrderLine[]
   currency?: string
+  orgSettings?: OrgCommerceSettings
   shippingAddress?: {
     street?: string
     city?: string
@@ -139,9 +143,10 @@ export interface ProductionDashboard {
 // Reference Number Generation
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function generateOrderRef(orgId: string): Promise<string> {
+async function generateOrderRef(orgId: string, settings?: OrgCommerceSettings): Promise<string> {
   const year = new Date().getFullYear()
-  const prefix = `ORD-${year}-`
+  const orderPrefix = settings?.orderPrefix ?? SHOPMOICA_SETTINGS.orderPrefix
+  const prefix = `${orderPrefix}-${year}-`
 
   const [latest] = await db
     .select({ ref: commerceOrders.ref })
@@ -152,7 +157,7 @@ async function generateOrderRef(orgId: string): Promise<string> {
 
   let nextNum = 1
   if (latest?.ref) {
-    const match = latest.ref.match(/ORD-\d{4}-(\d+)/)
+    const match = latest.ref.match(new RegExp(`${orderPrefix}-\\d{4}-(\\d+)`))
     if (match) {
       nextNum = parseInt(match[1], 10) + 1
     }
@@ -165,16 +170,19 @@ async function generateOrderRef(orgId: string): Promise<string> {
 // Order Management
 // ─────────────────────────────────────────────────────────────────────────────
 
-function calculateLineTotals(lines: OrderLine[]): { subtotal: number; taxTotal: number; total: number } {
+function calculateLineTotals(
+  lines: OrderLine[],
+  settings?: OrgCommerceSettings,
+): { subtotal: number; taxTotal: number; total: number } {
   const subtotal = lines.reduce((sum, line) => {
     const discountMultiplier = 1 - (line.discount ?? 0) / 100
     return sum + line.quantity * line.unitPrice * discountMultiplier
   }, 0)
 
-  // Assume 15% tax (configurable in production)
-  const taxRate = 0.15
-  const taxTotal = subtotal * taxRate
-  const total = subtotal + taxTotal
+  const effectiveSettings = settings ?? SHOPMOICA_SETTINGS
+  const { totalTax, totalWithTax } = calculateTaxes(subtotal, effectiveSettings)
+  const taxTotal = parseFloat(totalTax)
+  const total = parseFloat(totalWithTax)
 
   return { subtotal, taxTotal, total }
 }
@@ -182,8 +190,8 @@ function calculateLineTotals(lines: OrderLine[]): { subtotal: number; taxTotal: 
 export async function createOrder(input: CreateOrderInput): Promise<OrderWithDetails> {
   logger.info('Creating order', { orgId: input.orgId, customerId: input.customerId })
 
-  const ref = await generateOrderRef(input.orgId)
-  const { subtotal, taxTotal, total } = calculateLineTotals(input.lines)
+  const ref = await generateOrderRef(input.orgId, input.orgSettings)
+  const { subtotal, taxTotal, total } = calculateLineTotals(input.lines, input.orgSettings)
 
   // Create order
   const [order] = await db
@@ -194,7 +202,7 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderWithDet
       quoteId: input.quoteId ?? null,
       ref,
       status: 'created',
-      currency: input.currency ?? 'CAD',
+      currency: input.currency ?? input.orgSettings?.currency ?? SHOPMOICA_SETTINGS.currency,
       subtotal: subtotal.toFixed(2),
       taxTotal: taxTotal.toFixed(2),
       total: total.toFixed(2),

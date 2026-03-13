@@ -2,7 +2,7 @@
  * Zonga Server Actions — Search & Discovery.
  *
  * Global search across assets, creators, events, and playlists.
- * All searches query the audit_log JSONB metadata.
+ * All searches query dedicated domain tables.
  */
 'use server'
 
@@ -46,40 +46,39 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search assets
     const assetRows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'title' as title,
-        metadata->>'creatorName' as subtitle,
-        metadata->>'status' as status,
-        metadata->>'genre' as genre,
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'asset.created'
-        AND org_id = ${ctx.orgId}
+        a.id,
+        a.title,
+        c.display_name as subtitle,
+        a.status,
+        a.genre,
+        a.created_at as "createdAt"
+      FROM zonga_content_assets a
+      LEFT JOIN zonga_creators c ON c.id = a.creator_id
+      WHERE a.org_id = ${ctx.orgId}
         AND (
-          LOWER(metadata->>'title') LIKE ${pattern}
-          OR LOWER(metadata->>'creatorName') LIKE ${pattern}
-          OR LOWER(metadata->>'genre') LIKE ${pattern}
+          LOWER(a.title) LIKE ${pattern}
+          OR LOWER(c.display_name) LIKE ${pattern}
+          OR LOWER(a.genre) LIKE ${pattern}
         )
-      ORDER BY created_at DESC
+      ORDER BY a.created_at DESC
       LIMIT 20`,
     )) as unknown as { rows: Omit<SearchResult, 'type'>[] }
 
     // Search creators
     const creatorRows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'name' as title,
-        metadata->>'email' as subtitle,
-        metadata->>'status' as status,
-        metadata->>'primaryGenre' as genre,
+        id,
+        display_name as title,
+        genre as subtitle,
+        status,
+        genre,
         created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'creator.registered'
-        AND org_id = ${ctx.orgId}
+      FROM zonga_creators
+      WHERE org_id = ${ctx.orgId}
         AND (
-          LOWER(metadata->>'name') LIKE ${pattern}
-          OR LOWER(metadata->>'email') LIKE ${pattern}
-          OR LOWER(metadata->>'country') LIKE ${pattern}
+          LOWER(display_name) LIKE ${pattern}
+          OR LOWER(genre) LIKE ${pattern}
+          OR LOWER(country) LIKE ${pattern}
         )
       ORDER BY created_at DESC
       LIMIT 20`,
@@ -88,19 +87,18 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search events
     const eventRows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'title' as title,
-        metadata->>'venue' as subtitle,
-        metadata->>'status' as status,
-        metadata->>'genre' as genre,
+        id,
+        title,
+        venue as subtitle,
+        status,
+        NULL as genre,
         created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'event.created'
-        AND org_id = ${ctx.orgId}
+      FROM zonga_events
+      WHERE org_id = ${ctx.orgId}
         AND (
-          LOWER(metadata->>'title') LIKE ${pattern}
-          OR LOWER(metadata->>'venue') LIKE ${pattern}
-          OR LOWER(metadata->>'city') LIKE ${pattern}
+          LOWER(title) LIKE ${pattern}
+          OR LOWER(venue) LIKE ${pattern}
+          OR LOWER(city) LIKE ${pattern}
         )
       ORDER BY created_at DESC
       LIMIT 20`,
@@ -109,18 +107,17 @@ export async function globalSearch(query: string): Promise<SearchResults> {
     // Search playlists
     const playlistRows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'title' as title,
-        metadata->>'description' as subtitle,
-        metadata->>'visibility' as status,
-        metadata->>'genre' as genre,
+        id,
+        title,
+        description as subtitle,
+        visibility as status,
+        NULL as genre,
         created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'playlist.created'
-        AND org_id = ${ctx.orgId}
+      FROM zonga_playlists
+      WHERE org_id = ${ctx.orgId}
         AND (
-          LOWER(metadata->>'title') LIKE ${pattern}
-          OR LOWER(metadata->>'description') LIKE ${pattern}
+          LOWER(title) LIKE ${pattern}
+          OR LOWER(description) LIKE ${pattern}
         )
       ORDER BY created_at DESC
       LIMIT 20`,
@@ -150,21 +147,22 @@ export async function getTrending(): Promise<SearchResult[]> {
   const ctx = await resolveOrgContext()
 
   try {
-    // Assets with most likes in the last 30 days
+    // Assets with most favorites in the last 30 days
     const rows = (await platformDb.execute(
       sql`SELECT
-        a.metadata->>'assetId' as id,
-        b.metadata->>'title' as title,
-        b.metadata->>'creatorName' as subtitle,
-        b.metadata->>'genre' as genre,
-        COUNT(*) as like_count
-      FROM audit_log a
-      LEFT JOIN audit_log b ON b.org_id = a.metadata->>'assetId' AND b.action = 'asset.created'
-      WHERE a.action = 'social.liked'
-        AND a.org_id = ${ctx.orgId}
-        AND a.created_at >= NOW() - INTERVAL '30 days'
-      GROUP BY a.metadata->>'assetId', b.metadata->>'title', b.metadata->>'creatorName', b.metadata->>'genre'
-      ORDER BY like_count DESC
+        a.id,
+        a.title,
+        c.display_name as subtitle,
+        a.genre,
+        COUNT(f.id) as fav_count
+      FROM zonga_content_assets a
+      LEFT JOIN zonga_creators c ON c.id = a.creator_id
+      LEFT JOIN zonga_listener_favorites f
+        ON f.entity_id = a.id AND f.entity_type = 'asset'
+        AND f.created_at >= NOW() - INTERVAL '30 days'
+      WHERE a.org_id = ${ctx.orgId} AND a.status = 'published'
+      GROUP BY a.id, a.title, c.display_name, a.genre
+      ORDER BY fav_count DESC
       LIMIT 10`,
     )) as unknown as { rows: Array<{ id: string; title: string; subtitle: string; genre: string }> }
 
@@ -186,16 +184,19 @@ export async function getRecentlyPlayed(): Promise<SearchResult[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        a.metadata->>'assetId' as id,
-        b.metadata->>'title' as title,
-        b.metadata->>'creatorName' as subtitle,
-        b.metadata->>'genre' as genre,
-        a.created_at as "createdAt"
-      FROM audit_log a
-      LEFT JOIN audit_log b ON b.org_id = a.metadata->>'assetId' AND b.action = 'asset.created'
-      WHERE a.action = 'stream.played' AND a.actor_id = ${ctx.actorId}
-        AND a.org_id = ${ctx.orgId}
-      ORDER BY a.created_at DESC
+        a.id,
+        a.title,
+        c.display_name as subtitle,
+        a.genre,
+        la.created_at as "createdAt"
+      FROM zonga_listener_activity la
+      JOIN zonga_content_assets a ON a.id = la.entity_id
+      LEFT JOIN zonga_creators c ON c.id = a.creator_id
+      WHERE la.listener_id = ${ctx.actorId}
+        AND la.org_id = ${ctx.orgId}
+        AND la.activity_type = 'stream'
+        AND la.entity_type = 'asset'
+      ORDER BY la.created_at DESC
       LIMIT 20`,
     )) as unknown as { rows: Omit<SearchResult, 'type'>[] }
 

@@ -6,8 +6,8 @@
  * Next.js server actions for order management and production planning.
  */
 
-import { auth } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import {
   createOrder,
   getOrder,
@@ -74,18 +74,13 @@ export async function createOrderAction(input: {
   }
   notes?: string
 }): Promise<ActionResult<OrderWithDetails>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId, actorId } = await resolveOrgContext()
 
     const data = await createOrder({
       ...input,
       orgId,
-      userId,
+      userId: actorId,
     })
 
     revalidatePath('/orders')
@@ -101,12 +96,8 @@ export async function createOrderAction(input: {
 }
 
 export async function getOrderAction(orderId: string): Promise<ActionResult<OrderWithDetails>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const data = await getOrder(orderId)
     if (!data) {
       return { success: false, error: 'Order not found' }
@@ -128,13 +119,8 @@ export async function listOrdersAction(filter?: {
   dateTo?: string
   search?: string
 }): Promise<ActionResult<OrderWithDetails[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId } = await resolveOrgContext()
 
     const filterObj: OrderListFilter = {
       orgId,
@@ -159,12 +145,8 @@ export async function listOrdersAction(filter?: {
 export async function confirmOrderAction(
   orderId: string,
 ): Promise<ActionResult<typeof commerceOrders.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const order = await confirmOrder(orderId)
 
     revalidatePath('/orders')
@@ -183,12 +165,8 @@ export async function confirmOrderAction(
 export async function startFulfillmentAction(
   orderId: string,
 ): Promise<ActionResult<typeof commerceOrders.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const order = await startFulfillment(orderId)
 
     revalidatePath('/orders')
@@ -208,12 +186,8 @@ export async function markOrderShippedAction(
   orderId: string,
   trackingInfo?: { carrier?: string; trackingNumber?: string },
 ): Promise<ActionResult<typeof commerceOrders.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const order = await markOrderShipped(orderId, trackingInfo)
 
     revalidatePath('/orders')
@@ -232,12 +206,8 @@ export async function markOrderShippedAction(
 export async function completeOrderAction(
   orderId: string,
 ): Promise<ActionResult<typeof commerceOrders.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const order = await completeOrder(orderId)
 
     revalidatePath('/orders')
@@ -257,12 +227,8 @@ export async function cancelOrderAction(
   orderId: string,
   reason?: string,
 ): Promise<ActionResult<typeof commerceOrders.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const order = await cancelOrder(orderId, reason)
 
     revalidatePath('/orders')
@@ -290,12 +256,8 @@ export async function allocateInventoryAction(input: {
   expectedFulfillmentDate?: string
   notes?: string
 }): Promise<ActionResult<typeof commerceMandateAllocations.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const allocation = await allocateInventory({
       ...input,
       expectedFulfillmentDate: input.expectedFulfillmentDate
@@ -320,12 +282,8 @@ export async function fulfillAllocationAction(
   allocationId: string,
   quantityFulfilled: number,
 ): Promise<ActionResult<typeof commerceMandateAllocations.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const allocation = await fulfillAllocation(allocationId, quantityFulfilled)
 
     revalidatePath('/orders')
@@ -344,12 +302,8 @@ export async function fulfillAllocationAction(
 export async function cancelAllocationAction(
   allocationId: string,
 ): Promise<ActionResult<typeof commerceMandateAllocations.$inferSelect>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const allocation = await cancelAllocation(allocationId)
 
     revalidatePath('/orders')
@@ -369,12 +323,8 @@ export async function autoAllocateOrderAction(
   orderId: string,
   priority?: Priority,
 ): Promise<ActionResult<(typeof commerceMandateAllocations.$inferSelect)[]>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
+    await resolveOrgContext()
     const allocations = await autoAllocateOrder(orderId, priority)
 
     revalidatePath(`/orders/${orderId}`)
@@ -395,13 +345,8 @@ export async function autoAllocateOrderAction(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getProductionDashboardAction(): Promise<ActionResult<ProductionDashboard>> {
-  const { userId } = await auth()
-  if (!userId) {
-    return { success: false, error: 'Unauthorized' }
-  }
-
   try {
-    const orgId = userId // Replace with actual entity lookup
+    const { orgId } = await resolveOrgContext()
 
     const dashboard = await getProductionDashboard(orgId)
 

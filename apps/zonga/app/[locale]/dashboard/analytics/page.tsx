@@ -79,6 +79,54 @@ export default async function AnalyticsPage() {
         </Card>
       </div>
 
+      {/* Engagement Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">🎤</span>
+              <p className="text-xs text-gray-500">Active Creators</p>
+            </div>
+            <p className="text-2xl font-bold text-navy">
+              {formatNumber(analytics.totalCreators ?? 0)}
+            </p>
+          </div>
+        </Card>
+        <Card>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">💿</span>
+              <p className="text-xs text-gray-500">Published Releases</p>
+            </div>
+            <p className="text-2xl font-bold text-navy">
+              {formatNumber(analytics.totalReleases ?? 0)}
+            </p>
+          </div>
+        </Card>
+        <Card>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">❤️</span>
+              <p className="text-xs text-gray-500">Total Favorites</p>
+            </div>
+            <p className="text-2xl font-bold text-navy">
+              {formatNumber(analytics.totalFavorites ?? 0)}
+            </p>
+          </div>
+        </Card>
+        <Card>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">🤝</span>
+              <p className="text-xs text-gray-500">Artist Follows</p>
+            </div>
+            <p className="text-2xl font-bold text-navy">
+              {formatNumber(analytics.totalFollowers ?? 0)}
+            </p>
+          </div>
+        </Card>
+      </div>
+
       {/* Top Assets */}
       <div>
         <h2 className="text-lg font-semibold text-navy mb-3">🏆 Top Assets</h2>
@@ -105,6 +153,41 @@ export default async function AnalyticsPage() {
                       <td className="px-5 py-3 text-gray-400 font-mono">{i + 1}</td>
                       <td className="px-5 py-3 font-medium text-navy">{a.title ?? 'Untitled'}</td>
                       <td className="px-5 py-3">{formatNumber(a.streams ?? 0)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
+      </div>
+
+      {/* Top Creators */}
+      <div>
+        <h2 className="text-lg font-semibold text-navy mb-3">🎤 Top Creators</h2>
+        {(analytics.topCreators ?? []).length === 0 ? (
+          <Card>
+            <div className="p-8 text-center">
+              <p className="text-gray-500 text-sm">No creator data available yet.</p>
+            </div>
+          </Card>
+        ) : (
+          <Card>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-gray-100">
+                  <tr>
+                    <th className="px-5 py-3 text-xs font-medium text-gray-500">#</th>
+                    <th className="px-5 py-3 text-xs font-medium text-gray-500">Creator</th>
+                    <th className="px-5 py-3 text-xs font-medium text-gray-500">Streams</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {analytics.topCreators.map((c, i) => (
+                    <tr key={c.creatorId} className="hover:bg-gray-50">
+                      <td className="px-5 py-3 text-gray-400 font-mono">{i + 1}</td>
+                      <td className="px-5 py-3 font-medium text-navy">{c.name}</td>
+                      <td className="px-5 py-3">{formatNumber(c.streams ?? 0)}</td>
                     </tr>
                   ))}
                 </tbody>

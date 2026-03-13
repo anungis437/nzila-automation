@@ -1012,3 +1012,160 @@ export const commerceShopifySyncRecords = pgTable('commerce_shopify_sync_records
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Org Commerce Configuration Tables
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const commerceSupplierStrategyEnum = pgEnum('commerce_supplier_strategy', [
+  'LOWEST_COST',
+  'FASTEST',
+  'BALANCED',
+  'MANUAL',
+])
+
+export const commerceMarkupStrategyEnum = pgEnum('commerce_markup_strategy', [
+  'FIXED_PERCENT',
+  'TIERED',
+  'MANUAL',
+])
+
+// ── 38) commerce_org_settings ──────────────────────────────────────────────
+
+export const commerceOrgSettings = pgTable('commerce_org_settings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  currency: varchar('currency', { length: 3 }).notNull().default('CAD'),
+  locale: varchar('locale', { length: 10 }).notNull().default('en-CA'),
+  quotePrefix: varchar('quote_prefix', { length: 10 }).notNull().default('SQ'),
+  invoicePrefix: varchar('invoice_prefix', { length: 10 }).notNull().default('INV'),
+  poPrefix: varchar('po_prefix', { length: 10 }).notNull().default('PO'),
+  orderPrefix: varchar('order_prefix', { length: 10 }).notNull().default('ORD'),
+  quoteValidityDays: integer('quote_validity_days').notNull().default(30),
+  shareLinkExpiryDays: integer('share_link_expiry_days').notNull().default(7),
+  taxConfig: jsonb('tax_config').notNull(),
+  defaultShippingPolicy: varchar('default_shipping_policy', { length: 100 }).notNull().default('FOB Origin'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 39) commerce_org_quote_policies ────────────────────────────────────────
+
+export const commerceOrgQuotePolicies = pgTable('commerce_org_quote_policies', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  minMarginPercent: numeric('min_margin_percent', { precision: 5, scale: 2 }).notNull().default('15'),
+  approvalRequiredBelowMargin: boolean('approval_required_below_margin').notNull().default(true),
+  maxDiscountWithoutApproval: numeric('max_discount_without_approval', { precision: 5, scale: 2 }).notNull().default('25'),
+  autoExpireQuotesAfterDays: integer('auto_expire_quotes_after_days').notNull().default(30),
+  allowManualPriceOverride: boolean('allow_manual_price_override').notNull().default(false),
+  approvalThreshold: numeric('approval_threshold', { precision: 18, scale: 2 }).notNull().default('10000'),
+  requireEvidenceForInvoice: boolean('require_evidence_for_invoice').notNull().default(true),
+  marginFloors: jsonb('margin_floors').notNull().default({ budget: 15, standard: 25, premium: 35 }),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 40) commerce_org_payment_policies ──────────────────────────────────────
+
+export const commerceOrgPaymentPolicies = pgTable('commerce_org_payment_policies', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  depositRequired: boolean('deposit_required').notNull().default(true),
+  defaultDepositPercent: numeric('default_deposit_percent', { precision: 5, scale: 2 }).notNull().default('30'),
+  depositRequiredBeforeProduction: boolean('deposit_required_before_production').notNull().default(true),
+  allowPartialPayments: boolean('allow_partial_payments').notNull().default(true),
+  defaultPaymentTerms: varchar('default_payment_terms', { length: 50 }).notNull().default('Net 30'),
+  defaultPaymentTermsDays: integer('default_payment_terms_days').notNull().default(30),
+  defaultLeadTimeDays: integer('default_lead_time_days').notNull().default(14),
+  paymentInstructions: text('payment_instructions').notNull().default('Please reply to this email with your preferred payment method.'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 41) commerce_org_supplier_policies ─────────────────────────────────────
+
+export const commerceOrgSupplierPolicies = pgTable('commerce_org_supplier_policies', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  preferredSupplierIds: jsonb('preferred_supplier_ids').notNull().default([]),
+  supplierSelectionStrategy: commerceSupplierStrategyEnum('supplier_selection_strategy').notNull().default('BALANCED'),
+  qualityWeight: numeric('quality_weight', { precision: 3, scale: 2 }).notNull().default('0.30'),
+  leadTimeWeight: numeric('lead_time_weight', { precision: 3, scale: 2 }).notNull().default('0.30'),
+  costWeight: numeric('cost_weight', { precision: 3, scale: 2 }).notNull().default('0.40'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 42) commerce_org_catalog_policies ──────────────────────────────────────
+
+export const commerceOrgCatalogPolicies = pgTable('commerce_org_catalog_policies', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  enableInternalSkuMapping: boolean('enable_internal_sku_mapping').notNull().default(false),
+  defaultMarkupStrategy: commerceMarkupStrategyEnum('default_markup_strategy').notNull().default('FIXED_PERCENT'),
+  defaultFixedMarkupPercent: numeric('default_fixed_markup_percent', { precision: 5, scale: 2 }).notNull().default('40'),
+  defaultDecorationRule: varchar('default_decoration_rule', { length: 50 }).notNull().default('standard'),
+  categoryMappings: jsonb('category_mappings').notNull().default({}),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 43) commerce_org_branding_configs ──────────────────────────────────────
+
+export const commerceOrgBrandingConfigs = pgTable('commerce_org_branding_configs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  companyName: varchar('company_name', { length: 200 }).notNull().default('ShopMoiCa.ca'),
+  companyLegalName: varchar('company_legal_name', { length: 200 }).notNull().default('Nzila Ventures SENC'),
+  displayName: varchar('display_name', { length: 100 }).notNull().default('ShopMoiCa'),
+  logoUrl: text('logo_url'),
+  logoInitials: varchar('logo_initials', { length: 4 }),
+  primaryColor: varchar('primary_color', { length: 7 }).notNull().default('#7c3aed'),
+  secondaryColor: varchar('secondary_color', { length: 7 }).notNull().default('#e5e7eb'),
+  quoteFooterText: text('quote_footer_text'),
+  supportEmail: varchar('support_email', { length: 200 }),
+  customerPortalLabel: varchar('customer_portal_label', { length: 100 }).notNull().default('Quote Portal'),
+  address: text('address').notNull().default('Montréal, QC, Canada'),
+  hashSalt: varchar('hash_salt', { length: 100 }).notNull().default('_shopmoica_salt'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── 44) commerce_org_communication_templates ───────────────────────────────
+
+export const commerceOrgCommunicationTemplates = pgTable('commerce_org_communication_templates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id)
+    .unique(),
+  templates: jsonb('templates').notNull(),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})

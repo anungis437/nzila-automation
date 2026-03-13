@@ -12,12 +12,13 @@ import { approvalRepo, revisionRepo, recordTimelineEvent } from '@/lib/repositor
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { quoteRepo } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 async function hashIp(ip: string): Promise<string> {
   const encoder = new TextEncoder()
-  const data = encoder.encode(ip + '_shopmoica_salt')
+  const data = encoder.encode(ip + SHOPMOICA_BRANDING.hashSalt)
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')

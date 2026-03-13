@@ -12,7 +12,7 @@
  *   3. `runAIExtraction`  → Auto-populate quote from unstructured RFP emails
  *   4. `runPrediction`    → Quote acceptance/conversion prediction
  */
-import { auth } from '@clerk/nextjs/server'
+import { resolveOrgContext } from '@/lib/resolve-org'
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -59,8 +59,7 @@ export async function getSmartPricing(opts: {
   theme: string
   clientHistory?: string
 }): Promise<PricingSuggestion[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const _ctx = await resolveOrgContext()
 
   try {
     // Pull recent quote history for context
@@ -109,8 +108,7 @@ export async function findSimilarProducts(
   description: string,
   limit: number = 5,
 ): Promise<SimilarProduct[]> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const _ctx = await resolveOrgContext()
 
   try {
     const embeddings = await runAIEmbed(description, { profile: 'shop-quoter-embed' })
@@ -142,11 +140,10 @@ Return JSON array: [{ "sku": string, "name": string, "similarity": number (0-1) 
 export async function extractFromRfp(
   rfpText: string,
 ): Promise<RfpExtraction | null> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const ctx = await resolveOrgContext()
 
   try {
-    logger.info('Extracting from RFP', { actorId: userId, textLength: rfpText.length })
+    logger.info('Extracting from RFP', { actorId: ctx.actorId, textLength: rfpText.length })
 
     const data = await runAIExtraction(rfpText, 'rfp-extraction', {
       profile: 'shop-quoter-extract',
@@ -155,8 +152,8 @@ export async function extractFromRfp(
 
     const pack = buildEvidencePackFromAction({
       actionType: 'RFP_EXTRACTION',
-      orgId: 'platform',
-      actorId: userId,
+      orgId: ctx.orgId,
+      actorId: ctx.actorId,
       metadata: { inputLength: rfpText.length },
     })
     await processEvidencePack(pack)
@@ -178,8 +175,7 @@ export async function extractFromRfp(
 /* ─── Quote Conversion Prediction ─── */
 
 export async function predictConversion(quoteId: string): Promise<ConversionPrediction | null> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const _ctx = await resolveOrgContext()
 
   try {
     const prediction = await runPrediction({

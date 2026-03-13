@@ -12,7 +12,7 @@
  * @invariant ZNG-ACT2-02: platformDb usage
  * @invariant ZNG-ACT2-03: Logger integration
  * @invariant ZNG-ACT2-04: Exported function signatures
- * @invariant ZNG-ACT2-05: Audit log pattern (INSERT INTO audit_log)
+ * @invariant ZNG-ACT2-05: Domain table pattern (primary writes to domain tables; audit_log for tracing only)
  */
 import { describe, it, expect } from 'vitest'
 import { readFileSync, existsSync } from 'node:fs'
@@ -85,36 +85,50 @@ describe('ZNG-ACT2-03 — All actions use structured logger', () => {
   }
 })
 
-describe('ZNG-ACT2-05 — All actions use audit_log INSERT pattern', () => {
-  const MUTATION_FILES = [
-    'social-actions.ts',
-    'notification-actions.ts',
-    'playlist-actions.ts',
-    'event-actions.ts',
-  ]
+describe('ZNG-ACT2-05 — Mutation actions write to domain tables', () => {
+  it('social-actions writes to zonga_listener_follows and zonga_listener_favorites', () => {
+    const content = readFileSync(join(ZONGA_ACTIONS, 'social-actions.ts'), 'utf-8')
+    expect(content).toContain('zonga_listener_follows')
+    expect(content).toContain('zonga_listener_favorites')
+  })
 
-  for (const file of MUTATION_FILES) {
-    it(`${file} uses INSERT INTO audit_log`, () => {
-      const path = join(ZONGA_ACTIONS, file)
-      if (!existsSync(path)) return
-      const content = readFileSync(path, 'utf-8')
-      expect(content).toContain('INSERT INTO audit_log')
-    })
-  }
+  it('notification-actions writes to zonga_notifications', () => {
+    const content = readFileSync(join(ZONGA_ACTIONS, 'notification-actions.ts'), 'utf-8')
+    expect(content).toContain('zonga_notifications')
+  })
+
+  it('playlist-actions writes to zonga_playlists and zonga_playlist_items', () => {
+    const content = readFileSync(join(ZONGA_ACTIONS, 'playlist-actions.ts'), 'utf-8')
+    expect(content).toContain('zonga_playlists')
+    expect(content).toContain('zonga_playlist_items')
+  })
+
+  it('event-actions uses INSERT INTO audit_log for tracing', () => {
+    const content = readFileSync(join(ZONGA_ACTIONS, 'event-actions.ts'), 'utf-8')
+    expect(content).toContain('INSERT INTO audit_log')
+  })
 })
 
 /* ─── Social Actions Contract ─── */
 
 describe('ZNG-ACT2-04 — Social actions exported functions', () => {
-  it('exports followUser, unfollowUser, likeAsset, unlikeAsset, postComment, tipCreator', () => {
+  it('exports followCreator, unfollowCreator, favoriteEntity, unfavoriteEntity, postComment, tipCreator', () => {
     const path = join(ZONGA_ACTIONS, 'social-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain('export async function followUser')
-    expect(content).toContain('export async function unfollowUser')
-    expect(content).toContain('export async function likeAsset')
-    expect(content).toContain('export async function unlikeAsset')
+    expect(content).toContain('export async function followCreator')
+    expect(content).toContain('export async function unfollowCreator')
+    expect(content).toContain('export async function favoriteEntity')
+    expect(content).toContain('export async function unfavoriteEntity')
     expect(content).toContain('export async function postComment')
     expect(content).toContain('export async function tipCreator')
+  })
+
+  it('preserves deprecated wrappers/aliases: followUser, likeAsset, unlikeAsset', () => {
+    const path = join(ZONGA_ACTIONS, 'social-actions.ts')
+    const content = readFileSync(path, 'utf-8')
+    expect(content).toContain('followUser')
+    expect(content).toContain('likeAsset')
+    expect(content).toContain('unlikeAsset')
   })
 
   it('exports listing functions: listFollowers, listFollowing, listComments', () => {
@@ -125,30 +139,30 @@ describe('ZNG-ACT2-04 — Social actions exported functions', () => {
     expect(content).toContain('export async function listComments')
   })
 
-  it('exports stats: getSocialStats, getAssetLikeCount', () => {
+  it('exports stats: getSocialStats, getEntityFavoriteCount (with getAssetLikeCount alias)', () => {
     const path = join(ZONGA_ACTIONS, 'social-actions.ts')
     const content = readFileSync(path, 'utf-8')
     expect(content).toContain('export async function getSocialStats')
-    expect(content).toContain('export async function getAssetLikeCount')
+    expect(content).toContain('export async function getEntityFavoriteCount')
+    expect(content).toContain('export const getAssetLikeCount')
   })
 
-  it('tipCreator records revenue.recorded for the creator', () => {
+  it('tipCreator writes to zonga_revenue_events using RevenueType.TIP', () => {
     const path = join(ZONGA_ACTIONS, 'social-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain("'revenue.recorded'")
-    // Revenue type must use enum (RevenueType.TIP), not hardcoded 'tip' string
+    expect(content).toContain('zonga_revenue_events')
     expect(content).toContain('RevenueType.TIP')
   })
 
-  it('uses proper audit actions for social events', () => {
+  it('uses domain tables plus audit_log for comments', () => {
     const path = join(ZONGA_ACTIONS, 'social-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain("'social.followed'")
-    expect(content).toContain("'social.unfollowed'")
-    expect(content).toContain("'social.liked'")
-    expect(content).toContain("'social.unliked'")
+    // Follows/favorites/tips go to domain tables (no audit_log for these)
+    expect(content).toContain('zonga_listener_follows')
+    expect(content).toContain('zonga_listener_favorites')
+    expect(content).toContain('zonga_revenue_events')
+    // Comments still use audit_log (append-only pattern)
     expect(content).toContain("'social.commented'")
-    expect(content).toContain("'social.tipped'")
   })
 })
 
@@ -170,12 +184,12 @@ describe('ZNG-ACT2-04 — Notification actions exported functions', () => {
     expect(content).toContain('export async function getUnreadCount')
   })
 
-  it('uses proper audit actions for notifications', () => {
+  it('uses zonga_notifications domain table for reads and writes', () => {
     const path = join(ZONGA_ACTIONS, 'notification-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain("'notification.created'")
-    expect(content).toContain("'notification.read'")
-    expect(content).toContain("'notification.read_all'")
+    expect(content).toContain('zonga_notifications')
+    expect(content).toContain('INSERT INTO zonga_notifications')
+    expect(content).toContain('UPDATE zonga_notifications')
   })
 
   it('markAsRead and markAllRead call revalidatePath', () => {
@@ -196,13 +210,13 @@ describe('ZNG-ACT2-04 — Search actions exported functions', () => {
     expect(content).toContain('export async function getRecentlyPlayed')
   })
 
-  it('globalSearch queries across multiple entity types', () => {
+  it('globalSearch queries domain tables for multiple entity types', () => {
     const path = join(ZONGA_ACTIONS, 'search-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain("'asset.created'")
-    expect(content).toContain("'creator.registered'")
-    expect(content).toContain("'event.created'")
-    expect(content).toContain("'playlist.created'")
+    expect(content).toContain('zonga_content_assets')
+    expect(content).toContain('zonga_creators')
+    expect(content).toContain('zonga_events')
+    expect(content).toContain('zonga_playlists')
   })
 
   it('exports SearchResult and SearchResults types', () => {
@@ -226,12 +240,12 @@ describe('ZNG-ACT2-04 — Playlist actions exported functions', () => {
     expect(content).toContain('export async function removeTrackFromPlaylist')
   })
 
-  it('uses proper audit actions for playlists', () => {
+  it('writes to zonga_playlists/zonga_playlist_items with audit trail for creation', () => {
     const path = join(ZONGA_ACTIONS, 'playlist-actions.ts')
     const content = readFileSync(path, 'utf-8')
+    expect(content).toContain('zonga_playlists')
+    expect(content).toContain('zonga_playlist_items')
     expect(content).toContain("'playlist.created'")
-    expect(content).toContain("'playlist.track.added'")
-    expect(content).toContain("'playlist.track.removed'")
   })
 })
 
@@ -256,11 +270,11 @@ describe('ZNG-ACT2-04 — Event actions exported functions', () => {
     expect(content).toContain("from '@/lib/stripe'")
   })
 
-  it('purchaseTicket records revenue', () => {
+  it('purchaseTicket writes to zonga_ticket_purchases with audit trail', () => {
     const path = join(ZONGA_ACTIONS, 'event-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain("'revenue.recorded'")
-    expect(content).toContain("'ticket_sale'")
+    expect(content).toContain('zonga_ticket_purchases')
+    expect(content).toContain("'event.ticket.purchased'")
   })
 
   it('uses proper audit actions for events', () => {
@@ -281,9 +295,11 @@ describe('ZNG-ACT2 — publishRelease added to release-actions', () => {
     expect(content).toContain('export async function publishRelease')
   })
 
-  it('publishRelease uses release.published audit action', () => {
+  it('publishRelease transitions status via transitionReleaseStatus', () => {
     const path = join(ZONGA_ACTIONS, 'release-actions.ts')
     const content = readFileSync(path, 'utf-8')
-    expect(content).toContain("'release.published'")
+    expect(content).toContain('export async function publishRelease')
+    // Uses release.status_changed audit action for all transitions
+    expect(content).toContain("'release.status_changed'")
   })
 })

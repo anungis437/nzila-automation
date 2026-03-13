@@ -1,10 +1,10 @@
 {
-  "capturedAt": "2026-03-13T03:47:21.144Z",
+  "capturedAt": "2026-03-13T03:00:45.781Z",
   "schemaDir": "packages/db/src/schema",
   "files": {
     "packages/db/src/schema/agri.ts": {
-      "hash": "b812b37c49b8993a9af20ad478f24d655f1484f00047214688a0a6a81baa309e",
-      "size": 17499
+      "hash": "8c2923401a74a9df8c822bb22ae3807cc5fa6b3d1f9e2c66067db2fb055eb9a6",
+      "size": 17493
     },
     "packages/db/src/schema/ai.ts": {
       "hash": "a5b42b4dde05d53d8b545c8a8df4a150ab94b57cedc5141eb124378e98e99917",
@@ -19,8 +19,8 @@
       "size": 2950
     },
     "packages/db/src/schema/commerce.ts": {
-      "hash": "ab5df7727de0174345753e3d623e2fdc3eb88f4b5f73dc801dd1681551a59ff1",
-      "size": 40582
+      "hash": "7b4bfb43cac96f0a317fd29ffe2874e87fa515dcc7bf3d8ea0e16d3f0ddefc0a",
+      "size": 48970
     },
     "packages/db/src/schema/equity.ts": {
       "hash": "0fd6a70ac3ffbd6857b9edd13a145a3abfbc8333dac18e802078fcb16b5e5f7b",
@@ -83,9 +83,9 @@
       "size": 2403
     },
     "packages/db/src/schema/zonga.ts": {
-      "hash": "5e674f7a3c576e965207f1ed17fe80848d93ee99d98eb2ef9b2dd429d4736a2d",
-      "size": 9170
+      "hash": "0fada289191319125535dd696e9cb650199ea7f73d91c95b2824683540c4bbf5",
+      "size": 21885
     }
   },
-  "compositeHash": "b26ecf70ee3baf1441ab7bc97dc4261be76040584517b7724122f4df2a914b1f"
+  "compositeHash": "6684a8493f802f1bfa92ff0880034f5741e678c2c716fe9d4804b6c86dcfe5ce"
 }

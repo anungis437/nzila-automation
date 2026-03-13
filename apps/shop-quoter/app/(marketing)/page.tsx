@@ -15,7 +15,7 @@ const features = [
   {
     title: "Smart Quoting",
     description:
-      "Create tiered proposals (Budget / Standard / Premium) with automatic Quebec GST/QST calculations and margin tracking.",
+      "Create tiered proposals (Budget / Standard / Premium) with automatic tax calculations and margin tracking.",
     icon: "📋",
   },
   {
@@ -93,7 +93,7 @@ export default function MarketingPage() {
 
           <ScrollReveal delay={0.2}>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 md:text-xl">
-              Create tiered proposals, calculate Quebec taxes automatically, and
+              Create tiered proposals, calculate taxes automatically, and
               track every decision with an evidence-first audit trail powered by
               AI.
             </p>
@@ -190,7 +190,7 @@ export default function MarketingPage() {
                   every quote tells a trustworthy story.
                 </p>
                 <p className="mt-4 font-poppins font-semibold text-electric">
-                  Built in Quebec for Canadian commerce.
+                  Built for modern commerce.
                 </p>
               </div>
             </ScrollReveal>

@@ -18,6 +18,7 @@ import { quoteRepo } from '@/lib/db'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { recordTimelineEvent } from '@/lib/repositories/workflow-repository'
 import { resolveOrgContext } from '@/lib/resolve-org'
+import { getOrgPaymentPolicy } from '@nzila/platform-commerce-org/service'
 import { logger } from '@/lib/logger'
 
 interface ActionResult<T = void> {
@@ -139,6 +140,48 @@ export async function checkProductionReadinessAction(
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
     logger.error('Failed to check production readiness', { error: msg })
+    return { ok: false, error: msg }
+  }
+}
+
+/**
+ * Auto-apply the org's payment policy to a quote.
+ * Called when a quote is accepted to automatically set deposit requirements
+ * based on the org's configured payment policy (depositRequired, defaultDepositPercent, etc.).
+ */
+export async function autoApplyOrgDepositPolicyAction(
+  quoteId: string,
+): Promise<ActionResult<{ requirementId: string; depositRequired: boolean }>> {
+  try {
+    const ctx = await resolveOrgContext()
+    const policy = await getOrgPaymentPolicy(ctx.orgId)
+
+    const quote = await quoteRepo.findById(quoteId)
+    if (!quote) return { ok: false, error: 'Quote not found' }
+
+    const depositAmount = policy.depositRequired && quote.total
+      ? (policy.defaultDepositPercent / 100) * quote.total
+      : 0
+
+    const requirement = await setPaymentRequirement(
+      {
+        quoteId,
+        depositRequired: policy.depositRequired,
+        depositPercent: policy.depositRequired ? policy.defaultDepositPercent : undefined,
+        depositAmount: policy.depositRequired ? depositAmount : undefined,
+        dueBeforeProduction: policy.depositRequiredBeforeProduction,
+      },
+      ctx.actorId,
+      ctx.orgId,
+    )
+
+    return {
+      ok: true,
+      data: { requirementId: requirement.id, depositRequired: policy.depositRequired },
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error'
+    logger.error('Failed to auto-apply org deposit policy', { error: msg })
     return { ok: false, error: msg }
   }
 }

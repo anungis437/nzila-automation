@@ -16,6 +16,7 @@ import {
 } from '@nzila/db'
 import { logger } from '../logger'
 import { ShopifyClient } from './client'
+import { getOrgSettings } from '@nzila/platform-commerce-org/service'
 import type {
   ShopifyCustomer,
   ShopifyOrder,
@@ -280,7 +281,7 @@ export class ShopifySyncService {
                 ref: quoteData.ref ?? `SHOP-${order.order_number}`,
                 customerId: quoteData.customerId ?? '',
                 status: quoteData.status ?? 'draft',
-                currency: quoteData.currency ?? 'CAD',
+                currency: quoteData.currency ?? (await getOrgSettings(this.orgId)).currency,
                 subtotal: quoteData.subtotal ?? '0',
                 taxTotal: quoteData.taxTotal ?? '0',
                 total: quoteData.total ?? '0',

@@ -2,14 +2,17 @@
  * Pricing utilities — Shop Quoter app.
  *
  * Delegates to @nzila/pricing-engine for all tax and pricing calculations.
+ * Org-aware: accepts OrgCommerceSettings for currency/locale/tax config.
  * Provides UI-specific display config on top.
  */
 import {
   calculateQuebecTaxes as _calculateQuebecTaxes,
   formatCurrency as _formatCurrency,
 } from '@nzila/pricing-engine'
+import type { OrgCommerceSettings } from '@nzila/platform-commerce-org/types'
+import { calculateTaxes, formatCurrency as orgFormatCurrency } from '@nzila/platform-commerce-org/pricing'
 
-// Re-export so existing consumers don't break
+// Legacy constants — preserved for backward compatibility
 export const GST_RATE = 0.05
 export const QST_RATE = 0.09975
 
@@ -18,9 +21,22 @@ export function calculateQuebecTaxes(subtotal: number) {
   return _calculateQuebecTaxes(subtotal)
 }
 
+/**
+ * Org-aware tax calculation. Uses the org's tax config instead of
+ * hardcoded Quebec rates.
+ */
+export function calculateOrgTaxes(subtotal: number, settings: OrgCommerceSettings) {
+  return calculateTaxes(subtotal, settings)
+}
+
 /** Format a number as CAD currency (delegates to pricing-engine). */
 export function formatCAD(n: number): string {
   return _formatCurrency(n, 'CAD')
+}
+
+/** Org-aware currency formatting. */
+export function formatOrgCurrency(n: number, settings: OrgCommerceSettings): string {
+  return orgFormatCurrency(n, settings.currency, settings.locale)
 }
 
 /** Tier display labels. */

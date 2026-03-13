@@ -21,7 +21,9 @@
       "@nzila/commerce-observability": ["../../packages/commerce-observability/src"],
       "@nzila/commerce-state": ["../../packages/commerce-state/src"],
       "@nzila/commerce-governance": ["../../packages/commerce-governance/src"],
-      "@nzila/commerce-events": ["../../packages/commerce-events/src"]
+      "@nzila/commerce-events": ["../../packages/commerce-events/src"],
+      "@nzila/platform-commerce-org": ["../../packages/platform-commerce-org/src"],
+      "@nzila/platform-commerce-org/*": ["../../packages/platform-commerce-org/src/*"]
     }
   },
   "include": [

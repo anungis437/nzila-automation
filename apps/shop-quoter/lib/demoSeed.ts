@@ -19,6 +19,34 @@ import {
   commerceQuoteLines,
   commerceTimelineEvents,
 } from '@nzila/db'
+import {
+  upsertOrgSettings,
+  upsertOrgQuotePolicy,
+  upsertOrgPaymentPolicy,
+  upsertOrgSupplierPolicy,
+  upsertOrgCatalogPolicy,
+  upsertOrgBranding,
+  upsertOrgCommunicationTemplates,
+} from '@nzila/platform-commerce-org/service'
+import {
+  SHOPMOICA_ORG_ID,
+  SHOPMOICA_SETTINGS,
+  SHOPMOICA_QUOTE_POLICY,
+  SHOPMOICA_PAYMENT_POLICY,
+  SHOPMOICA_SUPPLIER_POLICY,
+  SHOPMOICA_CATALOG_POLICY,
+  SHOPMOICA_BRANDING,
+  SHOPMOICA_COMMUNICATION_TEMPLATES,
+  PROMONORTH_ORG_ID,
+  PROMONORTH_SETTINGS,
+  PROMONORTH_QUOTE_POLICY,
+  PROMONORTH_PAYMENT_POLICY,
+  PROMONORTH_SUPPLIER_POLICY,
+  PROMONORTH_CATALOG_POLICY,
+  PROMONORTH_BRANDING,
+  PROMONORTH_COMMUNICATION_TEMPLATES,
+} from '@nzila/platform-commerce-org/defaults'
+import type { OrgCommerceConfig } from '@nzila/platform-commerce-org/types'
 
 export interface DemoOrg {
   id: string
@@ -58,7 +86,7 @@ export interface DemoTimeline {
 }
 
 export function createDemoOrg(): DemoOrg {
-  return { id: 'demo-org-quoter', name: 'ShopMoiCa Demo Corp', tier: 'PREMIUM' }
+  return { id: SHOPMOICA_ORG_ID, name: 'ShopMoiCa Demo Corp', tier: 'PREMIUM' }
 }
 
 export function createDemoUsers(orgId: string): DemoUser[] {
@@ -251,6 +279,90 @@ export function createDemoAnalytics() {
   }
 }
 
+// ── PromoNorth demo data ────────────────────────────────────────────────────
+
+export function createPromoNorthOrg(): DemoOrg {
+  return { id: PROMONORTH_ORG_ID, name: 'PromoNorth Inc.', tier: 'STANDARD' }
+}
+
+export function createPromoNorthUsers(orgId: string): DemoUser[] {
+  return [
+    { id: 'pn-admin', email: 'admin@promonorth.com', role: 'admin', orgId },
+    { id: 'pn-sales', email: 'sales@promonorth.com', role: 'sales', orgId },
+  ]
+}
+
+export function createPromoNorthCustomers(): DemoCustomer[] {
+  return [
+    { id: 'pn-customer-1', name: 'Jane Smith', email: 'jane@acme.com', company: 'Acme Corp' },
+    { id: 'pn-customer-2', name: 'Bob Wilson', email: 'bob@globaltech.com', company: 'GlobalTech' },
+    { id: 'pn-customer-3', name: 'Sara Lee', email: 'sara@nycdesign.com', company: 'NYC Design Co' },
+  ]
+}
+
+export function createPromoNorthQuotes(orgId: string): DemoQuote[] {
+  return [
+    {
+      id: 'pn-quote-001',
+      ref: 'PN-2026-001',
+      orgId,
+      customerId: 'pn-customer-1',
+      title: 'Branded Apparel Bundle — Acme',
+      status: 'DRAFT',
+      lines: [
+        { productId: 'pn-tshirt', description: 'Custom Branded T-Shirt', quantity: 500, unitPrice: 8 },
+        { productId: 'pn-cap', description: 'Embroidered Cap', quantity: 200, unitPrice: 12 },
+      ],
+      total: 6400,
+      notes: 'Rush delivery requested',
+    },
+    {
+      id: 'pn-quote-002',
+      ref: 'PN-2026-002',
+      orgId,
+      customerId: 'pn-customer-2',
+      title: 'Trade Show Kit — GlobalTech',
+      status: 'SENT_TO_CLIENT',
+      lines: [
+        { productId: 'pn-mug', description: 'Ceramic Logo Mug', quantity: 1000, unitPrice: 5 },
+        { productId: 'pn-pen', description: 'Premium Branded Pen', quantity: 2000, unitPrice: 2 },
+        { productId: 'pn-bag', description: 'Trade Show Tote Bag', quantity: 500, unitPrice: 6 },
+      ],
+      total: 12000,
+    },
+    {
+      id: 'pn-quote-003',
+      ref: 'PN-2026-003',
+      orgId,
+      customerId: 'pn-customer-3',
+      title: 'Holiday Gift Baskets — NYC Design',
+      status: 'ACCEPTED',
+      lines: [
+        { productId: 'pn-basket', description: 'Premium Gift Basket', quantity: 100, unitPrice: 45 },
+      ],
+      total: 4500,
+      notes: 'Corporate holiday gifts — deliver by Dec 15',
+    },
+  ]
+}
+
+// ── Org config seeding ──────────────────────────────────────────────────────
+
+async function seedOrgConfig(config: OrgCommerceConfig, actorId: string): Promise<void> {
+  const { orgId } = config.settings
+  const strip = <T extends { orgId: string }>(obj: T): Omit<T, 'orgId'> => {
+    const { orgId: _, ...rest } = obj
+    return rest
+  }
+  await upsertOrgSettings(orgId, strip(config.settings), actorId)
+  await upsertOrgQuotePolicy(orgId, strip(config.quotePolicy), actorId)
+  await upsertOrgPaymentPolicy(orgId, strip(config.paymentPolicy), actorId)
+  await upsertOrgSupplierPolicy(orgId, strip(config.supplierPolicy), actorId)
+  await upsertOrgCatalogPolicy(orgId, strip(config.catalogPolicy), actorId)
+  await upsertOrgBranding(orgId, strip(config.branding), actorId)
+  await upsertOrgCommunicationTemplates(orgId, strip(config.communicationTemplates), actorId)
+}
+
 export async function seedDemo() {
   const org = createDemoOrg()
   const users = createDemoUsers(org.id)
@@ -259,7 +371,31 @@ export async function seedDemo() {
   const timelines = createDemoTimelines()
   const analytics = createDemoAnalytics()
 
-  // Insert customers into DB
+  // Seed ShopMoiCa org config
+  const shopmoicaConfig: OrgCommerceConfig = {
+    settings: SHOPMOICA_SETTINGS,
+    quotePolicy: SHOPMOICA_QUOTE_POLICY,
+    paymentPolicy: SHOPMOICA_PAYMENT_POLICY,
+    supplierPolicy: SHOPMOICA_SUPPLIER_POLICY,
+    catalogPolicy: SHOPMOICA_CATALOG_POLICY,
+    branding: SHOPMOICA_BRANDING,
+    communicationTemplates: SHOPMOICA_COMMUNICATION_TEMPLATES,
+  }
+  await seedOrgConfig(shopmoicaConfig, 'demo-seed')
+
+  // Seed PromoNorth org config
+  const promonorthConfig: OrgCommerceConfig = {
+    settings: PROMONORTH_SETTINGS,
+    quotePolicy: PROMONORTH_QUOTE_POLICY,
+    paymentPolicy: PROMONORTH_PAYMENT_POLICY,
+    supplierPolicy: PROMONORTH_SUPPLIER_POLICY,
+    catalogPolicy: PROMONORTH_CATALOG_POLICY,
+    branding: PROMONORTH_BRANDING,
+    communicationTemplates: PROMONORTH_COMMUNICATION_TEMPLATES,
+  }
+  await seedOrgConfig(promonorthConfig, 'demo-seed')
+
+  // Insert ShopMoiCa customers into DB
   for (const c of customers) {
     await db
       .insert(commerceCustomers)
@@ -273,7 +409,7 @@ export async function seedDemo() {
       .onConflictDoNothing()
   }
 
-  // Insert quotes + lines into DB
+  // Insert ShopMoiCa quotes + lines into DB
   for (const q of quotes) {
     const subtotal = q.lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0)
     const gst = subtotal * 0.05
@@ -316,6 +452,66 @@ export async function seedDemo() {
     }
   }
 
+  // Insert PromoNorth customers + quotes into DB
+  const pnOrg = createPromoNorthOrg()
+  const pnUsers = createPromoNorthUsers(pnOrg.id)
+  const pnCustomers = createPromoNorthCustomers()
+  const pnQuotes = createPromoNorthQuotes(pnOrg.id)
+
+  for (const c of pnCustomers) {
+    await db
+      .insert(commerceCustomers)
+      .values({
+        id: c.id,
+        orgId: pnOrg.id,
+        name: c.name,
+        email: c.email,
+        metadata: { company: c.company },
+      })
+      .onConflictDoNothing()
+  }
+
+  for (const q of pnQuotes) {
+    const subtotal = q.lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0)
+    const tax = subtotal * 0.08875 // NY sales tax
+    const total = subtotal + tax
+
+    await db
+      .insert(commerceQuotes)
+      .values({
+        id: q.id,
+        orgId: q.orgId,
+        ref: q.ref,
+        customerId: q.customerId,
+        status: q.status.toLowerCase() as 'draft',
+        pricingTier: 'standard',
+        currency: 'USD',
+        subtotal: String(subtotal),
+        taxTotal: String(tax),
+        total: String(total),
+        notes: q.notes ?? null,
+        metadata: { title: q.title },
+        createdBy: 'demo-seed',
+      })
+      .onConflictDoNothing()
+
+    for (const line of q.lines) {
+      await db
+        .insert(commerceQuoteLines)
+        .values({
+          id: crypto.randomUUID(),
+          orgId: q.orgId,
+          quoteId: q.id,
+          description: line.description,
+          quantity: line.quantity,
+          unitPrice: String(line.unitPrice),
+          lineTotal: String(line.quantity * line.unitPrice),
+          sortOrder: 0,
+        })
+        .onConflictDoNothing()
+    }
+  }
+
   // Insert timeline events into DB
   for (const tl of timelines) {
     for (const evt of tl.events) {
@@ -335,15 +531,18 @@ export async function seedDemo() {
   logger.info(
     'Shop Quoter demo data seeded to database',
     {
-      org: org.name,
-      users: users.length,
-      customers: customers.length,
-      quotes: quotes.length,
+      orgs: [org.name, pnOrg.name],
+      shopmoicaUsers: users.length,
+      shopmoicaCustomers: customers.length,
+      shopmoicaQuotes: quotes.length,
+      promonorthUsers: pnUsers.length,
+      promonorthCustomers: pnCustomers.length,
+      promonorthQuotes: pnQuotes.length,
       timelines: timelines.length,
     },
   )
 
-  return { org, users, customers, quotes, timelines, analytics }
+  return { org, users, customers, quotes, timelines, analytics, pnOrg, pnUsers, pnCustomers, pnQuotes }
 }
 
 if (process.argv[1]?.includes('demoSeed')) {

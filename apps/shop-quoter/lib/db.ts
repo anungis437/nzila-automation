@@ -3,10 +3,12 @@
  *
  * Provides Drizzle-backed repositories querying the NzilaOS commerce schema
  * (commerceQuotes, commerceQuoteLines, commerceCustomers).
- * Falls back to in-memory stubs when the database is unavailable (local dev).
+ * Org-aware: accepts OrgCommerceSettings for prefix, currency, and validity.
  */
 import { db, commerceQuotes, commerceQuoteLines, commerceCustomers } from '@nzila/db'
 import { eq, sql, desc } from 'drizzle-orm'
+import type { OrgCommerceSettings } from '@nzila/platform-commerce-org/types'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 
 // ── App-facing types ───────────────────────────────────────────────────────
 
@@ -57,6 +59,7 @@ export interface CreateQuoteInput {
   qst?: number
   total?: number
   createdBy?: string
+  settings?: OrgCommerceSettings
 }
 
 export interface CustomerAddress {
@@ -77,12 +80,15 @@ export interface QuoteRepository {
   update(id: string, patch: Partial<Quote>): Promise<Quote>
 }
 
-async function generateRef(): Promise<string> {
+async function generateRef(settings?: OrgCommerceSettings): Promise<string> {
+  const prefix = settings?.quotePrefix ?? SHOPMOICA_SETTINGS.quotePrefix
+  const year = new Date().getFullYear()
+  const fullPrefix = `${prefix}-${year}-`
   const [result] = await db
     .select({ count: sql<number>`count(*)` })
     .from(commerceQuotes)
   const n = (result?.count ?? 0) + 1
-  return `SQ-2026-${String(n).padStart(3, '0')}`
+  return `${fullPrefix}${String(n).padStart(3, '0')}`
 }
 
 async function loadLines(quoteId: string): Promise<QuoteLine[]> {
@@ -120,7 +126,7 @@ function mapQuoteRow(
     notes: row.notes ?? null,
     validUntilDays: row.validUntil
       ? Math.ceil((new Date(row.validUntil).getTime() - Date.now()) / 86_400_000)
-      : 30,
+      : SHOPMOICA_SETTINGS.quoteValidityDays,
     lines,
     subtotal: Number(row.subtotal ?? 0),
     gst: Number((row.metadata as Record<string, unknown>)?.gst ?? 0),
@@ -135,9 +141,11 @@ function mapQuoteRow(
 export const quoteRepo: QuoteRepository = {
   async create(input) {
     const id = crypto.randomUUID()
-    const ref = await generateRef()
+    const settings = input.settings
+    const ref = await generateRef(settings)
+    const validityDays = input.validUntilDays ?? settings?.quoteValidityDays ?? SHOPMOICA_SETTINGS.quoteValidityDays
     const validUntil = new Date()
-    validUntil.setDate(validUntil.getDate() + (input.validUntilDays ?? 30))
+    validUntil.setDate(validUntil.getDate() + validityDays)
 
     const [row] = await db
       .insert(commerceQuotes)
@@ -148,7 +156,7 @@ export const quoteRepo: QuoteRepository = {
         status: 'draft',
         pricingTier: input.tier?.toLowerCase() as 'budget' | 'standard' | 'premium',
         customerId: input.customerId,
-        currency: 'CAD',
+        currency: settings?.currency ?? SHOPMOICA_SETTINGS.currency,
         subtotal: String(input.subtotal ?? 0),
         taxTotal: String((input.gst ?? 0) + (input.qst ?? 0)),
         total: String(input.total ?? 0),

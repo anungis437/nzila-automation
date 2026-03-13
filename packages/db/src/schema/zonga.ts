@@ -2,7 +2,8 @@
  * Nzila OS — Zonga (Content/Music Platform) tables
  *
  * Creators, content assets, releases, revenue events,
- * payouts, and wallets for the Zonga platform.
+ * payouts, wallets, listeners, events, tickets, playlists,
+ * moderation, integrity, and notifications for the Zonga platform.
  *
  * Every table is scoped by org_id (org identity).
  * Follows existing patterns from commerce.ts.
@@ -48,9 +49,74 @@ export const zongaAssetStatusEnum = pgEnum('zonga_asset_status', [
 
 export const zongaReleaseStatusEnum = pgEnum('zonga_release_status', [
   'draft',
+  'under_review',
   'scheduled',
+  'published',
   'released',
+  'held',
+  'rejected',
+  'archived',
   'withdrawn',
+])
+
+export const zongaCreatorOnboardingStatusEnum = pgEnum('zonga_creator_onboarding_status', [
+  'invited',
+  'registered',
+  'profile_complete',
+  'payout_ready',
+  'active',
+  'suspended',
+])
+
+export const zongaEventStatusEnum = pgEnum('zonga_event_status', [
+  'draft',
+  'published',
+  'sold_out',
+  'cancelled',
+  'completed',
+])
+
+export const zongaTicketPurchaseStatusEnum = pgEnum('zonga_ticket_purchase_status', [
+  'pending',
+  'confirmed',
+  'failed',
+  'refunded',
+  'cancelled',
+])
+
+export const zongaPlaylistVisibilityEnum = pgEnum('zonga_playlist_visibility', [
+  'public',
+  'private',
+  'unlisted',
+])
+
+export const zongaPlaylistOwnerTypeEnum = pgEnum('zonga_playlist_owner_type', [
+  'system',
+  'creator',
+  'listener',
+])
+
+export const zongaModerationCaseStatusEnum = pgEnum('zonga_moderation_case_status', [
+  'open',
+  'in_review',
+  'resolved',
+  'dismissed',
+  'escalated',
+])
+
+export const zongaModerationCaseTypeEnum = pgEnum('zonga_moderation_case_type', [
+  'copyright',
+  'abuse',
+  'quality',
+  'policy',
+  'fraud',
+  'other',
+])
+
+export const zongaPayoutPreviewStatusEnum = pgEnum('zonga_payout_preview_status', [
+  'draft',
+  'ready',
+  'locked',
 ])
 
 export const zongaRevenueTypeEnum = pgEnum('zonga_revenue_type', [
@@ -80,6 +146,24 @@ export const zongaLedgerEntryTypeEnum = pgEnum('zonga_ledger_entry_type', [
   'release',
 ])
 
+// ── Creator Accounts ────────────────────────────────────────────────────────
+
+export const zongaCreatorAccounts = pgTable('zonga_creator_accounts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  creatorId: uuid('creator_id').notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  phone: varchar('phone', { length: 50 }),
+  onboardingStatus: zongaCreatorOnboardingStatusEnum('onboarding_status')
+    .notNull()
+    .default('invited'),
+  kycStatus: varchar('kyc_status', { length: 50 }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 // ── Creators ────────────────────────────────────────────────────────────────
 
 export const zongaCreators = pgTable('zonga_creators', {
@@ -96,6 +180,10 @@ export const zongaCreators = pgTable('zonga_creators', {
   country: varchar('country', { length: 100 }),
   payoutCurrency: varchar('payout_currency', { length: 3 }).notNull().default('USD'),
   verified: boolean('verified').notNull().default(false),
+  legalName: varchar('legal_name', { length: 255 }),
+  city: varchar('city', { length: 100 }),
+  payoutStatus: varchar('payout_status', { length: 50 }),
+  verificationStatus: varchar('verification_status', { length: 50 }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -118,6 +206,7 @@ export const zongaContentAssets = pgTable('zonga_content_assets', {
   coverArtUrl: text('cover_art_url'),
   durationSeconds: integer('duration_seconds'),
   genre: varchar('genre', { length: 100 }),
+  fingerprintRef: varchar('fingerprint_ref', { length: 255 }),
   metadata: jsonb('metadata').notNull().default({}),
   publishedAt: timestamp('published_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -138,8 +227,28 @@ export const zongaReleases = pgTable('zonga_releases', {
   status: zongaReleaseStatusEnum('status').notNull().default('draft'),
   releaseDate: timestamp('release_date', { withTimezone: true }),
   metadata: jsonb('metadata').notNull().default({}),
+  releaseType: varchar('release_type', { length: 50 }),
+  description: text('description'),
+  coverAssetId: uuid('cover_asset_id'),
+  moderationStatus: varchar('moderation_status', { length: 50 }),
+  publishedAt: timestamp('published_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Release Tracks ──────────────────────────────────────────────────────────
+
+export const zongaReleaseTracks = pgTable('zonga_release_tracks', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  releaseId: uuid('release_id')
+    .notNull()
+    .references(() => zongaReleases.id),
+  assetId: uuid('asset_id')
+    .notNull()
+    .references(() => zongaContentAssets.id),
+  trackNumber: integer('track_number').notNull(),
+  titleOverride: varchar('title_override', { length: 255 }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ── Revenue Events (ledger-style, append-only) ──────────────────────────────
@@ -236,6 +345,234 @@ export const zongaRoyaltySplits = pgTable('zonga_royalty_splits', {
   sharePercent: numeric('share_percent', { precision: 5, scale: 2 }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Payout Previews ─────────────────────────────────────────────────────────
+
+export const zongaPayoutPreviews = pgTable('zonga_payout_previews', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  creatorId: uuid('creator_id')
+    .notNull()
+    .references(() => zongaCreators.id),
+  periodStart: timestamp('period_start', { withTimezone: true }).notNull(),
+  periodEnd: timestamp('period_end', { withTimezone: true }).notNull(),
+  totalAmount: numeric('total_amount', { precision: 18, scale: 6 }).notNull(),
+  currency: varchar('currency', { length: 3 }).notNull().default('USD'),
+  status: zongaPayoutPreviewStatusEnum('status').notNull().default('draft'),
+  metadata: jsonb('metadata').notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Playlists ───────────────────────────────────────────────────────────────
+
+export const zongaPlaylists = pgTable('zonga_playlists', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  ownerType: zongaPlaylistOwnerTypeEnum('owner_type').notNull(),
+  ownerId: uuid('owner_id').notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  visibility: zongaPlaylistVisibilityEnum('visibility').notNull().default('public'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaPlaylistItems = pgTable('zonga_playlist_items', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  playlistId: uuid('playlist_id')
+    .notNull()
+    .references(() => zongaPlaylists.id),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId: uuid('entity_id').notNull(),
+  position: integer('position').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Listeners ───────────────────────────────────────────────────────────────
+
+export const zongaListeners = pgTable('zonga_listeners', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  displayName: varchar('display_name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }),
+  city: varchar('city', { length: 100 }),
+  country: varchar('country', { length: 100 }),
+  preferencesJson: jsonb('preferences_json').notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaListenerFollows = pgTable('zonga_listener_follows', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  listenerId: uuid('listener_id')
+    .notNull()
+    .references(() => zongaListeners.id),
+  creatorId: uuid('creator_id')
+    .notNull()
+    .references(() => zongaCreators.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaListenerFavorites = pgTable('zonga_listener_favorites', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  listenerId: uuid('listener_id')
+    .notNull()
+    .references(() => zongaListeners.id),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId: uuid('entity_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaListenerPlaylistSaves = pgTable('zonga_listener_playlist_saves', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  listenerId: uuid('listener_id')
+    .notNull()
+    .references(() => zongaListeners.id),
+  playlistId: uuid('playlist_id')
+    .notNull()
+    .references(() => zongaPlaylists.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaListenerActivity = pgTable('zonga_listener_activity', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  listenerId: uuid('listener_id')
+    .notNull()
+    .references(() => zongaListeners.id),
+  activityType: varchar('activity_type', { length: 50 }).notNull(),
+  entityType: varchar('entity_type', { length: 50 }),
+  entityId: uuid('entity_id'),
+  metadataJson: jsonb('metadata_json').notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Events ──────────────────────────────────────────────────────────────────
+
+export const zongaEvents = pgTable('zonga_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  creatorId: uuid('creator_id')
+    .references(() => zongaCreators.id),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  venue: varchar('venue', { length: 255 }),
+  city: varchar('city', { length: 100 }),
+  country: varchar('country', { length: 100 }),
+  startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
+  endsAt: timestamp('ends_at', { withTimezone: true }),
+  status: zongaEventStatusEnum('status').notNull().default('draft'),
+  ticketingStatus: varchar('ticketing_status', { length: 50 }),
+  imageUrl: text('image_url'),
+  metadata: jsonb('metadata').notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaTicketTypes = pgTable('zonga_ticket_types', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  eventId: uuid('event_id')
+    .notNull()
+    .references(() => zongaEvents.id),
+  ticketType: varchar('ticket_type', { length: 100 }).notNull(),
+  price: numeric('price', { precision: 18, scale: 2 }).notNull(),
+  currency: varchar('currency', { length: 3 }).notNull().default('USD'),
+  quantityAvailable: integer('quantity_available').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaTicketPurchases = pgTable('zonga_ticket_purchases', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  eventId: uuid('event_id')
+    .notNull()
+    .references(() => zongaEvents.id),
+  ticketTypeId: uuid('ticket_type_id')
+    .notNull()
+    .references(() => zongaTicketTypes.id),
+  listenerId: uuid('listener_id')
+    .references(() => zongaListeners.id),
+  stripeCheckoutSessionId: varchar('stripe_checkout_session_id', { length: 255 }),
+  status: zongaTicketPurchaseStatusEnum('status').notNull().default('pending'),
+  amount: numeric('amount', { precision: 18, scale: 2 }).notNull(),
+  currency: varchar('currency', { length: 3 }).notNull().default('USD'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  confirmedAt: timestamp('confirmed_at', { withTimezone: true }),
+})
+
+// ── Moderation ──────────────────────────────────────────────────────────────
+
+export const zongaModerationCases = pgTable('zonga_moderation_cases', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId: uuid('entity_id').notNull(),
+  caseType: zongaModerationCaseTypeEnum('case_type').notNull(),
+  status: zongaModerationCaseStatusEnum('status').notNull().default('open'),
+  severity: varchar('severity', { length: 20 }).notNull().default('medium'),
+  notes: text('notes'),
+  assignedTo: uuid('assigned_to'),
+  resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const zongaIntegritySignals = pgTable('zonga_integrity_signals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId: uuid('entity_id').notNull(),
+  signalType: varchar('signal_type', { length: 100 }).notNull(),
+  severity: varchar('severity', { length: 20 }).notNull().default('info'),
+  explanation: text('explanation'),
+  metadataJson: jsonb('metadata_json').notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Notifications ───────────────────────────────────────────────────────────
+
+export const zongaNotifications = pgTable('zonga_notifications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => orgs.id),
+  userId: uuid('user_id').notNull(),
+  type: varchar('type', { length: 100 }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  body: text('body'),
+  link: text('link'),
+  read: boolean('read').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ── Zonga Outbox ────────────────────────────────────────────────────────────

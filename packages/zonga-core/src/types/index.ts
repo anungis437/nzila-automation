@@ -8,9 +8,11 @@
  */
 import type {
   CreatorStatus,
+  CreatorOnboardingStatus,
   AssetType,
   AssetStatus,
   ReleaseStatus,
+  ReleaseType,
   RevenueType,
   PayoutStatus,
   PayoutRail,
@@ -228,4 +230,198 @@ export interface PayoutBreakdownItem {
   readonly revenueType: RevenueType
   readonly eventCount: number
   readonly totalAmount: number
+}
+
+// ── Creator Account ────────────────────────────────────────────────────────
+
+export interface CreatorAccount {
+  readonly id: string
+  readonly orgId: string
+  readonly creatorId: string
+  readonly email: string
+  readonly phone: string | null
+  readonly onboardingStatus: CreatorOnboardingStatus
+  readonly kycStatus: string | null
+  readonly createdAt: string
+  readonly updatedAt: string
+}
+
+// ── Listener / Fan ─────────────────────────────────────────────────────────
+
+export interface Listener {
+  readonly id: string
+  readonly orgId: string
+  readonly displayName: string
+  readonly email: string | null
+  readonly city: string | null
+  readonly country: string | null
+  readonly preferencesJson: Readonly<Record<string, unknown>>
+  readonly createdAt: string
+  readonly updatedAt: string
+}
+
+export interface ListenerFollow {
+  readonly id: string
+  readonly orgId: string
+  readonly listenerId: string
+  readonly creatorId: string
+  readonly createdAt: string
+}
+
+export interface ListenerFavorite {
+  readonly id: string
+  readonly orgId: string
+  readonly listenerId: string
+  readonly entityType: FavoriteEntityType
+  readonly entityId: string
+  readonly createdAt: string
+}
+
+export interface ListenerActivity {
+  readonly id: string
+  readonly orgId: string
+  readonly listenerId: string
+  readonly activityType: ListenerActivityType
+  readonly entityType: string | null
+  readonly entityId: string | null
+  readonly metadataJson: Readonly<Record<string, unknown>>
+  readonly createdAt: string
+}
+
+// ── Playlist ────────────────────────────────────────────────────────────────
+
+export interface Playlist {
+  readonly id: string
+  readonly orgId: string
+  readonly ownerType: PlaylistOwnerType
+  readonly ownerId: string
+  readonly title: string
+  readonly description: string | null
+  readonly visibility: PlaylistVisibility
+  readonly createdAt: string
+  readonly updatedAt: string
+}
+
+export interface PlaylistItem {
+  readonly id: string
+  readonly playlistId: string
+  readonly entityType: string
+  readonly entityId: string
+  readonly position: number
+  readonly createdAt: string
+}
+
+// ── Event / Ticketing ──────────────────────────────────────────────────────
+
+export interface ZongaEvent {
+  readonly id: string
+  readonly orgId: string
+  readonly creatorId: string | null
+  readonly title: string
+  readonly description: string | null
+  readonly venue: string | null
+  readonly city: string | null
+  readonly country: string | null
+  readonly startsAt: string
+  readonly endsAt: string | null
+  readonly status: EventStatus
+  readonly ticketingStatus: string | null
+  readonly imageUrl: string | null
+  readonly metadata: Readonly<Record<string, unknown>>
+  readonly createdAt: string
+  readonly updatedAt: string
+}
+
+export interface TicketType {
+  readonly id: string
+  readonly orgId: string
+  readonly eventId: string
+  readonly ticketType: string
+  readonly price: number
+  readonly currency: string
+  readonly quantityAvailable: number
+  readonly createdAt: string
+}
+
+export interface TicketPurchase {
+  readonly id: string
+  readonly orgId: string
+  readonly eventId: string
+  readonly ticketTypeId: string
+  readonly listenerId: string | null
+  readonly stripeCheckoutSessionId: string | null
+  readonly status: TicketPurchaseStatus
+  readonly amount: number
+  readonly currency: string
+  readonly createdAt: string
+  readonly confirmedAt: string | null
+}
+
+// ── Moderation / Integrity ─────────────────────────────────────────────────
+
+export interface ModerationCase {
+  readonly id: string
+  readonly orgId: string
+  readonly entityType: string
+  readonly entityId: string
+  readonly caseType: ModerationCaseType
+  readonly status: ModerationCaseStatus
+  readonly severity: string
+  readonly notes: string | null
+  readonly assignedTo: string | null
+  readonly resolvedAt: string | null
+  readonly createdAt: string
+  readonly updatedAt: string
+}
+
+export interface IntegritySignal {
+  readonly id: string
+  readonly orgId: string
+  readonly entityType: string
+  readonly entityId: string
+  readonly signalType: string
+  readonly severity: string
+  readonly explanation: string | null
+  readonly metadataJson: Readonly<Record<string, unknown>>
+  readonly createdAt: string
+}
+
+// ── Notification ────────────────────────────────────────────────────────────
+
+export interface ZongaNotification {
+  readonly id: string
+  readonly orgId: string
+  readonly userId: string
+  readonly type: NotificationType
+  readonly title: string
+  readonly body: string | null
+  readonly link: string | null
+  readonly read: boolean
+  readonly createdAt: string
+}
+
+// ── Release Track ───────────────────────────────────────────────────────────
+
+export interface ReleaseTrack {
+  readonly id: string
+  readonly releaseId: string
+  readonly assetId: string
+  readonly trackNumber: number
+  readonly titleOverride: string | null
+  readonly createdAt: string
+}
+
+// ── Payout Preview (persisted) ─────────────────────────────────────────────
+
+export interface PayoutPreviewRecord {
+  readonly id: string
+  readonly orgId: string
+  readonly creatorId: string
+  readonly periodStart: string
+  readonly periodEnd: string
+  readonly totalAmount: number
+  readonly currency: string
+  readonly status: PayoutPreviewStatus
+  readonly createdAt: string
+  readonly updatedAt: string
 }

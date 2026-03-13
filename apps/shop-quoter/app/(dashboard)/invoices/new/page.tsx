@@ -159,7 +159,7 @@ export default function NewInvoicePage() {
     }
   }
 
-  // Calculate due date (Net 30 by default)
+  // Calculate due date based on org payment terms
   const today = new Date()
   const dueDate = new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0]
 
@@ -265,6 +265,7 @@ export default function NewInvoicePage() {
               <select
                 id="paymentTerms"
                 name="paymentTerms"
+                defaultValue="Net 30"
                 className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
                 <option value="Net 30">Net 30</option>

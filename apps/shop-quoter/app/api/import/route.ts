@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { importLegacyRecordsAction, validateLegacyDataAction } from '@/lib/actions'
 
@@ -11,7 +11,7 @@ import { importLegacyRecordsAction, validateLegacyDataAction } from '@/lib/actio
 export async function POST(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.import.execute', { 'http.method': 'POST' }, async () => {
-      const auth = await authenticateUser()
+      const auth = await authenticateOrgUser()
       if (!auth.ok) return auth.response
       try {
         const body = await request.json()
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.import.validate', { 'http.method': 'PUT' }, async () => {
-      const auth = await authenticateUser()
+      const auth = await authenticateOrgUser()
       if (!auth.ok) return auth.response
       try {
         const body = await request.json()

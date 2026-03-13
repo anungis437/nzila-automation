@@ -7,7 +7,7 @@
  * These are unit-level contract tests that verify integration contracts
  * WITHOUT making real API calls — all external calls are mocked.
  */
-import { describe, it, expect, vi as _vi, beforeEach as _beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 

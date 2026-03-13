@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { logger } from '@/lib/logger'
 import { ShopifySyncService } from '@/lib/shopify/sync-service'
+import { db, commerceShopifyCredentials } from '@nzila/db'
+import { eq } from 'drizzle-orm'
 
 const TOPIC_ENTITY_MAP: Record<string, 'customers' | 'orders'> = {
   'customers/create': 'customers',
@@ -41,9 +43,21 @@ export async function POST(request: NextRequest) {
   // Read raw body for HMAC verification
   const rawBody = Buffer.from(await request.arrayBuffer())
 
-  const webhookSecret = process.env.SHOPIFY_WEBHOOK_SECRET
+  // Resolve org + webhook secret from shopDomain via DB
+  const [credentials] = await db
+    .select()
+    .from(commerceShopifyCredentials)
+    .where(eq(commerceShopifyCredentials.shopDomain, shopDomain))
+    .limit(1)
+
+  if (!credentials || !credentials.isActive) {
+    logger.warn('No active Shopify credentials for shop domain', { shopDomain })
+    return NextResponse.json({ error: 'Unknown shop' }, { status: 404 })
+  }
+
+  const webhookSecret = credentials.webhookSecret ?? process.env.SHOPIFY_WEBHOOK_SECRET
   if (!webhookSecret) {
-    logger.error('SHOPIFY_WEBHOOK_SECRET not configured')
+    logger.error('No webhook secret for Shopify shop', { shopDomain })
     return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
   }
 
@@ -58,13 +72,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, skipped: true })
   }
 
-  logger.info('Shopify webhook received', { topic, shopDomain, entityType })
-
-  const orgId = process.env.ORG_ID
-  if (!orgId) {
-    logger.error('ORG_ID not configured for Shopify webhook handler')
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
-  }
+  const orgId = credentials.orgId
+  logger.info('Shopify webhook received', { topic, shopDomain, entityType, orgId })
 
   const syncService = await ShopifySyncService.fromOrg(orgId)
   if (!syncService) {

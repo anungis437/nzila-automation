@@ -4,7 +4,7 @@
  * Exposes request_count, error_rate, latency_ms via platform-observability.
  */
 import { NextResponse } from 'next/server'
-import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 
 let requestCount = 0
@@ -20,7 +20,7 @@ export function recordRequest(latencyMs: number, isError = false) {
 export async function GET(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.metrics.get', { 'http.method': 'GET' }, async () => {
-      const auth = await authenticateUser()
+      const auth = await authenticateOrgUser()
       if (!auth.ok) return auth.response
 
       return NextResponse.json({

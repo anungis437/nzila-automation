@@ -2,7 +2,7 @@
  * Zonga Server Actions — Notifications.
  *
  * In-app notification CRUD: list, mark-read, mark-all-read, create.
- * Stored via audit_log for event-sourced state.
+ * Reads/writes zonga_notifications domain table directly.
  */
 'use server'
 
@@ -33,53 +33,26 @@ export async function listNotifications(opts?: {
   const ctx = await resolveOrgContext()
 
   try {
+    const readFilter = opts?.unreadOnly ? sql` AND read = false` : sql``
+
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'userId' as "userId",
-        metadata->>'type' as type,
-        metadata->>'title' as title,
-        metadata->>'body' as body,
-        metadata->>'link' as link,
-        COALESCE((metadata->>'read')::boolean, false) as read,
+        id,
+        user_id as "userId",
+        type,
+        title,
+        body,
+        link,
+        read,
         created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'notification.created' AND metadata->>'userId' = ${ctx.actorId}
-        AND org_id = ${ctx.orgId}
+      FROM zonga_notifications
+      WHERE user_id = ${ctx.actorId} AND org_id = ${ctx.orgId}
+      ${readFilter}
       ORDER BY created_at DESC
       LIMIT 100`,
     )) as unknown as { rows: Notification[] }
 
-    // Build read-set from notification.read events
-    const readRows = (await platformDb.execute(
-      sql`SELECT metadata->>'notificationId' as id FROM audit_log
-      WHERE action = 'notification.read' AND actor_id = ${ctx.actorId}
-        AND org_id = ${ctx.orgId}`,
-    )) as unknown as { rows: { id: string }[] }
-
-    const readSet = new Set((readRows.rows ?? []).map((r) => r.id))
-
-    const allReadAt = (await platformDb.execute(
-      sql`SELECT created_at FROM audit_log
-      WHERE action = 'notification.read_all' AND actor_id = ${ctx.actorId}
-        AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC LIMIT 1`,
-    )) as unknown as { rows: { created_at: Date }[] }
-
-    const allReadDate = allReadAt.rows?.[0]?.created_at
-
-    const notifications = (rows.rows ?? []).map((n) => ({
-      ...n,
-      read:
-        readSet.has(n.id) ||
-        !!(allReadDate && n.createdAt && new Date(n.createdAt) < new Date(allReadDate)),
-    }))
-
-    if (opts?.unreadOnly) {
-      return notifications.filter((n) => !n.read)
-    }
-
-    return notifications
+    return rows.rows ?? []
   } catch (error) {
     logger.error('listNotifications failed', { error })
     return []
@@ -89,11 +62,15 @@ export async function listNotifications(opts?: {
 /* ─── Unread count ─── */
 
 export async function getUnreadCount(): Promise<number> {
-  const _ctx = await resolveOrgContext()
+  const ctx = await resolveOrgContext()
 
   try {
-    const notifications = await listNotifications({ unreadOnly: true })
-    return notifications.length
+    const [result] = (await platformDb.execute(
+      sql`SELECT COUNT(*) as total FROM zonga_notifications
+      WHERE user_id = ${ctx.actorId} AND org_id = ${ctx.orgId} AND read = false`,
+    )) as unknown as [{ total: number }]
+
+    return Number(result?.total ?? 0)
   } catch (error) {
     logger.error('getUnreadCount failed', { error })
     return 0
@@ -107,9 +84,8 @@ export async function markAsRead(notificationId: string): Promise<{ success: boo
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('notification.read', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.orgId},
-        ${JSON.stringify({ notificationId })}::jsonb)`,
+      sql`UPDATE zonga_notifications SET read = true
+      WHERE id = ${notificationId} AND user_id = ${ctx.actorId} AND org_id = ${ctx.orgId}`,
     )
 
     revalidatePath('/dashboard/notifications')
@@ -127,9 +103,8 @@ export async function markAllRead(): Promise<{ success: boolean }> {
 
   try {
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('notification.read_all', ${ctx.actorId}, 'notification', ${crypto.randomUUID()}, ${ctx.orgId},
-        ${JSON.stringify({ userId: ctx.actorId })}::jsonb)`,
+      sql`UPDATE zonga_notifications SET read = true
+      WHERE user_id = ${ctx.actorId} AND org_id = ${ctx.orgId} AND read = false`,
     )
 
     revalidatePath('/dashboard/notifications')
@@ -143,6 +118,7 @@ export async function markAllRead(): Promise<{ success: boolean }> {
 /* ─── Create notification (used internally by other actions) ─── */
 
 export async function createNotification(data: {
+  orgId: string
   userId: string
   type: string
   title: string
@@ -150,22 +126,14 @@ export async function createNotification(data: {
   link?: string
 }): Promise<{ success: boolean; notificationId?: string }> {
   try {
-    const notificationId = crypto.randomUUID()
+    const [row] = (await platformDb.execute(
+      sql`INSERT INTO zonga_notifications (org_id, user_id, type, title, body, link)
+      VALUES (${data.orgId}, ${data.userId}, ${data.type}, ${data.title},
+        ${data.body ?? null}, ${data.link ?? null})
+      RETURNING id`,
+    )) as unknown as [{ id: string }]
 
-    await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('notification.created', 'system', 'notification', ${notificationId}, 'system',
-        ${JSON.stringify({
-          userId: data.userId,
-          type: data.type,
-          title: data.title,
-          body: data.body,
-          link: data.link,
-          read: false,
-        })}::jsonb)`,
-    )
-
-    return { success: true, notificationId }
+    return { success: true, notificationId: row?.id }
   } catch (error) {
     logger.error('createNotification failed', { error })
     return { success: false }

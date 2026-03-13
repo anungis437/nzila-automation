@@ -1,13 +1,8 @@
 /**
  * Purchase Order Service
  *
- * Handles CRUD operations for purchase orders, including:
- * - PO creation with automatic reference numbering
- * - Line item management
- * - Receiving and inventory updates
- * - Zoho Books synchronization
- *
- * Ported from legacy shop_quoter_tool_v1 purchase-order-service.ts.
+ * Handles CRUD operations for purchase orders.
+ * Org-aware: uses OrgCommerceSettings for PO prefix.
  */
 
 import { and, eq, desc, sql, gte, lte } from 'drizzle-orm'
@@ -22,6 +17,8 @@ import {
 import { logger } from './logger'
 import { ZohoBooksClient } from './zoho/books-client'
 import type { ZohoPurchaseOrder, ZohoPurchaseOrderLine } from './zoho/types'
+import type { OrgCommerceSettings } from '@nzila/platform-commerce-org/types'
+import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -84,9 +81,10 @@ export interface POListFilter {
 // Reference Number Generation
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function generatePORef(orgId: string): Promise<string> {
+async function generatePORef(orgId: string, settings?: OrgCommerceSettings): Promise<string> {
   const year = new Date().getFullYear()
-  const prefix = `PO-${year}-`
+  const poPrefix = settings?.poPrefix ?? SHOPMOICA_SETTINGS.poPrefix
+  const prefix = `${poPrefix}-${year}-`
 
   // Get the last PO number for this entity and year
   const [lastPO] = await db

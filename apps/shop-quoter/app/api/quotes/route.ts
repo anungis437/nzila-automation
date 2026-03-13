@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { quoteRepo } from '@/lib/db'
 
@@ -11,10 +11,10 @@ import { quoteRepo } from '@/lib/db'
 export async function GET(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.list', { 'http.method': 'GET' }, async () => {
-    const authResult = await authenticateUser()
+    const authResult = await authenticateOrgUser()
     if (!authResult.ok) return authResult.response
     try {
-      const quotes = await quoteRepo.findAll('default')
+      const quotes = await quoteRepo.findAll(authResult.orgId)
       return NextResponse.json({ ok: true, data: quotes })
     } catch (err) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.create', { 'http.method': 'POST' }, async () => {
-    const authResult = await authenticateUser()
+    const authResult = await authenticateOrgUser()
     if (!authResult.ok) return authResult.response
     try {
       const body = await request.json()
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const quote = await quoteRepo.create({
-      orgId: body.orgId ?? 'default',
+      orgId: authResult.orgId,
       title: body.title,
       tier: body.tier ?? 'STANDARD',
       customerId: body.customerId ?? 'unknown',

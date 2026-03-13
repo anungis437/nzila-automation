@@ -4,7 +4,38 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./schemas": "./src/schemas.ts",
+    "./defaults": "./src/defaults.ts",
+    "./branding": "./src/branding.ts",
+    "./pricing": "./src/pricing.ts",
+    "./payments": "./src/payments.ts",
+    "./suppliers": "./src/suppliers.ts",
+    "./catalog": "./src/catalog.ts",
+    "./workflows": "./src/workflows.ts",
+    "./audit": "./src/audit.ts",
+    "./utils": "./src/utils.ts",
+    "./service": "./src/service.ts"
   },
-  "files": ["src"]
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@nzila/db": "workspace:*",
+    "@nzila/commerce-audit": "workspace:*",
+    "@nzila/commerce-observability": "workspace:*",
+    "@nzila/platform-policy-engine": "workspace:*",
+    "drizzle-orm": "^0.39.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "eslint": "^10.0.1",
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.18"
+  }
 }

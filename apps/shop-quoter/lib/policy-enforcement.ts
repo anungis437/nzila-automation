@@ -4,9 +4,12 @@
  * Integrates platform-policy-engine for quote generation,
  * price override, quote export, PO generation, and manual payment
  * confirmation operations.
+ * Org-aware: accepts OrgQuotePolicy for configurable thresholds.
  */
 import type { PolicyEvaluationInput, PolicyDefinition } from '@nzila/platform-policy-engine'
 import { evaluatePolicy, isBlocked } from '@nzila/platform-policy-engine'
+import type { OrgQuotePolicy } from '@nzila/platform-commerce-org/types'
+import { SHOPMOICA_QUOTE_POLICY } from '@nzila/platform-commerce-org/defaults'
 
 export type QuoterPolicyAction =
   | 'quote_generation'
@@ -15,7 +18,9 @@ export type QuoterPolicyAction =
   | 'po_generation'
   | 'manual_payment_confirmation'
 
-const QUOTER_POLICIES: PolicyDefinition[] = [
+function buildQuoterPolicies(orgQuotePolicy?: OrgQuotePolicy): PolicyDefinition[] {
+  const threshold = orgQuotePolicy?.approvalThreshold ?? SHOPMOICA_QUOTE_POLICY.approvalThreshold
+  return [
   {
     id: 'quoter-generation',
     name: 'Quote Generation Policy',
@@ -46,9 +51,9 @@ const QUOTER_POLICIES: PolicyDefinition[] = [
     rules: [
       {
         id: 'override-approval',
-        description: 'Price overrides above $10,000 require approval',
+        description: `Price overrides above $${threshold.toLocaleString()} require approval`,
         conditions: [
-          { field: 'context.amount', operator: 'gt', value: 10000 },
+          { field: 'context.amount', operator: 'gt', value: threshold },
         ],
         effect: 'require_approval',
         severity: 'critical',
@@ -134,6 +139,7 @@ const QUOTER_POLICIES: PolicyDefinition[] = [
     metadata: {},
   },
 ]
+}
 
 export interface PolicyCheckResult {
   allowed: boolean
@@ -145,8 +151,10 @@ export interface PolicyCheckResult {
 export async function checkQuoterPolicy(
   action: QuoterPolicyAction,
   context: Record<string, unknown>,
+  orgQuotePolicy?: OrgQuotePolicy,
 ): Promise<PolicyCheckResult> {
   const orgId = (context.orgId as string) ?? 'default'
+  const policies = buildQuoterPolicies(orgQuotePolicy)
   const input: PolicyEvaluationInput = {
     policyId: '',
     action,
@@ -160,7 +168,7 @@ export async function checkQuoterPolicy(
     environment: (context.environment as string) ?? 'production',
   }
 
-  const policy = QUOTER_POLICIES.find((p) =>
+  const policy = policies.find((p) =>
     p.rules.some((r) => r.conditions.some((c) => c.value === action)),
   )
 

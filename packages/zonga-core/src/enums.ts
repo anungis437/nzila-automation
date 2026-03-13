@@ -17,6 +17,16 @@ export const CreatorStatus = {
 } as const
 export type CreatorStatus = (typeof CreatorStatus)[keyof typeof CreatorStatus]
 
+export const CreatorOnboardingStatus = {
+  INVITED: 'invited',
+  REGISTERED: 'registered',
+  PROFILE_COMPLETE: 'profile_complete',
+  PAYOUT_READY: 'payout_ready',
+  ACTIVE: 'active',
+  SUSPENDED: 'suspended',
+} as const
+export type CreatorOnboardingStatus = (typeof CreatorOnboardingStatus)[keyof typeof CreatorOnboardingStatus]
+
 // ── Content Asset ───────────────────────────────────────────────────────────
 
 export const AssetType = {
@@ -41,11 +51,23 @@ export type AssetStatus = (typeof AssetStatus)[keyof typeof AssetStatus]
 
 export const ReleaseStatus = {
   DRAFT: 'draft',
+  UNDER_REVIEW: 'under_review',
   SCHEDULED: 'scheduled',
+  PUBLISHED: 'published',
   RELEASED: 'released',
+  HELD: 'held',
+  REJECTED: 'rejected',
+  ARCHIVED: 'archived',
   WITHDRAWN: 'withdrawn',
 } as const
 export type ReleaseStatus = (typeof ReleaseStatus)[keyof typeof ReleaseStatus]
+
+export const ReleaseType = {
+  SINGLE: 'single',
+  EP: 'ep',
+  ALBUM: 'album',
+} as const
+export type ReleaseType = (typeof ReleaseType)[keyof typeof ReleaseType]
 
 // ── Revenue ─────────────────────────────────────────────────────────────────
 
@@ -86,6 +108,113 @@ export const PayoutRail = {
   FLUTTERWAVE: 'flutterwave',
 } as const
 export type PayoutRail = (typeof PayoutRail)[keyof typeof PayoutRail]
+
+// ── Event ───────────────────────────────────────────────────────────────────
+
+export const EventStatus = {
+  DRAFT: 'draft',
+  PUBLISHED: 'published',
+  SOLD_OUT: 'sold_out',
+  CANCELLED: 'cancelled',
+  COMPLETED: 'completed',
+} as const
+export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus]
+
+export const TicketPurchaseStatus = {
+  PENDING: 'pending',
+  CONFIRMED: 'confirmed',
+  FAILED: 'failed',
+  REFUNDED: 'refunded',
+  CANCELLED: 'cancelled',
+} as const
+export type TicketPurchaseStatus = (typeof TicketPurchaseStatus)[keyof typeof TicketPurchaseStatus]
+
+// ── Playlist ────────────────────────────────────────────────────────────────
+
+export const PlaylistVisibility = {
+  PUBLIC: 'public',
+  PRIVATE: 'private',
+  UNLISTED: 'unlisted',
+} as const
+export type PlaylistVisibility = (typeof PlaylistVisibility)[keyof typeof PlaylistVisibility]
+
+export const PlaylistOwnerType = {
+  SYSTEM: 'system',
+  CREATOR: 'creator',
+  LISTENER: 'listener',
+} as const
+export type PlaylistOwnerType = (typeof PlaylistOwnerType)[keyof typeof PlaylistOwnerType]
+
+// ── Listener Activity ──────────────────────────────────────────────────────
+
+export const ListenerActivityType = {
+  VIEW: 'view',
+  PLAY: 'play',
+  FOLLOW: 'follow',
+  FAVORITE: 'favorite',
+  SAVE_PLAYLIST: 'save_playlist',
+  BUY_TICKET: 'buy_ticket',
+  SHARE: 'share',
+} as const
+export type ListenerActivityType = (typeof ListenerActivityType)[keyof typeof ListenerActivityType]
+
+export const FavoriteEntityType = {
+  TRACK: 'track',
+  RELEASE: 'release',
+  PLAYLIST: 'playlist',
+  EVENT: 'event',
+} as const
+export type FavoriteEntityType = (typeof FavoriteEntityType)[keyof typeof FavoriteEntityType]
+
+// ── Moderation ──────────────────────────────────────────────────────────────
+
+export const ModerationCaseStatus = {
+  OPEN: 'open',
+  IN_REVIEW: 'in_review',
+  RESOLVED: 'resolved',
+  DISMISSED: 'dismissed',
+  ESCALATED: 'escalated',
+} as const
+export type ModerationCaseStatus = (typeof ModerationCaseStatus)[keyof typeof ModerationCaseStatus]
+
+export const ModerationCaseType = {
+  COPYRIGHT: 'copyright',
+  ABUSE: 'abuse',
+  QUALITY: 'quality',
+  POLICY: 'policy',
+  FRAUD: 'fraud',
+  OTHER: 'other',
+} as const
+export type ModerationCaseType = (typeof ModerationCaseType)[keyof typeof ModerationCaseType]
+
+export const ModerationEntityType = {
+  CREATOR: 'creator',
+  ASSET: 'asset',
+  RELEASE: 'release',
+  EVENT: 'event',
+} as const
+export type ModerationEntityType = (typeof ModerationEntityType)[keyof typeof ModerationEntityType]
+
+// ── Payout Preview ─────────────────────────────────────────────────────────
+
+export const PayoutPreviewStatus = {
+  DRAFT: 'draft',
+  READY: 'ready',
+  LOCKED: 'locked',
+} as const
+export type PayoutPreviewStatus = (typeof PayoutPreviewStatus)[keyof typeof PayoutPreviewStatus]
+
+// ── Notification ────────────────────────────────────────────────────────────
+
+export const NotificationType = {
+  NEW_RELEASE: 'new_release',
+  EVENT_REMINDER: 'event_reminder',
+  TICKET_CONFIRMED: 'ticket_confirmed',
+  PAYOUT_COMPLETED: 'payout_completed',
+  MODERATION_ACTION: 'moderation_action',
+  SYSTEM: 'system',
+} as const
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
 // ── Ledger ──────────────────────────────────────────────────────────────────
 
