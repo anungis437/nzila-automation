@@ -50,7 +50,7 @@ export const POST = withOrganizationAuth(async (request, context) => {
     });
 
     return standardSuccessResponse(assignments);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to assign dispatch workers");
   }
 });

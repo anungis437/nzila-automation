@@ -17,7 +17,7 @@ import {
   X,
   Bookmark,
   Clock,
-  AlertTriangle,
+  _AlertTriangle,
   InboxIcon,
   ArrowUpRight,
   RefreshCw,

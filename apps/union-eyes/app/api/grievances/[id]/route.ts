@@ -4,7 +4,7 @@
  * GET /api/grievances/[id] — Fetch grievance detail with events
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest as _NextRequest, NextResponse as _NextResponse } from "next/server";
 import { db } from "@/db/db";
 import { grievances } from "@/db/schema/domains/claims/grievances";
 import { grievanceEvents } from "@/db/schema/domains/claims/grievance-lifecycle";
@@ -60,7 +60,7 @@ export const GET = withOrganizationAuth(async (request, context, params?: { id: 
       events,
       documents,
     });
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to fetch grievance");
   }
 });

@@ -5,7 +5,7 @@
  * GET  /api/grievances     — List grievances for the org (union_staff+)
  */
 
-import { NextResponse } from "next/server";
+import { NextResponse as _NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/db/db";
 import { grievances } from "@/db/schema/domains/claims/grievances";
@@ -96,7 +96,7 @@ export const POST = withOrganizationAuth(async (request, context) => {
     });
 
     return standardSuccessResponse(grievance);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to create grievance");
   }
 });
@@ -130,7 +130,7 @@ export const GET = withOrganizationAuth(async (request, context) => {
       : rows;
 
     return standardSuccessResponse(filtered);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to list grievances");
   }
 });

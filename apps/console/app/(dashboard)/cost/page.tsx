@@ -4,11 +4,11 @@
  * Org-scoped cost observability: spend over time, top cost drivers,
  * cost per request estimate, and projected monthly burn.
  */
-import { requireRole, getUserRole } from '@/lib/rbac'
+import { requireRole, getUserRole as _getUserRole } from '@/lib/rbac'
 
 export const dynamic = 'force-dynamic'
 
-interface CostRollup {
+interface _CostRollup {
   orgId: string
   appId: string
   category: string

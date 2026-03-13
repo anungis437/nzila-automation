@@ -9,7 +9,7 @@ import {
   generateTrendEnrichedDigest,
   createStubTrendSeriesPort,
   DEFAULT_DIGEST_TRENDS_CONFIG,
-  type TrendSeriesPort,
+  type _TrendSeriesPort,
   type TrendSeriesDataPoint,
   type DigestTrendsConfig,
 } from './digest-trends'
@@ -40,7 +40,7 @@ function makeDegradingSeries(days: number): TrendSeriesDataPoint[] {
   return points
 }
 
-function makeImprovingSeries(days: number): TrendSeriesDataPoint[] {
+function _makeImprovingSeries(days: number): TrendSeriesDataPoint[] {
   const points: TrendSeriesDataPoint[] = []
   const base = new Date('2026-02-24')
   for (let i = 0; i < days; i++) {

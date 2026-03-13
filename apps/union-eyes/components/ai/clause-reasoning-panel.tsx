@@ -53,7 +53,7 @@ const strengthColors: Record<string, string> = {
 };
 
 export function ClauseReasoningPanel({
-  grievanceId,
+  grievanceId: _grievanceId,
   data,
   onRequestAnalysis,
   loading,

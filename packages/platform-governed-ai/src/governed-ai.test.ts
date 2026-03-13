@@ -18,7 +18,7 @@ function makeProvider(overrides: Partial<AIModelProvider> = {}): AIModelProvider
   return {
     modelId: 'gpt-4o',
     modelVersion: '2024-08-06',
-    async invoke(input) {
+    async invoke(_input) {
       return {
         output: { recommendation: 'approve', reason: 'Low risk profile' },
         confidence: 0.92,

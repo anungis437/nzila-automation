@@ -14,7 +14,7 @@ import { AI_FEATURES } from '@/lib/services/feature-flags';
 import { guardAiFeature } from '@/lib/ai/ai-feature-guard';
 import { executeCopilotAction, getCopilotHistory } from '@/lib/ai/steward-copilot';
 import { standardErrorResponse, standardSuccessResponse, ErrorCode } from '@/lib/api/standardized-responses';
-import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
+import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders as _createRateLimitHeaders } from '@/lib/rate-limiter';
 
 const copilotSchema = z.object({
   actionType: z.enum(['timeline_summary', 'suggest_action', 'draft_response', 'explain_clause', 'risk_brief', 'custom_query']),

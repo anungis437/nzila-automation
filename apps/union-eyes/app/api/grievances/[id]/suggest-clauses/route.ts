@@ -21,7 +21,7 @@ import {
 } from "@/lib/api/standardized-responses";
 import { eq, and } from "drizzle-orm";
 
-const linkSchema = z.object({
+const _linkSchema = z.object({
   clauseId: z.string().uuid(),
 }).optional();
 
@@ -75,7 +75,7 @@ export const POST = withOrganizationAuth(async (request, context, params?: { id:
     );
 
     return standardSuccessResponse(suggestions);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to suggest clauses");
   }
 });

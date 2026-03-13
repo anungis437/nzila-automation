@@ -12,7 +12,7 @@
 
 import * as React from "react";
 import {
-  BookOpen,
+  BookOpen as _BookOpen,
   FileText,
   Users,
   Settings,

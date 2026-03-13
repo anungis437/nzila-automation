@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import {
   OntologyEntityTypes,
   RelationshipTypes,
-  EntityStatuses,
+  _EntityStatuses,
   validateCreateEntity,
   validateCreateRelationship,
   getOntologyDefinition,

@@ -58,7 +58,7 @@ const trendIcons: Record<string, React.ReactNode> = {
 };
 
 export function EmployerRiskCard({
-  employerId,
+  employerId: _employerId,
   data,
   onRecalculate,
   loading,

@@ -81,7 +81,7 @@ export const PATCH = withOrganizationAuth(async (request, context, params?: { id
     });
 
     return standardSuccessResponse(assignment);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to assign steward");
   }
 });

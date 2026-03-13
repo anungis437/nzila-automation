@@ -195,7 +195,7 @@ export const PLATFORM_ALERT_RULES: readonly AlertRule[] = [
 export type AlertSink = (event: AlertEvent) => void
 
 function defaultAlertSink(event: AlertEvent): void {
-  const prefix = event.severity === 'critical' ? '🚨' : event.severity === 'warning' ? '⚠️' : 'ℹ️'
+  const _prefix = event.severity === 'critical' ? '🚨' : event.severity === 'warning' ? '⚠️' : 'ℹ️'
   logger.emit(
     event.severity === 'critical' ? 'critical' : event.severity === 'warning' ? 'warn' : 'info',
     `alert.fired`,

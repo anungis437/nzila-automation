@@ -4,13 +4,13 @@
 import { describe, it, expect } from 'vitest'
 import {
   CreateExamSchema,
-  CreateExamSessionSchema,
+  _CreateExamSessionSchema,
   CreateCandidateSchema,
-  CreateCenterSchema,
-  CreateSubjectSchema,
-  RecordSubmissionSchema,
+  _CreateCenterSchema,
+  _CreateSubjectSchema,
+  _RecordSubmissionSchema,
   MarkSubmissionSchema,
-  ModerateSubmissionSchema,
+  _ModerateSubmissionSchema,
   NacpOrgContextSchema,
 } from './schemas/index'
 

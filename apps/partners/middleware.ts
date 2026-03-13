@@ -10,7 +10,7 @@ import { checkOrgRateLimit, orgRateLimitHeaders } from '@nzila/os-core/orgRateLi
  * /api/health is intentionally public (probe endpoints must not require auth).
  * Everything else (the portal itself) requires authentication.
  */
-const isPublicRoute = createRouteMatcher([
+const _isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/sign-up(.*)',

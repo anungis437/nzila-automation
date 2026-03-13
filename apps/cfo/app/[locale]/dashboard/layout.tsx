@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { getUserRoles, getVisiblePages, isClientRole, type FirmRole, type ClientRole } from '@/lib/rbac'
+import { getUserRoles, getVisiblePages, isClientRole, type FirmRole as _FirmRole, type ClientRole as _ClientRole } from '@/lib/rbac'
 import { DashboardShell } from './dashboard-shell'
 
 export default async function DashboardLayout({

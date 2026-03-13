@@ -9,7 +9,7 @@ import type {
   DecisionEdge,
   DecisionTrail,
   DecisionGraphStore,
-  DecisionStatus,
+  _DecisionStatus,
   CreateDecisionNodeInput,
   CreateDecisionEdgeInput,
 } from './types'

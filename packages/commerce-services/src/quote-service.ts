@@ -31,7 +31,7 @@ import {
   validateMarginFloor,
   type PricingItem,
   type PricingTemplate,
-  type MarginCalculation,
+  type _MarginCalculation,
   type TaxBreakdown,
   type MarginFloorValidation,
 } from '@nzila/pricing-engine'

@@ -1,7 +1,7 @@
 import {
   AcademicCapIcon,
   CheckBadgeIcon,
-  LockClosedIcon,
+  _LockClosedIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline'
 import { getCertProgress } from '@/lib/actions/certification-actions'

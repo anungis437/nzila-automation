@@ -117,7 +117,7 @@ export const PATCH = withOrganizationAuth(async (request, context, params?: { id
     });
 
     return standardSuccessResponse(updated);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to update grievance status");
   }
 });

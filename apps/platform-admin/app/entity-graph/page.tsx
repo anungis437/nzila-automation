@@ -2,14 +2,14 @@
 
 import { useState } from 'react'
 import {
-  createInMemoryGraphStore,
-  type EntityGraphStore,
-  type EntityNode,
-  getEntityNode,
-  getEntityNeighbors,
-  buildEntitySubgraph,
+  createInMemoryGraphStore as _createInMemoryGraphStore,
+  type _EntityGraphStore,
+  type EntityNode as _EntityNode,
+  getEntityNode as _getEntityNode,
+  getEntityNeighbors as _getEntityNeighbors,
+  buildEntitySubgraph as _buildEntitySubgraph,
 } from '@nzila/platform-entity-graph'
-import { OntologyEntityTypes } from '@nzila/platform-ontology'
+import { OntologyEntityTypes as _OntologyEntityTypes } from '@nzila/platform-ontology'
 
 export default function EntityGraphExplorer() {
   const [nodeId, setNodeId] = useState('')

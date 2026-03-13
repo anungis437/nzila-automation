@@ -26,7 +26,7 @@
 
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
-import { eq, sql } from 'drizzle-orm';
+import { eq as _eq, sql } from 'drizzle-orm';
 
 // ──────────────────────────────────────────────────────────────────
 // CAPE-ACEP Organization

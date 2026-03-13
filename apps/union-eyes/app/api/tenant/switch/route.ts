@@ -16,7 +16,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const POST = withApiAuth(
-  async (request: NextRequest, context: BaseAuthContext) => {
+  async (request: NextRequest, _context: BaseAuthContext) => {
     try {
       const body = await request.json();
       const { organizationId } = body;

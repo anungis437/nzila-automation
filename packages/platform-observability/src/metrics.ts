@@ -7,9 +7,9 @@
  * @module @nzila/platform-observability/metrics
  */
 import { createLogger } from './logger.js'
-import type { MetricType, MetricDefinition, MetricSample } from './types'
+import type { MetricType as _MetricType, MetricDefinition, MetricSample } from './types'
 
-const logger = createLogger()
+const _logger = createLogger()
 
 // ── Counter ─────────────────────────────────────────────────────────────────
 

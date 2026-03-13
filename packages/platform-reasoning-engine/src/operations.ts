@@ -10,7 +10,7 @@ import type {
   ReasoningStore,
   ReasoningStrategy,
   Citation,
-  CrossVerticalInsight,
+  _CrossVerticalInsight,
 } from './types'
 import { ReasoningStatuses } from './types'
 import type { ContextEnvelope } from '@nzila/platform-context-orchestrator'
@@ -84,7 +84,7 @@ export async function executeReasoningChain(
 
     await store.persistChain(chain)
     return chain
-  } catch (error) {
+  } catch (_error) {
     const chain: ReasoningChain = {
       id: generateId(),
       tenantId: request.tenantId,

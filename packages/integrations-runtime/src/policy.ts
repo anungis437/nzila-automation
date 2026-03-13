@@ -93,7 +93,7 @@ export function loadIntegrationPolicy(rootDir?: string): IntegrationPolicy {
   }
 
   try {
-    const content = readFileSync(policyPath, 'utf-8')
+    const _content = readFileSync(policyPath, 'utf-8')
     // Simple YAML-like parsing for the policy structure
     // In production, use a proper YAML parser
     cachedPolicy = DEFAULT_POLICY

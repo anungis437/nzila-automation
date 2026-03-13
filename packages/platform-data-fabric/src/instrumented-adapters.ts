@@ -6,12 +6,12 @@
  *   record_ingested → mapping_applied → reconciliation_performed → lineage_updated
  *   conflict_detected (when conflicts found)
  */
-import type { OntologyEntityType } from '@nzila/platform-ontology'
+import type { OntologyEntityType as _OntologyEntityType } from '@nzila/platform-ontology'
 import type {
   CanonicalRecord,
   ConflictRecord,
   DataFabricStore,
-  SourceRecord,
+  _SourceRecord,
 } from './types'
 import {
   mapSourceRecordToCanonical,

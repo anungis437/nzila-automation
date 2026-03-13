@@ -15,7 +15,7 @@ import { AI_FEATURES } from '@/lib/services/feature-flags';
 import { guardAiFeature } from '@/lib/ai/ai-feature-guard';
 import { analyzeGrievance } from '@/lib/ai/grievance-triage';
 import { standardErrorResponse, standardSuccessResponse, ErrorCode } from '@/lib/api/standardized-responses';
-import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders } from '@/lib/rate-limiter';
+import { checkRateLimit, RATE_LIMITS, createRateLimitHeaders as _createRateLimitHeaders } from '@/lib/rate-limiter';
 
 const triageSchema = z.object({
   grievanceId: z.string().uuid(),

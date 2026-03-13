@@ -90,7 +90,7 @@ export const POST = withOrganizationAuth(async (request, context, params?: { id:
     });
 
     return standardSuccessResponse(doc);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to upload document");
   }
 });

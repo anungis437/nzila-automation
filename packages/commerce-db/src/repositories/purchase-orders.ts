@@ -11,7 +11,7 @@ import {
   createAuditedScopedDb,
   commercePurchaseOrders,
   commercePurchaseOrderLines,
-  commerceSuppliers,
+  _commerceSuppliers,
 } from '@nzila/db'
 import { eq } from 'drizzle-orm'
 import type { CommerceDbContext, CommerceReadContext, PaginationOpts } from '../types'
@@ -373,7 +373,7 @@ export async function receiveLineItem(
   lineId: string,
   quantityReceived: number,
 ) {
-  const lines = await ctx.orgId // Need to fetch
+  const _lines = await ctx.orgId // Need to fetch
   const db = createAuditedScopedDb({
     orgId: ctx.orgId,
     actorId: ctx.actorId,

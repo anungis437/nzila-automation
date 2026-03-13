@@ -8,8 +8,8 @@ import type {
   PlatformEventBus,
   PlatformEventHandler,
   PlatformEventStore,
-  PlatformEventType,
-  Unsubscribe,
+  _PlatformEventType,
+  _Unsubscribe,
 } from './types'
 
 // ── In-Memory Event Store ───────────────────────────────────────────────────

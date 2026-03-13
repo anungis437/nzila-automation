@@ -24,7 +24,7 @@ export const GET = withOrganizationAuth(async (_request, context) => {
 
     const queue = await listDispatchQueue(organizationId);
     return standardSuccessResponse(queue);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to list dispatch queue");
   }
 });

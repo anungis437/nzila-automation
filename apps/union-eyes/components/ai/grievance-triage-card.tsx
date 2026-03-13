@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AiDisclaimer } from "./ai-disclaimer";
-import { Brain, CheckCircle2, XCircle, Clock, AlertTriangle, Loader2 } from "lucide-react";
+import { Brain, CheckCircle2, XCircle, Clock, AlertTriangle as _AlertTriangle, Loader2 } from "lucide-react";
 import { useFeatureFlag } from "@/lib/hooks/use-feature-flags";
 
 interface TriageData {
@@ -60,7 +60,7 @@ const complexityColors: Record<string, string> = {
 };
 
 export function GrievanceTriageCard({
-  grievanceId,
+  grievanceId: _grievanceId,
   triage,
   onRequestTriage,
   onAccept,

@@ -3,7 +3,7 @@
  *
  * Central registry for event type schemas and versioning.
  */
-import { z } from 'zod'
+import { z as _z } from 'zod'
 import type { EventSchemaDefinition, PlatformEventType } from './types'
 
 const schemaRegistry = new Map<string, EventSchemaDefinition>()

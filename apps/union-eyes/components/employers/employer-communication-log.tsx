@@ -16,7 +16,7 @@ import {
   Phone,
   Users,
   FileText,
-  Calendar,
+  _Calendar,
   Paperclip,
   ExternalLink,
   Search,

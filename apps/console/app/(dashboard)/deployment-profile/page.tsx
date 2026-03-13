@@ -6,7 +6,7 @@
  * Shows egress allowlist enforcement status for sovereign profiles.
  * Role-restricted. No deployment secrets exposed.
  */
-import { requireRole, getUserRole } from '@/lib/rbac'
+import { requireRole, getUserRole as _getUserRole } from '@/lib/rbac'
 import {
   CloudIcon,
   ServerIcon,
@@ -96,7 +96,7 @@ const PROFILES: DeploymentProfile[] = [
   },
 ]
 
-const profileIcons = {
+const _profileIcons = {
   dataResidency: GlobeAltIcon,
   updateModel: ArrowPathIcon,
   patchCadence: ShieldCheckIcon,

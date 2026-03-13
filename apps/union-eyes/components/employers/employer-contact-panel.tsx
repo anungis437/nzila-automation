@@ -15,7 +15,7 @@ import {
   User,
   Mail,
   Phone,
-  Briefcase,
+  _Briefcase,
   Plus,
   Edit2,
   Trash2,

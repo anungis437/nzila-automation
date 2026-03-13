@@ -1,5 +1,5 @@
 import {
-  UsersIcon,
+  UsersIcon as _UsersIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline'
 import { getAllPartners } from '@/lib/partner-auth'

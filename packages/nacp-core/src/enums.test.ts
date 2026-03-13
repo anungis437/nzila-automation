@@ -6,9 +6,9 @@ import {
   ExamSessionStatus,
   CandidateStatus,
   SubmissionStatus,
-  SubjectLevel,
-  IntegrityStatus,
-  CenterStatus,
+  _SubjectLevel,
+  _IntegrityStatus,
+  _CenterStatus,
   NacpRole,
 } from './enums'
 

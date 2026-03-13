@@ -36,7 +36,7 @@ export const POST = withOrganizationAuth(async (_request, context, params?: { id
     });
 
     return standardSuccessResponse(candidates);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to recommend steward");
   }
 });

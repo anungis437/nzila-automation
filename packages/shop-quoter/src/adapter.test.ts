@@ -5,7 +5,7 @@
  * in-memory repositories (no real DB).
  */
 import { describe, it, expect, vi } from 'vitest'
-import { QuoteStatus, PricingTier, OrgRole } from '@nzila/commerce-core/enums'
+import { QuoteStatus as _QuoteStatus, PricingTier as _PricingTier, OrgRole as _OrgRole } from '@nzila/commerce-core/enums'
 import { createShopQuoterAdapter } from './adapter'
 import type { QuoteRepository, QuoteEntity, QuoteLineEntity } from '@nzila/commerce-services/quote'
 import type { CustomerRepository } from './adapter'

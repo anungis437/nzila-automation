@@ -9,7 +9,7 @@ function createMockProvider(overrides: Partial<AIModelProvider> = {}): AIModelPr
   return {
     modelId: 'gpt-4',
     modelVersion: '1.0',
-    async invoke(input) {
+    async invoke(_input) {
       return {
         output: { result: 'mock-output' },
         confidence: 0.92,

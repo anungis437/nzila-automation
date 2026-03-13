@@ -13,7 +13,7 @@ import {
   commerceQuoteVersions,
   commerceQuoteLines,
 } from '@nzila/db'
-import { eq, and } from 'drizzle-orm'
+import { eq, and as _and } from 'drizzle-orm'
 import type { CommerceDbContext, CommerceReadContext, PaginationOpts } from '../types'
 
 // ── Reads ─────────────────────────────────────────────────────────────────

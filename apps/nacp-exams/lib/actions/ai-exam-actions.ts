@@ -105,7 +105,7 @@ export async function checkSubmissionSimilarity(
     }
 
     if (results.some((r) => r.flagged)) {
-      const pack = await buildExamEvidencePack({
+      const _pack = await buildExamEvidencePack({
         action: 'PLAGIARISM_FLAGGED',
         entityType: 'exam_session',
         orgId: sessionId,
@@ -129,7 +129,7 @@ export async function generateQuestions(opts: {
   count: number
   existingQuestions?: string[]
 }): Promise<GeneratedQuestion[]> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   try {
     const existingContext = opts.existingQuestions?.length
@@ -187,7 +187,7 @@ export async function extractPaperSubmission(
       variables: { candidateId, format: 'exam-answers' },
     })
 
-    const pack = await buildExamEvidencePack({
+    const _pack = await buildExamEvidencePack({
       action: 'PAPER_EXTRACTION',
       entityType: 'candidate',
       orgId: candidateId,

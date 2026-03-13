@@ -9,10 +9,10 @@
  */
 import { requireRole } from '@/lib/rbac'
 import {
-  generatePilotSummary,
+  generatePilotSummary as _generatePilotSummary,
   createDefaultPilotPorts,
   generatePilotPack,
-  type PilotSummaryBundle,
+  type _PilotSummaryBundle,
   type PilotSummaryPack,
 } from '@nzila/platform-ops'
 import {

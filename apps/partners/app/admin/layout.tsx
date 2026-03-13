@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { auth, currentUser as _currentUser } from '@clerk/nextjs/server'
 import { UserButton } from '@clerk/nextjs'
 import {
   HomeIcon,

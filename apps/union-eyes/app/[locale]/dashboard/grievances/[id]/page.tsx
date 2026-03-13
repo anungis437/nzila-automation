@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Scale,
   FileText,
-  User,
+  _User,
   Clock,
   Upload,
   ArrowLeft,

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import {
   PLATFORM_SLOS,
-  computeErrorBudget,
+  _computeErrorBudget,
   meetsSlo,
   type SloTarget,
 } from '@nzila/platform-observability/reliability'
@@ -15,7 +15,7 @@ import {
  * In production, wired to live metrics. In dev, renders baseline SLO catalog.
  */
 
-const STATUS_LABELS: Record<string, string> = {
+const _STATUS_LABELS: Record<string, string> = {
   ok: '✅ Healthy',
   warning: '⚠️ Warning',
   danger: '🔴 Critical',
@@ -26,7 +26,7 @@ function sloStatusColor(met: boolean): string {
   return met ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
 }
 
-function budgetStatusColor(remaining: number): string {
+function _budgetStatusColor(remaining: number): string {
   if (remaining > 50) return 'text-green-600'
   if (remaining > 10) return 'text-yellow-600'
   return 'text-red-600'

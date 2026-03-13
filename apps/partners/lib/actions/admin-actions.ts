@@ -1,18 +1,18 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { redirect as _redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
 import { platformDb } from '@nzila/db/platform'
 import { partners, partnerUsers } from '@nzila/db/schema'
-import { eq, desc, sql, and } from 'drizzle-orm'
-import { requirePlatformAdmin, isPlatformAdmin } from '../partner-auth'
+import { eq, desc, sql, and as _and } from 'drizzle-orm'
+import { requirePlatformAdmin, isPlatformAdmin as _isPlatformAdmin } from '../partner-auth'
 
 // ── Partner Management Actions ───────────────────────────────────────────────
 
 /**
  * Get all partners for admin view
  */
-export async function getPartners(options?: {
+export async function getPartners(_options?: {
   status?: string
   tier?: string
   type?: string

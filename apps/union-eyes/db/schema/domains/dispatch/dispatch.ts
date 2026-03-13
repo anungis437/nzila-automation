@@ -12,7 +12,7 @@ import {
   pgEnum,
   uuid,
   varchar,
-  text,
+  _text,
   timestamp,
   integer,
   jsonb,

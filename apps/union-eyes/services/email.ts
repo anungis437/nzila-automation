@@ -7,7 +7,7 @@
  */
 import {
   sendEmail as sendEmailViaResend,
-  type SendEmailOptions,
+  type _SendEmailOptions,
 } from '@/lib/email-service'
 import { logger } from '@/lib/logger'
 

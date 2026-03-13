@@ -98,8 +98,8 @@ import {
   predictArbitrationEscalation,
   getInsightReports,
   type InsightReportType,
-  type InsightTimeframe,
-  type InsightResult,
+  type _InsightTimeframe,
+  type _InsightResult,
 } from "@/lib/ai/executive-insights";
 
 // ─── Tests ──────────────────────────────────────────────────────────────────

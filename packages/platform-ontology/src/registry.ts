@@ -12,11 +12,11 @@ import type {
   CreateOntologyEntityInput,
   CreateRelationshipInput,
 } from './types'
-import { OntologyEntityTypes } from './types'
+import { OntologyEntityTypes as _OntologyEntityTypes } from './types'
 import {
   getTypeDefinition,
   getAllTypeDefinitions,
-  getRelationshipsFor,
+  _getRelationshipsFor,
   isRelationshipAllowed,
 } from './relationships'
 

@@ -1,7 +1,7 @@
 /**
  * Shop Quoter — Export Service Tests
  */
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi as _vi } from 'vitest'
 
 interface QuoteExport {
   id: string

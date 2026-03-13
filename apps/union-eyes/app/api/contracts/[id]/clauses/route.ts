@@ -23,7 +23,7 @@ export const GET = withOrganizationAuth(async (_request, context, params?: { id:
 
     const clauses = await listClauses(params.id);
     return standardSuccessResponse(clauses);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to list clauses");
   }
 });

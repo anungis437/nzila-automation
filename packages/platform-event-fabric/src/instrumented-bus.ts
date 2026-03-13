@@ -6,15 +6,15 @@
  *   handler error → event_handler_error (counter + log)
  *   subscribe/subscribeAll → subscription tracking
  */
-import type { PlatformEvent, PlatformEventBus, PlatformEventHandler, Unsubscribe } from './types'
+import type { PlatformEvent, PlatformEventBus, PlatformEventHandler as _PlatformEventHandler, Unsubscribe as _Unsubscribe } from './types'
 import { createPlatformEventBus, type CreateEventBusOptions } from './bus'
 import {
-  workflowTelemetry,
+  workflowTelemetry as _workflowTelemetry,
   governanceTelemetry,
-  govAuditEvents,
+  _govAuditEvents,
 } from '@nzila/platform-observability'
 import { createLogger } from '@nzila/platform-observability'
-import { Counter, Histogram, globalRegistry } from '@nzila/platform-observability'
+import { Counter as _Counter, Histogram as _Histogram, globalRegistry } from '@nzila/platform-observability'
 
 // ── Dedicated event-fabric metrics ──────────────────────────────────────────
 

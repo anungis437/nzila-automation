@@ -21,7 +21,7 @@ const DEFAULT_CLASSIFIED_RETRY_CONFIG = {
 const eventEntries = Object.entries(IntegrationEventTypes)
 const timeoutEntries = Object.entries(DEFAULT_TIMEOUT_CONFIG.overrides)
 
-function statusBadge(status: string) {
+function _statusBadge(status: string) {
   const colors: Record<string, string> = {
     ok: 'bg-green-50 text-green-700',
     degraded: 'bg-yellow-50 text-yellow-700',

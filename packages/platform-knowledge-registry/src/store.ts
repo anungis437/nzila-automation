@@ -8,7 +8,7 @@ import type {
   KnowledgeVersion,
   KnowledgeStore,
   KnowledgeSearchQuery,
-  UpdateKnowledgeAssetInput,
+  _UpdateKnowledgeAssetInput,
 } from './types'
 
 export function createInMemoryKnowledgeStore(): KnowledgeStore {

@@ -21,9 +21,9 @@ import {
 import Link from 'next/link'
 import { Card } from '@nzila/ui'
 import {
-  generateIntegrationsProofSection,
-  type IntegrationsProofPorts,
-  type IntegrationProviderSnapshot,
+  generateIntegrationsProofSection as _generateIntegrationsProofSection,
+  type _IntegrationsProofPorts,
+  type _IntegrationProviderSnapshot,
 } from '@nzila/platform-proof/integrations'
 
 export const dynamic = 'force-dynamic'

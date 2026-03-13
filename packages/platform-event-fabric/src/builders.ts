@@ -1,7 +1,7 @@
 /**
  * @nzila/platform-event-fabric — Event Builder Helpers
  */
-import type { PlatformEvent, PlatformEventMetadata, PlatformEventType } from './types'
+import type { PlatformEvent, PlatformEventMetadata as _PlatformEventMetadata, PlatformEventType } from './types'
 
 let idCounter = 0
 

@@ -1,8 +1,8 @@
 import type { AgriReadContext, AgriDbContext, PaginationOpts, PaginatedResult } from '../types'
 import type { AggregationLot, LotContribution, CreateLotInput } from '@nzila/agri-core'
 import { db } from '@nzila/db'
-import { agriLots, agriLotContributions, agriHarvests } from '@nzila/db/schema'
-import { eq, and, count, inArray, type SQL } from 'drizzle-orm'
+import { agriLots, agriLotContributions, agriHarvests as _agriHarvests } from '@nzila/db/schema'
+import { eq, and, count, inArray as _inArray, type SQL } from 'drizzle-orm'
 
 function toLot(row: typeof agriLots.$inferSelect): AggregationLot {
   return {

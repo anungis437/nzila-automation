@@ -12,7 +12,7 @@ import {
   db,
   commerceShareLinks,
 } from '@nzila/db'
-import { eq, and, sql } from 'drizzle-orm'
+import { eq, and as _and, sql } from 'drizzle-orm'
 import type {
   QuoteShareLink,
   CreateShareLinkInput,

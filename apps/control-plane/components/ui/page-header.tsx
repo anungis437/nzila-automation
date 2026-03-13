@@ -8,7 +8,7 @@ interface PageHeaderProps {
   actions?: React.ReactNode;
 }
 
-export function PageHeader({ title, description, icon, className, actions }: PageHeaderProps) {
+export function PageHeader({ title, description, icon: _icon, className, actions }: PageHeaderProps) {
   return (
     <div className={cn("flex items-center justify-between mb-8", className)}>
       <div>

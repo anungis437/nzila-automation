@@ -2,8 +2,8 @@
  * Nzila OS — Integration Runtime: Mock Adapter Tests
  */
 import { describe, it, expect } from 'vitest'
-import { MockAdapter, createMockAdapter } from '../mock-adapter'
-import type { SendRequest, SendResult } from '@nzila/integrations-core'
+import { MockAdapter as _MockAdapter, createMockAdapter } from '../mock-adapter'
+import type { SendRequest, SendResult as _SendResult } from '@nzila/integrations-core'
 
 function sampleRequest(): SendRequest {
   return {

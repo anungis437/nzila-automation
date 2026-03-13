@@ -48,7 +48,7 @@ function makeContext(): ContextEnvelope {
 function makeStrategy(): ReasoningStrategy {
   return {
     type: ReasoningTypes.RISK_BASED,
-    async reason(context, question) {
+    async reason(_context, _question) {
       const citation: Citation = {
         id: 'cit-1',
         sourceType: 'policy',

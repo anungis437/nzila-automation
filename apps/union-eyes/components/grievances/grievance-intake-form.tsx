@@ -15,7 +15,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm, type UseFormReturn, type FieldValues } from "react-hook-form";
+import { useForm, type UseFormReturn, type FieldValues as _FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";

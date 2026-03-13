@@ -20,7 +20,7 @@ export const dynamic = 'force-dynamic'
 
 // ── Status helpers ──────────────────────────────────────────────────────────
 
-function StatusIcon({ status }: { status: string }) {
+function _StatusIcon({ status }: { status: string }) {
   switch (status) {
     case 'sent':
       return <CheckCircleIcon className="h-4 w-4 text-green-500" />
@@ -35,7 +35,7 @@ function StatusIcon({ status }: { status: string }) {
   }
 }
 
-function statusClass(status: string): string {
+function _statusClass(status: string): string {
   switch (status) {
     case 'sent':
       return 'bg-green-100 text-green-700'

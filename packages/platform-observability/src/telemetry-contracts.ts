@@ -10,9 +10,9 @@
  * @module @nzila/platform-observability/telemetry-contracts
  */
 
-import { Span, trace } from './span'
-import { Counter, Histogram, globalRegistry } from './metrics'
-import { createLogger, type StructuredLogger } from './logger'
+import { Span as _Span, trace as _trace } from './span'
+import { Counter as _Counter, Histogram as _Histogram, globalRegistry } from './metrics'
+import { createLogger, type StructuredLogger as _StructuredLogger } from './logger'
 import type { CorrelationContext } from './types'
 
 // ── Shared metric vocabulary ───────────────────────────────────────────────
@@ -74,7 +74,7 @@ export interface TelemetryContext {
 
 // ── Request lifecycle telemetry ────────────────────────────────────────
 
-const requestLogger = createLogger({ org_id: 'platform' })
+const _requestLogger = createLogger({ org_id: 'platform' })
 
 export interface RequestTelemetryOptions {
   service: string

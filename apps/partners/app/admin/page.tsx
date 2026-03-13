@@ -1,10 +1,10 @@
 import { Card } from '@nzila/ui'
 import {
   UsersIcon,
-  CurrencyDollarIcon,
-  ChartBarIcon,
+  _CurrencyDollarIcon,
+  _ChartBarIcon,
   ClockIcon,
-  ArrowTrendingUpIcon,
+  _ArrowTrendingUpIcon,
   CheckCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline'

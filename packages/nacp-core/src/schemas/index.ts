@@ -7,11 +7,11 @@
  */
 import { z } from 'zod'
 import {
-  ExamSessionStatus,
-  CandidateStatus,
-  SubmissionStatus,
+  ExamSessionStatus as _ExamSessionStatus,
+  _CandidateStatus,
+  _SubmissionStatus,
   SubjectLevel,
-  CenterStatus,
+  _CenterStatus,
   NacpRole,
 } from '../enums'
 

@@ -2,7 +2,7 @@ import type {
   LotStatus, ShipmentStatus, BatchStatus, PaymentPlanStatus,
   AgriOrgRole, CropType, UnitOfMeasure, ProducerStatus,
   PaymentStatus, PaymentMethod, CertificationType,
-  AgriEvidenceType, TraceabilityEntityType, WarehouseStatus,
+  _AgriEvidenceType, TraceabilityEntityType, WarehouseStatus,
   ForecastType, RiskType, RiskScope,
 } from '../enums'
 

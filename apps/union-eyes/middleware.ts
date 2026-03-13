@@ -78,7 +78,7 @@ const _isProtectedRoute = createRouteMatcher([
   "/:locale/dashboard(.*)"
 ]);
 
-const isPublicRoute = createRouteMatcher([
+const _isPublicRoute = createRouteMatcher([
   "/",
   "/:locale",
   "/login(.*)",

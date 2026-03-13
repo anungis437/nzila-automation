@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { AiDisclaimer } from "./ai-disclaimer";
 import {
   BarChart3,
-  Building2,
+  _Building2,
   Flame,
   Scale,
   TrendingUp,

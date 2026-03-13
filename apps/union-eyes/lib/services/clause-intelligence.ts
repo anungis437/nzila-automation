@@ -17,7 +17,7 @@ import { clauseEmbeddings } from "@/db/schema/domains/agreements/clause-embeddin
 import {
   collectiveAgreements,
 } from "@/db/schema/domains/agreements/collective-agreements";
-import { eq, and, ilike, or, sql } from "drizzle-orm";
+import { eq, and, ilike, or, sql as _sql } from "drizzle-orm";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

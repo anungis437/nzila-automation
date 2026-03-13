@@ -14,7 +14,7 @@
  */
 
 import { db } from '@/db/db';
-import { eq, and, gte, desc, count, sql } from 'drizzle-orm';
+import { eq, and, gte, desc, count, sql as _sql } from 'drizzle-orm';
 import { getAiClient, UE_APP_KEY, UE_PROFILES } from '@/lib/ai/ai-client';
 import { employerRiskScores, type EmployerRiskScoreInsert } from '@/db/schema/domains/ml/employer-risk-scores';
 import { employers } from '@/db/schema/domains/compliance/employer-compliance';

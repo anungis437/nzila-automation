@@ -12,7 +12,7 @@
  */
 
 import { OntologyEntityTypes, EntityStatuses, RelationshipTypes } from '@nzila/platform-ontology'
-import { createInMemoryGraphStore, getEntityNeighbors, buildEntitySubgraph } from '@nzila/platform-entity-graph'
+import { createInMemoryGraphStore, getEntityNeighbors as _getEntityNeighbors, buildEntitySubgraph } from '@nzila/platform-entity-graph'
 import { createEventBus, PlatformEventTypes, buildPlatformEvent } from '@nzila/platform-event-fabric'
 import { createInMemoryKnowledgeStore, registerKnowledgeAsset, KnowledgeTypes } from '@nzila/platform-knowledge-registry'
 import { createInMemoryDecisionStore, createDecisionNode, executeDecision, getDecisionTrail, DecisionTypes, ActorTypes } from '@nzila/platform-decision-graph'
@@ -28,7 +28,7 @@ export async function runMobilityDemo() {
   console.log('1. Building entity graph...')
   const graphStore = createInMemoryGraphStore()
 
-  const vehicleNode = await graphStore.addNode({
+  const _vehicleNode = await graphStore.addNode({
     id: 'vehicle-001',
     tenantId: TENANT,
     entityType: OntologyEntityTypes.VEHICLE,
@@ -39,7 +39,7 @@ export async function runMobilityDemo() {
     updatedAt: new Date().toISOString(),
   })
 
-  const driverNode = await graphStore.addNode({
+  const _driverNode = await graphStore.addNode({
     id: 'driver-001',
     tenantId: TENANT,
     entityType: OntologyEntityTypes.EMPLOYEE,
@@ -50,7 +50,7 @@ export async function runMobilityDemo() {
     updatedAt: new Date().toISOString(),
   })
 
-  const tripNode = await graphStore.addNode({
+  const _tripNode = await graphStore.addNode({
     id: 'trip-001',
     tenantId: TENANT,
     entityType: OntologyEntityTypes.CASE,

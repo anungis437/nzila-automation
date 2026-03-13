@@ -40,7 +40,7 @@ import {
   auditAiInteraction,
   buildAiEnvelope,
   type AiResponseEnvelope,
-  type AiFallbackResponse,
+  type _AiFallbackResponse,
 } from "@/lib/ai/ai-feature-guard";
 
 // ─── Tests ──────────────────────────────────────────────────────────────────

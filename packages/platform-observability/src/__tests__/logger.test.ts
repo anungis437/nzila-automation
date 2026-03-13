@@ -1,7 +1,7 @@
 /**
  * @nzila/platform-observability — Structured Logger Tests
  */
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi as _vi } from 'vitest'
 import { StructuredLogger, createLogger } from '../logger'
 import type { StructuredLogEntry, LogSink } from '../logger'
 
@@ -63,7 +63,7 @@ describe('StructuredLogger', () => {
 
   it('creates logger from HTTP headers', () => {
     const { entries, sink } = collectSink()
-    const logger = StructuredLogger.fromHeaders(
+    const _logger = StructuredLogger.fromHeaders(
       { 'x-request-id': 'http-req', 'x-correlation-id': 'http-cor' },
       'http-org',
     )

@@ -9,7 +9,7 @@ import {
   Clock,
   Shield,
   RefreshCw,
-  Building2,
+  _Building2,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────

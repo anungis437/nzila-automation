@@ -11,7 +11,7 @@ import {
   createAuditedScopedDb,
   commerceSuppliers,
 } from '@nzila/db'
-import { eq, ilike, or } from 'drizzle-orm'
+import { eq, ilike as _ilike, or as _or } from 'drizzle-orm'
 import type { CommerceDbContext, CommerceReadContext, PaginationOpts } from '../types'
 
 type SupplierStatus = 'active' | 'inactive' | 'pending' | 'blocked'

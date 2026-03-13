@@ -13,7 +13,7 @@ import { platformDb } from '@nzila/db/platform'
 import { evidencePacks, closePeriods, platformIsolationAudits } from '@nzila/db/schema'
 import { desc } from 'drizzle-orm'
 
-const logger = createLogger('api:assurance')
+const _logger = createLogger('api:assurance')
 
 export async function GET(req: NextRequest) {
   return withRequestContext(req, () =>

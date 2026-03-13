@@ -12,10 +12,10 @@
 import { useState } from 'react'
 import {
   Clock,
-  DollarSign,
+  _DollarSign,
   AlertTriangle,
   TrendingUp,
-  BarChart3,
+  _BarChart3,
 } from 'lucide-react'
 
 /* ── Types (self-contained for client-side rendering) ─────────────────────── */

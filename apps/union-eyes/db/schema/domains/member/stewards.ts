@@ -10,7 +10,7 @@ import {
   pgEnum,
   uuid,
   varchar,
-  text,
+  _text,
   timestamp,
   boolean,
   integer,

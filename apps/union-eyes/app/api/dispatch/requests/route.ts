@@ -59,7 +59,7 @@ export const POST = withOrganizationAuth(async (request, context) => {
     });
 
     return standardSuccessResponse(row);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to create dispatch request");
   }
 });

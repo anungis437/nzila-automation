@@ -5,9 +5,9 @@ import type {
   DecisionNode,
   DecisionEdge,
   DecisionGraphStore,
-  DecisionStatus,
+  _DecisionStatus,
 } from './types'
-import type { OntologyEntityType } from '@nzila/platform-ontology'
+import type { OntologyEntityType as _OntologyEntityType } from '@nzila/platform-ontology'
 
 export function createInMemoryDecisionStore(): DecisionGraphStore {
   const nodes = new Map<string, DecisionNode>()

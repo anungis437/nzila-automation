@@ -2,7 +2,7 @@
  * Nzila OS — Integration Runtime: Timeout Tests
  */
 import { describe, it, expect } from 'vitest'
-import { withTimeout, getTimeoutMs, TimeoutError, DEFAULT_TIMEOUT_CONFIG } from '../timeout'
+import { withTimeout, getTimeoutMs, TimeoutError, DEFAULT_TIMEOUT_CONFIG as _DEFAULT_TIMEOUT_CONFIG } from '../timeout'
 
 describe('getTimeoutMs', () => {
   it('returns provider override when defined', () => {

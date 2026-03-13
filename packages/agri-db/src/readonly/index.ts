@@ -10,7 +10,7 @@
  * These functions accept `AgriReadContext` (which requires only `orgId`)
  * and cannot accept transaction (`tx`) objects.
  */
-import type { AgriReadContext, PaginationOpts, PaginatedResult } from '../types'
+import type { AgriReadContext as _AgriReadContext, PaginationOpts as _PaginationOpts, PaginatedResult as _PaginatedResult } from '../types'
 export type { AgriReadContext, PaginationOpts, PaginatedResult } from '../types'
 
 // ── Producers (read-only) ──────────────────────────────────────────────────

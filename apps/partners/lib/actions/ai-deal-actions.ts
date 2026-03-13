@@ -244,7 +244,7 @@ export async function extractDealFromEmail(
       variables: { format: 'deal-registration' },
     })
 
-    const pack = buildPartnerEvidencePack({
+    const _pack = buildPartnerEvidencePack({
       actionId: crypto.randomUUID(),
       actionType: 'DEAL_EXTRACTION',
       orgId: 'platform',

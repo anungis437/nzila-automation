@@ -1,5 +1,5 @@
 import type { AgriReadContext, AgriDbContext, PaginationOpts, PaginatedResult } from '../types'
-import type { InventoryBatch, BatchAllocation, CreateBatchInput, AllocateBatchInput } from '@nzila/agri-core'
+import type { InventoryBatch, BatchAllocation, CreateBatchInput, AllocateBatchInput as _AllocateBatchInput } from '@nzila/agri-core'
 import { db } from '@nzila/db'
 import { agriBatches, agriBatchAllocations } from '@nzila/db/schema'
 import { eq, and, count, type SQL } from 'drizzle-orm'

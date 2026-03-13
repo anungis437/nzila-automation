@@ -31,7 +31,7 @@ export const GET = withOrganizationAuth(async (_request, context) => {
       .orderBy(desc(complianceAlerts.createdAt));
 
     return standardSuccessResponse(alerts);
-  } catch (error) {
+  } catch (_error) {
     return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to list compliance alerts");
   }
 });

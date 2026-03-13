@@ -12,9 +12,9 @@ import {
   type QuoteRepository,
   type CreateQuoteInput,
   type QuoteEntity,
-  type QuoteLineEntity,
+  type _QuoteLineEntity,
   type QuoteLineInput,
-  type PricedQuote,
+  type _PricedQuote,
 } from './quote-service'
 import { AuditAction, CommerceEntityType } from '@nzila/commerce-audit'
 
@@ -202,7 +202,7 @@ describe('QuoteService', () => {
     })
 
     it('sets validUntil to null when validDays omitted', async () => {
-      const { validDays, ...input } = sampleInput
+      const { _validDays, ...input } = sampleInput
       const result = await service.createQuote(ctx, input)
       expect(result.ok).toBe(true)
       const createCall = (repo.createQuote as ReturnType<typeof vi.fn>).mock.calls[0]!

@@ -23,7 +23,7 @@ export async function createPartnerPayoutSession(opts: {
   successUrl: string
   cancelUrl: string
 }) {
-  const currency = opts.currency ?? 'usd'
+  const _currency = opts.currency ?? 'usd'
   return createCheckoutSession({
     orgId: opts.partnerId,
     lineItems: [

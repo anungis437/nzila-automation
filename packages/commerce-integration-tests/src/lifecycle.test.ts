@@ -40,15 +40,15 @@ import {
   createApprovalRequiredGate,
   createMarginFloorGate,
   createDiscountCapGate,
-  createQuoteValidityGate,
+  _createQuoteValidityGate,
   createQuoteCompletenessGate,
-  createOrderCompletenessGate,
-  createSnapshotIntegrityGate,
-  createEvidenceRequiredGate,
-  createInvoiceCompletenessGate,
-  createHighValueGate,
+  _createOrderCompletenessGate,
+  _createSnapshotIntegrityGate,
+  _createEvidenceRequiredGate,
+  _createInvoiceCompletenessGate,
+  _createHighValueGate,
   resolvePolicy,
-  withGovernanceGates,
+  _withGovernanceGates,
 } from '@nzila/commerce-governance'
 import type {
   QuoteEntity,
@@ -59,13 +59,13 @@ import type {
 import {
   InMemoryEventBus,
   createDomainEvent,
-  domainEventsFromTransition,
+  _domainEventsFromTransition,
   createSagaOrchestrator,
 } from '@nzila/commerce-events'
-import type { DomainEvent, SagaDefinition, SagaContext } from '@nzila/commerce-events'
+import type { DomainEvent, SagaDefinition, SagaContext as _SagaContext } from '@nzila/commerce-events'
 import {
   buildTransitionAuditEntry,
-  buildActionAuditEntry,
+  _buildActionAuditEntry,
   validateAuditEntry,
   hashAuditEntry,
   summarizeAuditTrail,
@@ -76,7 +76,7 @@ import type { AuditEntry, TransitionAuditContext } from '@nzila/commerce-audit'
 import {
   buildCommerceEvidencePack,
   validateCommerceEvidencePack,
-  generateCommercePackId,
+  _generateCommercePackId,
   resetPackCounter,
   buildArtifact,
   toSealableIndex,
@@ -695,7 +695,7 @@ describe('Audit + Evidence integration', () => {
 
 describe('Governance Gate Diagnostics — evaluateGates', () => {
   it('reports all gate results for a quote acceptance attempt', () => {
-    const policy = resolvePolicy()
+    const _policy = resolvePolicy()
     const gates = [
       { name: 'approval-required', guard: createApprovalRequiredGate() },
       { name: 'discount-cap', guard: createDiscountCapGate() },

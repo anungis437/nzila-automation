@@ -8,7 +8,7 @@
 
 import { auth } from '@clerk/nextjs/server'
 import { platformDb } from '@nzila/db/platform'
-import { sql, desc } from 'drizzle-orm'
+import { sql, desc as _desc } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 import { revalidatePath } from 'next/cache'
 import { buildPartnerEvidencePack } from '@/lib/evidence'

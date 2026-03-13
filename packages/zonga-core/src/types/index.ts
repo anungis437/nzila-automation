@@ -18,7 +18,7 @@ import type {
   ZongaRole,
   ZongaCurrency,
   ZongaLanguage,
-  AfricanGenre,
+  _AfricanGenre,
   AudioQuality,
 } from '../enums'
 

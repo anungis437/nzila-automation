@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { CircuitBreaker, DEFAULT_CIRCUIT_BREAKER_CONFIG, type CircuitBreakerPorts } from './circuitBreaker'
-import type { ProviderHealthRecord, CircuitState } from '@nzila/integrations-db'
+import { CircuitBreaker, DEFAULT_CIRCUIT_BREAKER_CONFIG as _DEFAULT_CIRCUIT_BREAKER_CONFIG, type CircuitBreakerPorts } from './circuitBreaker'
+import type { ProviderHealthRecord, CircuitState as _CircuitState } from '@nzila/integrations-db'
 
 function makeHealthRecord(overrides?: Partial<ProviderHealthRecord>): ProviderHealthRecord {
   return {

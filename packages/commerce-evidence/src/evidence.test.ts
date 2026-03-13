@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { EvidenceType, OrgRole } from '@nzila/commerce-core/enums'
-import { AuditAction, CommerceEntityType, buildActionAuditEntry, type AuditEntry } from '@nzila/commerce-audit'
+import { AuditAction, CommerceEntityType, buildActionAuditEntry as _buildActionAuditEntry, type AuditEntry } from '@nzila/commerce-audit'
 import {
   generateCommercePackId,
   resetPackCounter,

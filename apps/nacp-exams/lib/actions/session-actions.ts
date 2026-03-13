@@ -10,7 +10,7 @@
 import { platformDb } from '@nzila/db/platform'
 import { sql } from 'drizzle-orm'
 import { CreateExamSessionSchema } from '@nzila/nacp-core/schemas'
-import { ExamSessionStatus, NacpRole } from '@nzila/nacp-core/enums'
+import { ExamSessionStatus, NacpRole as _NacpRole } from '@nzila/nacp-core/enums'
 import type { ExamSession } from '@nzila/nacp-core/types'
 import { transitionSession } from '@/lib/session-machine'
 import { logTransition } from '@/lib/commerce-telemetry'

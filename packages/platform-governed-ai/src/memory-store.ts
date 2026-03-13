@@ -2,7 +2,7 @@
  * @nzila/platform-governed-ai — In-Memory Store
  */
 import type { AIRunRecord, AIRunStore } from './types'
-import type { OntologyEntityType } from '@nzila/platform-ontology'
+import type { OntologyEntityType as _OntologyEntityType } from '@nzila/platform-ontology'
 
 export function createInMemoryAIRunStore(): AIRunStore {
   const runs = new Map<string, AIRunRecord>()

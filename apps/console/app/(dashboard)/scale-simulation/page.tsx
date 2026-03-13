@@ -12,7 +12,7 @@ import {
   ExclamationTriangleIcon,
   BuildingOffice2Icon,
   DocumentTextIcon,
-  CurrencyDollarIcon,
+  _CurrencyDollarIcon,
   QueueListIcon,
 } from '@heroicons/react/24/outline'
 

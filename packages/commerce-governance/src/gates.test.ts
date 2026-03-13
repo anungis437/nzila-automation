@@ -25,7 +25,7 @@ import {
   createGovernedInvoiceMachine,
   resolvePolicy,
 } from './gates'
-import type { GovernancePolicy, QuoteEntity, OrderEntity, InvoiceEntity } from './gates'
+import type { GovernancePolicy as _GovernancePolicy, QuoteEntity, OrderEntity, InvoiceEntity } from './gates'
 import type { MachineDefinition, TransitionDef } from '@nzila/commerce-state'
 
 // ── Helpers ─────────────────────────────────────────────────────────────────

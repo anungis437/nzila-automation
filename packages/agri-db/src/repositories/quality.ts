@@ -1,5 +1,5 @@
 import type { AgriReadContext, AgriDbContext } from '../types'
-import type { QualityInspection, InspectLotInput, GradeLotInput } from '@nzila/agri-core'
+import type { QualityInspection, InspectLotInput, GradeLotInput as _GradeLotInput } from '@nzila/agri-core'
 import { db } from '@nzila/db'
 import { agriInspections } from '@nzila/db/schema'
 import { eq, and } from 'drizzle-orm'

@@ -87,7 +87,7 @@ export async function POST(_req: NextRequest) {
 
     let pack = await collectProcurementPack(auth.userId, auth.userId, ports)
     pack = await signProcurementPack(pack, ports)
-    const exportResult = exportAsJson(pack)
+    const _exportResult = exportAsJson(pack)
 
     await recordAuditEvent({
       orgId: auth.userId,

@@ -1,7 +1,7 @@
 /**
  * @nzila/platform-data-fabric — In-Memory Store
  */
-import type { OntologyEntityType } from '@nzila/platform-ontology'
+import type { OntologyEntityType as _OntologyEntityType } from '@nzila/platform-ontology'
 import type {
   CanonicalRecord,
   LineageRecord,

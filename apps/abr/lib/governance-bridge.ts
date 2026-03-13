@@ -34,8 +34,8 @@ import {
 } from '@nzila/os-core/evidence/seal'
 
 import {
-  buildEvidencePackFromAction,
-  processEvidencePack,
+  buildEvidencePackFromAction as _buildEvidencePackFromAction,
+  _processEvidencePack,
   type GovernanceActionContext,
   type EvidencePackResult,
 } from '@nzila/os-core/evidence'

@@ -14,7 +14,7 @@ import { db } from '@/db/db';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { organizationUsers } from "@/db/schema/domains/member";
 import { organizations, orgConfigurations, orgUsage } from "@/db/schema";
-import { eq, and, desc, sql, count, like, or, ne, sum } from "drizzle-orm";
+import { eq, and, desc, sql, count, like, or, ne, sum as _sum } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import type {
