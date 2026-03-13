@@ -10,6 +10,8 @@ import { logger } from '@/lib/logger'
 import { ZohoSyncService } from '@/lib/zoho/sync-service'
 import { ZohoCrmClient } from '@/lib/zoho/crm-client'
 import { ZohoOAuthClient } from '@/lib/zoho/oauth'
+import { db, commerceZohoCredentials } from '@nzila/db'
+import { eq } from 'drizzle-orm'
 
 const ZOHO_WEBHOOK_TOKEN = process.env.ZOHO_WEBHOOK_TOKEN ?? ''
 
@@ -62,14 +64,31 @@ export async function POST(request: NextRequest) {
     recordCount: payload.ids.length,
   })
 
-  // Build Zoho client from env
-  const orgId = process.env.ZOHO_ORG_ID
+  // Build Zoho client — resolve orgId from query param or env fallback
+  const orgId = request.nextUrl.searchParams.get('org') ?? process.env.ZOHO_ORG_ID
+  if (!orgId) {
+    logger.error('No orgId in Zoho webhook URL or ZOHO_ORG_ID env')
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
+  }
+
+  // Look up Zoho credentials from DB for this org
+  const [credentials] = await db
+    .select()
+    .from(commerceZohoCredentials)
+    .where(eq(commerceZohoCredentials.orgId, orgId))
+    .limit(1)
+
   const clientId = process.env.ZOHO_CLIENT_ID
   const clientSecret = process.env.ZOHO_CLIENT_SECRET
 
-  if (!orgId || !clientId || !clientSecret) {
-    logger.error('Missing Zoho env vars for webhook handler')
+  if (!clientId || !clientSecret) {
+    logger.error('Missing Zoho OAuth app credentials (ZOHO_CLIENT_ID/ZOHO_CLIENT_SECRET)')
     return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
+  }
+
+  if (!credentials) {
+    logger.error('No Zoho credentials found for org', { orgId })
+    return NextResponse.json({ error: 'No Zoho credentials for org' }, { status: 500 })
   }
 
   const oauthClient = new ZohoOAuthClient(orgId, {

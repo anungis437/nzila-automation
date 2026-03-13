@@ -40,7 +40,9 @@
     "@nzila/commerce-observability": "workspace:*",
     "@nzila/commerce-state": "workspace:*",
     "@nzila/commerce-governance": "workspace:*",
-    "@nzila/commerce-events": "workspace:*"
+    "@nzila/commerce-events": "workspace:*",
+    "@nzila/platform-events": "workspace:*",
+    "@nzila/platform-commerce-org": "workspace:*"
   },
   "devDependencies": {
     "@nzila/config": "workspace:*",

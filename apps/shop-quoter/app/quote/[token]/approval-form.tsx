@@ -7,14 +7,14 @@
  * Renders within the customer quote portal page.
  */
 import { useState } from 'react'
-import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 interface QuoteApprovalFormProps {
   token: string
   quoteRef: string
+  displayName: string
 }
 
-export function QuoteApprovalForm({ token, quoteRef }: QuoteApprovalFormProps) {
+export function QuoteApprovalForm({ token, quoteRef, displayName }: QuoteApprovalFormProps) {
   const [mode, setMode] = useState<'choose' | 'accept' | 'revision' | 'submitted'>('choose')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -68,7 +68,7 @@ export function QuoteApprovalForm({ token, quoteRef }: QuoteApprovalFormProps) {
         <h2 className="text-xl font-bold text-green-900 mb-2">Response Submitted</h2>
         <p className="text-green-700">
           Thank you! Your response to quote {quoteRef} has been recorded.
-          The {SHOPMOICA_BRANDING.displayName} team will be in touch.
+          The {displayName} team will be in touch.
         </p>
       </section>
     )

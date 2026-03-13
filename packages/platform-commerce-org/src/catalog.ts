@@ -28,3 +28,23 @@ export function resolveCategory(
 ): string {
   return policy.categoryMappings[externalCategory] ?? externalCategory
 }
+
+/**
+ * Map an external SKU to an internal SKU if internal mapping is enabled.
+ * When disabled, returns the original SKU.
+ */
+export function mapSku(
+  externalSku: string,
+  policy: OrgCatalogPolicy,
+  orgSkuMap?: Record<string, string>,
+): string {
+  if (!policy.enableInternalSkuMapping) return externalSku
+  return orgSkuMap?.[externalSku] ?? externalSku
+}
+
+/**
+ * Get the decoration rule for this org's catalog policy.
+ */
+export function getDecorationRule(policy: OrgCatalogPolicy): string {
+  return policy.defaultDecorationRule
+}

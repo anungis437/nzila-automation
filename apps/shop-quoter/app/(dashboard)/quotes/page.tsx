@@ -4,7 +4,7 @@ import {
   FunnelIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
-import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
+import { resolveOrgCommerceContext } from '@/lib/resolve-org'
 
 /** Status badge colours. */
 const statusColors: Record<string, string> = {
@@ -34,7 +34,7 @@ interface QuoteRow {
 const PLACEHOLDER_QUOTES: QuoteRow[] = [
   {
     id: 'demo-1',
-    reference: `${SHOPMOICA_SETTINGS.quotePrefix}-2026-001`,
+    reference: 'SQ-2026-001',
     customer: 'Desjardins Assurances',
     tier: 'Premium',
     status: 'DRAFT',
@@ -43,7 +43,7 @@ const PLACEHOLDER_QUOTES: QuoteRow[] = [
   },
   {
     id: 'demo-2',
-    reference: `${SHOPMOICA_SETTINGS.quotePrefix}-2026-002`,
+    reference: 'SQ-2026-002',
     customer: 'Hydro-Québec',
     tier: 'Standard',
     status: 'SENT',

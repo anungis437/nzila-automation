@@ -12,11 +12,11 @@ import { attemptQuoteTransition } from '@/lib/workflows/quote-state-machine'
 import { createShareLink } from '@/lib/services/share-link-service'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { recordTimelineEvent } from '@/lib/repositories/workflow-repository'
-import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
+import { getOrgSettings } from '@nzila/platform-commerce-org/service'
 
 const SendInput = z.object({
   quoteId: z.string().uuid(),
-  expiresInDays: z.number().int().min(1).max(90).default(SHOPMOICA_SETTINGS.shareLinkExpiryDays),
+  expiresInDays: z.number().int().min(1).max(90).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
     }
 
     const ctx = await resolveOrgContext()
+    const orgSettings = await getOrgSettings(ctx.orgId)
+    const expiresInDays = parsed.data.expiresInDays ?? orgSettings.shareLinkExpiryDays
     const quote = await quoteRepo.findById(parsed.data.quoteId)
     if (!quote) {
       return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
@@ -54,7 +56,7 @@ export async function POST(request: NextRequest) {
     const { link, rawToken } = await createShareLink(
       {
         quoteId: parsed.data.quoteId,
-        expiresInDays: parsed.data.expiresInDays,
+        expiresInDays,
         createdBy: authResult.userId,
       },
       ctx.orgId,

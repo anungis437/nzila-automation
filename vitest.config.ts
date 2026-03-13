@@ -34,6 +34,7 @@ export default defineConfig({
       'packages/commerce-services',
       'packages/commerce-integration-tests',
       'packages/commerce-observability',
+      'packages/platform-commerce-org',
       'packages/nacp-core',
       'packages/zonga-core',
       'packages/shop-quoter',

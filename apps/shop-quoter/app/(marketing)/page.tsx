@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
-import { SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
 
 const stats = [
   { value: "5,000+", label: "Quotes Created" },
@@ -209,7 +208,7 @@ export default function MarketingPage() {
                 <div className="absolute bottom-6 left-6 right-6 rounded-xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-electric font-poppins text-sm font-bold text-white">
-                      {SHOPMOICA_BRANDING.logoInitials}
+                      SQ
                     </div>
                     <div>
                       <div className="font-poppins text-sm font-semibold text-white">

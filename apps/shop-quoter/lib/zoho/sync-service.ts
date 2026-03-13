@@ -18,7 +18,7 @@ import {
 } from '@nzila/db'
 import { logger } from '../logger'
 import { ZohoCrmClient } from './crm-client'
-import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
+import { getOrgSettings } from '@nzila/platform-commerce-org/service'
 import type { ZohoContact, ZohoDeal, SyncResult, SyncConflict } from './types'
 import { ZOHO_MODULE_MAPPING } from './types'
 
@@ -676,7 +676,7 @@ export class ZohoSyncService {
                 status: quoteData.status ?? 'draft',
                 total: quoteData.total ?? '0',
                 notes: quoteData.notes,
-                currency: SHOPMOICA_SETTINGS.currency,
+                currency: (await getOrgSettings(this.orgId)).currency,
                 metadata: { zohoDealId: deal.id, dealName: deal.Deal_Name },
               })
               .returning()

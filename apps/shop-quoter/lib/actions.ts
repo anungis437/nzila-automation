@@ -86,6 +86,7 @@ export async function createQuoteAction(
       boxCount: formData.boxCount,
       theme: formData.theme || undefined,
       notes: formData.notes || undefined,
+      settings: config.settings,
       lines: formData.lines.map((l, idx) => ({
         id: crypto.randomUUID(),
         description: l.description,

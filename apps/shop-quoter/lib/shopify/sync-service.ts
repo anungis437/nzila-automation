@@ -16,7 +16,7 @@ import {
 } from '@nzila/db'
 import { logger } from '../logger'
 import { ShopifyClient } from './client'
-import { SHOPMOICA_SETTINGS } from '@nzila/platform-commerce-org/defaults'
+import { getOrgSettings } from '@nzila/platform-commerce-org/service'
 import type {
   ShopifyCustomer,
   ShopifyOrder,
@@ -281,7 +281,7 @@ export class ShopifySyncService {
                 customerId: quoteData.customerId ?? '',
                 createdBy: 'shopify-sync',
                 status: quoteData.status ?? 'draft',
-                currency: quoteData.currency ?? SHOPMOICA_SETTINGS.currency,
+                currency: quoteData.currency ?? (await getOrgSettings(this.orgId)).currency,
                 subtotal: quoteData.subtotal ?? '0',
                 taxTotal: quoteData.taxTotal ?? '0',
                 total: quoteData.total ?? '0',

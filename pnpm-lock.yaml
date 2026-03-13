@@ -1301,6 +1301,12 @@ importers:
       '@nzila/os-core':
         specifier: workspace:*
         version: link:../../packages/os-core
+      '@nzila/platform-commerce-org':
+        specifier: workspace:*
+        version: link:../../packages/platform-commerce-org
+      '@nzila/platform-events':
+        specifier: workspace:*
+        version: link:../../packages/platform-events
       '@nzila/platform-policy-engine':
         specifier: workspace:*
         version: link:../../packages/platform-policy-engine

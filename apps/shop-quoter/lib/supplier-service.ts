@@ -11,6 +11,7 @@ import { logger } from './logger'
 import { ZohoBooksClient } from './zoho/books-client'
 import type { ZohoVendor } from './zoho/types'
 import type { OrgPaymentPolicy } from '@nzila/platform-commerce-org/types'
+import type { OrgSupplierPolicy } from '@nzila/platform-commerce-org/types'
 import { SHOPMOICA_PAYMENT_POLICY } from '@nzila/platform-commerce-org/defaults'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -346,4 +347,94 @@ export async function syncSupplierFromZoho(
     logger.info('Created supplier from Zoho', { supplierId: created.id, zohoVendorId: zohoVendor.vendor_id })
     return created
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Org-Aware Supplier Ranking
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface RankedSupplier {
+  supplier: typeof commerceSuppliers.$inferSelect
+  score: number
+  isPreferred: boolean
+  breakdown: { qualityScore: number; leadTimeScore: number; costScore: number }
+}
+
+/**
+ * Rank suppliers for an org based on the org's supplier policy.
+ * Supports strategies: LOWEST_COST, FASTEST, BALANCED, MANUAL.
+ * Preferred suppliers get a ranking boost.
+ */
+export async function rankSuppliers(
+  orgId: string,
+  policy: OrgSupplierPolicy,
+): Promise<RankedSupplier[]> {
+  const allSuppliers = await listSuppliers({ orgId, status: 'active' })
+  if (allSuppliers.length === 0) return []
+
+  const preferredSet = new Set(policy.preferredSupplierIds)
+
+  // For MANUAL strategy, preferred suppliers come first, rest alphabetical
+  if (policy.supplierSelectionStrategy === 'MANUAL') {
+    return allSuppliers
+      .sort((a, b) => {
+        const aPref = preferredSet.has(a.supplier.id) ? 0 : 1
+        const bPref = preferredSet.has(b.supplier.id) ? 0 : 1
+        if (aPref !== bPref) return aPref - bPref
+        return a.supplier.name.localeCompare(b.supplier.name)
+      })
+      .map((s) => ({
+        supplier: s.supplier,
+        score: preferredSet.has(s.supplier.id) ? 1 : 0,
+        isPreferred: preferredSet.has(s.supplier.id),
+        breakdown: { qualityScore: 0, leadTimeScore: 0, costScore: 0 },
+      }))
+  }
+
+  // Normalize values for scoring
+  const maxRating = Math.max(...allSuppliers.map((s) => Number(s.supplier.rating ?? 0)), 1)
+  const maxLeadTime = Math.max(...allSuppliers.map((s) => s.stats.averageLeadTime ?? s.supplier.leadTimeDays ?? 14), 1)
+  const maxSpend = Math.max(...allSuppliers.map((s) => s.stats.totalSpend), 1)
+
+  const ranked: RankedSupplier[] = allSuppliers.map((s) => {
+    const rating = Number(s.supplier.rating ?? 3)
+    const leadTime = s.stats.averageLeadTime ?? s.supplier.leadTimeDays ?? 14
+    const avgCost = s.stats.totalPOs > 0 ? s.stats.totalSpend / s.stats.totalPOs : maxSpend
+
+    // Normalize scores (0-1, higher is better)
+    const qualityScore = rating / maxRating
+    const leadTimeScore = 1 - (leadTime / maxLeadTime) // lower lead time = higher score
+    const costScore = 1 - (avgCost / (maxSpend || 1)) // lower cost = higher score
+
+    let score: number
+    switch (policy.supplierSelectionStrategy) {
+      case 'LOWEST_COST':
+        score = costScore
+        break
+      case 'FASTEST':
+        score = leadTimeScore
+        break
+      case 'BALANCED':
+      default:
+        score =
+          policy.qualityWeight * qualityScore +
+          policy.leadTimeWeight * leadTimeScore +
+          policy.costWeight * costScore
+        break
+    }
+
+    // Preferred supplier boost (+20%)
+    const isPreferred = preferredSet.has(s.supplier.id)
+    if (isPreferred) score = Math.min(score * 1.2, 1)
+
+    return {
+      supplier: s.supplier,
+      score,
+      isPreferred,
+      breakdown: { qualityScore, leadTimeScore, costScore },
+    }
+  })
+
+  ranked.sort((a, b) => b.score - a.score)
+  return ranked
 }

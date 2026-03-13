@@ -10,10 +10,12 @@ import { validateShareLink } from '@/lib/services/share-link-service'
 import { quoteRepo, customerRepo } from '@/lib/db'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { QuoteApprovalForm } from './approval-form'
-import { SHOPMOICA_SETTINGS, SHOPMOICA_BRANDING } from '@nzila/platform-commerce-org/defaults'
+import { getOrgSettings, getOrgBranding } from '@nzila/platform-commerce-org/service'
+import type { OrgCommerceSettings, OrgBrandingConfig } from '@nzila/platform-commerce-org/types'
 
-function fmt(n: number) {
-  return new Intl.NumberFormat(SHOPMOICA_SETTINGS.locale, { style: 'currency', currency: SHOPMOICA_SETTINGS.currency }).format(n)
+function makeFmt(settings: OrgCommerceSettings) {
+  return (n: number) =>
+    new Intl.NumberFormat(settings.locale, { style: 'currency', currency: settings.currency }).format(n)
 }
 
 export default async function CustomerQuotePage({
@@ -69,6 +71,10 @@ export default async function CustomerQuotePage({
     metadata: { shareLinkId: link.id },
   })
 
+  const settings = await getOrgSettings(quote.orgId)
+  const branding = await getOrgBranding(quote.orgId)
+  const fmt = makeFmt(settings)
+
   const validUntil = new Date()
   validUntil.setDate(validUntil.getDate() + quote.validUntilDays)
 
@@ -79,9 +85,9 @@ export default async function CustomerQuotePage({
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">{SHOPMOICA_BRANDING.logoInitials}</span>
+              <span className="text-white font-bold text-sm">{branding.logoInitials}</span>
             </div>
-            <span className="font-semibold text-gray-900">{SHOPMOICA_BRANDING.displayName}</span>
+            <span className="font-semibold text-gray-900">{branding.displayName}</span>
           </div>
           <span className="text-sm text-gray-500">Quote {quote.reference}</span>
         </div>
@@ -117,7 +123,7 @@ export default async function CustomerQuotePage({
             <div className="text-right">
               <p className="text-sm text-gray-500">Valid until</p>
               <p className="font-medium text-gray-900">
-                {validUntil.toLocaleDateString(SHOPMOICA_SETTINGS.locale, {
+                {validUntil.toLocaleDateString(settings.locale, {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
@@ -177,11 +183,11 @@ export default async function CustomerQuotePage({
                 <span className="font-mono">{fmt(quote.subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>{SHOPMOICA_SETTINGS.taxConfig.taxes[0]?.label ?? 'Tax 1'}</span>
+                <span>{settings.taxConfig.taxes[0]?.label ?? 'Tax 1'}</span>
                 <span className="font-mono">{fmt(quote.gst)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>{SHOPMOICA_SETTINGS.taxConfig.taxes[1]?.label ?? 'Tax 2'}</span>
+                <span>{settings.taxConfig.taxes[1]?.label ?? 'Tax 2'}</span>
                 <span className="font-mono">{fmt(quote.qst)}</span>
               </div>
               <div className="border-t border-gray-300 pt-1 flex justify-between font-bold text-gray-900 text-base">
@@ -204,14 +210,14 @@ export default async function CustomerQuotePage({
 
         {/* Approval / Revision Form */}
         {isAwaitingResponse && (
-          <QuoteApprovalForm token={token} quoteRef={quote.reference} />
+          <QuoteApprovalForm token={token} quoteRef={quote.reference} displayName={branding.displayName} />
         )}
       </main>
 
       {/* Footer */}
       <footer className="border-t border-gray-200 mt-12">
         <div className="max-w-4xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} {SHOPMOICA_BRANDING.displayName}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {branding.displayName}. All rights reserved.</p>
           <p className="mt-1">This is a secure, time-limited quote link.</p>
         </div>
       </footer>

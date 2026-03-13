@@ -59,6 +59,7 @@ export interface CreateQuoteInput {
   qst?: number
   total?: number
   createdBy?: string
+  settings?: OrgCommerceSettings
 }
 
 export interface CustomerAddress {
@@ -140,8 +141,9 @@ function mapQuoteRow(
 export const quoteRepo: QuoteRepository = {
   async create(input) {
     const id = crypto.randomUUID()
-    const ref = await generateRef()
-    const validityDays = input.validUntilDays ?? SHOPMOICA_SETTINGS.quoteValidityDays
+    const settings = input.settings
+    const ref = await generateRef(settings)
+    const validityDays = input.validUntilDays ?? settings?.quoteValidityDays ?? SHOPMOICA_SETTINGS.quoteValidityDays
     const validUntil = new Date()
     validUntil.setDate(validUntil.getDate() + validityDays)
 
@@ -154,7 +156,7 @@ export const quoteRepo: QuoteRepository = {
         status: 'draft',
         pricingTier: input.tier?.toLowerCase() as 'budget' | 'standard' | 'premium',
         customerId: input.customerId,
-        currency: SHOPMOICA_SETTINGS.currency,
+        currency: settings?.currency ?? SHOPMOICA_SETTINGS.currency,
         subtotal: String(input.subtotal ?? 0),
         taxTotal: String((input.gst ?? 0) + (input.qst ?? 0)),
         total: String(input.total ?? 0),
