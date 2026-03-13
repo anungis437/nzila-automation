@@ -9,15 +9,11 @@ import { z } from 'zod'
 import {
   CreatorStatus as _CreatorStatus,
   AssetType,
-  _AssetStatus,
-  _ReleaseStatus,
   RevenueType,
-  _PayoutStatus,
   PayoutRail,
   ZongaRole,
   ZongaCurrency,
   ZongaLanguage,
-  _AfricanGenre,
   AudioQuality,
 } from '../enums'
 

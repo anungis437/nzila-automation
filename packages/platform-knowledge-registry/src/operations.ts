@@ -7,7 +7,6 @@ import type {
   KnowledgeAsset,
   KnowledgeStore,
   CreateKnowledgeAssetInput,
-  _UpdateKnowledgeAssetInput,
   KnowledgeSearchQuery,
 } from './types'
 

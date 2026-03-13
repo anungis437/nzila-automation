@@ -28,9 +28,6 @@ import {
   grievanceAssignments,
   type GrievanceWorkflow,
   type GrievanceStage,
-  type _InsertGrievanceTransition,
-  type _GrievanceTransition,
-  type _WorkflowStageConfig,
   type StageCondition,
   type StageAction,
 } from "@/db/schema";
@@ -42,11 +39,6 @@ import { generatePDF } from "@/lib/utils/pdf-generator";
 import { generateExcel } from "@/lib/utils/excel-generator";
 import DocumentStorageService from "@/lib/services/document-storage-service";
 import {
-  _sendGrievanceStageChangeNotification,
-  _sendGrievanceAssignedNotification,
-  _sendGrievanceResolvedNotification,
-  _sendGrievanceEscalationNotification,
-  _sendGrievanceDeadlineReminder,
 } from "@/lib/services/grievance-notifications";
 
 // ============================================================================

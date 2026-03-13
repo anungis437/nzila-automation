@@ -11,7 +11,6 @@
  */
 import {
   generatePilotSummary,
-  _computeBundleHash,
   type PilotExportPorts,
   type PilotSummaryBundle,
 } from './pilot-export'

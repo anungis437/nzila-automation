@@ -12,7 +12,6 @@ import {
   Upload,
   CheckCircle2,
   XCircle,
-  _AlertTriangle,
   Download,
   Loader2,
   Copy,
@@ -23,7 +22,6 @@ import {
   validateNeqs,
   buildValidationAuditEntry,
   type BulkValidationResult,
-  type _BulkValidationItem,
 } from '@nzila/tax'
 
 /* ── Types ────────────────────────────────────────────────────────────────── */

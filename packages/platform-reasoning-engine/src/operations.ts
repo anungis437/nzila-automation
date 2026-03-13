@@ -10,7 +10,6 @@ import type {
   ReasoningStore,
   ReasoningStrategy,
   Citation,
-  _CrossVerticalInsight,
 } from './types'
 import { ReasoningStatuses } from './types'
 import type { ContextEnvelope } from '@nzila/platform-context-orchestrator'

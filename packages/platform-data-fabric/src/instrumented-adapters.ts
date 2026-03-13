@@ -11,7 +11,6 @@ import type {
   CanonicalRecord,
   ConflictRecord,
   DataFabricStore,
-  _SourceRecord,
 } from './types'
 import {
   mapSourceRecordToCanonical,

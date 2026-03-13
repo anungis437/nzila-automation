@@ -40,15 +40,8 @@ import {
   createApprovalRequiredGate,
   createMarginFloorGate,
   createDiscountCapGate,
-  _createQuoteValidityGate,
   createQuoteCompletenessGate,
-  _createOrderCompletenessGate,
-  _createSnapshotIntegrityGate,
-  _createEvidenceRequiredGate,
-  _createInvoiceCompletenessGate,
-  _createHighValueGate,
   resolvePolicy,
-  _withGovernanceGates,
 } from '@nzila/commerce-governance'
 import type {
   QuoteEntity,
@@ -59,13 +52,11 @@ import type {
 import {
   InMemoryEventBus,
   createDomainEvent,
-  _domainEventsFromTransition,
   createSagaOrchestrator,
 } from '@nzila/commerce-events'
 import type { DomainEvent, SagaDefinition, SagaContext as _SagaContext } from '@nzila/commerce-events'
 import {
   buildTransitionAuditEntry,
-  _buildActionAuditEntry,
   validateAuditEntry,
   hashAuditEntry,
   summarizeAuditTrail,
@@ -76,7 +67,6 @@ import type { AuditEntry, TransitionAuditContext } from '@nzila/commerce-audit'
 import {
   buildCommerceEvidencePack,
   validateCommerceEvidencePack,
-  _generateCommercePackId,
   resetPackCounter,
   buildArtifact,
   toSealableIndex,

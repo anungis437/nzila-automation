@@ -8,7 +8,6 @@ import {
   varchar,
   timestamp,
   jsonb,
-  _real,
   index,
   integer,
 } from 'drizzle-orm/pg-core'

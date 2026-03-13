@@ -8,7 +8,6 @@
 import {
   Counter,
   Histogram,
-  _globalRegistry,
   createLogger,
   trace,
 } from '@nzila/platform-observability'

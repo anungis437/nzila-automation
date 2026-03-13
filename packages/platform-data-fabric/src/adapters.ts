@@ -6,11 +6,9 @@ import type {
   SourceAdapter,
   SourceRecord,
   CanonicalRecord,
-  _MappingRule,
   LineageRecord,
   ConflictRecord,
   DataFabricStore,
-  _SyncJob,
 } from './types'
 
 // ── Adapter Registry ────────────────────────────────────────────────────────

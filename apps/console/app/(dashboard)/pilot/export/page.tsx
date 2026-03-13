@@ -12,7 +12,6 @@ import {
   generatePilotSummary as _generatePilotSummary,
   createDefaultPilotPorts,
   generatePilotPack,
-  type _PilotSummaryBundle,
   type PilotSummaryPack,
 } from '@nzila/platform-ops'
 import {

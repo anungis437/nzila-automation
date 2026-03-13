@@ -90,7 +90,6 @@ import {
   draftResponse,
   recordCopilotOutcome,
   getCopilotHistory,
-  type _CopilotInput,
 } from "@/lib/ai/steward-copilot";
 
 // ─── Tests ──────────────────────────────────────────────────────────────────

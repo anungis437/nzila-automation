@@ -84,7 +84,7 @@ describe('Org Isolation — stress contract', () => {
   })
 
   it('ISOLATION_STRESS_010: platform-readiness.md references scale and isolation', () => {
-    const content = readContent('docs/platform-readiness.md')
+    const content = readContent('docs/governance/platform-readiness.md')
     expect(content).toBeTruthy()
     expect(content).toContain('Scale Envelope')
     expect(content).toContain('Multi-Org Stress')

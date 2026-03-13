@@ -33,8 +33,6 @@ import {
   pgEnum,
   numeric,
   date,
-  _foreignKey,
-  _unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 

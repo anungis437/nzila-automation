@@ -10,7 +10,6 @@ import {
   jsonb,
   integer,
   index,
-  _uniqueIndex,
 } from 'drizzle-orm/pg-core'
 
 // ── Canonical Records ───────────────────────────────────────────────────────

@@ -7,7 +7,6 @@ import { describe, it, expect } from 'vitest'
 import {
   generatePilotPack,
   verifyManifest,
-  type _PilotSummaryPack,
 } from './pilot-pack'
 import { createDefaultPilotPorts, type PilotExportPorts } from './pilot-export'
 

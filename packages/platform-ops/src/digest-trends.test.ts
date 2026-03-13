@@ -9,7 +9,6 @@ import {
   generateTrendEnrichedDigest,
   createStubTrendSeriesPort,
   DEFAULT_DIGEST_TRENDS_CONFIG,
-  type _TrendSeriesPort,
   type TrendSeriesDataPoint,
   type DigestTrendsConfig,
 } from './digest-trends'

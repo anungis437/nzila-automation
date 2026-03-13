@@ -14,7 +14,6 @@ import {
   ArrowPathIcon,
   SignalIcon,
   ExclamationTriangleIcon,
-  _ClockIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'

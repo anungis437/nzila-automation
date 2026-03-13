@@ -98,8 +98,6 @@ import {
   analyzeGrievance,
   getTriageHistory,
   reviewTriage,
-  type _TriageInput,
-  type _TriageResult,
 } from "@/lib/ai/grievance-triage";
 
 // ─── Tests ──────────────────────────────────────────────────────────────────

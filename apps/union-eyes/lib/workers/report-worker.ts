@@ -28,11 +28,7 @@ import { db } from '../../db/db';
 import { claims } from '../../db/schema/claims-schema';
 import { organizationMembers as members } from '../../db/schema/organization-members-schema';
 import { 
-  _grievanceWorkflows,
-  _grievanceStages,
   grievanceTransitions,
-  _grievanceAssignments,
-  _grievanceSettlements 
 } from '../../db/schema/grievance-workflow-schema';
 import { getNotificationService } from '../services/notification-service';
 import { eq, and, between, desc } from 'drizzle-orm';

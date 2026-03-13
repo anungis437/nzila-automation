@@ -10,10 +10,8 @@ import { z } from 'zod'
 import {
   QuoteStatus,
   OrderStatus,
-  _InvoiceStatus,
   PricingTier,
   ApprovalDecision,
-  _OpportunityStatus,
   CancellationReason,
   DisputeReason,
 } from '../enums'

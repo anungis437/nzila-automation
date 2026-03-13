@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import {
   createInMemoryGraphStore as _createInMemoryGraphStore,
-  type _EntityGraphStore,
   type EntityNode as _EntityNode,
   getEntityNode as _getEntityNode,
   getEntityNeighbors as _getEntityNeighbors,

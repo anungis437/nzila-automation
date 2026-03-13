@@ -365,10 +365,10 @@ describe('TRADE_STRUCTURAL_CONTRACTS', () => {
 
   it('migration docs exist', () => {
     expect(
-      existsSync(join(REPO_ROOT, 'docs', 'migrations', 'trade', 'canonical-domain-map.md')),
+      existsSync(join(REPO_ROOT, 'docs', 'migration', 'trade', 'canonical-domain-map.md')),
     ).toBe(true)
     expect(
-      existsSync(join(REPO_ROOT, 'docs', 'migrations', 'trade', 'cars-vertical-scope.md')),
+      existsSync(join(REPO_ROOT, 'docs', 'migration', 'trade', 'cars-vertical-scope.md')),
     ).toBe(true)
   })
 })

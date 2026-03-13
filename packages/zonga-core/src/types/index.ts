@@ -18,8 +18,8 @@ import type {
   ZongaRole,
   ZongaCurrency,
   ZongaLanguage,
-  _AfricanGenre,
-  AudioQuality,
+  AfricanGenre as _AfricanGenre,
+  AudioQuality
 } from '../enums'
 
 // ── Branded Types ───────────────────────────────────────────────────────────

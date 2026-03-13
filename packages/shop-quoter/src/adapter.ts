@@ -31,7 +31,6 @@
 import type { OrgContext } from '@nzila/commerce-core/types'
 import type {
   QuoteRepository,
-  _QuoteEntity,
 } from '@nzila/commerce-services/quote'
 import { createQuoteService } from '@nzila/commerce-services'
 import {

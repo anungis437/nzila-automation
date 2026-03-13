@@ -16,7 +16,6 @@ import type {
   PricingTier,
   OpportunityStatus,
   EvidenceType,
-  _CancellationReason,
   DisputeReason,
   OrgRole,
 } from '../enums'

@@ -35,7 +35,6 @@ import {
 
 import {
   buildEvidencePackFromAction as _buildEvidencePackFromAction,
-  _processEvidencePack,
   type GovernanceActionContext,
   type EvidencePackResult,
 } from '@nzila/os-core/evidence'

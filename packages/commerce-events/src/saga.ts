@@ -27,7 +27,6 @@ import type {
   SagaContext,
   SagaDefinition,
   SagaExecution,
-  _SagaStatus,
   SagaStep,
   SagaStepResult,
   Unsubscribe,

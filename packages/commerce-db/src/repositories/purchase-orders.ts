@@ -11,7 +11,6 @@ import {
   createAuditedScopedDb,
   commercePurchaseOrders,
   commercePurchaseOrderLines,
-  _commerceSuppliers,
 } from '@nzila/db'
 import { eq } from 'drizzle-orm'
 import type { CommerceDbContext, CommerceReadContext, PaginationOpts } from '../types'

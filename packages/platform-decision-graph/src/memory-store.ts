@@ -5,7 +5,6 @@ import type {
   DecisionNode,
   DecisionEdge,
   DecisionGraphStore,
-  _DecisionStatus,
 } from './types'
 import type { OntologyEntityType as _OntologyEntityType } from '@nzila/platform-ontology'
 

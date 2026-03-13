@@ -27,13 +27,10 @@ import {
   smsMessages,
   smsTemplates,
   smsCampaigns,
-  _smsCampaignRecipients,
   smsConversations,
   smsOptOuts,
   smsRateLimits,
-  type _NewSmsMessage,
   type NewSmsConversation,
-  type _SmsCampaign,
 } from '@/db/schema/domains/communications';
 import { organizations } from '@/db/schema-organizations';
 import { logger } from '@/lib/logger';

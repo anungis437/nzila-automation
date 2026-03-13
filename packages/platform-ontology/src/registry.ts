@@ -16,7 +16,6 @@ import { OntologyEntityTypes as _OntologyEntityTypes } from './types'
 import {
   getTypeDefinition,
   getAllTypeDefinitions,
-  _getRelationshipsFor,
   isRelationshipAllowed,
 } from './relationships'
 

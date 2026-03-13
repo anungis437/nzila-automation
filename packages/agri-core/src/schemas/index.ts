@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import {
   CropType, UnitOfMeasure, ProducerStatus, LotStatus as _LotStatus, BatchStatus as _BatchStatus,
-  _ShipmentStatus, _PaymentPlanStatus, _PaymentStatus, PaymentMethod,
-  CertificationType, _WarehouseStatus, _AgriOrgRole,
+  PaymentMethod,
+  CertificationType,
 } from '../enums'
 
 // ─── Shared ───

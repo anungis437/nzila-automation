@@ -12,10 +12,8 @@
 import { useState } from 'react'
 import {
   Clock,
-  _DollarSign,
   AlertTriangle,
   TrendingUp,
-  _BarChart3,
 } from 'lucide-react'
 
 /* ── Types (self-contained for client-side rendering) ─────────────────────── */

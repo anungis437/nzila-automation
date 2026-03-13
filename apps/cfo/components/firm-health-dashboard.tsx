@@ -18,8 +18,6 @@ import {
   TrendingDown,
   Users,
   DollarSign,
-  _Clock,
-  _BarChart3,
   Search,
 } from 'lucide-react'
 

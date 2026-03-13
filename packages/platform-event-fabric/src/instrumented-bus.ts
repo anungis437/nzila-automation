@@ -11,7 +11,6 @@ import { createPlatformEventBus, type CreateEventBusOptions } from './bus'
 import {
   workflowTelemetry as _workflowTelemetry,
   governanceTelemetry,
-  _govAuditEvents,
 } from '@nzila/platform-observability'
 import { createLogger } from '@nzila/platform-observability'
 import { Counter as _Counter, Histogram as _Histogram, globalRegistry } from '@nzila/platform-observability'

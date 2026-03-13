@@ -12,7 +12,6 @@ import {
   pgEnum,
   uuid,
   varchar,
-  _text,
   timestamp,
   integer,
   jsonb,

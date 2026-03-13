@@ -5,8 +5,6 @@ import {
   conflictDisclosures,
   armsLengthVerification,
   recusalTracking,
-  _conflictReviewCommittee,
-  _conflictTraining,
   conflictAuditLog,
 } from "@/db/schema/domains/governance";
 import { eq, and, lte, desc } from "drizzle-orm";

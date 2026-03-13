@@ -10,10 +10,8 @@ import {
   lmbpComplianceAlerts,
   lmbpComplianceReports,
   type NewForeignWorker,
-  type _NewLMBPLetter,
   type NewGSSApplication,
   type NewMentorship,
-  type _NewLMBPComplianceAlert,
 } from '@/db/schema/lmbp-immigration-schema';
 import { eq, and, gte, lte, sql } from 'drizzle-orm';
 

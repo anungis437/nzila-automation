@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import {
   PLATFORM_SLOS,
-  _computeErrorBudget,
   meetsSlo,
   type SloTarget,
 } from '@nzila/platform-observability/reliability'

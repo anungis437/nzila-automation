@@ -13,7 +13,6 @@ import {
   listEventSchemas,
   resetEventSchemaRegistry,
   buildPlatformEvent,
-  _PlatformEventSchema,
 } from './index'
 import type { PlatformEvent } from './types'
 
