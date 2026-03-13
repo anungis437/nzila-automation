@@ -35,7 +35,7 @@ describe('createStubWeatherAdapter', () => {
   it('returns historical data within date range', async () => {
     const result = await adapter.getHistorical('kasai', '2026-03-10', '2026-03-10')
     expect(result).toHaveLength(1)
-    expect(result[0].date).toBe('2026-03-10')
+    expect(result[0]!.date).toBe('2026-03-10')
   })
 
   it('returns empty for unknown region', async () => {
