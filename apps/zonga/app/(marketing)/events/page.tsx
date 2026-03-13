@@ -68,6 +68,7 @@ export default async function EventsPage() {
                       {/* Cover */}
                       <div className="md:w-64 aspect-video md:aspect-auto bg-linear-to-br from-electric/10 to-purple-500/10 flex items-center justify-center shrink-0">
                         {event.coverImageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={event.coverImageUrl}
                             alt={event.title}

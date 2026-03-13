@@ -207,7 +207,7 @@ export async function addTrackToPlaylist(data: {
   assetId: string
   position?: number
 }): Promise<{ success: boolean }> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   try {
     // Determine position (append by default)

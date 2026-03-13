@@ -81,6 +81,7 @@ export default async function ArtistsPage({
                     {/* Avatar */}
                     <div className="aspect-square bg-linear-to-br from-electric/20 to-purple-500/20 flex items-center justify-center">
                       {artist.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={artist.avatarUrl}
                           alt={artist.name}

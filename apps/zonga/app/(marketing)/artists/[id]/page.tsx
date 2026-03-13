@@ -48,6 +48,7 @@ export default async function ArtistProfilePage({ params }: Props) {
               {/* Avatar */}
               <div className="w-40 h-40 md:w-52 md:h-52 rounded-2xl bg-linear-to-br from-electric/20 to-purple-500/20 flex items-center justify-center overflow-hidden shadow-2xl shadow-electric/20">
                 {artist.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={artist.avatarUrl}
                     alt={artist.name}
@@ -107,6 +108,7 @@ export default async function ArtistProfilePage({ params }: Props) {
                     {/* Cover */}
                     <div className="aspect-square bg-linear-to-br from-electric/10 to-purple-500/10 flex items-center justify-center">
                       {release.coverArtUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={release.coverArtUrl}
                           alt={release.title}
