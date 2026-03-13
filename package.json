@@ -88,6 +88,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.27.0",
     "@nzila/platform-assurance": "workspace:*",
+    "@nzila/platform-change-management": "workspace:*",
     "@nzila/platform-compliance-snapshots": "workspace:*",
     "@nzila/platform-evidence-pack": "workspace:*",
     "@nzila/platform-observability": "workspace:*",
