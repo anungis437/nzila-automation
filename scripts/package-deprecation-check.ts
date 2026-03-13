@@ -120,7 +120,7 @@ if (violations.length > 0) {
   for (const v of violations) {
     process.stderr.write(`  ✗ ${v.pkg}: ${v.issue}\n`)
   }
-  process.stderr.write('\n  See docs/PACKAGE_LIFECYCLE_POLICY.md for guidance.\n\n')
+  process.stderr.write('\n  See docs/governance/PACKAGE_LIFECYCLE_POLICY.md for guidance.\n\n')
   process.exit(1)
 } else {
   process.stdout.write('  ✓ All deprecation metadata is consistent\n\n')

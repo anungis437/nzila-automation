@@ -7,10 +7,13 @@ guidance for common operational tasks and incident responses.
 
 ```
 runbooks/
-  security/     — Security incident response runbooks
-  governance/   — Governance and compliance runbooks
+  platform/       — Platform-level incident runbooks (orchestrator, AI, event fabric, observability)
+  numbered/       — Numbered standard procedures (rb-001 through rb-009)
+  commerce/       — Commerce domain runbooks (audit gap, evidence pack, saga compensation)
+  security/       — Security incident response (data breach, key rotation)
+  governance/     — Governance and compliance runbooks
   infrastructure/ — Infrastructure operations runbooks
-  finance-close/ — Month/year-end financial close runbooks
+  finance-close/  — Month/year-end financial close runbooks
 ```
 
 ## How to Use

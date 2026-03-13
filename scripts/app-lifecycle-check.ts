@@ -214,7 +214,7 @@ if (warnings.length > 0) {
 }
 
 if (errors.length > 0) {
-  process.stderr.write('  See docs/APP_LIFECYCLE_MATRIX.md for guidance.\n\n')
+  process.stderr.write('  See docs/governance/APP_LIFECYCLE_MATRIX.md for guidance.\n\n')
   process.exit(1)
 } else {
   process.stdout.write('  ✓ All apps are lifecycle-compliant\n\n')

@@ -176,7 +176,7 @@ if (warnings.length > 0) {
 }
 
 if (errors.length > 0) {
-  process.stderr.write('  See docs/PLATFORM_SURFACE_RESPONSIBILITIES.md for guidance.\n\n')
+  process.stderr.write('  See docs/governance/PLATFORM_SURFACE_RESPONSIBILITIES.md for guidance.\n\n')
   process.exit(1)
 } else {
   process.stdout.write('  ✓ All control-plane surfaces are governed\n\n')

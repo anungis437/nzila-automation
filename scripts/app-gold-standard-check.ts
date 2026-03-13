@@ -1,7 +1,7 @@
 /**
  * App Gold Standard Check — validates that each target app meets the
  * structural, testing, and integration requirements defined in
- * docs/APP_GOLD_STANDARD.md.
+ * docs/governance/APP_GOLD_STANDARD.md.
  *
  * Usage: pnpm app:gold-standard:check
  */
@@ -209,7 +209,7 @@ if (failed.length > 0) {
   for (const f of failed) {
     process.stderr.write(`    ✗ [${f.app}] ${f.check}: ${f.detail}\n`)
   }
-  process.stderr.write('\n  See docs/APP_GOLD_STANDARD.md for requirements.\n\n')
+  process.stderr.write('\n  See docs/governance/APP_GOLD_STANDARD.md for requirements.\n\n')
 }
 
 // Require at least PARTIAL compliance for all apps
