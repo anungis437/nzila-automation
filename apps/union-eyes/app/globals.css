@@ -9,17 +9,17 @@
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Nzila Portfolio Tokens (shared across all apps) ── */
-  --navy: #0B1121;
-  --navy-light: #131B2E;
-  --navy-mid: #1A2340;
+  /* ── Nzila Portfolio Tokens — aligned to Union Eyes logo palette ── */
+  --navy: #160041;
+  --navy-light: #1E0A52;
+  --navy-mid: #2B1463;
   --gold: #D4A843;
   --gold-light: #E8C76A;
-  --electric: #2563EB;
-  --electric-light: #60A5FA;
-  --emerald: #10B981;
+  --electric: #0052B4;
+  --electric-light: #4D94E0;
+  --emerald: #007F6B;
   --coral: #F43F5E;
-  --violet: #8B5CF6;
+  --violet: #7100AD;
 
   /* ── shadcn/ui design tokens ── */
   --background: 0 0% 100%;
@@ -33,7 +33,7 @@
   --secondary: 210 40% 96%;
   --secondary-foreground: 222 47% 9%;
   --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted-foreground: 215 20% 40%;
   --accent: 210 40% 96%;
   --accent-foreground: 222 47% 9%;
   --destructive: 0 84% 60%;
@@ -96,16 +96,16 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --color-navy: hsl(var(--navy));
-  --color-navy-light: hsl(var(--navy-light));
-  --color-navy-mid: hsl(var(--navy-mid));
-  --color-gold: hsl(var(--gold));
-  --color-gold-light: hsl(var(--gold-light));
-  --color-electric: hsl(var(--electric));
-  --color-electric-light: hsl(var(--electric-light));
-  --color-emerald: hsl(var(--emerald));
-  --color-coral: hsl(var(--coral));
-  --color-violet: hsl(var(--violet));
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-navy-mid: var(--navy-mid);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-electric: var(--electric);
+  --color-electric-light: var(--electric-light);
+  --color-emerald: var(--emerald);
+  --color-coral: var(--coral);
+  --color-violet: var(--violet);
   --color-sidebar-background: hsl(var(--sidebar-background));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-primary: hsl(var(--sidebar-primary));
@@ -151,22 +151,22 @@ html {
 
 /* Glass morphism — dark & light variants */
 .glass-card {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .glass-card-light {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.85);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(200, 200, 200, 0.5);
 }
 
 /* Animated gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #2563EB, #8B5CF6, #D4A843, #2563EB);
+  background: linear-gradient(135deg, #0052B4, #7100AD, #D4A843, #0052B4);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -191,8 +191,8 @@ html {
 /* Mesh gradient background */
 .bg-mesh {
   background:
-    radial-gradient(at 20% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
-    radial-gradient(at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(at 20% 20%, rgba(0, 82, 180, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(113, 0, 173, 0.12) 0%, transparent 50%),
     radial-gradient(at 50% 80%, rgba(212, 168, 67, 0.08) 0%, transparent 50%);
 }
 
@@ -219,8 +219,8 @@ html {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.15); }
-  50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.3); }
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 82, 180, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(0, 82, 180, 0.3); }
 }
 
 /* Shimmer loading */

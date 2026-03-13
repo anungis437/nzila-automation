@@ -137,9 +137,16 @@ export default function DashboardNavbar({ profile, onMenuClick: _onMenuClick }: 
 
           {/* Logo */}
           <Link href={`/${locale}/dashboard`} className="flex items-center space-x-2">
-            <span className="text-xl font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              UnionEyes
-            </span>
+            <img
+              src="/images/brand/icon.png"
+              alt="Union Eyes"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/images/brand/logo.png"
+              alt="Union Eyes"
+              className="h-6 object-contain hidden sm:block"
+            />
           </Link>
         </div>
 

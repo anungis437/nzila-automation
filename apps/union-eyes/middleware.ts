@@ -98,6 +98,7 @@ const _isPublicRoute = createRouteMatcher([
   "/status(.*)",
   "/case-studies(.*)",
   "/pilot-request(.*)",
+  "/features(.*)",
   // Locale-prefixed marketing pages (e.g. /fr-CA/story, /en-CA/pricing)
   "/:locale/story(.*)",
   "/:locale/pricing(.*)",
@@ -105,6 +106,7 @@ const _isPublicRoute = createRouteMatcher([
   "/:locale/status(.*)",
   "/:locale/case-studies(.*)",
   "/:locale/pilot-request(.*)",
+  "/:locale/features(.*)",
   // Legal pages
   "/legal(.*)",
   "/:locale/legal(.*)",
@@ -128,6 +130,7 @@ const isMarketingPath = createRouteMatcher([
   "/status(.*)",
   "/case-studies(.*)",
   "/pilot-request(.*)",
+  "/features(.*)",
   // NOTE: /legal(..) NOT included here — intl middleware must redirect
   // /legal/terms → /en-CA/legal/terms so the [locale] route matches.
 ]);

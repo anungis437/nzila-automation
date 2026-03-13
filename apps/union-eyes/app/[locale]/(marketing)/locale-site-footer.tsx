@@ -7,13 +7,10 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowRight, Linkedin, Twitter, Github, Mail, Globe } from 'lucide-react';
+import { ArrowRight, Linkedin, Twitter, Github, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const NZILA_URL    = process.env.NEXT_PUBLIC_NZILA_URL     ?? 'https://nzilaventures.com';
-const CONSOLE_URL  = process.env.NEXT_PUBLIC_CONSOLE_URL   ?? 'https://console.nzilaventures.com';
-const PARTNERS_URL = process.env.NEXT_PUBLIC_PARTNERS_URL  ?? 'https://partners.nzilaventures.com';
-const ABR_URL      = process.env.NEXT_PUBLIC_ABR_URL       ?? 'https://abr.nzilaventures.com';
+const NZILA_URL = process.env.NEXT_PUBLIC_NZILA_URL ?? 'https://nzilaventures.com';
 
 const socials = [
   { name: 'LinkedIn',    href: 'https://linkedin.com/company/union-eyes', icon: Linkedin },
@@ -22,12 +19,7 @@ const socials = [
   { name: 'Email',       href: 'mailto:hello@unioneyes.com',               icon: Mail     },
 ];
 
-const ecosystemLinks = [
-  { name: 'Nzila Ventures', href: NZILA_URL,    desc: 'Parent company'      },
-  { name: 'Console',        href: CONSOLE_URL,  desc: 'Admin portal'        },
-  { name: 'Partner Hub',    href: PARTNERS_URL, desc: 'Integration portal'  },
-  { name: 'ABR Insights',   href: ABR_URL,      desc: 'Analytics engine'    },
-];
+
 
 export default function LocaleSiteFooter() {
   const t  = useTranslations('marketing.footer');
@@ -35,26 +27,30 @@ export default function LocaleSiteFooter() {
   const locale = (params?.locale as string) || 'en-CA';
 
   const footerLinks = {
-    [t('product')]: [
-      { name: t('features'),    href: `/${locale}/story` },
-      { name: t('pricing'),     href: `/${locale}/pricing` },
-      { name: t('caseStudies'), href: `/${locale}/case-studies` },
-      { name: t('status'),      href: `/${locale}/status` },
+    [t('platform')]: [
+      { name: t('grievanceTracking'),  href: `/${locale}/features/grievance-tracking` },
+      { name: t('memberPortal'),       href: `/${locale}/features/member-portal` },
+      { name: t('aiWorkbench'),        href: `/${locale}/features/ai-workbench` },
+      { name: t('analyticsReporting'), href: `/${locale}/features/analytics` },
+      { name: t('pricing'),            href: `/${locale}/pricing` },
+      { name: t('systemStatus'),       href: `/${locale}/status` },
     ],
-    [t('company')]: [
+    [t('resources')]: [
+      { name: t('caseStudies'),  href: `/${locale}/case-studies` },
       { name: t('story'),        href: `/${locale}/story` },
+      { name: t('pilotProgram'), href: `/${locale}/pilot-request` },
       { name: t('contact'),      href: `/${locale}/contact` },
-      { name: t('pilotRequest'), href: `/${locale}/pilot-request` },
     ],
     [t('legal')]: [
-      { name: t('privacy'),  href: `/${locale}/legal/privacy` },
-      { name: t('terms'),    href: `/${locale}/legal/terms` },
-      { name: t('security'), href: '/security' },
+      { name: t('privacy'),       href: `/${locale}/legal/privacy` },
+      { name: t('terms'),         href: `/${locale}/legal/terms` },
+      { name: t('security'),      href: `/${locale}/legal/security` },
+      { name: t('accessibility'), href: `/${locale}/legal/accessibility` },
     ],
   };
 
   return (
-    <footer className="bg-navy text-gray-300">
+    <footer className="bg-navy text-gray-200">
       {/* Pre-footer CTA */}
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex flex-col lg:flex-row items-center justify-between gap-8">
@@ -62,7 +58,7 @@ export default function LocaleSiteFooter() {
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
               {t('tagline')}
             </h3>
-            <p className="text-gray-400 text-lg">{t('description')}</p>
+            <p className="text-gray-200 text-lg">{t('description')}</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
@@ -83,22 +79,24 @@ export default function LocaleSiteFooter() {
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-6">
             <Link href={`/${locale}`} className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-electric to-violet flex items-center justify-center shadow-lg shadow-electric/20 group-hover:shadow-electric/40 transition-shadow">
-                <span className="text-white font-bold text-sm">UE</span>
-              </div>
+              <img
+                src="/images/brand/icon.png"
+                alt="Union Eyes"
+                className="w-10 h-10 rounded-lg shadow-lg shadow-electric/20 group-hover:shadow-electric/40 transition-shadow"
+              />
               <span className="text-2xl font-bold text-white">Union Eyes</span>
             </Link>
 
-            <p className="text-gray-400 max-w-sm leading-relaxed">{t('description')}</p>
+            <p className="text-gray-200 max-w-sm leading-relaxed">{t('description')}</p>
 
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full bg-emerald/20 text-emerald">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald mr-1.5 animate-pulse" />
-                4,773 {locale === 'fr-CA' ? 'entités' : 'Entities'}
+                {locale === 'fr-CA' ? 'Pilote actif' : 'Pilot Active'}
               </span>
               <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full bg-gold/20 text-gold">
                 {locale === 'fr-CA' ? 'Fait au Canada' : 'Canadian Made'}
@@ -111,7 +109,7 @@ export default function LocaleSiteFooter() {
             <div className="flex items-center gap-3 pt-2">
               {socials.map((s) => (
                 <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.name}
-                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-all">
                   <s.icon className="h-4 w-4" />
                 </a>
               ))}
@@ -125,7 +123,7 @@ export default function LocaleSiteFooter() {
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <Link href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm leading-relaxed">
+                    <Link href={link.href} className="text-gray-300 hover:text-white transition-colors text-sm leading-relaxed">
                       {link.name}
                     </Link>
                   </li>
@@ -134,45 +132,26 @@ export default function LocaleSiteFooter() {
             </div>
           ))}
 
-          {/* Ecosystem */}
-          <div>
-            <h4 className="text-white font-semibold mb-5 text-xs tracking-[0.15em] uppercase flex items-center gap-1.5">
-              <Globe className="h-3.5 w-3.5 text-gray-500" />
-              Ecosystem
-            </h4>
-            <ul className="space-y-4">
-              {ecosystemLinks.map((link) => (
-                <li key={link.name}>
-                  <a href={link.href} target="_blank" rel="noopener noreferrer" className="group text-sm">
-                    <span className="text-gray-400 group-hover:text-white transition-colors inline-flex items-center gap-1">
-                      {link.name}<span className="text-gray-600 text-xs">↗</span>
-                    </span>
-                    <span className="block text-xs text-gray-600 mt-0.5">{link.desc}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-400">
             &copy; {new Date().getFullYear()} Union Eyes. {t('rights')}
           </p>
-          <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
+          <div className="flex items-center gap-4 text-sm text-gray-400 flex-wrap justify-center">
             <a href={NZILA_URL} target="_blank" rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-colors font-medium">
+              className="text-gray-300 hover:text-white transition-colors font-medium">
               Nzila Ventures
             </a>
-            <span className="text-gray-700">·</span>
-            <Link href={`/${locale}/legal/privacy`} className="hover:text-gray-300 transition-colors">{t('privacy')}</Link>
-            <span className="text-gray-700">·</span>
-            <Link href={`/${locale}/legal/terms`} className="hover:text-gray-300 transition-colors">{t('terms')}</Link>
-            <span className="text-gray-700">·</span>
-            <Link href={`/${locale}/contact`} className="hover:text-gray-300 transition-colors">{t('contact')}</Link>
+            <span className="text-gray-500">·</span>
+            <Link href={`/${locale}/legal/privacy`} className="hover:text-gray-200 transition-colors">{t('privacy')}</Link>
+            <span className="text-gray-500">·</span>
+            <Link href={`/${locale}/legal/terms`} className="hover:text-gray-200 transition-colors">{t('terms')}</Link>
+            <span className="text-gray-500">·</span>
+            <Link href={`/${locale}/contact`} className="hover:text-gray-200 transition-colors">{t('contact')}</Link>
           </div>
         </div>
       </div>

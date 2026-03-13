@@ -25,19 +25,19 @@ export default function PayPage() {
   const [error, setError] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
 
-  // Pricing data
+  // Pricing data — must match main pricing page ($30/$249)
   const pricingData = {
     monthly: {
-      price: "$19",
+      price: "$30",
       planId: process.env.NEXT_PUBLIC_WHOP_PLAN_ID_MONTHLY ?? "plan_Fd5UBpraUWKMH",
       savingsPercentage: 0,
       savingsAmount: "$0"
     },
     yearly: {
-      price: "$190",
+      price: "$249",
       planId: process.env.NEXT_PUBLIC_WHOP_PLAN_ID_YEARLY ?? "plan_VVfTQzyslIKtq",
-      savingsPercentage: 17,
-      savingsAmount: "$38"
+      savingsPercentage: 31,
+      savingsAmount: "$111"
     }
   };
 
@@ -110,11 +110,12 @@ setError('An unexpected error occurred. Please try again.');
 
   // Benefits list
   const benefits = [
-    "All Pro Plan features",
-    "Unlimited storage & bandwidth",
-    "Full e-commerce functionality",
-    "Priority customer support",
-    "Team collaboration tools"
+    "1,000 AI credits per billing cycle",
+    "AI-powered grievance triage & drafting",
+    "Precedent research & CBA extraction",
+    "Full claims & arbitration toolkit",
+    "Multi-role team collaboration",
+    "Priority support from labour specialists"
   ];
 
   // Current pricing data based on selected billing cycle
@@ -175,7 +176,7 @@ setError('An unexpected error occurred. Please try again.');
           <CardHeader className="px-6 py-6">
             <CardTitle className="text-2xl font-bold">Pro Plan</CardTitle>
             <CardDescription className="text-base text-gray-500 mt-1">
-              Best for e-commerce and scaling businesses.
+              Everything your union needs to manage grievances, members &amp; advocacy.
             </CardDescription>
           </CardHeader>
           

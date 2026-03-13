@@ -47,10 +47,10 @@ export default async function LocaleRootPage({
   const t = await getTranslations({ locale, namespace: 'marketing.home' });
 
   const stats = [
-    { value: '4,773', label: t('statsLabel.unionEntities') },
-    { value: '56%',   label: t('statsLabel.timeSaved') },
-    { value: '40%',   label: t('statsLabel.fasterResponses') },
-    { value: '99.9%', label: t('statsLabel.platformUptime') },
+    { value: '35+', label: t('statsLabel.unionEntities') },
+    { value: '2',   label: t('statsLabel.timeSaved') },
+    { value: 'PIPEDA', label: t('statsLabel.fasterResponses') },
+    { value: '5+',  label: t('statsLabel.platformUptime') },
   ];
 
   const values = [t('value1'), t('value2'), t('value3'), t('value4')];
@@ -70,12 +70,12 @@ export default async function LocaleRootPage({
             className="object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-linear-to-b from-navy/80 via-navy/70 to-navy/90" />
+          <div className="absolute inset-0 bg-linear-to-b from-navy/90 via-navy/85 to-navy/95" />
           <div className="absolute inset-0 bg-mesh opacity-60" />
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
             <ScrollReveal>
-              <span className="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase rounded-full bg-electric/20 text-electric-light mb-6">
+              <span className="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/20 text-white mb-6">
                 {t('badge')}
               </span>
             </ScrollReveal>
@@ -88,7 +88,7 @@ export default async function LocaleRootPage({
             </ScrollReveal>
 
             <ScrollReveal delay={0.2}>
-              <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl">
+              <p className="text-xl md:text-2xl text-white mb-10 max-w-3xl">
                 {t('heroDescription')}
               </p>
             </ScrollReveal>
@@ -103,7 +103,7 @@ export default async function LocaleRootPage({
                 </Link>
                 <Link
                   href={`/${locale}/story`}
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-xl border border-white/20 hover:bg-white/20 transition-all text-lg btn-press"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white/15 backdrop-blur text-white font-bold rounded-xl border border-white/30 hover:bg-white/25 transition-all text-lg btn-press"
                 >
                   {t('ctaSecondary')}
                 </Link>
@@ -127,7 +127,7 @@ export default async function LocaleRootPage({
                 <ScrollReveal key={stat.label}>
                   <div className="text-center">
                     <div className="text-4xl md:text-5xl font-bold text-white mb-2">{stat.value}</div>
-                    <div className="text-gray-400 font-medium text-sm tracking-wider uppercase">{stat.label}</div>
+                    <div className="text-white font-medium text-sm tracking-wider uppercase">{stat.label}</div>
                   </div>
                 </ScrollReveal>
               ))}
@@ -146,14 +146,14 @@ export default async function LocaleRootPage({
                 <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">
                   {t('missionHeading')}
                 </h2>
-                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                <p className="text-lg text-gray-800 mb-6 leading-relaxed">
                   {t('missionDescription')}
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   {values.map((item) => (
                     <div key={item} className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-electric" />
-                      <span className="text-sm font-medium text-gray-700">{item}</span>
+                      <span className="text-sm font-medium text-gray-800">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -173,17 +173,17 @@ export default async function LocaleRootPage({
                     <div className="flex items-center gap-6 text-white">
                       <div>
                         <div className="text-2xl font-bold">35+</div>
-                        <div className="text-xs text-gray-300">{t('unionRoles')}</div>
+                        <div className="text-xs text-gray-100">{t('unionRoles')}</div>
                       </div>
-                      <div className="w-px h-10 bg-white/20" />
+                      <div className="w-px h-10 bg-white/30" />
                       <div>
                         <div className="text-2xl font-bold">4</div>
-                        <div className="text-xs text-gray-300">{t('languages')}</div>
+                        <div className="text-xs text-gray-100">{t('languages')}</div>
                       </div>
-                      <div className="w-px h-10 bg-white/20" />
+                      <div className="w-px h-10 bg-white/30" />
                       <div>
                         <div className="text-2xl font-bold">PIPEDA</div>
-                        <div className="text-xs text-gray-300">{t('certLabel')}</div>
+                        <div className="text-xs text-gray-100">{t('certLabel')}</div>
                       </div>
                     </div>
                   </div>
@@ -199,7 +199,7 @@ export default async function LocaleRootPage({
           <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <ScrollReveal>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">{t('badge')}</h2>
-              <p className="text-xl text-gray-300 mb-10">{t('heroDescription')}</p>
+              <p className="text-xl text-gray-100 mb-10">{t('heroDescription')}</p>
               <Link
                 href={`/${locale}/pilot-request`}
                 className="inline-flex items-center justify-center px-10 py-5 bg-electric text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-lg shadow-lg shadow-electric/30 btn-press"

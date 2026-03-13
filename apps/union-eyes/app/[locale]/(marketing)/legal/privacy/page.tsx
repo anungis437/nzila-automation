@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { Shield, Lock, Eye, Database, Trash2, Download } from 'lucide-react';
 
 export async function generateMetadata({
@@ -8,77 +9,63 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  await params;
-  return {
-    title: 'Privacy Policy | Union Eyes',
-    description:
-      'How Union Eyes collects, uses, and protects your personal information under PIPEDA and Canadian privacy law.',
-  };
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'marketing.legal.privacy' });
+  return { title: t('pageTitle'), description: t('pageDescription') };
 }
 
-export default async function PrivacyPolicyPage() {
+export default async function PrivacyPolicyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'marketing.legal.privacy' });
+  const tLegal = await getTranslations({ locale, namespace: 'marketing.legal' });
+
   return (
     <div className="bg-white min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-violet-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Privacy Policy</h1>
+            <h1 className="text-4xl font-bold text-gray-900">{t('heading')}</h1>
           </div>
-          <p className="text-lg text-gray-600">
-            Last updated: March 1, 2026
-          </p>
+          <p className="text-lg text-gray-600">{tLegal('lastUpdated')}</p>
         </div>
 
         <div className="prose prose-lg max-w-none">
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-5 w-5 text-violet-600" />
-              <h2 className="text-2xl font-semibold text-gray-900 !mt-0">Information We Collect</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mt-0!">{t('collectTitle')}</h2>
             </div>
-            <p className="text-gray-700">
-              Union Eyes collects information necessary to provide union management
-              services, including: name, email address, union membership details,
-              and usage data. We collect this information when you create an account,
-              use our platform, or interact with our services.
-            </p>
+            <p className="text-gray-700">{t('collectDesc')}</p>
           </section>
 
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Lock className="h-5 w-5 text-violet-600" />
-              <h2 className="text-2xl font-semibold text-gray-900 !mt-0">How We Use Your Information</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mt-0!">{t('useTitle')}</h2>
             </div>
-            <p className="text-gray-700">
-              We use your information to provide and improve our services, communicate
-              with you about your account, process grievances and voting, and comply
-              with legal obligations. We do not sell your personal information to third
-              parties.
-            </p>
+            <p className="text-gray-700">{t('useDesc')}</p>
           </section>
 
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Database className="h-5 w-5 text-violet-600" />
-              <h2 className="text-2xl font-semibold text-gray-900 !mt-0">Data Storage &amp; Security</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mt-0!">{t('storageTitle')}</h2>
             </div>
-            <p className="text-gray-700">
-              All data is stored in Canadian data centres in compliance with PIPEDA
-              (Personal Information Protection and Electronic Documents Act). We use
-              industry-standard encryption for data in transit and at rest, and
-              implement strict access controls.
-            </p>
+            <p className="text-gray-700">{t('storageDesc')}</p>
           </section>
 
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Download className="h-5 w-5 text-violet-600" />
-              <h2 className="text-2xl font-semibold text-gray-900 !mt-0">Your Rights</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mt-0!">{t('rightsTitle')}</h2>
             </div>
             <p className="text-gray-700">
-              Under Canadian privacy law, you have the right to access, correct, and
-              delete your personal information. You can exercise these rights through
-              your account settings or by contacting us at{' '}
+              {t('rightsDesc')}{' '}
               <a href="mailto:privacy@unioneyes.com" className="text-violet-600 hover:text-violet-700">
                 privacy@unioneyes.com
               </a>.
@@ -88,20 +75,15 @@ export default async function PrivacyPolicyPage() {
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Trash2 className="h-5 w-5 text-violet-600" />
-              <h2 className="text-2xl font-semibold text-gray-900 !mt-0">Data Retention</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mt-0!">{t('retentionTitle')}</h2>
             </div>
-            <p className="text-gray-700">
-              We retain your personal information only as long as necessary to provide
-              our services and comply with legal obligations. When you delete your
-              account, your data is permanently removed within 30 days.
-            </p>
+            <p className="text-gray-700">{t('retentionDesc')}</p>
           </section>
 
           <section className="border-t border-gray-200 pt-8">
-            <h2 className="text-2xl font-semibold text-gray-900">Contact Us</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('contactTitle')}</h2>
             <p className="text-gray-700">
-              If you have questions about this privacy policy, please contact our
-              Privacy Officer at{' '}
+              {t('contactDesc')}{' '}
               <a href="mailto:privacy@unioneyes.com" className="text-violet-600 hover:text-violet-700">
                 privacy@unioneyes.com
               </a>.

@@ -8,6 +8,7 @@ import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { getTranslations } from 'next-intl/server';
 import nextDynamic from 'next/dynamic';
+import type { PricingLabels } from '@/app/(marketing)/pricing/pricing-page-client';
 
 const PricingPageClient = nextDynamic(
   () => import('@/app/(marketing)/pricing/pricing-page-client'),
@@ -28,11 +29,51 @@ export async function generateMetadata({
 }
 
 export default async function LocalePricingPage({
-  params: _params,
+  params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   const { userId } = await auth();
+  const t = await getTranslations({ locale, namespace: 'marketing.pricingBody' });
+
+  const labels: PricingLabels = {
+    heading: t('plansForEveryUnion'),
+    subtitle: t('plansSubtitle'),
+    monthly: t('monthly'),
+    yearly: t('yearly'),
+    free: t('free'),
+    freeDesc: t('freeDesc'),
+    forever: t('forever'),
+    getStarted: t('getStarted'),
+    pro: t('pro'),
+    proDesc: t('proDesc'),
+    upgradeToPro: t('upgradeToPro'),
+    mostPopular: t('mostPopular'),
+    enterprise: t('enterprise'),
+    enterpriseDesc: t('enterpriseDesc'),
+    custom: t('custom'),
+    contactUs: t('contactUs'),
+    whatsIncluded: t('whatsIncluded'),
+    trustLine1: t('trustLine1'),
+    trustLine2: t('trustLine2'),
+    billedAnnually: t('billedAnnually'),
+    month: t('month'),
+    year: t('year'),
+    freeBenefits: [
+      t('freeBenefit1'), t('freeBenefit2'), t('freeBenefit3'),
+      t('freeBenefit4'), t('freeBenefit5'), t('freeBenefit6'), t('freeBenefit7'),
+    ],
+    proBenefits: [
+      t('proBenefit1'), t('proBenefit2'), t('proBenefit3'), t('proBenefit4'),
+      t('proBenefit5'), t('proBenefit6'), t('proBenefit7'), t('proBenefit8'),
+    ],
+    entBenefits: [
+      t('entBenefit1'), t('entBenefit2'), t('entBenefit3'), t('entBenefit4'),
+      t('entBenefit5'), t('entBenefit6'), t('entBenefit7'), t('entBenefit8'),
+    ],
+  };
+
   const activePaymentProvider = process.env.ACTIVE_PAYMENT_PROVIDER ?? 'stripe';
   const whopRedirectUrl =
     process.env.NEXT_PUBLIC_WHOP_REDIRECT_URL ?? 'https://whop-boilerplate.vercel.app/dashboard';
@@ -54,6 +95,7 @@ export default async function LocalePricingPage({
       stripeYearlyLink={process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_YEARLY ?? '#'}
       monthlyPrice="$30"
       yearlyPrice="$249"
+      labels={labels}
     />
   );
 }

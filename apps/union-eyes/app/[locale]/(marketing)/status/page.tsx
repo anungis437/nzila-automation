@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { StatusPage } from '@/components/monitoring/StatusPage';
+import type { StatusLabels } from '@/components/monitoring/StatusPage';
 
 export async function generateMetadata({
   params,
@@ -21,10 +22,35 @@ export async function generateMetadata({
   };
 }
 
-export default function LocaleStatusPage() {
+export default async function LocaleStatusPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'marketing.statusBody' });
+
+  const labels: StatusLabels = {
+    systemStatus: t('systemStatus'),
+    statusDescription: t('statusDescription'),
+    allOperational: t('allOperational'),
+    someDegraded: t('someDegraded'),
+    systemIssues: t('systemIssues'),
+    systemInformation: t('systemInformation'),
+    uptime: t('uptime'),
+    version: t('version'),
+    timestamp: t('timestamp'),
+    services: t('services'),
+    monitored: t('monitored'),
+    responseTime: t('responseTime'),
+    statusLabel: t('statusLabel'),
+    lastChecked: t('lastChecked'),
+    loadError: t('loadError'),
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <StatusPage />
+      <StatusPage labels={labels} />
     </div>
   );
 }

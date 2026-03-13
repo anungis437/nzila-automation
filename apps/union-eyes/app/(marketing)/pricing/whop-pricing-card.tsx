@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { validateRedirectUrl } from "@/lib/utils/sanitize";
  
@@ -19,6 +20,7 @@ interface WhopPricingCardProps {
   billingCycle: "monthly" | "yearly";
   savingsPercentage: number;
   savingsAmount: string;
+  highlighted?: boolean;
 }
 
 /**
@@ -30,13 +32,14 @@ interface WhopPricingCardProps {
 export default function WhopPricingCard({ 
   title, 
   price, 
-  description: _description, 
+  description, 
   buttonText, 
   planId,
   redirectUrl: _redirectUrl,
   billingCycle,
   savingsPercentage,
-  savingsAmount
+  savingsAmount,
+  highlighted,
 }: WhopPricingCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,15 +92,21 @@ setError('An unexpected error occurred. Please try again.');
 
   // Benefits list
   const benefits = [
-    "All Pro Plan features",
-    "Unlimited storage & bandwidth",
-    "Full e-commerce functionality",
-    "Priority customer support",
-    "Team collaboration tools"
+    "1,000 AI credits per cycle",
+    "AI-powered grievance triage",
+    "Precedent research & matching",
+    "CBA clause extraction",
+    "Full claims & arbitration toolkit",
+    "Multi-role team collaboration",
+    "Analytics & report builder",
+    "Priority support",
   ];
 
   return (
-    <Card className="rounded-2xl border shadow-sm overflow-hidden relative">
+    <Card className={cn(
+      "rounded-2xl border shadow-sm overflow-hidden relative",
+      highlighted && "border-purple-300 shadow-lg ring-1 ring-purple-200"
+    )}>
       {/* Savings tag for yearly billing */}
       {billingCycle === "yearly" && (
         <motion.div 
@@ -114,7 +123,7 @@ setError('An unexpected error occurred. Please try again.');
       
       <CardHeader className="px-6 py-6">
         <CardTitle className="text-2xl font-bold">{title}</CardTitle>
-        <CardDescription className="text-base text-gray-500 mt-1">Best for e-commerce and scaling businesses.</CardDescription>
+        <CardDescription className="text-base text-gray-500 mt-1">{description}</CardDescription>
       </CardHeader>
       
       <CardContent className="px-6 space-y-6 pb-0">

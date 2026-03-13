@@ -100,12 +100,12 @@ function NavSection({
         onClick={() => setOpen(o => !o)}
         className="w-full mb-1 px-3 flex items-center justify-between group cursor-pointer"
       >
-        <h3 className="hidden md:block text-[10px] font-semibold text-gray-400 uppercase tracking-wider select-none group-hover:text-gray-600 transition-colors">
+        <h3 className="hidden md:block text-[10px] font-semibold text-gray-500 uppercase tracking-wider select-none group-hover:text-gray-700 transition-colors">
           {title}
         </h3>
         <ChevronDown
           size={12}
-          className={`hidden md:block text-gray-400 group-hover:text-gray-600 transition-transform duration-200 ${
+          className={`hidden md:block text-gray-500 group-hover:text-gray-700 transition-transform duration-200 ${
             open ? "" : "-rotate-90"
           }`}
         />
@@ -346,7 +346,7 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
         className={`flex items-center py-2 px-3 rounded-lg cursor-pointer transition-all ${
           isActive(item.href)
             ? "bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30"
-            : "text-gray-600 hover:bg-white/80 hover:shadow-sm"
+            : "text-gray-800 hover:bg-gray-100 hover:shadow-sm"
         }`}
         whileHover={{ scale: 1.02, x: 2, transition: { duration: 0.2 } }}
         whileTap={{ scale: 0.98 }}
@@ -359,7 +359,7 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
   );
 
   return (
-    <div className="h-screen w-15 md:w-55 bg-white/60 backdrop-blur-xl border-r border-white/40 flex flex-col justify-between py-5 relative overflow-hidden">
+    <div className="h-screen w-15 md:w-55 bg-white/90 backdrop-blur-xl border-r border-gray-200 flex flex-col justify-between py-5 relative overflow-hidden">
       {/* Glassmorphism effects */}
       <motion.div
         className="absolute inset-0 bg-linear-to-b from-primary/5 via-transparent to-primary/5 pointer-events-none"
@@ -388,13 +388,17 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-blue-800 shadow-lg">
-              <Shield size={18} className="text-white" />
-            </div>
+            <img
+              src="/images/brand/icon.png"
+              alt="Union Eyes"
+              className="w-8 h-8 rounded-lg object-contain"
+            />
             <div className="hidden md:block">
-              <span className="font-bold text-lg bg-linear-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                UnionEyes
-              </span>
+              <img
+                src="/images/brand/logo.png"
+                alt="Union Eyes"
+                className="h-6 object-contain"
+              />
             </div>
           </motion.div>
         </Link>
@@ -427,7 +431,7 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
 
         <Link href="/dashboard/profile">
           <motion.div
-            className="flex items-center px-3 py-3 hover:bg-white/70 rounded-lg mx-2 cursor-pointer transition-colors"
+            className="flex items-center px-3 py-3 hover:bg-gray-100 rounded-lg mx-2 cursor-pointer transition-colors"
             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.98 }}
           >
@@ -449,7 +453,7 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
               <p className="text-sm font-medium text-gray-900 truncate">
                 {userEmail?.split("@")[0] || t("common.member")}
               </p>
-              <p className="text-xs text-gray-500">{t("sidebar.viewProfile")}</p>
+              <p className="text-xs text-gray-600">{t("sidebar.viewProfile")}</p>
             </div>
           </motion.div>
         </Link>

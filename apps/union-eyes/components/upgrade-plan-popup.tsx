@@ -193,10 +193,10 @@ setError('An unexpected error occurred. Please try again later.');
   
   // Benefits list
   const benefits = [
-    "1,000 credits per billing cycle",
-    "Automatic credit renewals",
-    "Access to all premium features",
-    "Priority support"
+    "1,000 AI credits per billing cycle",
+    "AI-powered grievance triage & drafting",
+    "Precedent research & CBA extraction",
+    "Priority support from labour specialists"
   ];
   
   return (

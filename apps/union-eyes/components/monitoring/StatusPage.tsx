@@ -14,7 +14,44 @@ import { RefreshCw } from 'lucide-react';
 import type { SystemStatus, ServiceHealth, ServiceStatus } from '@/lib/monitoring';
 import { getStatusColor, getStatusEmoji, formatUptime } from '@/lib/monitoring';
 
-export function StatusPage() {
+export interface StatusLabels {
+  systemStatus: string;
+  statusDescription: string;
+  allOperational: string;
+  someDegraded: string;
+  systemIssues: string;
+  systemInformation: string;
+  uptime: string;
+  version: string;
+  timestamp: string;
+  services: string;
+  monitored: string;
+  responseTime: string;
+  statusLabel: string;
+  lastChecked: string;
+  loadError: string;
+}
+
+const defaultStatusLabels: StatusLabels = {
+  systemStatus: "System Status",
+  statusDescription: "Current operational status of all services",
+  allOperational: "All Systems Operational",
+  someDegraded: "Degraded Performance",
+  systemIssues: "System Issues",
+  systemInformation: "System Information",
+  uptime: "Uptime",
+  version: "Version",
+  timestamp: "Timestamp",
+  services: "Services",
+  monitored: "monitored",
+  responseTime: "Response Time:",
+  statusLabel: "Status:",
+  lastChecked: "Last Checked:",
+  loadError: "Failed to load system status",
+};
+
+export function StatusPage({ labels: labelsProp }: { labels?: StatusLabels } = {}) {
+  const l = labelsProp ?? defaultStatusLabels;
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
@@ -50,7 +87,7 @@ export function StatusPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
-              Failed to load system status
+              {l.loadError}
             </p>
           </CardContent>
         </Card>
@@ -65,9 +102,9 @@ export function StatusPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl">System Status</CardTitle>
+              <CardTitle className="text-2xl">{l.systemStatus}</CardTitle>
               <CardDescription>
-                Current operational status of all services
+                {l.statusDescription}
               </CardDescription>
             </div>
             <button
@@ -85,9 +122,9 @@ export function StatusPage() {
               <span className="text-4xl">{getStatusEmoji(status.status)}</span>
               <div>
                 <h3 className="text-xl font-semibold capitalize">
-                  {status.status === 'healthy' ? 'All Systems Operational' : 
-                   status.status === 'degraded' ? 'Degraded Performance' :
-                   'System Issues'}
+                  {status.status === 'healthy' ? l.allOperational : 
+                   status.status === 'degraded' ? l.someDegraded :
+                   l.systemIssues}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Last updated: {lastUpdate.toLocaleTimeString()}
@@ -102,34 +139,34 @@ export function StatusPage() {
       {/* Service Details */}
       <div className="grid gap-4 md:grid-cols-2">
         {status.services.map((service) => (
-          <ServiceCard key={service.name} service={service} />
+          <ServiceCard key={service.name} service={service} labels={l} />
         ))}
       </div>
 
       {/* System Info */}
       <Card>
         <CardHeader>
-          <CardTitle>System Information</CardTitle>
+          <CardTitle>{l.systemInformation}</CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="font-medium text-muted-foreground">Uptime</dt>
+              <dt className="font-medium text-muted-foreground">{l.uptime}</dt>
               <dd className="mt-1">{formatUptime(status.uptime)}</dd>
             </div>
             <div>
-              <dt className="font-medium text-muted-foreground">Version</dt>
+              <dt className="font-medium text-muted-foreground">{l.version}</dt>
               <dd className="mt-1">{status.version}</dd>
             </div>
             <div>
-              <dt className="font-medium text-muted-foreground">Timestamp</dt>
+              <dt className="font-medium text-muted-foreground">{l.timestamp}</dt>
               <dd className="mt-1">
                 {new Date(status.timestamp).toLocaleString()}
               </dd>
             </div>
             <div>
-              <dt className="font-medium text-muted-foreground">Services</dt>
-              <dd className="mt-1">{status.services.length} monitored</dd>
+              <dt className="font-medium text-muted-foreground">{l.services}</dt>
+              <dd className="mt-1">{status.services.length} {l.monitored}</dd>
             </div>
           </dl>
         </CardContent>
@@ -138,7 +175,7 @@ export function StatusPage() {
   );
 }
 
-function ServiceCard({ service }: { service: ServiceHealth }) {
+function ServiceCard({ service, labels }: { service: ServiceHealth; labels: StatusLabels }) {
   return (
     <Card>
       <CardHeader>
@@ -151,18 +188,18 @@ function ServiceCard({ service }: { service: ServiceHealth }) {
         <div className="space-y-2 text-sm">
           {service.responseTime && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Response Time:</span>
+              <span className="text-muted-foreground">{labels.responseTime}</span>
               <span className="font-medium">{service.responseTime}ms</span>
             </div>
           )}
           {service.message && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Status:</span>
+              <span className="text-muted-foreground">{labels.statusLabel}</span>
               <span className="font-medium">{service.message}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Last Checked:</span>
+            <span className="text-muted-foreground">{labels.lastChecked}</span>
             <span className="font-medium">
               {new Date(service.lastChecked).toLocaleTimeString()}
             </span>

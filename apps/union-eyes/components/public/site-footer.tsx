@@ -13,21 +13,18 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Linkedin, Twitter, Github, Mail, Globe } from 'lucide-react';
+import { ArrowRight, Linkedin, Twitter, Github, Mail } from 'lucide-react';
 
-const NZILA_URL   = process.env.NEXT_PUBLIC_NZILA_URL     ?? 'https://nzilaventures.com';
-const CONSOLE_URL = process.env.NEXT_PUBLIC_CONSOLE_URL   ?? 'https://console.nzilaventures.com';
-const PARTNERS_URL = process.env.NEXT_PUBLIC_PARTNERS_URL ?? 'https://partners.nzilaventures.com';
-const ABR_URL     = process.env.NEXT_PUBLIC_ABR_URL       ?? 'https://abr.nzilaventures.com';
+const NZILA_URL = process.env.NEXT_PUBLIC_NZILA_URL ?? 'https://nzilaventures.com';
 
 /* ────────────────── Link Data ────────────────── */
 
 const footerLinks = {
   Platform: [
-    { name: 'Grievance Tracking',   href: '/story' },
-    { name: 'Member Portal',        href: '/story' },
-    { name: 'AI Workbench',         href: '/story' },
-    { name: 'Analytics & Reporting', href: '/story' },
+    { name: 'Grievance Tracking',    href: '/features/grievance-tracking' },
+    { name: 'Member Portal',         href: '/features/member-portal' },
+    { name: 'AI Workbench',          href: '/features/ai-workbench' },
+    { name: 'Analytics & Reporting', href: '/features/analytics' },
     { name: 'Pricing',              href: '/pricing' },
     { name: 'System Status',        href: '/status' },
   ],
@@ -40,18 +37,10 @@ const footerLinks = {
   Legal: [
     { name: 'Privacy Policy',    href: '/legal/privacy' },
     { name: 'Terms of Service',  href: '/legal/terms' },
-    { name: 'PIPEDA Compliance', href: '/legal/privacy' },
-    { name: 'Data Sovereignty',  href: '/legal/privacy' },
+    { name: 'Security',          href: '/legal/security' },
     { name: 'Accessibility',     href: '/legal/accessibility' },
   ],
 };
-
-const ecosystemLinks = [
-  { name: 'Nzila Ventures', href: NZILA_URL,   desc: 'Parent company' },
-  { name: 'Console',        href: CONSOLE_URL,  desc: 'Admin portal' },
-  { name: 'Partner Hub',    href: PARTNERS_URL, desc: 'Integration portal' },
-  { name: 'ABR Insights',   href: ABR_URL,      desc: 'Analytics engine' },
-];
 
 const socials = [
   { name: 'LinkedIn', href: 'https://linkedin.com/company/union-eyes', icon: Linkedin },
@@ -64,17 +53,17 @@ const socials = [
 
 export default function SiteFooter() {
   return (
-    <footer className="bg-navy text-gray-300">
+    <footer className="bg-navy text-gray-200">
       {/* ─── Pre-footer CTA ─── */}
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="text-center lg:text-left max-w-xl">
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              Ready to see Union Eyes in action?
+              Interested in piloting Union Eyes?
             </h3>
-            <p className="text-gray-400 text-lg">
-              Start a pilot with your local in under 48 hours — no commitment,
-              no credit card.
+            <p className="text-gray-200 text-lg">
+              We&apos;re working with unions like CUPE and CAPE to shape the platform.
+              Apply for early access — no commitment, no credit card.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -88,7 +77,7 @@ export default function SiteFooter() {
               href="/contact"
               className="inline-flex items-center justify-center px-7 py-3.5 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all text-sm btn-press"
             >
-              Talk to Us
+              Learn More
             </Link>
           </div>
         </div>
@@ -96,27 +85,29 @@ export default function SiteFooter() {
 
       {/* ─── Main Footer ─── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand Column (spans 2) */}
           <div className="lg:col-span-2 space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-electric to-violet flex items-center justify-center shadow-lg shadow-electric/20 group-hover:shadow-electric/40 transition-shadow">
-                <span className="text-white font-bold text-sm">UE</span>
-              </div>
+              <img
+                src="/images/brand/icon.png"
+                alt="Union Eyes"
+                className="w-10 h-10 rounded-lg shadow-lg shadow-electric/20 group-hover:shadow-electric/40 transition-shadow"
+              />
               <span className="text-2xl font-bold text-white">Union Eyes</span>
             </Link>
 
-            <p className="text-gray-400 max-w-sm leading-relaxed">
-              AI-powered union management built with organizers, not for them.
+            <p className="text-gray-200 max-w-sm leading-relaxed">
+              AI-powered union management co-designed with organizers, not for them.
               Grievance tracking, member engagement, and operational excellence
-              — all on one platform.
+              — now in pilot with leading Canadian unions.
             </p>
 
             {/* Trust Badges */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full bg-emerald/20 text-emerald">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald mr-1.5 animate-pulse" />
-                4,773 Entities
+                Pilot Active
               </span>
               <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full bg-gold/20 text-gold">
                 Canadian Made
@@ -135,7 +126,7 @@ export default function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.name}
-                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white transition-all"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-all"
                 >
                   <social.icon className="h-4 w-4" />
                 </a>
@@ -154,7 +145,7 @@ export default function SiteFooter() {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 hover:text-white transition-colors text-sm leading-relaxed"
+                      className="text-gray-300 hover:text-white transition-colors text-sm leading-relaxed"
                     >
                       {link.name}
                     </Link>
@@ -164,61 +155,34 @@ export default function SiteFooter() {
             </div>
           ))}
 
-          {/* Ecosystem Column */}
-          <div>
-            <h4 className="text-white font-semibold mb-5 text-xs tracking-[0.15em] uppercase flex items-center gap-1.5">
-              <Globe className="h-3.5 w-3.5 text-gray-500" />
-              Ecosystem
-            </h4>
-            <ul className="space-y-4">
-              {ecosystemLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group text-sm"
-                  >
-                    <span className="text-gray-400 group-hover:text-white transition-colors inline-flex items-center gap-1">
-                      {link.name}
-                      <span className="text-gray-600 text-xs">↗</span>
-                    </span>
-                    <span className="block text-xs text-gray-600 mt-0.5">
-                      {link.desc}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
 
       {/* ─── Bottom Bar ─── */}
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-400">
             &copy; {new Date().getFullYear()} Union Eyes. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
+          <div className="flex items-center gap-4 text-sm text-gray-400 flex-wrap justify-center">
             <span>
               A{' '}
               <a
                 href={NZILA_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors font-medium"
+                className="text-gray-300 hover:text-white transition-colors font-medium"
               >
                 Nzila Ventures
               </a>
               {' '}product
             </span>
-            <span className="text-gray-700">·</span>
-            <Link href="/legal/privacy" className="hover:text-gray-300 transition-colors">Privacy</Link>
-            <span className="text-gray-700">·</span>
-            <Link href="/legal/terms" className="hover:text-gray-300 transition-colors">Terms</Link>
-            <span className="text-gray-700">·</span>
-            <Link href="/contact" className="hover:text-gray-300 transition-colors">Contact</Link>
+            <span className="text-gray-500">·</span>
+            <Link href="/legal/privacy" className="hover:text-gray-200 transition-colors">Privacy</Link>
+            <span className="text-gray-500">·</span>
+            <Link href="/legal/terms" className="hover:text-gray-200 transition-colors">Terms</Link>
+            <span className="text-gray-500">·</span>
+            <Link href="/contact" className="hover:text-gray-200 transition-colors">Contact</Link>
           </div>
         </div>
       </div>

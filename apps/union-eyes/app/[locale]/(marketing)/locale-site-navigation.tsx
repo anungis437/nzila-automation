@@ -71,9 +71,11 @@ export default function LocaleSiteNavigation() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href={`/${locale}`} className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-lg bg-linear-to-br from-electric to-violet flex items-center justify-center shadow-lg shadow-electric/20 group-hover:shadow-electric/40 transition-shadow">
-                <span className="text-white font-bold text-sm">UE</span>
-              </div>
+              <img
+                src="/images/brand/icon.png"
+                alt="Union Eyes"
+                className="w-9 h-9 rounded-lg shadow-lg shadow-electric/20 group-hover:shadow-electric/40 transition-shadow"
+              />
               <span className={`text-xl font-bold transition-colors ${scrolled ? 'text-navy' : 'text-white'}`}>
                 Union Eyes
               </span>
