@@ -80,5 +80,5 @@ export async function createTraceabilityLink(
       linkMetadata: metadata,
     })
     .returning()
-  return toLink(row)
+  return toLink(row!)
 }

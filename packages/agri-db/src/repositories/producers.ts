@@ -28,7 +28,7 @@ export async function listProducers(
   const offset = opts.offset ?? 0
   const where = eq(agriProducers.orgId, ctx.orgId)
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriProducers).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriProducers).where(where),
   ])
@@ -64,7 +64,7 @@ export async function createProducer(
       metadata: values.metadata ?? {},
     })
     .returning()
-  return toProfile(row)
+  return toProfile(row!)
 }
 
 export async function updateProducer(

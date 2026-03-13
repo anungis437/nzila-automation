@@ -41,7 +41,7 @@ export async function listLots(
   if (opts.cropId) conditions.push(eq(agriLots.cropId, opts.cropId))
   const where = and(...conditions)!
 
-  const [rows, [{ value: total }]] = await Promise.all([
+  const [rows, [{ value: total } = { value: 0 }]] = await Promise.all([
     db.select().from(agriLots).where(where).limit(limit).offset(offset),
     db.select({ value: count() }).from(agriLots).where(where),
   ])
@@ -91,14 +91,14 @@ export async function createLot(
     await db.insert(agriLotContributions).values(
       contributions.map((c) => ({
         orgId: ctx.orgId,
-        lotId: row.id,
+        lotId: row!.id,
         harvestId: c.harvestId,
         weight: c.weight.toString(),
       })),
     )
   }
 
-  return toLot(row)
+  return toLot(row!)
 }
 
 export async function updateLotStatus(
