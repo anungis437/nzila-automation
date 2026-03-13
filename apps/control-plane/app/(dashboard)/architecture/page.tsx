@@ -3,14 +3,22 @@ import { PageHeader } from "@/components/ui/page-header";
 import { CardSkeleton } from "@/components/ui/loading";
 import { SummaryCard } from "@/components/ui/summary-card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Boxes, Package, AlertTriangle, CheckCircle } from "lucide-react";
+import {
+  Boxes,
+  Package,
+  AlertTriangle,
+  CheckCircle,
+  Layers,
+  Server,
+  FileCheck,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Architecture — Nzila OS Control Plane",
   description:
-    "Architecture governance: package ownership, app compliance, and dependency health.",
+    "Architecture governance: package ownership, app compliance, lifecycle tiers, and dependency health.",
 };
 
 interface ArchSummary {
@@ -19,11 +27,15 @@ interface ArchSummary {
     withMeta: number;
     deprecated: number;
     categories: Record<string, number>;
+    stability: Record<string, number>;
     metaCoverage: number;
   };
   apps: {
     items: Array<{
       app: string;
+      tier: string;
+      owner: string;
+      domain: string;
       checks: number;
       passed: number;
       level: string;
@@ -31,11 +43,21 @@ interface ArchSummary {
     fullCompliance: number;
     partialCompliance: number;
     total: number;
+    tiers: Record<string, number>;
+    unregistered: string[];
+  };
+  platformServices: {
+    total: number;
+    lifecycles: Record<string, number>;
+  };
+  contracts: {
+    testFiles: number;
   };
   overall: {
     metaCoverage: number;
     appComplianceRate: number;
     deprecatedPackages: number;
+    registryCompleteness: number;
   };
 }
 
@@ -58,6 +80,12 @@ async function ArchitectureContent() {
       {/* Top-level summary cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <SummaryCard
+          title="Registry Completeness"
+          icon={<Layers className="h-5 w-5" />}
+          value={`${data.overall.registryCompleteness}%`}
+          subtitle={`${data.apps.total} registered apps`}
+        />
+        <SummaryCard
           title="Package Meta Coverage"
           icon={<Package className="h-5 w-5" />}
           value={`${data.overall.metaCoverage}%`}
@@ -68,6 +96,12 @@ async function ArchitectureContent() {
           icon={<CheckCircle className="h-5 w-5" />}
           value={`${data.overall.appComplianceRate}%`}
           subtitle={`${data.apps.fullCompliance}/${data.apps.total} fully compliant`}
+        />
+        <SummaryCard
+          title="Platform Services"
+          icon={<Server className="h-5 w-5" />}
+          value={data.platformServices.total}
+          subtitle={`${Object.keys(data.platformServices.lifecycles).length} lifecycle stages`}
         />
         <SummaryCard
           title="Deprecated Packages"
@@ -81,6 +115,42 @@ async function ArchitectureContent() {
           value={data.packages.total}
           subtitle={`${Object.keys(data.packages.categories).length} categories`}
         />
+        <SummaryCard
+          title="Contract Tests"
+          icon={<FileCheck className="h-5 w-5" />}
+          value={data.contracts.testFiles}
+          subtitle="Test files"
+        />
+      </div>
+
+      {/* App Lifecycle Tiers */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4">
+          App Lifecycle Tiers
+        </h2>
+        <div className="grid gap-3 md:grid-cols-4">
+          {["PRODUCTION", "PILOT", "INCUBATING", "EXPERIMENTAL"].map(
+            (tier) => (
+              <div
+                key={tier}
+                className="rounded-lg border border-border bg-card p-4"
+              >
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {tier}
+                </div>
+                <div className="mt-1 text-2xl font-bold text-foreground">
+                  {data.apps.tiers[tier] ?? 0}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+        {data.apps.unregistered.length > 0 && (
+          <div className="mt-3 rounded-lg border border-destructive/50 bg-destructive/5 p-3 text-sm">
+            <span className="font-medium text-destructive">Unregistered:</span>{" "}
+            {data.apps.unregistered.join(", ")}
+          </div>
+        )}
       </div>
 
       {/* Category breakdown */}
@@ -127,6 +197,12 @@ async function ArchitectureContent() {
                   App
                 </th>
                 <th className="text-center px-4 py-3 font-medium text-muted-foreground">
+                  Tier
+                </th>
+                <th className="text-center px-4 py-3 font-medium text-muted-foreground">
+                  Owner
+                </th>
+                <th className="text-center px-4 py-3 font-medium text-muted-foreground">
                   Checks
                 </th>
                 <th className="text-center px-4 py-3 font-medium text-muted-foreground">
@@ -141,6 +217,12 @@ async function ArchitectureContent() {
                   className="border-b border-border last:border-0"
                 >
                   <td className="px-4 py-3 font-medium">{app.app}</td>
+                  <td className="text-center px-4 py-3">
+                    <span className="font-mono text-xs">{app.tier}</span>
+                  </td>
+                  <td className="text-center px-4 py-3 text-muted-foreground">
+                    {app.owner}
+                  </td>
                   <td className="text-center px-4 py-3">
                     {app.passed}/{app.checks}
                   </td>
@@ -162,6 +244,44 @@ async function ArchitectureContent() {
           </table>
         </div>
       </div>
+
+      {/* Platform services lifecycle */}
+      {data.platformServices.total > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
+            Platform Service Lifecycles
+          </h2>
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/50">
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">
+                    Lifecycle
+                  </th>
+                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">
+                    Count
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(data.platformServices.lifecycles)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([lifecycle, count]) => (
+                    <tr
+                      key={lifecycle}
+                      className="border-b border-border last:border-0"
+                    >
+                      <td className="px-4 py-3 font-mono text-xs">
+                        {lifecycle}
+                      </td>
+                      <td className="text-right px-4 py-3">{count}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -171,7 +291,7 @@ export default function ArchitecturePage() {
     <>
       <PageHeader
         title="Architecture"
-        description="Package ownership, dependency health, and app gold standard compliance."
+        description="Architecture health: lifecycle tiers, registry completeness, package ownership, and compliance."
       />
       <Suspense
         fallback={

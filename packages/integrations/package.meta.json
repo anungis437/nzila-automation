@@ -1,0 +1,10 @@
+{
+  "owner": "platform",
+  "category": "DEPRECATED",
+  "stability": "DEPRECATED",
+  "allowed_dependents": [],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": true,
+  "deprecation_note": "Stub package — real integration logic lives in integrations-core, integrations-db, integrations-runtime. Migrate provider manifests and remove."
+}
