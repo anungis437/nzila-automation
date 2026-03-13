@@ -8,9 +8,11 @@
 import { z } from 'zod'
 import {
   CreatorStatus,
+  CreatorOnboardingStatus,
   AssetType,
   AssetStatus,
   ReleaseStatus,
+  ReleaseType,
   RevenueType,
   PayoutStatus,
   PayoutRail,
@@ -19,6 +21,15 @@ import {
   ZongaLanguage,
   AfricanGenre,
   AudioQuality,
+  EventStatus,
+  TicketPurchaseStatus,
+  PlaylistVisibility,
+  PlaylistOwnerType,
+  ModerationCaseType,
+  ModerationCaseStatus,
+  FavoriteEntityType,
+  ListenerActivityType,
+  NotificationType,
 } from '../enums'
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -152,3 +163,118 @@ export const ZongaOrgContextSchema = z.object({
   permissions: z.array(z.string()),
   requestId: z.string().min(1),
 })
+
+// ── Listener ────────────────────────────────────────────────────────────────
+
+export const CreateListenerSchema = z.object({
+  displayName: z.string().min(1).max(255),
+  email: z.string().email().optional(),
+  city: z.string().max(100).optional(),
+  country: z.string().max(100).optional(),
+  preferencesJson: z.record(z.unknown()).optional(),
+})
+export type CreateListenerInput = z.infer<typeof CreateListenerSchema>
+
+export const ListenerFollowSchema = z.object({
+  listenerId: z.string().uuid(),
+  creatorId: z.string().uuid(),
+})
+export type ListenerFollowInput = z.infer<typeof ListenerFollowSchema>
+
+export const ListenerFavoriteSchema = z.object({
+  listenerId: z.string().uuid(),
+  entityType: z.enum(enumValues(FavoriteEntityType)),
+  entityId: z.string().uuid(),
+})
+export type ListenerFavoriteInput = z.infer<typeof ListenerFavoriteSchema>
+
+export const ListenerActivitySchema = z.object({
+  listenerId: z.string().uuid(),
+  activityType: z.enum(enumValues(ListenerActivityType)),
+  entityType: z.string().max(50).optional(),
+  entityId: z.string().uuid().optional(),
+  metadataJson: z.record(z.unknown()).optional(),
+})
+export type ListenerActivityInput = z.infer<typeof ListenerActivitySchema>
+
+// ── Event ──────────────────────────────────────────────────────────────────
+
+export const CreateEventSchema = z.object({
+  title: z.string().min(1).max(255),
+  description: z.string().max(5000).optional(),
+  venue: z.string().max(255).optional(),
+  city: z.string().max(100).optional(),
+  country: z.string().max(100).optional(),
+  startsAt: z.string().datetime(),
+  endsAt: z.string().datetime().optional(),
+  creatorId: z.string().uuid().optional(),
+  metadata: z.record(z.unknown()).optional(),
+})
+export type CreateEventInput = z.infer<typeof CreateEventSchema>
+
+export const CreateTicketTypeSchema = z.object({
+  eventId: z.string().uuid(),
+  ticketType: z.string().min(1).max(100),
+  price: z.number().min(0),
+  currency: z.enum(enumValues(ZongaCurrency)).default('USD'),
+  quantityAvailable: z.number().int().min(0),
+})
+export type CreateTicketTypeInput = z.infer<typeof CreateTicketTypeSchema>
+
+export const PurchaseTicketSchema = z.object({
+  eventId: z.string().uuid(),
+  ticketTypeId: z.string().uuid(),
+  listenerId: z.string().uuid().optional(),
+  successUrl: z.string().url(),
+  cancelUrl: z.string().url(),
+})
+export type PurchaseTicketInput = z.infer<typeof PurchaseTicketSchema>
+
+// ── Playlist ────────────────────────────────────────────────────────────────
+
+export const CreatePlaylistSchema = z.object({
+  title: z.string().min(1).max(255),
+  description: z.string().max(2000).optional(),
+  ownerType: z.enum(enumValues(PlaylistOwnerType)),
+  ownerId: z.string().uuid(),
+  visibility: z.enum(enumValues(PlaylistVisibility)).default('public'),
+})
+export type CreatePlaylistInput = z.infer<typeof CreatePlaylistSchema>
+
+export const AddPlaylistItemSchema = z.object({
+  playlistId: z.string().uuid(),
+  entityType: z.enum(['track', 'release']),
+  entityId: z.string().uuid(),
+  position: z.number().int().min(0),
+})
+export type AddPlaylistItemInput = z.infer<typeof AddPlaylistItemSchema>
+
+// ── Moderation ──────────────────────────────────────────────────────────────
+
+export const CreateModerationCaseSchema = z.object({
+  entityType: z.enum(['creator', 'asset', 'release', 'event']),
+  entityId: z.string().uuid(),
+  caseType: z.enum(enumValues(ModerationCaseType)),
+  severity: z.enum(['info', 'low', 'medium', 'high', 'critical']).default('medium'),
+  notes: z.string().max(5000).optional(),
+  assignedTo: z.string().uuid().optional(),
+})
+export type CreateModerationCaseInput = z.infer<typeof CreateModerationCaseSchema>
+
+export const ResolveModerationCaseSchema = z.object({
+  caseId: z.string().uuid(),
+  resolution: z.enum(['resolved', 'dismissed', 'escalated']),
+  notes: z.string().max(5000).optional(),
+})
+export type ResolveModerationCaseInput = z.infer<typeof ResolveModerationCaseSchema>
+
+// ── Notification ────────────────────────────────────────────────────────────
+
+export const CreateNotificationSchema = z.object({
+  userId: z.string().uuid(),
+  type: z.enum(enumValues(NotificationType)),
+  title: z.string().min(1).max(500),
+  body: z.string().max(5000).optional(),
+  link: z.string().max(2000).optional(),
+})
+export type CreateNotificationInput = z.infer<typeof CreateNotificationSchema>

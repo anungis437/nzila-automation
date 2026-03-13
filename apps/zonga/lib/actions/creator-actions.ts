@@ -2,6 +2,8 @@
  * Zonga Server Actions — Creators.
  *
  * Manage creator profiles, onboarding, and payee information.
+ * Reads/writes domain tables (zonga_creators, zonga_content_assets,
+ * zonga_revenue_events, zonga_payouts) + audit_log for traceability.
  */
 'use server'
 
@@ -40,23 +42,23 @@ export async function listCreators(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id, metadata->>'name' as name,
-        metadata->>'email' as email,
-        metadata->>'status' as status,
-        metadata->>'genre' as genre,
-        metadata->>'country' as country,
-        metadata->>'assetCount' as "assetCount",
-        metadata->>'totalRevenue' as "totalRevenue",
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'creator.registered'
-      AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC
+        c.id, c.display_name as name,
+        ca.email,
+        c.status,
+        c.genre,
+        c.country,
+        (SELECT COUNT(*) FROM zonga_content_assets a WHERE a.creator_id = c.id) as "assetCount",
+        (SELECT COALESCE(SUM(r.amount::numeric), 0) FROM zonga_revenue_events r WHERE r.creator_id = c.id) as "totalRevenue",
+        c.created_at as "createdAt"
+      FROM zonga_creators c
+      LEFT JOIN zonga_creator_accounts ca ON ca.creator_id = c.id
+      WHERE c.org_id = ${ctx.orgId}
+      ORDER BY c.created_at DESC
       LIMIT ${pageSize} OFFSET ${offset}`,
     )) as unknown as { rows: Creator[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action = 'creator.registered' AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as total FROM zonga_creators WHERE org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -86,10 +88,24 @@ export async function registerCreator(data: {
   try {
     const creatorId = crypto.randomUUID()
 
+    // Write to domain table
+    await platformDb.execute(
+      sql`INSERT INTO zonga_creators (id, org_id, user_id, display_name, status, genre, country)
+      VALUES (${creatorId}, ${ctx.orgId}, ${ctx.actorId}, ${data.name},
+        ${CreatorStatus.ACTIVE}, ${data.genre ?? null}, ${data.country ?? null})`,
+    )
+
+    // Write creator account
+    await platformDb.execute(
+      sql`INSERT INTO zonga_creator_accounts (org_id, creator_id, email, onboarding_status)
+      VALUES (${ctx.orgId}, ${creatorId}, ${data.email}, 'registered')`,
+    )
+
+    // Supplementary audit trail
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, metadata, org_id)
       VALUES ('creator.registered', ${ctx.actorId}, 'creator', ${creatorId},
-        ${JSON.stringify({ ...data, status: CreatorStatus.ACTIVE, id: creatorId })}::jsonb, ${ctx.orgId})`,
+        ${JSON.stringify({ name: data.name, email: data.email })}::jsonb, ${ctx.orgId})`,
     )
 
     const auditEvent = buildZongaAuditEvent({
@@ -129,35 +145,32 @@ export async function getCreatorDetail(creatorId: string): Promise<{
   try {
     const [creator] = (await platformDb.execute(
       sql`SELECT
-        org_id as id, metadata->>'name' as name,
-        metadata->>'email' as email,
-        metadata->>'status' as status,
-        metadata->>'genre' as genre,
-        metadata->>'country' as country,
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE org_id = ${creatorId} AND entity_type = 'creator'
-      AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC LIMIT 1`,
+        c.id, c.display_name as name,
+        ca.email,
+        c.status,
+        c.genre,
+        c.country,
+        c.created_at as "createdAt"
+      FROM zonga_creators c
+      LEFT JOIN zonga_creator_accounts ca ON ca.creator_id = c.id
+      WHERE c.id = ${creatorId} AND c.org_id = ${ctx.orgId}
+      LIMIT 1`,
     )) as unknown as [Creator | undefined]
 
     const [assetCount] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as count FROM audit_log
-      WHERE metadata->>'creatorId' = ${creatorId} AND action = 'asset.created'
-      AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as count FROM zonga_content_assets
+      WHERE creator_id = ${creatorId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ count: number }]
 
     const [revenueSum] = (await platformDb.execute(
-      sql`SELECT COALESCE(SUM(CAST(metadata->>'amount' AS NUMERIC)), 0) as total
-      FROM audit_log
-      WHERE metadata->>'creatorId' = ${creatorId} AND action = 'revenue.recorded'
-      AND org_id = ${ctx.orgId}`,
+      sql`SELECT COALESCE(SUM(amount::numeric), 0) as total
+      FROM zonga_revenue_events
+      WHERE creator_id = ${creatorId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [payoutCount] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as count FROM audit_log
-      WHERE metadata->>'creatorId' = ${creatorId} AND action = 'payout.executed'
-      AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as count FROM zonga_payouts
+      WHERE creator_id = ${creatorId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ count: number }]
 
     return {

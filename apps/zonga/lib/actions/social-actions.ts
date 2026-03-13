@@ -2,7 +2,8 @@
  * Zonga Server Actions — Social & Engagement.
  *
  * Follow creators, like content, post comments, and tip artists.
- * All interactions are stored via audit_log for event-sourced state.
+ * Reads/writes domain tables (zonga_listener_follows, zonga_listener_favorites,
+ * zonga_listener_activity, zonga_revenue_events) + audit_log for traceability.
  */
 'use server'
 
@@ -17,17 +18,17 @@ import { RevenueType } from '@/lib/zonga-services'
 
 export interface Follow {
   id: string
-  followerId: string
-  followingId: string
-  followingName?: string
+  listenerId: string
+  creatorId: string
+  creatorName?: string
   createdAt?: Date
 }
 
 export interface Like {
   id: string
-  userId: string
-  assetId: string
-  assetTitle?: string
+  listenerId: string
+  entityId: string
+  entityType: string
   createdAt?: Date
 }
 
@@ -49,66 +50,62 @@ export interface SocialStats {
 
 /* ─── Follow ─── */
 
-export async function followUser(followingId: string, followingName?: string): Promise<{ success: boolean }> {
+export async function followCreator(creatorId: string): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
 
   try {
-    const followId = crypto.randomUUID()
-
     // Check if already following
     const [existing] = (await platformDb.execute(
-      sql`SELECT org_id FROM audit_log
-      WHERE action = 'social.followed'
-        AND metadata->>'followerId' = ${ctx.actorId}
-        AND metadata->>'followingId' = ${followingId}
-        AND org_id = ${ctx.orgId}
+      sql`SELECT id FROM zonga_listener_follows
+      WHERE listener_id = ${ctx.actorId} AND creator_id = ${creatorId} AND org_id = ${ctx.orgId}
       LIMIT 1`,
-    )) as unknown as [{ org_id: string } | undefined]
+    )) as unknown as [{ id: string } | undefined]
 
     if (existing) {
-      return { success: true } // Already following
+      return { success: true }
     }
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.followed', ${ctx.actorId}, 'follow', ${followId}, ${ctx.orgId},
-        ${JSON.stringify({
-          followerId: ctx.actorId,
-          followingId,
-          followingName,
-        })}::jsonb)`,
+      sql`INSERT INTO zonga_listener_follows (org_id, listener_id, creator_id)
+      VALUES (${ctx.orgId}, ${ctx.actorId}, ${creatorId})`,
     )
 
-    logger.info('User followed', { followerId: ctx.actorId, followingId })
+    // Activity tracking
+    await platformDb.execute(
+      sql`INSERT INTO zonga_listener_activity (org_id, listener_id, activity_type, entity_type, entity_id)
+      VALUES (${ctx.orgId}, ${ctx.actorId}, 'follow', 'creator', ${creatorId})`,
+    )
+
+    logger.info('Creator followed', { listenerId: ctx.actorId, creatorId })
     return { success: true }
   } catch (error) {
-    logger.error('followUser failed', { error })
+    logger.error('followCreator failed', { error })
     return { success: false }
   }
 }
 
-export async function unfollowUser(followingId: string): Promise<{ success: boolean }> {
+/** @deprecated Use followCreator instead */
+export const followUser = followCreator
+
+export async function unfollowCreator(creatorId: string): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
 
   try {
-    const unfollowId = crypto.randomUUID()
-
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.unfollowed', ${ctx.actorId}, 'follow', ${unfollowId}, ${ctx.orgId},
-        ${JSON.stringify({
-          followerId: ctx.actorId,
-          followingId,
-        })}::jsonb)`,
+      sql`DELETE FROM zonga_listener_follows
+      WHERE listener_id = ${ctx.actorId} AND creator_id = ${creatorId} AND org_id = ${ctx.orgId}`,
     )
 
-    logger.info('User unfollowed', { followerId: ctx.actorId, followingId })
+    logger.info('Creator unfollowed', { listenerId: ctx.actorId, creatorId })
     return { success: true }
   } catch (error) {
-    logger.error('unfollowUser failed', { error })
+    logger.error('unfollowCreator failed', { error })
     return { success: false }
   }
 }
+
+/** @deprecated Use unfollowCreator instead */
+export const unfollowUser = unfollowCreator
 
 export async function listFollowers(creatorId: string): Promise<Follow[]> {
   const ctx = await resolveOrgContext()
@@ -116,20 +113,15 @@ export async function listFollowers(creatorId: string): Promise<Follow[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'followerId' as "followerId",
-        metadata->>'followingId' as "followingId",
-        metadata->>'followingName' as "followingName",
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followingId' = ${creatorId}
-        AND org_id = ${ctx.orgId}
-        AND org_id NOT IN (
-          SELECT metadata->>'originalFollowId' FROM audit_log
-          WHERE action = 'social.unfollowed' AND metadata->>'followingId' = ${creatorId}
-            AND org_id = ${ctx.orgId}
-        )
-      ORDER BY created_at DESC`,
+        f.id,
+        f.listener_id as "listenerId",
+        f.creator_id as "creatorId",
+        c.display_name as "creatorName",
+        f.created_at as "createdAt"
+      FROM zonga_listener_follows f
+      LEFT JOIN zonga_creators c ON c.id = f.creator_id
+      WHERE f.creator_id = ${creatorId} AND f.org_id = ${ctx.orgId}
+      ORDER BY f.created_at DESC`,
     )) as unknown as { rows: Follow[] }
 
     return rows.rows ?? []
@@ -146,15 +138,15 @@ export async function listFollowing(userId_?: string): Promise<Follow[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'followerId' as "followerId",
-        metadata->>'followingId' as "followingId",
-        metadata->>'followingName' as "followingName",
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followerId' = ${targetUser}
-        AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC`,
+        f.id,
+        f.listener_id as "listenerId",
+        f.creator_id as "creatorId",
+        c.display_name as "creatorName",
+        f.created_at as "createdAt"
+      FROM zonga_listener_follows f
+      LEFT JOIN zonga_creators c ON c.id = f.creator_id
+      WHERE f.listener_id = ${targetUser} AND f.org_id = ${ctx.orgId}
+      ORDER BY f.created_at DESC`,
     )) as unknown as { rows: Follow[] }
 
     return rows.rows ?? []
@@ -164,81 +156,83 @@ export async function listFollowing(userId_?: string): Promise<Follow[]> {
   }
 }
 
-/* ─── Likes ─── */
+/* ─── Favorites (replaces likes) ─── */
 
-export async function likeAsset(
-  assetId: string,
-  assetTitle?: string,
+export async function favoriteEntity(
+  entityType: string,
+  entityId: string,
 ): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
 
   try {
-    const likeId = crypto.randomUUID()
+    // Idempotent: skip if already favorited
+    const [existing] = (await platformDb.execute(
+      sql`SELECT id FROM zonga_listener_favorites
+      WHERE listener_id = ${ctx.actorId} AND entity_id = ${entityId} AND org_id = ${ctx.orgId}
+      LIMIT 1`,
+    )) as unknown as [{ id: string } | undefined]
+
+    if (existing) return { success: true }
 
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.liked', ${ctx.actorId}, 'like', ${likeId}, ${ctx.orgId},
-        ${JSON.stringify({
-          userId: ctx.actorId,
-          assetId,
-          assetTitle,
-        })}::jsonb)`,
+      sql`INSERT INTO zonga_listener_favorites (org_id, listener_id, entity_type, entity_id)
+      VALUES (${ctx.orgId}, ${ctx.actorId}, ${entityType}, ${entityId})`,
     )
 
-    logger.info('Asset liked', { userId: ctx.actorId, assetId })
+    logger.info('Entity favorited', { listenerId: ctx.actorId, entityType, entityId })
     return { success: true }
   } catch (error) {
-    logger.error('likeAsset failed', { error })
+    logger.error('favoriteEntity failed', { error })
     return { success: false }
   }
 }
 
-export async function unlikeAsset(assetId: string): Promise<{ success: boolean }> {
+/** @deprecated Use favoriteEntity instead */
+export async function likeAsset(assetId: string, _assetTitle?: string) {
+  return favoriteEntity('asset', assetId)
+}
+
+export async function unfavoriteEntity(entityId: string): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
 
   try {
-    const unlikeId = crypto.randomUUID()
-
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.unliked', ${ctx.actorId}, 'like', ${unlikeId}, ${ctx.orgId},
-        ${JSON.stringify({
-          userId: ctx.actorId,
-          assetId,
-        })}::jsonb)`,
+      sql`DELETE FROM zonga_listener_favorites
+      WHERE listener_id = ${ctx.actorId} AND entity_id = ${entityId} AND org_id = ${ctx.orgId}`,
     )
 
     return { success: true }
   } catch (error) {
-    logger.error('unlikeAsset failed', { error })
+    logger.error('unfavoriteEntity failed', { error })
     return { success: false }
   }
 }
 
-export async function getAssetLikeCount(assetId: string): Promise<number> {
+/** @deprecated Use unfavoriteEntity instead */
+export async function unlikeAsset(assetId: string) {
+  return unfavoriteEntity(assetId)
+}
+
+export async function getEntityFavoriteCount(entityId: string): Promise<number> {
   const ctx = await resolveOrgContext()
 
   try {
-    const [likes] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.liked' AND metadata->>'assetId' = ${assetId}
-        AND org_id = ${ctx.orgId}`,
+    const [result] = (await platformDb.execute(
+      sql`SELECT COUNT(*) as total FROM zonga_listener_favorites
+      WHERE entity_id = ${entityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
-    const [unlikes] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.unliked' AND metadata->>'assetId' = ${assetId}
-        AND org_id = ${ctx.orgId}`,
-    )) as unknown as [{ total: number }]
-
-    return Math.max(0, Number(likes?.total ?? 0) - Number(unlikes?.total ?? 0))
+    return Number(result?.total ?? 0)
   } catch (error) {
-    logger.error('getAssetLikeCount failed', { error })
+    logger.error('getEntityFavoriteCount failed', { error })
     return 0
   }
 }
 
-/* ─── Comments ─── */
+/** @deprecated Use getEntityFavoriteCount instead */
+export const getAssetLikeCount = getEntityFavoriteCount
+
+/* ─── Comments (kept in audit_log for now — low-volume append-only) ─── */
 
 export async function postComment(data: {
   assetId: string
@@ -261,6 +255,13 @@ export async function postComment(data: {
         })}::jsonb)`,
     )
 
+    // Activity tracking
+    await platformDb.execute(
+      sql`INSERT INTO zonga_listener_activity (org_id, listener_id, activity_type, entity_type, entity_id, metadata_json)
+      VALUES (${ctx.orgId}, ${ctx.actorId}, 'comment', 'asset', ${data.assetId},
+        ${JSON.stringify({ commentId })}::jsonb)`,
+    )
+
     logger.info('Comment posted', { userId: ctx.actorId, assetId: data.assetId })
     revalidatePath('/dashboard/catalog')
     return { success: true, commentId }
@@ -276,7 +277,7 @@ export async function listComments(assetId: string): Promise<Comment[]> {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
+        entity_id as id,
         metadata->>'userId' as "userId",
         metadata->>'userName' as "userName",
         metadata->>'assetId' as "assetId",
@@ -307,31 +308,18 @@ export async function tipCreator(data: {
   const ctx = await resolveOrgContext()
 
   try {
-    const tipId = crypto.randomUUID()
-
+    // Record revenue in domain table
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('social.tipped', ${ctx.actorId}, 'tip', ${tipId}, ${ctx.orgId},
-        ${JSON.stringify({
-          senderId: ctx.actorId,
-          creatorId: data.creatorId,
-          creatorName: data.creatorName,
-          amount: data.amount,
-          currency: data.currency,
-          message: data.message,
-        })}::jsonb)`,
+      sql`INSERT INTO zonga_revenue_events (org_id, creator_id, type, amount, currency, source, description)
+      VALUES (${ctx.orgId}, ${data.creatorId}, ${RevenueType.TIP}, ${data.amount},
+        ${data.currency}, 'tip', ${data.message ?? null})`,
     )
 
-    // Also record it as revenue for the creator
+    // Activity tracking
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.orgId},
-        ${JSON.stringify({
-          type: RevenueType.TIP,
-          creatorId: data.creatorId,
-          amount: data.amount,
-          currency: data.currency,
-        })}::jsonb)`,
+      sql`INSERT INTO zonga_listener_activity (org_id, listener_id, activity_type, entity_type, entity_id, metadata_json)
+      VALUES (${ctx.orgId}, ${ctx.actorId}, 'tip', 'creator', ${data.creatorId},
+        ${JSON.stringify({ amount: data.amount, currency: data.currency })}::jsonb)`,
     )
 
     logger.info('Tip sent', { senderId: ctx.actorId, creatorId: data.creatorId, amount: data.amount })
@@ -344,32 +332,28 @@ export async function tipCreator(data: {
 
 /* ─── Social Stats ─── */
 
-export async function getSocialStats(orgId: string): Promise<SocialStats> {
+export async function getSocialStats(entityId: string): Promise<SocialStats> {
   const ctx = await resolveOrgContext()
 
   try {
     const [followers] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followingId' = ${orgId}
-        AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as total FROM zonga_listener_follows
+      WHERE creator_id = ${entityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [following] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.followed' AND metadata->>'followerId' = ${orgId}
-        AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as total FROM zonga_listener_follows
+      WHERE listener_id = ${entityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [likes] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.liked' AND metadata->>'userId' = ${orgId}
-        AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as total FROM zonga_listener_favorites
+      WHERE listener_id = ${entityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [comments] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log
-      WHERE action = 'social.commented' AND metadata->>'userId' = ${orgId}
-        AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as total FROM zonga_listener_activity
+      WHERE listener_id = ${entityId} AND activity_type = 'comment' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {

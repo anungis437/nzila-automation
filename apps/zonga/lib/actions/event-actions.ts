@@ -3,6 +3,8 @@
  *
  * Create and manage live events, sell tickets via Stripe checkout,
  * and track ticket inventory / attendance.
+ * Reads/writes domain tables (zonga_events, zonga_ticket_types,
+ * zonga_ticket_purchases) + audit_log for traceability.
  */
 'use server'
 
@@ -15,6 +17,9 @@ import {
   buildZongaAuditEvent,
   ZongaAuditAction,
   ZongaEntityType,
+  CreateEventSchema,
+  CreateTicketTypeSchema,
+  PurchaseTicketSchema,
 } from '@/lib/zonga-services'
 import { createCheckoutSession } from '@/lib/stripe'
 import { buildEvidencePackFromAction, processEvidencePack } from '@/lib/evidence'
@@ -28,30 +33,34 @@ export interface ZongaEvent {
   venue: string
   city: string
   country: string
-  startDate: string
-  endDate?: string
-  ticketPrice: number
-  currency: string
-  totalTickets: number
-  soldTickets: number
+  startsAt: string
+  endsAt?: string
   status: 'draft' | 'published' | 'sold_out' | 'cancelled' | 'completed'
   imageUrl?: string
-  performers?: string[]
-  genre?: string
+  creatorId?: string
+  ticketTypes?: TicketTypeSummary[]
   createdAt?: Date
+}
+
+export interface TicketTypeSummary {
+  id: string
+  ticketType: string
+  price: number
+  currency: string
+  quantityAvailable: number
+  sold: number
 }
 
 export interface Ticket {
   id: string
   eventId: string
-  eventTitle: string
-  buyerEmail: string
-  buyerName?: string
-  quantity: number
-  totalPrice: number
+  ticketTypeId: string
+  ticketType: string
+  listenerId?: string
+  amount: number
   currency: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'used'
-  stripeSessionId?: string
+  status: 'pending' | 'confirmed' | 'cancelled' | 'refunded'
+  stripeCheckoutSessionId?: string
   createdAt?: Date
 }
 
@@ -80,31 +89,26 @@ export async function listEvents(opts?: {
   try {
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'title' as title,
-        metadata->>'description' as description,
-        metadata->>'venue' as venue,
-        metadata->>'city' as city,
-        metadata->>'country' as country,
-        metadata->>'startDate' as "startDate",
-        metadata->>'endDate' as "endDate",
-        COALESCE(CAST(metadata->>'ticketPrice' AS NUMERIC), 0) as "ticketPrice",
-        metadata->>'currency' as currency,
-        COALESCE(CAST(metadata->>'totalTickets' AS INTEGER), 0) as "totalTickets",
-        COALESCE(CAST(metadata->>'soldTickets' AS INTEGER), 0) as "soldTickets",
-        metadata->>'status' as status,
-        metadata->>'imageUrl' as "imageUrl",
-        metadata->'performers' as performers,
-        metadata->>'genre' as genre,
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE (action = 'event.created' OR action = 'event.published') AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC
+        e.id,
+        e.title,
+        e.description,
+        e.venue,
+        e.city,
+        e.country,
+        e.starts_at as "startsAt",
+        e.ends_at as "endsAt",
+        e.status,
+        e.image_url as "imageUrl",
+        e.creator_id as "creatorId",
+        e.created_at as "createdAt"
+      FROM zonga_events e
+      WHERE e.org_id = ${ctx.orgId}
+      ORDER BY e.starts_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: ZongaEvent[] }
 
     const [cnt] = (await platformDb.execute(
-      sql`SELECT COUNT(*) as total FROM audit_log WHERE action LIKE 'event.%' AND action != 'event.ticket.purchased' AND org_id = ${ctx.orgId}`,
+      sql`SELECT COUNT(*) as total FROM zonga_events WHERE org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {
@@ -130,61 +134,40 @@ export async function getEventDetail(eventId: string): Promise<{
   try {
     const [event] = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'title' as title,
-        metadata->>'description' as description,
-        metadata->>'venue' as venue,
-        metadata->>'city' as city,
-        metadata->>'country' as country,
-        metadata->>'startDate' as "startDate",
-        metadata->>'endDate' as "endDate",
-        COALESCE(CAST(metadata->>'ticketPrice' AS NUMERIC), 0) as "ticketPrice",
-        metadata->>'currency' as currency,
-        COALESCE(CAST(metadata->>'totalTickets' AS INTEGER), 0) as "totalTickets",
-        COALESCE(CAST(metadata->>'soldTickets' AS INTEGER), 0) as "soldTickets",
-        metadata->>'status' as status,
-        metadata->'performers' as performers,
-        metadata->>'genre' as genre,
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE org_id = ${eventId} AND action LIKE 'event.%' AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC LIMIT 1`,
+        e.id, e.title, e.description, e.venue, e.city, e.country,
+        e.starts_at as "startsAt", e.ends_at as "endsAt",
+        e.status, e.image_url as "imageUrl",
+        e.creator_id as "creatorId",
+        e.created_at as "createdAt"
+      FROM zonga_events e
+      WHERE e.id = ${eventId} AND e.org_id = ${ctx.orgId}`,
     )) as unknown as [ZongaEvent | undefined]
 
     const ticketRows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'eventId' as "eventId",
-        metadata->>'eventTitle' as "eventTitle",
-        metadata->>'buyerEmail' as "buyerEmail",
-        metadata->>'buyerName' as "buyerName",
-        COALESCE(CAST(metadata->>'quantity' AS INTEGER), 1) as quantity,
-        COALESCE(CAST(metadata->>'totalPrice' AS NUMERIC), 0) as "totalPrice",
-        metadata->>'currency' as currency,
-        metadata->>'status' as status,
-        metadata->>'stripeSessionId' as "stripeSessionId",
-        created_at as "createdAt"
-      FROM audit_log
-      WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${eventId} AND org_id = ${ctx.orgId}
-      ORDER BY created_at DESC`,
+        tp.id,
+        tp.event_id as "eventId",
+        tp.ticket_type_id as "ticketTypeId",
+        tt.ticket_type as "ticketType",
+        tp.listener_id as "listenerId",
+        tp.amount,
+        tp.currency,
+        tp.status,
+        tp.stripe_checkout_session_id as "stripeCheckoutSessionId",
+        tp.created_at as "createdAt"
+      FROM zonga_ticket_purchases tp
+      JOIN zonga_ticket_types tt ON tt.id = tp.ticket_type_id
+      WHERE tp.event_id = ${eventId} AND tp.org_id = ${ctx.orgId}
+      ORDER BY tp.created_at DESC`,
     )) as unknown as { rows: Ticket[] }
 
     const tickets = ticketRows.rows ?? []
-    const ticketsSold = tickets.reduce(
-      (sum, t) => sum + Number(t.quantity ?? 0),
-      0,
-    )
-    const ticketRevenue = tickets.reduce(
-      (sum, t) => sum + Number(t.totalPrice ?? 0),
-      0,
-    )
+    const ticketsSold = tickets.filter(t => t.status === 'confirmed').length
+    const ticketRevenue = tickets
+      .filter(t => t.status === 'confirmed')
+      .reduce((sum, t) => sum + Number(t.amount ?? 0), 0)
 
-    return {
-      event: event ?? null,
-      tickets,
-      ticketsSold,
-      ticketRevenue,
-    }
+    return { event: event ?? null, tickets, ticketsSold, ticketRevenue }
   } catch (error) {
     logger.error('getEventDetail failed', { error })
     return { event: null, tickets: [], ticketsSold: 0, ticketRevenue: 0 }
@@ -196,31 +179,36 @@ export async function getEventDetail(eventId: string): Promise<{
 export async function createEvent(data: {
   title: string
   description?: string
-  venue: string
-  city: string
-  country: string
-  startDate: string
-  endDate?: string
-  ticketPrice: number
-  currency: string
-  totalTickets: number
-  performers?: string[]
-  genre?: string
-}): Promise<{ success: boolean; eventId?: string }> {
+  venue?: string
+  city?: string
+  country?: string
+  startsAt: string
+  endsAt?: string
+  creatorId?: string
+}): Promise<{ success: boolean; eventId?: string; error?: unknown }> {
   const ctx = await resolveOrgContext()
+
+  const parsed = CreateEventSchema.safeParse(data)
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.flatten().fieldErrors }
+  }
 
   try {
     const eventId = crypto.randomUUID()
 
     await platformDb.execute(
+      sql`INSERT INTO zonga_events (id, org_id, creator_id, title, description, venue, city, country, starts_at, ends_at, status)
+      VALUES (${eventId}, ${ctx.orgId}, ${data.creatorId ?? null}, ${data.title},
+        ${data.description ?? null}, ${data.venue ?? null}, ${data.city ?? null},
+        ${data.country ?? null}, ${new Date(data.startsAt)},
+        ${data.endsAt ? new Date(data.endsAt) : null}, 'draft')`,
+    )
+
+    // Supplementary audit trail
+    await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
       VALUES ('event.created', ${ctx.actorId}, 'event', ${eventId}, ${ctx.orgId},
-        ${JSON.stringify({
-          ...data,
-          id: eventId,
-          status: 'draft',
-          soldTickets: 0,
-        })}::jsonb)`,
+        ${JSON.stringify({ title: data.title, venue: data.venue })}::jsonb)`,
     )
 
     const auditEvent = buildZongaAuditEvent({
@@ -249,6 +237,40 @@ export async function createEvent(data: {
   }
 }
 
+/* ─── Create Ticket Type ─── */
+
+export async function createTicketType(data: {
+  eventId: string
+  ticketType: string
+  price: number
+  currency?: string
+  quantityAvailable: number
+}): Promise<{ success: boolean; ticketTypeId?: string; error?: unknown }> {
+  const ctx = await resolveOrgContext()
+
+  const parsed = CreateTicketTypeSchema.safeParse(data)
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.flatten().fieldErrors }
+  }
+
+  try {
+    const ticketTypeId = crypto.randomUUID()
+
+    await platformDb.execute(
+      sql`INSERT INTO zonga_ticket_types (id, org_id, event_id, ticket_type, price, currency, quantity_available)
+      VALUES (${ticketTypeId}, ${ctx.orgId}, ${data.eventId}, ${data.ticketType},
+        ${data.price}, ${data.currency ?? 'USD'}, ${data.quantityAvailable})`,
+    )
+
+    logger.info('Ticket type created', { ticketTypeId, eventId: data.eventId })
+    revalidatePath('/dashboard/events')
+    return { success: true, ticketTypeId }
+  } catch (error) {
+    logger.error('createTicketType failed', { error })
+    return { success: false }
+  }
+}
+
 /* ─── Publish Event ─── */
 
 export async function publishEvent(
@@ -258,9 +280,14 @@ export async function publishEvent(
 
   try {
     await platformDb.execute(
+      sql`UPDATE zonga_events SET status = 'published', updated_at = NOW()
+      WHERE id = ${eventId} AND org_id = ${ctx.orgId}`,
+    )
+
+    await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
       VALUES ('event.published', ${ctx.actorId}, 'event', ${eventId}, ${ctx.orgId},
-        ${JSON.stringify({ status: 'published', publishedAt: new Date().toISOString() })}::jsonb)`,
+        ${JSON.stringify({ publishedAt: new Date().toISOString() })}::jsonb)`,
     )
 
     logger.info('Event published', { eventId, actorId: ctx.actorId })
@@ -276,75 +303,79 @@ export async function publishEvent(
 
 export async function purchaseTicket(data: {
   eventId: string
-  eventTitle: string
-  quantity: number
-  ticketPrice: number
-  currency: string
-  buyerEmail: string
-  buyerName?: string
+  ticketTypeId: string
+  listenerId?: string
   successUrl: string
   cancelUrl: string
-}): Promise<{ success: boolean; checkoutUrl?: string }> {
+}): Promise<{ success: boolean; checkoutUrl?: string; error?: unknown }> {
   const ctx = await resolveOrgContext()
 
+  const parsed = PurchaseTicketSchema.safeParse(data)
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.flatten().fieldErrors }
+  }
+
   try {
-    const ticketId = crypto.randomUUID()
-    const totalPrice = data.ticketPrice * data.quantity
+    // Fetch ticket type details for pricing
+    const [ticketType] = (await platformDb.execute(
+      sql`SELECT id, ticket_type, price, currency, quantity_available,
+        (SELECT COUNT(*) FROM zonga_ticket_purchases
+         WHERE ticket_type_id = zonga_ticket_types.id AND status = 'confirmed') as sold
+      FROM zonga_ticket_types
+      WHERE id = ${data.ticketTypeId} AND event_id = ${data.eventId}`,
+    )) as unknown as [{ id: string; ticket_type: string; price: number; currency: string; quantity_available: number; sold: number } | undefined]
+
+    if (!ticketType) {
+      return { success: false, error: 'Ticket type not found' }
+    }
+
+    if (Number(ticketType.sold) >= ticketType.quantity_available) {
+      return { success: false, error: 'Sold out' }
+    }
+
+    // Fetch event title for display
+    const [event] = (await platformDb.execute(
+      sql`SELECT title FROM zonga_events WHERE id = ${data.eventId}`,
+    )) as unknown as [{ title: string } | undefined]
+
+    const purchaseId = crypto.randomUUID()
 
     // Create Stripe checkout session
     const session = await createCheckoutSession({
       orgId: data.eventId,
       lineItems: [
         {
-          name: `${data.eventTitle} — Ticket`,
-          amountCents: Math.round(totalPrice * 100), // cents
-          quantity: data.quantity,
+          name: `${event?.title ?? 'Event'} — ${ticketType.ticket_type}`,
+          amountCents: Math.round(Number(ticketType.price) * 100),
+          quantity: 1,
         },
       ],
       successUrl: data.successUrl,
       cancelUrl: data.cancelUrl,
       metadata: {
-        ticketId,
+        purchaseId,
         eventId: data.eventId,
-        quantity: String(data.quantity),
+        ticketTypeId: data.ticketTypeId,
       },
     })
 
-    // Record ticket purchase (pending until webhook confirms)
+    // Record purchase (pending until webhook confirms)
     await platformDb.execute(
-      sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('event.ticket.purchased', ${ctx.actorId}, 'ticket', ${ticketId}, ${ctx.orgId},
-        ${JSON.stringify({
-          eventId: data.eventId,
-          eventTitle: data.eventTitle,
-          buyerEmail: data.buyerEmail,
-          buyerName: data.buyerName,
-          quantity: data.quantity,
-          totalPrice,
-          currency: data.currency,
-          status: 'pending',
-          stripeSessionId: session?.id ?? null,
-        })}::jsonb)`,
+      sql`INSERT INTO zonga_ticket_purchases (id, org_id, event_id, ticket_type_id, listener_id,
+        stripe_checkout_session_id, status, amount, currency)
+      VALUES (${purchaseId}, ${ctx.orgId}, ${data.eventId}, ${data.ticketTypeId},
+        ${data.listenerId ?? null}, ${session?.id ?? null}, 'pending',
+        ${ticketType.price}, ${ticketType.currency})`,
     )
 
-    // Record revenue event
+    // Supplementary audit trail
     await platformDb.execute(
       sql`INSERT INTO audit_log (action, actor_id, entity_type, entity_id, org_id, metadata)
-      VALUES ('revenue.recorded', ${ctx.actorId}, 'revenue', ${crypto.randomUUID()}, ${ctx.orgId},
-        ${JSON.stringify({
-          type: 'ticket_sale',
-          eventId: data.eventId,
-          amount: totalPrice,
-          currency: data.currency,
-        })}::jsonb)`,
+      VALUES ('event.ticket.purchased', ${ctx.actorId}, 'ticket', ${purchaseId}, ${ctx.orgId},
+        ${JSON.stringify({ eventId: data.eventId, ticketTypeId: data.ticketTypeId })}::jsonb)`,
     )
 
-    logger.info('Ticket purchase initiated', {
-      ticketId,
-      eventId: data.eventId,
-      quantity: data.quantity,
-    })
-
+    logger.info('Ticket purchase initiated', { purchaseId, eventId: data.eventId })
     revalidatePath('/dashboard/events')
     return { success: true, checkoutUrl: session?.url ?? undefined }
   } catch (error) {
@@ -365,34 +396,35 @@ export async function listTickets(opts?: {
   const offset = (page - 1) * 25
 
   try {
-    const whereClause = opts?.eventId
-      ? sql`WHERE action = 'event.ticket.purchased' AND metadata->>'eventId' = ${opts.eventId} AND org_id = ${ctx.orgId}`
-      : sql`WHERE action = 'event.ticket.purchased' AND org_id = ${ctx.orgId}`
+    const eventFilter = opts?.eventId
+      ? sql`AND tp.event_id = ${opts.eventId}`
+      : sql``
 
     const rows = (await platformDb.execute(
       sql`SELECT
-        org_id as id,
-        metadata->>'eventId' as "eventId",
-        metadata->>'eventTitle' as "eventTitle",
-        metadata->>'buyerEmail' as "buyerEmail",
-        metadata->>'buyerName' as "buyerName",
-        COALESCE(CAST(metadata->>'quantity' AS INTEGER), 1) as quantity,
-        COALESCE(CAST(metadata->>'totalPrice' AS NUMERIC), 0) as "totalPrice",
-        metadata->>'currency' as currency,
-        metadata->>'status' as status,
-        created_at as "createdAt"
-      FROM audit_log
-      ${whereClause}
-      ORDER BY created_at DESC
+        tp.id,
+        tp.event_id as "eventId",
+        tp.ticket_type_id as "ticketTypeId",
+        tt.ticket_type as "ticketType",
+        tp.listener_id as "listenerId",
+        tp.amount,
+        tp.currency,
+        tp.status,
+        tp.stripe_checkout_session_id as "stripeCheckoutSessionId",
+        tp.created_at as "createdAt"
+      FROM zonga_ticket_purchases tp
+      JOIN zonga_ticket_types tt ON tt.id = tp.ticket_type_id
+      WHERE tp.org_id = ${ctx.orgId} ${eventFilter}
+      ORDER BY tp.created_at DESC
       LIMIT 25 OFFSET ${offset}`,
     )) as unknown as { rows: Ticket[] }
 
     const [totals] = (await platformDb.execute(
       sql`SELECT
         COUNT(*) as total,
-        COALESCE(SUM(CAST(metadata->>'totalPrice' AS NUMERIC)), 0) as total_revenue
-      FROM audit_log
-      ${whereClause}`,
+        COALESCE(SUM(CASE WHEN tp.status = 'confirmed' THEN tp.amount::numeric ELSE 0 END), 0) as total_revenue
+      FROM zonga_ticket_purchases tp
+      WHERE tp.org_id = ${ctx.orgId} ${eventFilter}`,
     )) as unknown as [{ total: number; total_revenue: number }]
 
     return {

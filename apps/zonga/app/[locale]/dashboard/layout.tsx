@@ -19,7 +19,9 @@ const sidebarLinks = [
   { href: 'dashboard/payouts', label: 'Payouts', icon: '⚡' },
   { href: 'dashboard/creators', label: 'Creators', icon: '🎤' },
   { href: 'dashboard/analytics', label: 'Analytics', icon: '📈' },
+  { href: 'dashboard/listener', label: 'My Music', icon: '🎧' },
   { href: 'dashboard/notifications', label: 'Notifications', icon: '🔔' },
+  { href: 'dashboard/moderation', label: 'Moderation', icon: '🛡️' },
   { href: 'dashboard/integrity', label: 'Integrity', icon: '🔒' },
 ];
 

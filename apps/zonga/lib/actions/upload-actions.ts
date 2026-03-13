@@ -72,15 +72,13 @@ export async function uploadAudio(
     // Compute fingerprint for integrity / duplicate detection
     const sha256 = await fingerprintAudio(buffer)
 
-    // Update the content asset record with storage URL
+    // Update the content asset record with storage URL + fingerprint
     const storageUrl = `blob://${result.blobPath}`
 
     await platformDb.execute(sql`
-      UPDATE audit_log SET metadata = jsonb_set(
-        COALESCE(metadata, '{}'::jsonb),
-        '{storageUrl}',
-        ${JSON.stringify(storageUrl)}::jsonb
-      )
+      UPDATE zonga_content_assets
+      SET storage_url = ${storageUrl},
+          updated_at  = now()
       WHERE id = ${meta.assetId} AND org_id = ${ctx.orgId}
     `)
 
@@ -173,11 +171,9 @@ export async function uploadCover(
 
     // Update asset with cover art URL
     await platformDb.execute(sql`
-      UPDATE audit_log SET metadata = jsonb_set(
-        COALESCE(metadata, '{}'::jsonb),
-        '{coverArtUrl}',
-        ${JSON.stringify(coverUrl)}::jsonb
-      )
+      UPDATE zonga_content_assets
+      SET cover_art_url = ${coverUrl},
+          updated_at    = now()
       WHERE id = ${assetId} AND org_id = ${ctx.orgId}
     `)
 

@@ -18,12 +18,13 @@ const isPublicRoute = createRouteMatcher([
   '/pricing(.*)',
   '/contact(.*)',
   '/artists(.*)',
+  '/events(.*)',
   '/for-labels(.*)',
   '/api/health(.*)',
 ])
 
 const isMarketingPath = (pathname: string) =>
-  ['/', '/about', '/pricing', '/contact', '/artists', '/for-labels'].some(
+  ['/', '/about', '/pricing', '/contact', '/artists', '/events', '/for-labels'].some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 
