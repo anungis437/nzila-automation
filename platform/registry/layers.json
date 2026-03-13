@@ -1,0 +1,67 @@
+{
+  "description": "Machine-readable architectural layer map for Nzila OS. Defines which directories belong to each architectural layer.",
+  "layers": {
+    "apps": {
+      "label": "Layer 1 — Apps",
+      "paths": ["apps/*"],
+      "description": "Business applications"
+    },
+    "platform_services": {
+      "label": "Layer 2 — Platform Services",
+      "paths": [
+        "platform/*",
+        "packages/platform-*"
+      ],
+      "description": "Reusable platform capabilities"
+    },
+    "shared_packages": {
+      "label": "Layer 3 — Shared Packages",
+      "paths": ["packages/*"],
+      "description": "Reusable libraries",
+      "excludes": ["packages/platform-*"]
+    },
+    "infrastructure": {
+      "label": "Layer 4 — Infrastructure / Tooling",
+      "paths": [
+        "scripts/*",
+        "tooling/*",
+        "ops/*",
+        "infrastructure/*",
+        "governance/*"
+      ],
+      "description": "Scripts, tooling, ops, infrastructure adapters"
+    }
+  },
+  "dependency_rules": [
+    {
+      "from": "apps",
+      "may_depend_on": ["platform_services", "shared_packages"],
+      "must_not_depend_on": ["apps", "infrastructure"]
+    },
+    {
+      "from": "platform_services",
+      "may_depend_on": ["shared_packages"],
+      "must_not_depend_on": ["apps"]
+    },
+    {
+      "from": "shared_packages",
+      "may_depend_on": ["shared_packages"],
+      "must_not_depend_on": ["apps", "infrastructure"]
+    },
+    {
+      "from": "infrastructure",
+      "may_depend_on": ["shared_packages", "platform_services"],
+      "must_not_depend_on": ["apps"]
+    }
+  ],
+  "overrides": {
+    "allowed_cross_layer": [
+      {
+        "from": "platform_services",
+        "to": "infrastructure",
+        "reason": "Platform deploy and ops adapters may reference infrastructure config",
+        "packages": ["platform-deploy", "platform-ops", "platform-environment"]
+      }
+    ]
+  }
+}
