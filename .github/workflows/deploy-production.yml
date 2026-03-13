@@ -32,7 +32,7 @@ jobs:
         run: pnpm governance:check
 
       - name: Change window validation
-        run: node --import tsx scripts/validate-change-window.ts --env=PRODUCTION --service=all --commit=${{ github.sha }}
+        run: node --import tsx scripts/validate-change-window.ts --env=PROD --service=all --commit=${{ github.sha }}
 
       - name: Contract tests
         id: contract_tests

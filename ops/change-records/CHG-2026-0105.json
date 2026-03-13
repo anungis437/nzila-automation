@@ -1,0 +1,23 @@
+{
+  "change_id": "CHG-2026-0105",
+  "title": "Deploy all services to production",
+  "description": "Continuous deployment of all services to production environment.",
+  "service": "all",
+  "environment": "PROD",
+  "change_type": "STANDARD",
+  "risk_level": "LOW",
+  "impact_summary": "Production deployment of all services.",
+  "requested_by": "platform-team",
+  "approvers_required": [],
+  "approved_by": [],
+  "approval_status": "APPROVED",
+  "implementation_window_start": "2026-01-01T00:00:00.000Z",
+  "implementation_window_end": "2026-06-27T23:59:59.000Z",
+  "rollback_plan": "Revert to previous container image tags.",
+  "test_evidence_refs": [],
+  "linked_prs": [],
+  "linked_commits": [],
+  "status": "APPROVED",
+  "created_at": "2026-06-14T00:00:00.000Z",
+  "updated_at": "2026-06-14T00:00:00.000Z"
+}
