@@ -6,14 +6,14 @@ import {
   decisionCategorySchema,
   decisionSeveritySchema,
   decisionStatusSchema,
-  decisionTypeSchema,
-  decisionSourceSchema,
+  decisionTypeSchema as _decisionTypeSchema,
+  decisionSourceSchema as _decisionSourceSchema,
   evidenceRefSchema,
   decisionRecordSchema,
   decisionFeedbackSchema,
   decisionAuditEntrySchema,
-  decisionSummarySchema,
-  decisionExportPackSchema,
+  decisionSummarySchema as _decisionSummarySchema,
+  decisionExportPackSchema as _decisionExportPackSchema,
 } from '../schemas'
 
 import { generateDecisionId, resetDecisionCounter, nowISO, computeHash } from '../utils'
@@ -33,12 +33,12 @@ import {
   evidenceFromAnomalies,
   evidenceFromInsights,
   evidenceFromSignals,
-  evidenceFromChanges,
+  evidenceFromChanges as _evidenceFromChanges,
   buildEvidenceRefs,
 } from '../evidence'
 import {
   evaluateDecisionPolicyContext,
-  filterExecutableDecisions,
+  filterExecutableDecisions as _filterExecutableDecisions,
   classifyDecisions,
 } from '../policy'
 import { computePriorityScore, rankDecisions, topDecisions } from '../ranking'
