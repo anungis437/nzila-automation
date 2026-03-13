@@ -59,7 +59,7 @@ export async function getSmartPricing(opts: {
   theme: string
   clientHistory?: string
 }): Promise<PricingSuggestion[]> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   try {
     // Pull recent quote history for context
@@ -108,7 +108,7 @@ export async function findSimilarProducts(
   description: string,
   limit: number = 5,
 ): Promise<SimilarProduct[]> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   try {
     const embeddings = await runAIEmbed(description, { profile: 'shop-quoter-embed' })
@@ -175,7 +175,7 @@ export async function extractFromRfp(
 /* ─── Quote Conversion Prediction ─── */
 
 export async function predictConversion(quoteId: string): Promise<ConversionPrediction | null> {
-  const ctx = await resolveOrgContext()
+  const _ctx = await resolveOrgContext()
 
   try {
     const prediction = await runPrediction({

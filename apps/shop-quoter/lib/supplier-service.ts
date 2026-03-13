@@ -264,7 +264,7 @@ export async function syncSupplierToZoho(
     throw new Error(`Supplier ${supplierId} not found`)
   }
 
-  const address = supplier.address as SupplierAddress | null
+  const _address = supplier.address as SupplierAddress | null
 
   const zohoVendor: Partial<ZohoVendor> = {
     contact_name: supplier.name,

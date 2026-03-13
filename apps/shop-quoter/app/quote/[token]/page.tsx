@@ -11,7 +11,7 @@ import { quoteRepo, customerRepo } from '@/lib/db'
 import { emitWorkflowAuditEvent } from '@/lib/services/workflow-audit-service'
 import { QuoteApprovalForm } from './approval-form'
 import { getOrgSettings, getOrgBranding } from '@nzila/platform-commerce-org/service'
-import type { OrgCommerceSettings, OrgBrandingConfig } from '@nzila/platform-commerce-org/types'
+import type { OrgCommerceSettings } from '@nzila/platform-commerce-org/types'
 
 function makeFmt(settings: OrgCommerceSettings) {
   return (n: number) =>

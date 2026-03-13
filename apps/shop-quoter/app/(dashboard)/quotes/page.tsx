@@ -4,7 +4,6 @@ import {
   FunnelIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
-import { resolveOrgCommerceContext } from '@/lib/resolve-org'
 
 /** Status badge colours. */
 const statusColors: Record<string, string> = {

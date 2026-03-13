@@ -76,7 +76,7 @@ test.describe('Scenario 3: Client Approval Flow', () => {
   })
 
   test('client portal returns 404 for invalid token', async ({ page }) => {
-    const res = await page.goto(`${BASE}/quote/invalid-token-that-does-not-exist`)
+    await page.goto(`${BASE}/quote/invalid-token-that-does-not-exist`)
     // Should render the page but show an error state — not crash
     const body = page.locator('body')
     await expect(body).toBeVisible()

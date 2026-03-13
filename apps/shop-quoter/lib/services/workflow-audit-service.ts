@@ -27,7 +27,7 @@ export function emitWorkflowAuditEvent(input: AuditEventInput): void {
   const { event, quoteId, orgId, userId, metadata } = input
 
   // Build audit entry via commerce-audit
-  const auditEntry = auditQuoteTransition({
+  const _auditEntry = auditQuoteTransition({
     quoteId,
     fromStatus: metadata?.fromStatus as string ?? event,
     toStatus: metadata?.toStatus as string ?? event,

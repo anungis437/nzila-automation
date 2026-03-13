@@ -15,7 +15,7 @@ import {
   commercePaymentEvents,
   commerceTimelineEvents,
 } from '@nzila/db'
-import { eq, desc, and } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import type {
   QuoteApproval,
   QuoteRevision,
