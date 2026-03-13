@@ -82,7 +82,7 @@ function mapShopifyOrderToQuote(
 ): Partial<typeof commerceQuotes.$inferInsert> {
   return {
     ref: `SHOP-${order.order_number}`,
-    customerId,
+    customerId: customerId ?? undefined,
     status: (FINANCIAL_STATUS_MAP[order.financial_status] ?? 'draft') as 'draft',
     currency: order.currency,
     subtotal: order.subtotal_price,
@@ -276,8 +276,9 @@ export class ShopifySyncService {
               .insert(commerceQuotes)
               .values({
                 orgId: this.orgId,
+                createdBy: 'shopify-sync',
                 ref: quoteData.ref ?? `SHOP-${order.order_number}`,
-                customerId: quoteData.customerId,
+                customerId: quoteData.customerId ?? '',
                 status: quoteData.status ?? 'draft',
                 currency: quoteData.currency ?? 'CAD',
                 subtotal: quoteData.subtotal ?? '0',

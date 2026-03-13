@@ -181,6 +181,7 @@ export type TimelineEvent = z.infer<typeof TimelineEventSchema>
 // ── Audit Event Types ──────────────────────────────────────────────────────
 
 export const WorkflowAuditEvent = z.enum([
+  'quote_submitted_for_review',
   'quote_sent_to_client',
   'quote_share_link_created',
   'quote_share_link_viewed',

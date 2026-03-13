@@ -38,7 +38,7 @@ export async function createPurchaseOrderFromQuote(
   // Step 1 — Evaluate readiness
   const readiness = await evaluatePOReadiness(quoteId)
   if (!readiness.ready) {
-    logger.warn({ quoteId, blockers: readiness.blockers }, 'PO readiness check failed')
+    logger.warn('PO readiness check failed', { quoteId, blockers: readiness.blockers })
     emitWorkflowAuditEvent({
       event: 'quote_blocked_by_payment_policy',
       quoteId,
@@ -58,15 +58,15 @@ export async function createPurchaseOrderFromQuote(
       orgId,
       customerId: quote.customerId,
       quoteId,
-      lines: (quote.lines ?? []).map((l: Record<string, unknown>) => ({
-        productId: String(l.productId ?? ''),
-        description: String(l.description ?? l.title ?? ''),
+      lines: (quote.lines ?? []).map((l) => ({
+        productId: l.id,
+        description: l.description,
         sku: l.sku as string | undefined,
-        quantity: Number(l.quantity ?? 1),
-        unitPrice: Number(l.unitPrice ?? l.price ?? 0),
-        discount: l.discount ? Number(l.discount) : undefined,
+        quantity: l.quantity,
+        unitPrice: l.unitCost,
+        discount: undefined,
       })),
-      notes: `Created from quote ${quote.ref ?? quoteId}`,
+      notes: `Created from quote ${quote.reference ?? quoteId}`,
       userId,
     }
 
@@ -82,9 +82,9 @@ export async function createPurchaseOrderFromQuote(
         sku: l.sku,
         quantity: l.quantity,
         unitCost: l.unitPrice,
-        orderId: order.id,
+        orderId: order.order.id,
       })),
-      notes: `PO for order from quote ${quote.ref ?? quoteId}`,
+      notes: `PO for order from quote ${quote.reference ?? quoteId}`,
       createdBy: userId,
     }
 
@@ -100,9 +100,9 @@ export async function createPurchaseOrderFromQuote(
     await recordTimelineEvent({
       quoteId,
       event: 'po_created',
-      description: `PO ${po.ref ?? po.id} created from quote. Order: ${order.ref ?? order.id}`,
+      description: `PO ${po.po.id} created from quote. Order: ${order.order.id}`,
       actor: userId,
-      metadata: { orderId: order.id, poId: po.id },
+      metadata: { orderId: order.order.id, poId: po.po.id },
     })
 
     emitWorkflowAuditEvent({
@@ -110,14 +110,14 @@ export async function createPurchaseOrderFromQuote(
       quoteId,
       orgId,
       userId,
-      metadata: { orderId: order.id, poId: po.id },
+      metadata: { orderId: order.order.id, poId: po.po.id },
     })
 
-    logger.info({ quoteId, orderId: order.id, poId: po.id }, 'PO created from quote')
-    return { ok: true, orderId: order.id, poId: po.id }
+    logger.info('PO created from quote', { quoteId, orderId: order.order.id, poId: po.po.id })
+    return { ok: true, orderId: order.order.id, poId: po.po.id }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    logger.error({ quoteId, error: msg }, 'Failed to create PO from quote')
+    logger.error('Failed to create PO from quote', { quoteId, error: msg })
     return { ok: false, error: msg }
   }
 }

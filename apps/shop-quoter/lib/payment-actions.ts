@@ -31,7 +31,7 @@ export async function setDepositRequirementAction(
 ): Promise<ActionResult<{ requirementId: string }>> {
   try {
     const ctx = await resolveOrgContext()
-    const requirement = await setPaymentRequirement(input, ctx.userId, ctx.orgId)
+    const requirement = await setPaymentRequirement(input, ctx.actorId, ctx.orgId)
 
     // Transition quote to DEPOSIT_REQUIRED if currently ACCEPTED
     const quote = await quoteRepo.findById(input.quoteId)
@@ -44,7 +44,7 @@ export async function setDepositRequirementAction(
           quoteId: input.quoteId,
           event: 'status_change',
           description: `Quote moved to DEPOSIT_REQUIRED`,
-          actor: ctx.userId,
+          actor: ctx.actorId,
         })
       }
     } else if (quote && !input.depositRequired) {
@@ -56,13 +56,13 @@ export async function setDepositRequirementAction(
           quoteId: input.quoteId,
           event: 'status_change',
           description: `Quote advanced to READY_FOR_PO (no deposit required)`,
-          actor: ctx.userId,
+          actor: ctx.actorId,
         })
         emitWorkflowAuditEvent({
           event: 'quote_unblocked_for_po',
           quoteId: input.quoteId,
           orgId: ctx.orgId,
-          userId: ctx.userId,
+          userId: ctx.actorId,
           metadata: {},
         })
       }
@@ -71,7 +71,7 @@ export async function setDepositRequirementAction(
     return { ok: true, data: { requirementId: requirement.id } }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    logger.error({ error: msg }, 'Failed to set deposit requirement')
+    logger.error('Failed to set deposit requirement', { error: msg })
     return { ok: false, error: msg }
   }
 }
@@ -81,7 +81,7 @@ export async function recordPaymentAction(
 ): Promise<ActionResult<{ newStatus: string }>> {
   try {
     const ctx = await resolveOrgContext()
-    const result = await recordPayment(input, ctx.userId, ctx.orgId)
+    const result = await recordPayment(input, ctx.actorId, ctx.orgId)
 
     // If payment is cleared, advance to READY_FOR_PO
     if (result.newStatus === 'PAID') {
@@ -95,13 +95,13 @@ export async function recordPaymentAction(
             quoteId: input.quoteId,
             event: 'status_change',
             description: 'Deposit payment cleared — quote advanced to READY_FOR_PO',
-            actor: ctx.userId,
+            actor: ctx.actorId,
           })
           emitWorkflowAuditEvent({
             event: 'quote_unblocked_for_po',
             quoteId: input.quoteId,
             orgId: ctx.orgId,
-            userId: ctx.userId,
+            userId: ctx.actorId,
             metadata: { newStatus: result.newStatus },
           })
         }
@@ -111,7 +111,7 @@ export async function recordPaymentAction(
     return { ok: true, data: { newStatus: result.newStatus } }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    logger.error({ error: msg }, 'Failed to record payment')
+    logger.error('Failed to record payment', { error: msg })
     return { ok: false, error: msg }
   }
 }
@@ -124,7 +124,7 @@ export async function checkPOReadinessAction(
     return { ok: true, data: { ready: result.ready, blockers: result.blockers } }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    logger.error({ error: msg }, 'Failed to check PO readiness')
+    logger.error('Failed to check PO readiness', { error: msg })
     return { ok: false, error: msg }
   }
 }
@@ -138,7 +138,7 @@ export async function checkProductionReadinessAction(
     return { ok: true, data: { ready: result.ready, blockers: result.blockers } }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    logger.error({ error: msg }, 'Failed to check production readiness')
+    logger.error('Failed to check production readiness', { error: msg })
     return { ok: false, error: msg }
   }
 }
