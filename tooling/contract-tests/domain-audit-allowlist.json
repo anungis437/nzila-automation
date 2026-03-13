@@ -1,0 +1,40 @@
+{
+  "description": "Files allowed to directly reference audit/evidence tables for legitimate audit/governance purposes",
+  "allowlist": [
+    "apps/*/app/api/evidence/**",
+    "apps/*/app/api/audit/**",
+    "apps/*/app/(dashboard)/governance/**",
+    "apps/*/app/(dashboard)/audit/**",
+    "apps/*/lib/evidence.ts",
+    "apps/*/lib/evidence/**",
+    "apps/*/lib/audit-timeline.ts",
+    "apps/control-plane/**",
+    "packages/evidence/**",
+    "packages/commerce-audit/**",
+    "packages/commerce-evidence/**",
+    "packages/platform-evidence-pack/**",
+    "packages/platform-assurance/**",
+    "packages/platform-compliance-snapshots/**",
+    "packages/platform-procurement-proof/**",
+    "packages/platform-governance/**",
+    "tooling/**",
+    "scripts/**"
+  ],
+  "audit_table_patterns": [
+    "audit_entries",
+    "audit_log",
+    "audit_trail",
+    "evidence_packs",
+    "evidence_entries",
+    "governance_snapshots",
+    "compliance_snapshots",
+    "sealed_evidence"
+  ],
+  "audit_import_patterns": [
+    "from.*commerce-audit",
+    "from.*commerce-evidence",
+    "from.*platform-evidence-pack",
+    "from.*evidence.*seal",
+    "from.*audit.*timeline"
+  ]
+}

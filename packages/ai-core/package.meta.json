@@ -1,0 +1,14 @@
+{
+  "owner": "ai-platform",
+  "category": "PLATFORM_CORE",
+  "stability": "STABLE",
+  "allowed_dependents": [
+    "packages/ai-*",
+    "packages/platform-ai-*",
+    "apps/*"
+  ],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}

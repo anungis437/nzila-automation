@@ -1,0 +1,13 @@
+{
+  "owner": "commerce",
+  "category": "DOMAIN_SHARED",
+  "stability": "EVOLVING",
+  "allowed_dependents": [
+    "apps/cfo",
+    "packages/commerce-*"
+  ],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}

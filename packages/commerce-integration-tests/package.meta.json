@@ -1,0 +1,13 @@
+{
+  "owner": "commerce",
+  "category": "DOMAIN_SHARED",
+  "stability": "STABLE",
+  "allowed_dependents": [],
+  "forbidden_dependents": [
+    "apps/*",
+    "packages/*"
+  ],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}

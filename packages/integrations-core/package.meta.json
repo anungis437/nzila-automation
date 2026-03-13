@@ -1,0 +1,13 @@
+{
+  "owner": "integrations",
+  "category": "PLATFORM_CORE",
+  "stability": "STABLE",
+  "allowed_dependents": [
+    "packages/integrations-*",
+    "apps/*"
+  ],
+  "forbidden_dependents": [],
+  "replacement_for": null,
+  "deprecated": false,
+  "deprecation_note": null
+}
