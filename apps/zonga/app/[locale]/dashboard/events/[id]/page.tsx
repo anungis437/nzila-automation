@@ -83,7 +83,7 @@ export default async function EventDetailPage({
           <div className="p-5">
             <p className="text-xs text-gray-500">Date</p>
             <p className="text-lg font-bold text-navy">
-              {new Date(event.startDate).toLocaleDateString('en-CA')}
+              {new Date(event.startsAt).toLocaleDateString('en-CA')}
             </p>
           </div>
         </Card>
@@ -197,12 +197,12 @@ export default async function EventDetailPage({
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Start</dt>
-                  <dd className="text-navy">{new Date(event.startDate).toLocaleDateString('en-CA')}</dd>
+                  <dd className="text-navy">{new Date(event.startsAt).toLocaleDateString('en-CA')}</dd>
                 </div>
-                {event.endDate && (
+                {event.endsAt && (
                   <div className="flex justify-between">
                     <dt className="text-gray-500">End</dt>
-                    <dd className="text-navy">{new Date(event.endDate).toLocaleDateString('en-CA')}</dd>
+                    <dd className="text-navy">{new Date(event.endsAt).toLocaleDateString('en-CA')}</dd>
                   </div>
                 )}
                 {event.genre && (
@@ -229,14 +229,14 @@ export default async function EventDetailPage({
                   style={{
                     width: `${Math.min(
                       100,
-                      (ticketsSold / Math.max(1, event.totalTickets)) * 100,
+                      (ticketsSold / Math.max(1, event.totalTickets ?? 0)) * 100,
                     )}%`,
                   }}
                 />
               </div>
               <p className="mt-2 text-xs text-gray-500 text-center">
                 {ticketsSold} / {event.totalTickets} tickets sold (
-                {Math.round((ticketsSold / Math.max(1, event.totalTickets)) * 100)}%)
+                {Math.round((ticketsSold / Math.max(1, event.totalTickets ?? 0)) * 100)}%)
               </p>
             </div>
           </Card>

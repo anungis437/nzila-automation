@@ -27,7 +27,7 @@ export interface Follow {
 export interface Like {
   id: string
   listenerId: string
-  entityId: string
+  targetEntityId: string
   entityType: string
   createdAt?: Date
 }
@@ -160,7 +160,7 @@ export async function listFollowing(userId_?: string): Promise<Follow[]> {
 
 export async function favoriteEntity(
   entityType: string,
-  entityId: string,
+  targetEntityId: string,
 ): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
 
@@ -168,7 +168,7 @@ export async function favoriteEntity(
     // Idempotent: skip if already favorited
     const [existing] = (await platformDb.execute(
       sql`SELECT id FROM zonga_listener_favorites
-      WHERE listener_id = ${ctx.actorId} AND entity_id = ${entityId} AND org_id = ${ctx.orgId}
+      WHERE listener_id = ${ctx.actorId} AND entity_id = ${targetEntityId} AND org_id = ${ctx.orgId}
       LIMIT 1`,
     )) as unknown as [{ id: string } | undefined]
 
@@ -176,10 +176,10 @@ export async function favoriteEntity(
 
     await platformDb.execute(
       sql`INSERT INTO zonga_listener_favorites (org_id, listener_id, entity_type, entity_id)
-      VALUES (${ctx.orgId}, ${ctx.actorId}, ${entityType}, ${entityId})`,
+      VALUES (${ctx.orgId}, ${ctx.actorId}, ${entityType}, ${targetEntityId})`,
     )
 
-    logger.info('Entity favorited', { listenerId: ctx.actorId, entityType, entityId })
+    logger.info('Entity favorited', { listenerId: ctx.actorId, entityType, targetEntityId })
     return { success: true }
   } catch (error) {
     logger.error('favoriteEntity failed', { error })
@@ -192,13 +192,13 @@ export async function likeAsset(assetId: string, _assetTitle?: string) {
   return favoriteEntity('asset', assetId)
 }
 
-export async function unfavoriteEntity(entityId: string): Promise<{ success: boolean }> {
+export async function unfavoriteEntity(targetEntityId: string): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
 
   try {
     await platformDb.execute(
       sql`DELETE FROM zonga_listener_favorites
-      WHERE listener_id = ${ctx.actorId} AND entity_id = ${entityId} AND org_id = ${ctx.orgId}`,
+      WHERE listener_id = ${ctx.actorId} AND entity_id = ${targetEntityId} AND org_id = ${ctx.orgId}`,
     )
 
     return { success: true }
@@ -213,13 +213,13 @@ export async function unlikeAsset(assetId: string) {
   return unfavoriteEntity(assetId)
 }
 
-export async function getEntityFavoriteCount(entityId: string): Promise<number> {
+export async function getEntityFavoriteCount(targetEntityId: string): Promise<number> {
   const ctx = await resolveOrgContext()
 
   try {
     const [result] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM zonga_listener_favorites
-      WHERE entity_id = ${entityId} AND org_id = ${ctx.orgId}`,
+      WHERE entity_id = ${targetEntityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return Number(result?.total ?? 0)
@@ -332,28 +332,28 @@ export async function tipCreator(data: {
 
 /* ─── Social Stats ─── */
 
-export async function getSocialStats(entityId: string): Promise<SocialStats> {
+export async function getSocialStats(targetEntityId: string): Promise<SocialStats> {
   const ctx = await resolveOrgContext()
 
   try {
     const [followers] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM zonga_listener_follows
-      WHERE creator_id = ${entityId} AND org_id = ${ctx.orgId}`,
+      WHERE creator_id = ${targetEntityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [following] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM zonga_listener_follows
-      WHERE listener_id = ${entityId} AND org_id = ${ctx.orgId}`,
+      WHERE listener_id = ${targetEntityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [likes] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM zonga_listener_favorites
-      WHERE listener_id = ${entityId} AND org_id = ${ctx.orgId}`,
+      WHERE listener_id = ${targetEntityId} AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     const [comments] = (await platformDb.execute(
       sql`SELECT COUNT(*) as total FROM zonga_listener_activity
-      WHERE listener_id = ${entityId} AND activity_type = 'comment' AND org_id = ${ctx.orgId}`,
+      WHERE listener_id = ${targetEntityId} AND activity_type = 'comment' AND org_id = ${ctx.orgId}`,
     )) as unknown as [{ total: number }]
 
     return {

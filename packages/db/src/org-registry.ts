@@ -133,6 +133,20 @@ export const ORG_SCOPED_TABLES = [
   'zongaPayouts',
   'zongaOutbox',
   'zongaRoyaltySplits',
+  'zongaCreatorAccounts',
+  'zongaPayoutPreviews',
+  'zongaPlaylists',
+  'zongaListeners',
+  'zongaListenerFollows',
+  'zongaListenerFavorites',
+  'zongaListenerPlaylistSaves',
+  'zongaListenerActivity',
+  'zongaEvents',
+  'zongaTicketTypes',
+  'zongaTicketPurchases',
+  'zongaModerationCases',
+  'zongaIntegritySignals',
+  'zongaNotifications',
 
   // ── commerce.ts ─────────────────────────────────────────
   'commerceCustomers',
@@ -163,6 +177,13 @@ export const ORG_SCOPED_TABLES = [
   'commerceZohoSyncRecords',
   'commerceZohoConflicts',
   'commerceZohoCredentials',
+  'commerceOrgSettings',
+  'commerceOrgQuotePolicies',
+  'commerceOrgPaymentPolicies',
+  'commerceOrgSupplierPolicies',
+  'commerceOrgCatalogPolicies',
+  'commerceOrgBrandingConfigs',
+  'commerceOrgCommunicationTemplates',
 
   // ── platform.ts ─────────────────────────────────────────
   'platformRequestMetrics',
@@ -284,6 +305,9 @@ export const NON_ORG_SCOPED_TABLES = [
   { table: 'platformProofPacks', reason: 'System-level governance proof packs' },
   { table: 'platformDeploymentProfiles', reason: 'System-level deployment profile configurations (no Org context)' },
   { table: 'idempotencyCache', reason: 'System-level idempotency cache — keyed by composite key containing orgId' },
+  // ── zonga.ts (no org_id) ────────────────────────────────
+  { table: 'zongaReleaseTracks', reason: 'Scoped via release_id FK → zongaReleases (Org-scoped)' },
+  { table: 'zongaPlaylistItems', reason: 'Scoped via playlist_id FK → zongaPlaylists (Org-scoped)' },
 ] as const
 
 /**

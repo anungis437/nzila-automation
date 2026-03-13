@@ -9,7 +9,7 @@ import { followUser, unfollowUser } from '@/lib/actions/social-actions'
 
 export function FollowButton({
   followingId,
-  followingName,
+  followingName: _followingName,
 }: {
   followingId: string
   followingName?: string
@@ -28,7 +28,7 @@ export function FollowButton({
             await unfollowUser(followingId)
             setIsFollowing(false)
           } else {
-            await followUser(followingId, followingName)
+            await followUser(followingId)
             setIsFollowing(true)
           }
           router.refresh()

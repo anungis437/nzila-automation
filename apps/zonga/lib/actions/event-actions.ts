@@ -38,6 +38,12 @@ export interface ZongaEvent {
   status: 'draft' | 'published' | 'sold_out' | 'cancelled' | 'completed'
   imageUrl?: string
   creatorId?: string
+  ticketPrice?: number
+  currency?: string
+  totalTickets?: number
+  soldTickets?: number
+  performers?: string[]
+  genre?: string
   ticketTypes?: TicketTypeSummary[]
   createdAt?: Date
 }
@@ -57,9 +63,13 @@ export interface Ticket {
   ticketTypeId: string
   ticketType: string
   listenerId?: string
+  buyerName?: string
+  buyerEmail?: string
+  quantity?: number
+  totalPrice?: number
   amount: number
   currency: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'refunded'
+  status: 'pending' | 'confirmed' | 'cancelled' | 'refunded' | 'used'
   stripeCheckoutSessionId?: string
   createdAt?: Date
 }
@@ -185,6 +195,11 @@ export async function createEvent(data: {
   startsAt: string
   endsAt?: string
   creatorId?: string
+  ticketPrice?: number
+  currency?: string
+  totalTickets?: number
+  performers?: string[]
+  genre?: string
 }): Promise<{ success: boolean; eventId?: string; error?: unknown }> {
   const ctx = await resolveOrgContext()
 

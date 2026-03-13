@@ -78,7 +78,7 @@ export async function listReleases(opts?: {
 export async function createRelease(data: {
   title: string
   type: 'single' | 'ep' | 'album' | 'compilation'
-  creatorId: string
+  creatorId?: string
   creatorName?: string
   trackCount?: number
   releaseDate?: string
@@ -97,7 +97,7 @@ export async function createRelease(data: {
     // Write to domain table
     await platformDb.execute(
       sql`INSERT INTO zonga_releases (id, org_id, creator_id, title, status, release_type, release_date)
-      VALUES (${releaseId}, ${ctx.orgId}, ${data.creatorId}, ${data.title},
+      VALUES (${releaseId}, ${ctx.orgId}, ${data.creatorId ?? ctx.actorId}, ${data.title},
         ${ReleaseStatus.DRAFT}, ${data.type}, ${data.releaseDate ? new Date(data.releaseDate) : null})`,
     )
 
@@ -146,12 +146,12 @@ export async function transitionReleaseStatus(
     const result = transitionRelease(
       release.status as ReleaseStatus,
       targetStatus,
-      { role: 'admin', actorId: ctx.actorId, orgId: ctx.orgId },
+      { role: 'admin' as const, actorId: ctx.actorId, orgId: ctx.orgId, meta: {} },
       releaseId,
       { id: releaseId, title: release.title },
     )
 
-    if (!result.success) {
+    if (!result.ok) {
       return { success: false, error: `Transition not allowed: ${release.status} → ${targetStatus}` }
     }
 

@@ -10,8 +10,7 @@ import { logger } from '@/lib/logger'
 import { ZohoSyncService } from '@/lib/zoho/sync-service'
 import { ZohoCrmClient } from '@/lib/zoho/crm-client'
 import { ZohoOAuthClient } from '@/lib/zoho/oauth'
-import { db, commerceZohoCredentials } from '@nzila/db'
-import { eq } from 'drizzle-orm'
+import { findZohoCredentialsByOrg } from '@/lib/zoho/credential-lookup'
 
 const ZOHO_WEBHOOK_TOKEN = process.env.ZOHO_WEBHOOK_TOKEN ?? ''
 
@@ -72,11 +71,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Look up Zoho credentials from DB for this org
-  const [credentials] = await db
-    .select()
-    .from(commerceZohoCredentials)
-    .where(eq(commerceZohoCredentials.orgId, orgId))
-    .limit(1)
+  const credentials = await findZohoCredentialsByOrg(orgId)
 
   const clientId = process.env.ZOHO_CLIENT_ID
   const clientSecret = process.env.ZOHO_CLIENT_SECRET

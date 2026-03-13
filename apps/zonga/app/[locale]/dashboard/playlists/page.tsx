@@ -86,11 +86,11 @@ export default async function PlaylistsPage({
                       </p>
                     </div>
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                      playlist.isPublic
+                      playlist.visibility === 'public'
                         ? 'bg-emerald-500/10 text-emerald-600'
                         : 'bg-gray-100 text-gray-500'
                     }`}>
-                      {playlist.isPublic ? 'Public' : 'Private'}
+                      {playlist.visibility === 'public' ? 'Public' : 'Private'}
                     </span>
                   </div>
                   {playlist.description && (

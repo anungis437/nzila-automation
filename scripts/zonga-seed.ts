@@ -30,11 +30,11 @@ const creators = [
   { id: uuid('c1', 1), name: 'Amara Diallo', genre: 'Afrobeats', country: 'Senegal', bio: 'Pioneering Afrobeats from Dakar' },
   { id: uuid('c1', 2), name: 'Kwame Asante', genre: 'Highlife', country: 'Ghana', bio: 'Modern highlife with traditional roots' },
   { id: uuid('c1', 3), name: 'Zara Okafor', genre: 'Afropop', country: 'Nigeria', bio: 'Chart-topping Afropop artist' },
-  { id: uuid('c1', 4), name: 'Tendai Moyo', genre: 'Amapiano', country: 'South Africa', bio: 'Amapiano producer and DJ' },
+  { id: uuid('c1', 4), name: 'Tendai Moyo', genre: 'Amapiano', country: 'Canada', bio: 'Amapiano producer and DJ' },
   { id: uuid('c1', 5), name: 'Fatou Cissé', genre: 'Mbalax', country: 'Senegal', bio: 'Contemporary Mbalax vocalist' },
   { id: uuid('c1', 6), name: 'Kofi Mensah', genre: 'Hiplife', country: 'Ghana', bio: 'Hiplife pioneer blending hip-hop with highlife' },
   { id: uuid('c1', 7), name: 'Nia Kamara', genre: 'R&B', country: 'Kenya', bio: 'Soulful R&B from Nairobi' },
-  { id: uuid('c1', 8), name: 'Jabari Nkomo', genre: 'Gqom', country: 'South Africa', bio: 'Underground Gqom producer' },
+  { id: uuid('c1', 8), name: 'Jabari Nkomo', genre: 'Gqom', country: 'Canada', bio: 'Underground Gqom producer' },
 ]
 
 // ── Content Assets ──────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ const releases = [
 const events = [
   { id: uuid('e1', 1), creatorIdx: 0, title: 'Dakar Music Festival 2026', venue: 'Place du Souvenir', city: 'Dakar', country: 'Senegal', daysFromNow: 30 },
   { id: uuid('e1', 2), creatorIdx: 2, title: 'Lagos Live Sessions', venue: 'Eko Hotel', city: 'Lagos', country: 'Nigeria', daysFromNow: 45 },
-  { id: uuid('e1', 3), creatorIdx: 3, title: 'Amapiano Nights Jozi', venue: 'Constitution Hill', city: 'Johannesburg', country: 'South Africa', daysFromNow: 60 },
+  { id: uuid('e1', 3), creatorIdx: 3, title: 'Amapiano Nights Jozi', venue: 'Massey Hall', city: 'Toronto', country: 'Canada', daysFromNow: 60 },
 ]
 
 // ── Listeners ───────────────────────────────────────────────────────────

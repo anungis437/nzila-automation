@@ -28,7 +28,7 @@ export interface ListenerActivity {
   id: string
   activityType: string
   entityType: string
-  entityId: string
+  targetEntityId: string
   metadataJson?: Record<string, unknown>
   createdAt?: Date
 }
@@ -130,7 +130,7 @@ export async function getListenerFeed(opts?: {
         id,
         activity_type as "activityType",
         entity_type as "entityType",
-        entity_id as "entityId",
+        entity_id as "targetEntityId",
         metadata_json as "metadataJson",
         created_at as "createdAt"
       FROM zonga_listener_activity
@@ -149,7 +149,7 @@ export async function getListenerFeed(opts?: {
 export async function recordActivity(data: {
   activityType: string
   entityType: string
-  entityId: string
+  targetEntityId: string
   metadata?: Record<string, unknown>
 }): Promise<{ success: boolean }> {
   const ctx = await resolveOrgContext()
@@ -157,7 +157,7 @@ export async function recordActivity(data: {
   try {
     await platformDb.execute(
       sql`INSERT INTO zonga_listener_activity (org_id, listener_id, activity_type, entity_type, entity_id, metadata_json)
-      VALUES (${ctx.orgId}, ${ctx.actorId}, ${data.activityType}, ${data.entityType}, ${data.entityId},
+      VALUES (${ctx.orgId}, ${ctx.actorId}, ${data.activityType}, ${data.entityType}, ${data.targetEntityId},
         ${data.metadata ? JSON.stringify(data.metadata) + '::jsonb' : null})`,
     )
 

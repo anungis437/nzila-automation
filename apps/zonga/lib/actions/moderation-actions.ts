@@ -18,7 +18,7 @@ import { createNotification } from '@/lib/actions/notification-actions'
 export interface ModerationCase {
   id: string
   entityType: string
-  entityId: string
+  targetEntityId: string
   caseType: string
   status: string
   severity: string
@@ -31,7 +31,7 @@ export interface ModerationCase {
 export interface IntegritySignal {
   id: string
   entityType: string
-  entityId: string
+  targetEntityId: string
   signalType: string
   severity: string
   explanation?: string
@@ -64,7 +64,7 @@ export async function listModerationCases(opts?: {
       sql`SELECT
         id,
         entity_type as "entityType",
-        entity_id as "entityId",
+        entity_id as "targetEntityId",
         case_type as "caseType",
         status,
         severity,
@@ -96,7 +96,7 @@ export async function getModerationCase(caseId: string): Promise<ModerationCase 
       sql`SELECT
         id,
         entity_type as "entityType",
-        entity_id as "entityId",
+        entity_id as "targetEntityId",
         case_type as "caseType",
         status,
         severity,
@@ -117,7 +117,7 @@ export async function getModerationCase(caseId: string): Promise<ModerationCase 
 
 export async function createModerationCase(data: {
   entityType: string
-  entityId: string
+  targetEntityId: string
   caseType: string
   severity: string
   notes?: string
@@ -127,7 +127,7 @@ export async function createModerationCase(data: {
   try {
     const [row] = (await platformDb.execute(
       sql`INSERT INTO zonga_moderation_cases (org_id, entity_type, entity_id, case_type, severity, notes)
-      VALUES (${ctx.orgId}, ${data.entityType}, ${data.entityId}, ${data.caseType},
+      VALUES (${ctx.orgId}, ${data.entityType}, ${data.targetEntityId}, ${data.caseType},
         ${data.severity}, ${data.notes ?? null})
       RETURNING id`,
     )) as unknown as [{ id: string }]
@@ -161,8 +161,8 @@ export async function resolveModerationCase(
       // Look up the content owner for notification
       const [owner] = (await platformDb.execute(
         sql`SELECT CASE
-          WHEN ${modCase.entityType} = 'asset' THEN (SELECT creator_id FROM zonga_content_assets WHERE id = ${modCase.entityId})
-          WHEN ${modCase.entityType} = 'release' THEN (SELECT creator_id FROM zonga_releases WHERE id = ${modCase.entityId})
+          WHEN ${modCase.entityType} = 'asset' THEN (SELECT creator_id FROM zonga_content_assets WHERE id = ${modCase.targetEntityId})
+          WHEN ${modCase.entityType} = 'release' THEN (SELECT creator_id FROM zonga_releases WHERE id = ${modCase.targetEntityId})
           ELSE NULL
         END as "ownerId"`,
       )) as unknown as [{ ownerId: string | null }]
@@ -174,7 +174,7 @@ export async function resolveModerationCase(
           type: 'moderation_resolved',
           title: 'Content review complete',
           body: `Your ${modCase.entityType} has been reviewed and the case has been resolved.`,
-          link: `/dashboard/catalog/${modCase.entityId}`,
+          link: `/dashboard/catalog/${modCase.targetEntityId}`,
         })
       }
     }
@@ -211,14 +211,14 @@ export async function assignModerationCase(
 /* ─── Integrity Signals ─── */
 
 export async function listIntegritySignals(opts?: {
-  entityId?: string
+  targetEntityId?: string
   signalType?: string
   severity?: string
 }): Promise<IntegritySignal[]> {
   const ctx = await resolveOrgContext()
 
   try {
-    const entityFilter = opts?.entityId ? sql` AND entity_id = ${opts.entityId}` : sql``
+    const entityFilter = opts?.targetEntityId ? sql` AND entity_id = ${opts.targetEntityId}` : sql``
     const typeFilter = opts?.signalType ? sql` AND signal_type = ${opts.signalType}` : sql``
     const severityFilter = opts?.severity ? sql` AND severity = ${opts.severity}` : sql``
 
@@ -226,7 +226,7 @@ export async function listIntegritySignals(opts?: {
       sql`SELECT
         id,
         entity_type as "entityType",
-        entity_id as "entityId",
+        entity_id as "targetEntityId",
         signal_type as "signalType",
         severity,
         explanation,
@@ -248,7 +248,7 @@ export async function listIntegritySignals(opts?: {
 
 export async function recordIntegritySignal(data: {
   entityType: string
-  entityId: string
+  targetEntityId: string
   signalType: string
   severity: string
   explanation?: string
@@ -259,7 +259,7 @@ export async function recordIntegritySignal(data: {
   try {
     const [row] = (await platformDb.execute(
       sql`INSERT INTO zonga_integrity_signals (org_id, entity_type, entity_id, signal_type, severity, explanation, metadata_json)
-      VALUES (${ctx.orgId}, ${data.entityType}, ${data.entityId}, ${data.signalType},
+      VALUES (${ctx.orgId}, ${data.entityType}, ${data.targetEntityId}, ${data.signalType},
         ${data.severity}, ${data.explanation ?? null},
         ${data.metadata ? JSON.stringify(data.metadata) + '::jsonb' : null})
       RETURNING id`,
@@ -269,7 +269,7 @@ export async function recordIntegritySignal(data: {
     if (data.severity === 'critical') {
       await createModerationCase({
         entityType: data.entityType,
-        entityId: data.entityId,
+        targetEntityId: data.targetEntityId,
         caseType: `auto_${data.signalType}`,
         severity: 'critical',
         notes: `Auto-created from integrity signal: ${data.explanation ?? data.signalType}`,

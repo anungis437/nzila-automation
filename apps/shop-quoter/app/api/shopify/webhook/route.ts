@@ -8,8 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { logger } from '@/lib/logger'
 import { ShopifySyncService } from '@/lib/shopify/sync-service'
-import { db, commerceShopifyCredentials } from '@nzila/db'
-import { eq } from 'drizzle-orm'
+import { findShopifyCredentialsByDomain } from '@/lib/shopify/credential-lookup'
 
 const TOPIC_ENTITY_MAP: Record<string, 'customers' | 'orders'> = {
   'customers/create': 'customers',
@@ -44,11 +43,7 @@ export async function POST(request: NextRequest) {
   const rawBody = Buffer.from(await request.arrayBuffer())
 
   // Resolve org + webhook secret from shopDomain via DB
-  const [credentials] = await db
-    .select()
-    .from(commerceShopifyCredentials)
-    .where(eq(commerceShopifyCredentials.shopDomain, shopDomain))
-    .limit(1)
+  const credentials = await findShopifyCredentialsByDomain(shopDomain)
 
   if (!credentials || !credentials.isActive) {
     logger.warn('No active Shopify credentials for shop domain', { shopDomain })

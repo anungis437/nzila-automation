@@ -178,7 +178,7 @@ export type ListenerFollowInput = z.infer<typeof ListenerFollowSchema>
 export const ListenerFavoriteSchema = z.object({
   listenerId: z.string().uuid(),
   entityType: z.enum(enumValues(FavoriteEntityType)),
-  entityId: z.string().uuid(),
+  targetEntityId: z.string().uuid(),
 })
 export type ListenerFavoriteInput = z.infer<typeof ListenerFavoriteSchema>
 
@@ -186,7 +186,7 @@ export const ListenerActivitySchema = z.object({
   listenerId: z.string().uuid(),
   activityType: z.enum(enumValues(ListenerActivityType)),
   entityType: z.string().max(50).optional(),
-  entityId: z.string().uuid().optional(),
+  targetEntityId: z.string().uuid().optional(),
   metadataJson: z.record(z.unknown()).optional(),
 })
 export type ListenerActivityInput = z.infer<typeof ListenerActivitySchema>
@@ -238,7 +238,7 @@ export type CreatePlaylistInput = z.infer<typeof CreatePlaylistSchema>
 export const AddPlaylistItemSchema = z.object({
   playlistId: z.string().uuid(),
   entityType: z.enum(['track', 'release']),
-  entityId: z.string().uuid(),
+  targetEntityId: z.string().uuid(),
   position: z.number().int().min(0),
 })
 export type AddPlaylistItemInput = z.infer<typeof AddPlaylistItemSchema>
@@ -247,7 +247,7 @@ export type AddPlaylistItemInput = z.infer<typeof AddPlaylistItemSchema>
 
 export const CreateModerationCaseSchema = z.object({
   entityType: z.enum(['creator', 'asset', 'release', 'event']),
-  entityId: z.string().uuid(),
+  targetEntityId: z.string().uuid(),
   caseType: z.enum(enumValues(ModerationCaseType)),
   severity: z.enum(['info', 'low', 'medium', 'high', 'critical']).default('medium'),
   notes: z.string().max(5000).optional(),

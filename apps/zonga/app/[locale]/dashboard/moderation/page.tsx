@@ -148,7 +148,7 @@ export default async function ModerationPage() {
                       <td className="px-5 py-3 text-gray-500">
                         {c.entityType}
                         <span className="text-gray-300 mx-1">/</span>
-                        <span className="font-mono text-xs">{c.entityId.slice(0, 8)}</span>
+                        <span className="font-mono text-xs">{c.targetEntityId.slice(0, 8)}</span>
                       </td>
                       <td className="px-5 py-3">{severityBadge(c.severity)}</td>
                       <td className="px-5 py-3">{statusBadge(c.status)}</td>

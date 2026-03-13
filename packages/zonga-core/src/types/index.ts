@@ -21,7 +21,17 @@ import type {
   ZongaCurrency,
   ZongaLanguage,
   AfricanGenre as _AfricanGenre,
-  AudioQuality
+  AudioQuality,
+  EventStatus,
+  TicketPurchaseStatus,
+  PlaylistVisibility,
+  PlaylistOwnerType,
+  ModerationCaseType,
+  ModerationCaseStatus,
+  FavoriteEntityType,
+  ListenerActivityType,
+  NotificationType,
+  PayoutPreviewStatus,
 } from '../enums'
 
 // ── Branded Types ───────────────────────────────────────────────────────────
@@ -273,7 +283,7 @@ export interface ListenerFavorite {
   readonly orgId: string
   readonly listenerId: string
   readonly entityType: FavoriteEntityType
-  readonly entityId: string
+  readonly targetEntityId: string
   readonly createdAt: string
 }
 
@@ -283,7 +293,7 @@ export interface ListenerActivity {
   readonly listenerId: string
   readonly activityType: ListenerActivityType
   readonly entityType: string | null
-  readonly entityId: string | null
+  readonly targetEntityId: string | null
   readonly metadataJson: Readonly<Record<string, unknown>>
   readonly createdAt: string
 }
@@ -306,7 +316,7 @@ export interface PlaylistItem {
   readonly id: string
   readonly playlistId: string
   readonly entityType: string
-  readonly entityId: string
+  readonly targetEntityId: string
   readonly position: number
   readonly createdAt: string
 }
@@ -363,7 +373,7 @@ export interface ModerationCase {
   readonly id: string
   readonly orgId: string
   readonly entityType: string
-  readonly entityId: string
+  readonly targetEntityId: string
   readonly caseType: ModerationCaseType
   readonly status: ModerationCaseStatus
   readonly severity: string
@@ -378,7 +388,7 @@ export interface IntegritySignal {
   readonly id: string
   readonly orgId: string
   readonly entityType: string
-  readonly entityId: string
+  readonly targetEntityId: string
   readonly signalType: string
   readonly severity: string
   readonly explanation: string | null

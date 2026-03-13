@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { quoteRepo } from '@/lib/db'
 import { transitionQuote } from '@/lib/quote-machine'
 import { auditQuoteTransition } from '@/lib/evidence'
 import { logTransition } from '@/lib/commerce-telemetry'
 import { logger } from '@/lib/logger'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 /**
  * GET /api/quotes/[id] — fetch a single quote.
@@ -18,10 +19,11 @@ export async function GET(
 ) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.get', { 'http.method': 'GET' }, async () => {
-    const authResult = await authenticateOrgUser()
+    const authResult = await authenticateUser()
     if (!authResult.ok) return authResult.response
     const { id } = await params
     try {
+      const ctx = await resolveOrgContext()
       const quote = await quoteRepo.findById(id)
       if (!quote) {
         return NextResponse.json(
@@ -29,7 +31,7 @@ export async function GET(
           { status: 404 },
         )
       }
-      if (quote.orgId !== authResult.orgId) {
+      if (quote.orgId !== ctx.orgId) {
         return NextResponse.json(
           { ok: false, error: 'Quote not found' },
           { status: 404 },
@@ -52,9 +54,11 @@ export async function PATCH(
 ) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.update', { 'http.method': 'PATCH' }, async () => {
-    const authResult = await authenticateOrgUser()
+    const authResult = await authenticateUser()
     if (!authResult.ok) return authResult.response
-    const { userId, orgId } = authResult
+    const { userId } = authResult
+    const ctx = await resolveOrgContext()
+    const orgId = ctx.orgId
     const { id } = await params
     try {
       const body = await request.json()

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import { authenticateOrgUser, withRequestContext } from '@/lib/api-guards'
+import { authenticateUser, withRequestContext } from '@/lib/api-guards'
 import { withSpan } from '@nzila/os-core/telemetry'
 import { quoteRepo } from '@/lib/db'
+import { resolveOrgContext } from '@/lib/resolve-org'
 
 /**
  * GET /api/quotes — list all quotes for the current org.
@@ -11,10 +12,11 @@ import { quoteRepo } from '@/lib/db'
 export async function GET(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.list', { 'http.method': 'GET' }, async () => {
-    const authResult = await authenticateOrgUser()
+    const authResult = await authenticateUser()
     if (!authResult.ok) return authResult.response
     try {
-      const quotes = await quoteRepo.findAll(authResult.orgId)
+      const ctx = await resolveOrgContext()
+      const quotes = await quoteRepo.findAll(ctx.orgId)
       return NextResponse.json({ ok: true, data: quotes })
     } catch (err) {
       return NextResponse.json(
@@ -29,7 +31,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   return withRequestContext(request, () =>
     withSpan('api.quotes.create', { 'http.method': 'POST' }, async () => {
-    const authResult = await authenticateOrgUser()
+    const authResult = await authenticateUser()
     if (!authResult.ok) return authResult.response
     try {
       const body = await request.json()
@@ -42,8 +44,9 @@ export async function POST(request: Request) {
       )
     }
 
+    const ctx = await resolveOrgContext()
     const quote = await quoteRepo.create({
-      orgId: authResult.orgId,
+      orgId: ctx.orgId,
       title: body.title,
       tier: body.tier ?? 'STANDARD',
       customerId: body.customerId ?? 'unknown',

@@ -34,7 +34,7 @@ export default function NewPlaylistPage() {
         title: fd.get('title') as string,
         description: fd.get('description') as string || undefined,
         genre: fd.get('genre') as string || undefined,
-        isPublic: fd.get('visibility') === 'public',
+        visibility: fd.get('visibility') as string || 'public',
       })
 
       if (!res.success) {

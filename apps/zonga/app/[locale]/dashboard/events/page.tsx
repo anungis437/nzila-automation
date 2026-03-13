@@ -121,7 +121,7 @@ export default async function EventsPage({
                   </div>
 
                   <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>📅 {new Date(event.startDate).toLocaleDateString('en-CA')}</span>
+                    <span>📅 {new Date(event.startsAt).toLocaleDateString('en-CA')}</span>
                     <span>🎟️ {event.soldTickets}/{event.totalTickets}</span>
                   </div>
 

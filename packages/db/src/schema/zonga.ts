@@ -389,7 +389,7 @@ export const zongaPlaylistItems = pgTable('zonga_playlist_items', {
     .notNull()
     .references(() => zongaPlaylists.id),
   entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
+  targetEntityId: uuid('entity_id').notNull(),
   position: integer('position').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -433,7 +433,7 @@ export const zongaListenerFavorites = pgTable('zonga_listener_favorites', {
     .notNull()
     .references(() => zongaListeners.id),
   entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
+  targetEntityId: uuid('entity_id').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -461,7 +461,7 @@ export const zongaListenerActivity = pgTable('zonga_listener_activity', {
     .references(() => zongaListeners.id),
   activityType: varchar('activity_type', { length: 50 }).notNull(),
   entityType: varchar('entity_type', { length: 50 }),
-  entityId: uuid('entity_id'),
+  targetEntityId: uuid('entity_id'),
   metadataJson: jsonb('metadata_json').notNull().default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -534,7 +534,7 @@ export const zongaModerationCases = pgTable('zonga_moderation_cases', {
     .notNull()
     .references(() => orgs.id),
   entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
+  targetEntityId: uuid('entity_id').notNull(),
   caseType: zongaModerationCaseTypeEnum('case_type').notNull(),
   status: zongaModerationCaseStatusEnum('status').notNull().default('open'),
   severity: varchar('severity', { length: 20 }).notNull().default('medium'),
@@ -551,7 +551,7 @@ export const zongaIntegritySignals = pgTable('zonga_integrity_signals', {
     .notNull()
     .references(() => orgs.id),
   entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
+  targetEntityId: uuid('entity_id').notNull(),
   signalType: varchar('signal_type', { length: 100 }).notNull(),
   severity: varchar('severity', { length: 20 }).notNull().default('info'),
   explanation: text('explanation'),

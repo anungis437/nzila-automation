@@ -42,11 +42,11 @@ export default async function PlaylistDetailPage({
             )}
             <div className="flex items-center gap-2 mt-2">
               <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                playlist.isPublic
+                playlist.visibility === 'public'
                   ? 'bg-emerald-500/10 text-emerald-600'
                   : 'bg-gray-100 text-gray-500'
               }`}>
-                {playlist.isPublic ? 'Public' : 'Private'}
+                {playlist.visibility === 'public' ? 'Public' : 'Private'}
               </span>
               <span className="text-xs text-gray-400">
                 {tracks.length} track{tracks.length !== 1 ? 's' : ''}
@@ -72,7 +72,7 @@ export default async function PlaylistDetailPage({
         <Card>
           <div className="p-5">
             <p className="text-xs text-gray-500">Visibility</p>
-            <p className="text-2xl font-bold text-navy">{playlist.isPublic ? 'Public' : 'Private'}</p>
+            <p className="text-2xl font-bold text-navy">{playlist.visibility === 'public' ? 'Public' : 'Private'}</p>
           </div>
         </Card>
         <Card>

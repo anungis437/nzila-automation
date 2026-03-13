@@ -51,6 +51,7 @@ export type AssetStatus = (typeof AssetStatus)[keyof typeof AssetStatus]
 
 export const ReleaseStatus = {
   DRAFT: 'draft',
+  SUBMITTED: 'submitted',
   UNDER_REVIEW: 'under_review',
   SCHEDULED: 'scheduled',
   PUBLISHED: 'published',

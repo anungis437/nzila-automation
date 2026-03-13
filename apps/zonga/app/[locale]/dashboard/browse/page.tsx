@@ -156,13 +156,13 @@ export default async function BrowsePage({
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 rounded-lg bg-purple-100 px-3 py-2 text-center">
                         <p className="text-xs font-bold text-purple-700">
-                          {event.startDate
-                            ? new Date(event.startDate).toLocaleDateString('en-CA', { month: 'short' })
+                          {event.startsAt
+                            ? new Date(event.startsAt).toLocaleDateString('en-CA', { month: 'short' })
                             : '—'}
                         </p>
                         <p className="text-lg font-bold text-purple-800">
-                          {event.startDate
-                            ? new Date(event.startDate).getDate()
+                          {event.startsAt
+                            ? new Date(event.startsAt).getDate()
                             : '—'}
                         </p>
                       </div>

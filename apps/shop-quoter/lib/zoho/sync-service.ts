@@ -670,11 +670,9 @@ export class ZohoSyncService {
               .insert(commerceQuotes)
               .values({
                 orgId: this.orgId,
-                createdBy: 'zoho-sync',
-                customerId: '',
-                ref: `ZOHO-${deal.id.slice(0, 8)}`,
                 customerId: quoteData.customerId ?? '',
                 createdBy: 'zoho-sync',
+                ref: `ZOHO-${deal.id.slice(0, 8)}`,
                 status: quoteData.status ?? 'draft',
                 total: quoteData.total ?? '0',
                 notes: quoteData.notes,
