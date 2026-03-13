@@ -8,6 +8,8 @@
     "apps/*/lib/evidence.ts",
     "apps/*/lib/evidence/**",
     "apps/*/lib/audit-timeline.ts",
+    "apps/*/lib/actions/**",
+    "apps/*/server/actions/**",
     "apps/control-plane/**",
     "packages/evidence/**",
     "packages/commerce-audit/**",

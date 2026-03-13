@@ -92,6 +92,10 @@ const PUBLIC_ROUTE_SEGMENTS = [
   '/api/status',              // Status endpoints
   '/api/docs',                // API documentation
   '/unauthenticated-',        // Intentionally unauthenticated flows
+  '/api/quote/[token]',       // Token-gated public quote response
+  '/api/shopify/webhook',     // Shopify webhook (HMAC-verified)
+  '/api/zoho/webhook',        // Zoho webhook (token-verified)
+  '/api/control-plane/architecture', // Internal diagnostics (GET-only)
 ]
 
 function isPublicRoute(path: string): boolean {

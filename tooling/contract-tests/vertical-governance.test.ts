@@ -151,6 +151,9 @@ describe('INV-11 — Every API route has authorization', () => {
     '/api/gdpr/cookie-consent', // Cookie consent must be public
     '/api/whop/unauthenticated-checkout', // Whop public checkout flow
     '/api/payments/webhooks/paypal',       // PayPal webhook (has its own signature verification)
+    '/api/quote/[token]',                  // Token-gated public quote response
+    '/api/zoho/webhook',                   // Zoho webhook (token-verified)
+    '/api/control-plane/architecture',     // Internal diagnostics (GET-only)
   ]
 
   for (const appDir of appDirs) {

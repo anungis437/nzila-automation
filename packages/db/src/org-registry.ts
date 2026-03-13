@@ -198,6 +198,39 @@ export const ORG_SCOPED_TABLES = [
   'mobilityCommunications',
   'mobilityAiOutputs',
   'mobilityAuditLog',
+
+  // ── agri.ts ──────────────────────────────────────────────
+  'agriProducers',
+  'agriCooperatives',
+  'agriCrops',
+  'agriHarvests',
+  'agriLots',
+  'agriLotContributions',
+  'agriInspections',
+  'agriWarehouses',
+  'agriBatches',
+  'agriBatchAllocations',
+  'agriShipments',
+  'agriShipmentMilestones',
+  'agriPaymentPlans',
+  'agriPayments',
+  'agriCertifications',
+  'agriTraceabilityLinks',
+  'agriEvidenceArtifacts',
+  'agriForecasts',
+  'agriPriceSignals',
+  'agriRiskScores',
+
+  // ── commerce.ts (new SaaS tables) ───────────────────────
+  'commerceQuoteApprovals',
+  'commerceQuoteRevisions',
+  'commercePaymentRequirements',
+  'commercePaymentTracking',
+  'commercePaymentEvents',
+  'commerceShareLinks',
+  'commerceTimelineEvents',
+  'commerceShopifyCredentials',
+  'commerceShopifySyncRecords',
 ] as const
 
 /**

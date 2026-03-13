@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateUser, withRequestContext } from '@/lib/api-guards'
+import { withSpan } from '@nzila/os-core/telemetry'
 import { quoteRepo } from '@/lib/db'
 import { resolveOrgContext } from '@/lib/resolve-org'
 import { attemptQuoteTransition } from '@/lib/workflows/quote-state-machine'
@@ -17,7 +18,8 @@ const ReviewInput = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  return withRequestContext(request, async () => {
+  return withRequestContext(request, async () =>
+    withSpan('api.quotes.review', { 'http.method': 'POST' }, async () => {
     const authResult = await authenticateUser()
     if (!authResult.ok) return authResult.response
 
@@ -67,5 +69,5 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ ok: true, status: 'INTERNAL_REVIEW' })
-  })
+  }))
 }

@@ -145,4 +145,4 @@ fs.writeFileSync(outPath, JSON.stringify(snapshot, null, 2))
 
 process.stdout.write(`\n✓ Architecture snapshot written to ${path.relative(ROOT, outPath)}\n`)
 process.stdout.write(`  Packages: ${totalPackages} (${withMeta} with meta, ${deprecated} deprecated)\n`)
-process.stdout.write(`  Apps: ${apps.filter((a) => a.level === 'FULL').length}/${apps.length} fully compliant\n\n`)
+process.stdout.write(`  Apps: ${apps.filter((a) => a.level === 'FULL').length}/${apps.length} governance-complete\n\n`)

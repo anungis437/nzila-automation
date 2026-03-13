@@ -38,7 +38,7 @@ export function emitWorkflowAuditEvent(input: AuditEventInput): void {
   // Log via observability pipeline
   logAuditTrail({
     entityType: 'quote',
-    entityId: quoteId,
+    targetEntityId: quoteId,
     action: event,
     actorId: userId,
     orgId,

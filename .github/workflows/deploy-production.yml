@@ -34,6 +34,14 @@ jobs:
       - name: Change window validation
         run: node --import tsx scripts/validate-change-window.ts --env=PRODUCTION --service=all --commit=${{ github.sha }}
 
+      - name: Contract tests
+        id: contract_tests
+        run: pnpm contract:test
+
+      - name: SLO gate
+        id: slo_gate
+        run: node --import tsx scripts/slo-gate.ts --env=production
+
   verify-artifact:
     runs-on: ubuntu-latest
     needs: pre-deploy-gates
