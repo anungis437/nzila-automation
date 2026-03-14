@@ -36,7 +36,7 @@ async function loadPlatformSettings(): Promise<PlatformSettingsData> {
     await db.execute(sql`
       SELECT settings, features_enabled
       FROM organizations
-      WHERE organization_type = 'platform'
+      WHERE organization_type IN ('platform', 'congress')
       LIMIT 1
     `)
   );
@@ -53,7 +53,7 @@ async function loadPlatformSettings(): Promise<PlatformSettingsData> {
              k.scopes, k.request_count::int as request_count
       FROM integration_api_keys k
       JOIN organizations o ON o.id = k.organization_id
-      WHERE o.organization_type = 'platform'
+      WHERE o.organization_type IN ('platform', 'congress')
       ORDER BY k.created_at DESC
     `)
   ).map((r: Record<string, unknown>) => ({

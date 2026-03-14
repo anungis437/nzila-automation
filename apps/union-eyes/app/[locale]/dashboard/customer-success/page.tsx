@@ -104,7 +104,7 @@ async function loadOverview(): Promise<OverviewStats> {
         COUNT(*) FILTER (WHERE status = 'active') as active_orgs,
         COALESCE(SUM(member_count), 0) as total_members,
         COALESCE(SUM(active_member_count), 0) as active_members
-      FROM organizations WHERE organization_type != 'platform'
+      FROM organizations WHERE organization_type NOT IN ('platform', 'congress')
     `)
   ).map((r: Record<string, unknown>) => r);
 
@@ -193,7 +193,7 @@ async function loadOrgHealth(): Promise<OrgHealth[]> {
         COALESCE((SELECT COUNT(*) FROM collective_agreements ca WHERE ca.organization_id = o.id), 0) as total_cbas,
         (SELECT ROUND(AVG(n.score), 1) FROM customer_nps_surveys n WHERE n.organization_id = o.id) as nps_avg
       FROM organizations o
-      WHERE o.organization_type != 'platform'
+      WHERE o.organization_type NOT IN ('platform', 'congress')
       ORDER BY o.name
     `)
   ).map((r: Record<string, unknown>) => {

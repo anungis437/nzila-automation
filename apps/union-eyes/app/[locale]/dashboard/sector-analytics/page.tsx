@@ -78,7 +78,7 @@ async function loadOverview(): Promise<Overview> {
         COALESCE(SUM(member_count), 0)::int as total_members,
         COALESCE(SUM(active_member_count), 0)::int as active_members
       FROM organizations
-      WHERE organization_type != 'platform'
+      WHERE organization_type NOT IN ('platform', 'congress')
     `)
   );
   const r = rows[0] as Record<string, unknown>;
@@ -87,7 +87,7 @@ async function loadOverview(): Promise<Overview> {
     await db.execute(sql`
       SELECT COUNT(DISTINCT s)::int as cnt
       FROM organizations, unnest(sectors) s
-      WHERE organization_type != 'platform'
+      WHERE organization_type NOT IN ('platform', 'congress')
     `)
   );
   const sc = sectorRows[0] as Record<string, unknown>;
@@ -121,7 +121,7 @@ async function loadOrganizations(): Promise<OrgRow[]> {
         WHERE logged_in_at >= now() - interval '30 days'
         GROUP BY organization_id
       ) le ON le.organization_id = o.id
-      WHERE o.organization_type != 'platform'
+      WHERE o.organization_type NOT IN ('platform', 'congress')
       ORDER BY o.member_count DESC NULLS LAST
     `)
   ).map((r: Record<string, unknown>) => ({
@@ -147,7 +147,7 @@ async function loadSectorBreakdown(): Promise<SectorSummary[]> {
         COALESCE(SUM(o.member_count), 0)::int as total_members,
         COALESCE(SUM(o.active_member_count), 0)::int as active_members
       FROM organizations o, unnest(o.sectors) s
-      WHERE o.organization_type != 'platform'
+      WHERE o.organization_type NOT IN ('platform', 'congress')
       GROUP BY s
       ORDER BY total_members DESC
     `)

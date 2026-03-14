@@ -219,7 +219,7 @@ async function loadOrgBreakdown(): Promise<OrgBreakdown[]> {
         (SELECT COUNT(*) FROM grievances g WHERE g.organization_id = o.id AND g.status = 'settled') as resolved_grievances
       FROM organizations o
       LEFT JOIN support_tickets t ON t.organization_id = o.id
-      WHERE o.organization_type != 'platform'
+      WHERE o.organization_type NOT IN ('platform', 'congress')
       GROUP BY o.id, o.name
       ORDER BY open_tickets DESC
     `)
