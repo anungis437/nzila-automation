@@ -138,7 +138,10 @@ export function CookieConsentBanner({ organizationId, userId }: CookieConsentBan
     try {
       await fetch("/api/gdpr/cookie-consent", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": consentId,
+        },
         body: JSON.stringify({
           consentId,
           userId,

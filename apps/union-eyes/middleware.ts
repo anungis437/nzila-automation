@@ -229,7 +229,10 @@ export default clerkMiddleware(async (auth, req) => {
     // the homepage with locale="clerk_<handshake-token>", which 404s.
     // Using auth() directly lets us return a clean 401 JSON response.
 
-    // ── Idempotency-Key enforcement (fail-closed in pilot/prod) ──────────
+    // ── Idempotency-Key enforcement (warn-and-continue) ─────────────────
+    // Most client-side fetch calls do not yet include the header.
+    // Instead of hard-rejecting (400), auto-inject a generated key so the
+    // request flows through, and log a warning for gradual migration.
     if (process.env.NODE_ENV !== 'development') {
       if (
         ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) &&
@@ -238,18 +241,13 @@ export default clerkMiddleware(async (auth, req) => {
         !req.nextUrl.pathname.startsWith('/api/cron')
       ) {
         if (!req.headers.get('idempotency-key')) {
+          logger.warn(`Missing Idempotency-Key header on ${req.method} ${req.nextUrl.pathname}`);
+          const requestHeaders = new Headers(req.headers);
+          requestHeaders.set('idempotency-key', `auto-${crypto.randomUUID()}`);
           return withRequestId(
-            NextResponse.json(
-              {
-                error: 'Missing Idempotency-Key header',
-                message:
-                  'All mutation requests (POST, PUT, PATCH, DELETE) must include an Idempotency-Key header.',
-                code: 'IDEMPOTENCY_KEY_REQUIRED',
-              },
-              { status: 400 },
-            ),
+            NextResponse.next({ request: { headers: requestHeaders } }),
             requestId,
-          )
+          );
         }
       }
     }
