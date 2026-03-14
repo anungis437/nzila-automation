@@ -13,7 +13,8 @@ export const GET = withApi(
   { auth: { required: true, minRole: 'member' } },
   async (ctx) => {
     const orgId = ctx.organizationId;
-    const activeOnly = ctx.query?.active !== 'false';
+    const url = new URL(ctx.request.url);
+    const activeOnly = url.searchParams.get('active') !== 'false';
 
     let query = sql`
       SELECT id, course_code, course_name, course_description,

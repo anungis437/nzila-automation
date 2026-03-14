@@ -29,7 +29,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
     department: row.department,
     membership_number: row.membershipNumber,
     is_primary: row.isPrimary,
-    member_category: row.memberCategory,
     created_at: row.createdAt,
     joined_at: row.joinedAt,
     updated_at: row.updatedAt,

@@ -14,8 +14,9 @@ export const GET = withApi(
   { auth: { required: true, minRole: 'member' } },
   async (ctx) => {
     const orgId = ctx.organizationId;
-    const limit = Number(ctx.query?.limit) || 50;
-    const contentType = ctx.query?.type || null; // 'template', 'resource', or null for all
+    const url = new URL(ctx.request.url);
+    const limit = Number(url.searchParams.get('limit')) || 50;
+    const contentType = url.searchParams.get('type') || null; // 'template', 'resource', or null for all
 
     let query = sql`
       SELECT id, title, slug, meta_description, status, category,

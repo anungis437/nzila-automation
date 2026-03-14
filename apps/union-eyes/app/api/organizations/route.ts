@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq, and, sql, type SQL } from 'drizzle-orm';
 import { withRLSContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
@@ -23,12 +23,12 @@ export async function GET(req: NextRequest) {
   const statusFilter = searchParams.get('status');
   const includeStats = searchParams.get('include_stats') === 'true';
 
-  const conditions = [];
+  const conditions: SQL[] = [];
   if (parentId) conditions.push(eq(organizations.parentId, parentId));
   if (statusFilter) conditions.push(eq(organizations.status, statusFilter));
 
   const where = conditions.length > 0
-    ? sql`${sql.join(conditions, sql` AND `)}`
+    ? and(...conditions)
     : undefined;
 
   const rows = await db.select().from(organizations).where(where);

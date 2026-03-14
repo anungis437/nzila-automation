@@ -22,6 +22,7 @@ export const GET = withApi(
     },
   },
   async () => {
-    return await getPlatformStatsFromDb();
+    const stats = await getPlatformStatsFromDb();
+    return stats as unknown as Record<string, unknown>;
   },
 );

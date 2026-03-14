@@ -41,7 +41,7 @@ export const GET = withApi(
       timestamp: m.createdAt,
     }));
 
-    return activity;
+    return { data: activity };
   },
 );
 

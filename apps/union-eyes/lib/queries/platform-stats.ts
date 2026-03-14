@@ -123,7 +123,7 @@ export async function getPlatformStatsFromDb(): Promise<PlatformStats> {
   `);
 
   // ── Organization list with health data ──
-  const orgList = await db
+  const orgRows = await db
     .select({
       id: organizations.id,
       name: organizations.name,
@@ -139,6 +139,13 @@ export async function getPlatformStatsFromDb(): Promise<PlatformStats> {
     })
     .from(organizations)
     .where(ne(organizations.organizationType, 'platform'));
+
+  const orgList = orgRows.map(o => ({
+    ...o,
+    status: o.status ?? 'active',
+    sectors: (o.sectors ?? []) as string[],
+    createdAt: o.createdAt ?? new Date(),
+  }));
 
   // ── Member role distribution ──
   const roleDistribution = await db.execute(sql`
