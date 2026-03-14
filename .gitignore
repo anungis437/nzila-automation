@@ -8,6 +8,9 @@ legacy-codebases/
 notion_export/
 *.zip
 
+# ----- Staging migration SQL files ------
+staging-*.sql
+
 # ----- Node / JS / TS ------
 **/node_modules/
 **/.next/
