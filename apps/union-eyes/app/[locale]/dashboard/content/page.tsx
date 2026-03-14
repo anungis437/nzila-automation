@@ -142,7 +142,16 @@ function computeStats(items: ContentItem[], courses: TrainingCourse[]): ContentS
   };
 }
 
-export default async function ContentDashboard() {
+export default async function ContentDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string; status?: string; type?: string }>;
+}) {
+  const params = await searchParams;
+  const activeTab = params.tab ?? 'overview';
+  const filterStatus = params.status ?? null;
+  const filterType = params.type ?? null;
+
   const { userId } = await auth();
 
   if (!userId) {
@@ -171,8 +180,19 @@ export default async function ContentDashboard() {
   }
 
   const stats = computeStats(items, courses);
-  const templates = items.filter(i => i.type === 'template');
-  const resources = items.filter(i => i.type === 'resource');
+  const allTemplates = items.filter(i => i.type === 'template');
+  const allResources = items.filter(i => i.type === 'resource');
+
+  // Apply status filter when navigating from overview
+  const templates = filterStatus && activeTab === 'templates'
+    ? allTemplates.filter(t => t.status === filterStatus)
+    : allTemplates;
+  const resources = filterStatus && activeTab === 'resources'
+    ? allResources.filter(r => r.status === filterStatus)
+    : allResources;
+  const filteredCourses = filterType && activeTab === 'training'
+    ? courses.filter(c => c.category === filterType)
+    : courses;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -183,55 +203,69 @@ export default async function ContentDashboard() {
         </p>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs defaultValue={activeTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="templates">Templates ({stats.templates.total})</TabsTrigger>
-          <TabsTrigger value="resources">Resources ({stats.resources.total})</TabsTrigger>
-          <TabsTrigger value="training">Training ({stats.training.total})</TabsTrigger>
+          <TabsTrigger value="overview">
+            <Link href="/dashboard/content" className="no-underline">Overview</Link>
+          </TabsTrigger>
+          <TabsTrigger value="templates">
+            <Link href="/dashboard/content?tab=templates" className="no-underline">Templates ({stats.templates.total})</Link>
+          </TabsTrigger>
+          <TabsTrigger value="resources">
+            <Link href="/dashboard/content?tab=resources" className="no-underline">Resources ({stats.resources.total})</Link>
+          </TabsTrigger>
+          <TabsTrigger value="training">
+            <Link href="/dashboard/content?tab=training" className="no-underline">Training ({stats.training.total})</Link>
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Templates
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.templates.total}</div>
-                <p className="text-xs text-muted-foreground">{stats.templates.published} published</p>
-              </CardContent>
-            </Card>
+            <Link href="/dashboard/content?tab=templates" className="no-underline">
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Templates
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.templates.total}</div>
+                  <p className="text-xs text-muted-foreground">{stats.templates.published} published</p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <FolderOpen className="h-4 w-4" />
-                  Resources
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.resources.total}</div>
-                <p className="text-xs text-muted-foreground">{stats.resources.published} published</p>
-              </CardContent>
-            </Card>
+            <Link href="/dashboard/content?tab=resources" className="no-underline">
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <FolderOpen className="h-4 w-4" />
+                    Resources
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.resources.total}</div>
+                  <p className="text-xs text-muted-foreground">{stats.resources.published} published</p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4" />
-                  Training Courses
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.training.total}</div>
-                <p className="text-xs text-muted-foreground">{stats.training.totalCompletions.toLocaleString()} completions</p>
-              </CardContent>
-            </Card>
+            <Link href="/dashboard/content?tab=training" className="no-underline">
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4" />
+                    Training Courses
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.training.total}</div>
+                  <p className="text-xs text-muted-foreground">{stats.training.totalCompletions.toLocaleString()} completions</p>
+                </CardContent>
+              </Card>
+            </Link>
 
             <Card>
               <CardHeader className="pb-2">
@@ -282,22 +316,22 @@ export default async function ContentDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <Link href="/dashboard/content?tab=templates&status=published" className="flex items-center justify-between hover:bg-muted/50 rounded-md px-2 py-1 -mx-2 transition-colors no-underline">
                     <span className="text-sm">Published</span>
                     <Badge variant="default">{stats.templates.published + stats.resources.published}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
+                  </Link>
+                  <Link href="/dashboard/content?tab=templates&status=draft" className="flex items-center justify-between hover:bg-muted/50 rounded-md px-2 py-1 -mx-2 transition-colors no-underline">
                     <span className="text-sm">In Draft</span>
                     <Badge variant="secondary">{stats.templates.draft}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
+                  </Link>
+                  <Link href="/dashboard/content?tab=templates&status=review" className="flex items-center justify-between hover:bg-muted/50 rounded-md px-2 py-1 -mx-2 transition-colors no-underline">
                     <span className="text-sm">Needs Review</span>
                     <Badge variant="outline">{stats.templates.review}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
+                  </Link>
+                  <Link href="/dashboard/content?tab=templates&status=archived" className="flex items-center justify-between hover:bg-muted/50 rounded-md px-2 py-1 -mx-2 transition-colors no-underline">
                     <span className="text-sm">Archived</span>
                     <Badge variant="outline">{stats.templates.archived}</Badge>
-                  </div>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -316,7 +350,7 @@ export default async function ContentDashboard() {
                   .sort((a, b) => b.views - a.views)
                   .slice(0, 5)
                   .map((item) => (
-                    <div key={item.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                    <Link key={item.id} href={item.type === 'template' ? `/dashboard/content/${item.slug}` : `/dashboard/content?tab=resources`} className="flex items-center justify-between border-b pb-3 last:border-0 hover:bg-muted/50 rounded-md px-2 py-1 -mx-2 transition-colors no-underline">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-medium">{item.title}</p>
@@ -328,7 +362,7 @@ export default async function ContentDashboard() {
                         <p className="text-sm font-bold">{item.views.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">views</p>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 {items.length === 0 && (
                   <p className="text-sm text-muted-foreground">No content found</p>
@@ -342,7 +376,17 @@ export default async function ContentDashboard() {
         <TabsContent value="templates" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Content Templates</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Content Templates</CardTitle>
+                {filterStatus && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Filtered: {filterStatus}</Badge>
+                    <Link href="/dashboard/content?tab=templates" className="text-xs text-muted-foreground hover:text-foreground">
+                      Clear filter
+                    </Link>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               {templates.length === 0 ? (
@@ -441,11 +485,11 @@ export default async function ContentDashboard() {
               <CardTitle>Training Materials</CardTitle>
             </CardHeader>
             <CardContent>
-              {courses.length === 0 ? (
+              {filteredCourses.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No training courses found</p>
               ) : (
                 <div className="space-y-3">
-                  {courses.map((course) => (
+                  {filteredCourses.map((course) => (
                     <div key={course.id} className="flex items-start justify-between border-b pb-4 last:border-0 gap-4">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
                         {course.deliveryMethod === 'video' ? (
