@@ -281,9 +281,12 @@ async function loadNpsSurveys(): Promise<NpsSurvey[]> {
 async function loadFeatureAdoption(): Promise<FeatureAdoption[]> {
   const rows = Array.from(
     await db.execute(sql`
-      SELECT feature_name, module, usage_count, active_users,
-        (SELECT COUNT(DISTINCT fa2.organization_id) FROM platform_feature_adoption fa2 WHERE fa2.feature_name = fa.feature_name) as org_coverage
-      FROM platform_feature_adoption fa
+      SELECT feature_name, module,
+        SUM(usage_count)::int as usage_count,
+        SUM(active_users)::int as active_users,
+        COUNT(DISTINCT organization_id)::int as org_coverage
+      FROM platform_feature_adoption
+      GROUP BY feature_name, module
       ORDER BY usage_count DESC
     `)
   ).map((r: Record<string, unknown>) => ({
