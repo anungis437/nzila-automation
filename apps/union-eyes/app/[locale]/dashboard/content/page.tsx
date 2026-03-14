@@ -346,9 +346,9 @@ export default async function ContentDashboard() {
               ) : (
                 <div className="space-y-3">
                   {templates.map((template) => (
-                    <div key={template.id} className="flex items-center justify-between border-b pb-3 last:border-0">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                    <div key={template.id} className="flex items-start justify-between border-b pb-4 last:border-0 gap-4">
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <Badge variant={
                             template.status === 'published' ? 'default' :
                             template.status === 'draft' ? 'secondary' :
@@ -356,16 +356,20 @@ export default async function ContentDashboard() {
                           }>
                             {template.status}
                           </Badge>
-                          <span className="text-sm font-medium">{template.title}</span>
+                          <span className="text-sm font-semibold">{template.title}</span>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {template.category} &bull; Template
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {template.views.toLocaleString()} views &bull; {template.downloads.toLocaleString()} downloads
-                        </p>
+                        {template.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-2">{template.description}</p>
+                        )}
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span>{template.category}</span>
+                          <span>&bull;</span>
+                          <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{template.views.toLocaleString()}</span>
+                          <span>&bull;</span>
+                          <span className="flex items-center gap-1"><Download className="h-3 w-3" />{template.downloads.toLocaleString()}</span>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 shrink-0">
                         <button className="p-2 hover:bg-muted rounded-md" title="View">
                           <Eye className="h-4 w-4" />
                         </button>
@@ -393,21 +397,29 @@ export default async function ContentDashboard() {
               ) : (
                 <div className="space-y-3">
                   {resources.map((resource) => (
-                    <div key={resource.id} className="flex items-center justify-between border-b pb-3 last:border-0">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium">{resource.title}</p>
+                    <div key={resource.id} className="flex items-start justify-between border-b pb-4 last:border-0 gap-4">
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-semibold">{resource.title}</p>
                           {resource.status !== 'published' && (
                             <Badge variant="secondary">{resource.status}</Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {resource.category} &bull; PDF
-                          {resource.fileSizeMb ? ` \u2022 ${resource.fileSizeMb} MB` : ''}
-                          {' \u2022 '}{resource.downloads.toLocaleString()} downloads
-                        </p>
+                        {resource.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-2">{resource.description}</p>
+                        )}
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span>{resource.category}</span>
+                          <span>&bull;</span>
+                          <span>PDF</span>
+                          {resource.fileSizeMb && (
+                            <><span>&bull;</span><span>{resource.fileSizeMb} MB</span></>
+                          )}
+                          <span>&bull;</span>
+                          <span className="flex items-center gap-1"><Download className="h-3 w-3" />{resource.downloads.toLocaleString()}</span>
+                        </div>
                       </div>
-                      <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                      <button className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 shrink-0">
                         Download
                       </button>
                     </div>
@@ -430,31 +442,37 @@ export default async function ContentDashboard() {
               ) : (
                 <div className="space-y-3">
                   {courses.map((course) => (
-                    <div key={course.id} className="flex items-center justify-between border-b pb-3 last:border-0">
-                      <div className="space-y-1 flex items-center gap-3">
+                    <div key={course.id} className="flex items-start justify-between border-b pb-4 last:border-0 gap-4">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
                         {course.deliveryMethod === 'video' ? (
-                          <Video className="h-8 w-8 text-primary shrink-0" />
+                          <Video className="h-8 w-8 text-primary shrink-0 mt-0.5" />
                         ) : course.deliveryMethod === 'workshop' ? (
-                          <GraduationCap className="h-8 w-8 text-primary shrink-0" />
+                          <GraduationCap className="h-8 w-8 text-primary shrink-0 mt-0.5" />
                         ) : (
-                          <BookOpen className="h-8 w-8 text-primary shrink-0" />
+                          <BookOpen className="h-8 w-8 text-primary shrink-0 mt-0.5" />
                         )}
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium">{course.name}</p>
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-semibold">{course.name}</p>
                             {course.isMandatory && (
                               <Badge variant="destructive" className="text-xs">Required</Badge>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {course.deliveryMethod === 'video' ? 'Video' :
-                             course.deliveryMethod === 'workshop' ? 'Workshop' : 'Document'}
-                            {course.durationLabel ? ` \u2022 ${course.durationLabel}` : ''}
-                            {' \u2022 '}{course.completions} completions
-                          </p>
+                          {course.description && (
+                            <p className="text-xs text-muted-foreground line-clamp-2">{course.description}</p>
+                          )}
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span>{course.deliveryMethod === 'video' ? 'Video' :
+                             course.deliveryMethod === 'workshop' ? 'Workshop' : 'Document'}</span>
+                            {course.durationLabel && (
+                              <><span>&bull;</span><span>{course.durationLabel}</span></>
+                            )}
+                            <span>&bull;</span>
+                            <span>{course.completions} completions</span>
+                          </div>
                         </div>
                       </div>
-                      <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                      <button className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 shrink-0">
                         {course.deliveryMethod === 'video' ? 'Watch' :
                          course.deliveryMethod === 'workshop' ? 'Enroll' : 'Read'}
                       </button>
