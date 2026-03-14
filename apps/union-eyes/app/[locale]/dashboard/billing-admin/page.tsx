@@ -18,24 +18,17 @@ import { hasMinRole } from '@/lib/api-auth-guard';
 import { DollarSign, CreditCard, TrendingUp, Users, FileText, AlertCircle } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
-// Fetch billing subscriptions from API
-async function getBillingSubscriptions() {
+// Fetch billing data from platform stats API
+async function getBillingData() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/billing/subscriptions?limit=50`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/platform/stats`, {
       cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
-    
-    if (!response.ok) {
-      logger.error('Failed to fetch billing subscriptions');
-      return null;
-    }
-    
-    return await response.json();
+    if (!response.ok) return null;
+    const json = await response.json();
+    return json?.data ?? json ?? null;
   } catch (error) {
-    logger.error('Error fetching billing subscriptions:', error);
+    logger.error('Error fetching billing data:', error);
     return null;
   }
 }
@@ -54,18 +47,22 @@ export default async function BillingAdminDashboard() {
   }
   
   // Fetch real data
-  const billingData = await getBillingSubscriptions();
+  const stats = await getBillingData();
   
-  // Fallback to placeholder if API fails
-  const subscriptions = billingData?.data?.subscriptions || [];
+  const orgs: Array<{ name: string; type: string; memberCount: number; subscriptionTier: string; perCapitaRate: number; status: string; activeMemberCount: number }> = stats?.organizations ?? [];
+  const activeOrgs = orgs.filter((o) => o.status === 'active');
   
-  const metrics = billingData?.data?.metrics || {
-    total_mrr: 0,
-    active_subscriptions: 0,
-    payment_success_rate: 0,
-    past_due_count: 0,
-    mrr_growth: 0,
-    new_subscriptions: 0,
+  // Compute billing metrics from real org data
+  const totalMrr = orgs.reduce((sum, o) => sum + (o.memberCount * (o.perCapitaRate || 0)), 0);
+  const activeSubscriptions = orgs.filter((o) => o.subscriptionTier && o.subscriptionTier !== 'none').length;
+  const pastDueCount = orgs.filter((o) => o.status !== 'active' && o.subscriptionTier && o.subscriptionTier !== 'none').length;
+  const settlementValue = Number(stats?.settlements?.totalMonetaryValue ?? 0);
+  
+  const metrics = {
+    total_mrr: totalMrr,
+    active_subscriptions: activeSubscriptions,
+    payment_success_rate: activeSubscriptions > 0 ? Math.round((activeOrgs.length / orgs.length) * 100) : 0,
+    past_due_count: pastDueCount,
   };
   
   return (
@@ -96,9 +93,9 @@ export default async function BillingAdminDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${(metrics.total_mrr / 1000).toFixed(1)}K</div>
-                <p className="text-xs text-muted-foreground text-green-600">
-                  +${(metrics.mrr_growth / 1000).toFixed(0)}K from last month
+                <div className="text-2xl font-bold">${totalMrr > 1000 ? (totalMrr / 1000).toFixed(1) + 'K' : totalMrr.toFixed(0)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Based on per-capita rates × member counts
                 </p>
               </CardContent>
             </Card>
@@ -112,7 +109,7 @@ export default async function BillingAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.active_subscriptions}</div>
-                <p className="text-xs text-muted-foreground">+{metrics.new_subscriptions} this month</p>
+                <p className="text-xs text-muted-foreground">{orgs.length} total organizations</p>
               </CardContent>
             </Card>
             
@@ -148,22 +145,22 @@ export default async function BillingAdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Revenue Growth
+                  Revenue Breakdown
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">This Month</span>
-                    <span className="text-lg font-bold">${(metrics.total_mrr / 1000).toFixed(1)}K</span>
+                    <span className="text-sm">Total MRR</span>
+                    <span className="text-lg font-bold">${totalMrr.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Last Month</span>
-                    <span className="text-lg font-bold text-muted-foreground">${((metrics.total_mrr - metrics.mrr_growth) / 1000).toFixed(1)}K</span>
+                    <span className="text-sm">Settlement Value</span>
+                    <span className="text-lg font-bold text-green-600">${settlementValue.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Growth Rate</span>
-                    <span className="text-lg font-bold text-green-600">+{((metrics.mrr_growth / (metrics.total_mrr - metrics.mrr_growth)) * 100).toFixed(1)}%</span>
+                    <span className="text-sm">Active Orgs</span>
+                    <span className="text-lg font-bold">{activeOrgs.length} / {orgs.length}</span>
                   </div>
                 </div>
               </CardContent>
@@ -200,26 +197,25 @@ export default async function BillingAdminDashboard() {
         <TabsContent value="subscriptions" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Subscriptions</CardTitle>
+              <CardTitle>Organization Subscriptions</CardTitle>
             </CardHeader>
             <CardContent>
-              {subscriptions.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No subscriptions found</p>
+              {orgs.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No organizations found</p>
               ) : (
                 <div className="space-y-3">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {subscriptions.map((sub: any) => (
-                    <div key={sub.id || sub.customer} className="flex items-center justify-between border-b pb-3 last:border-0">
+                  {orgs.map((org) => (
+                    <div key={org.name} className="flex items-center justify-between border-b pb-3 last:border-0">
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{sub.customer || sub.organization_name}</p>
-                        <p className="text-xs text-muted-foreground">{sub.plan} Plan</p>
-                        <p className="text-xs text-muted-foreground">Renewal: {sub.renewal || sub.renewal_date}</p>
+                        <p className="text-sm font-medium">{org.name}</p>
+                        <p className="text-xs text-muted-foreground capitalize">{org.subscriptionTier || 'free'} Plan</p>
+                        <p className="text-xs text-muted-foreground">{org.memberCount.toLocaleString()} members</p>
                       </div>
                       <div className="text-right space-y-1">
-                        <Badge variant={sub.status === 'active' ? 'default' : 'destructive'}>
-                          {sub.status}
+                        <Badge variant={org.status === 'active' ? 'default' : 'destructive'}>
+                          {org.status}
                         </Badge>
-                        <p className="text-sm font-bold">${(sub.mrr || sub.amount).toLocaleString()}/mo</p>
+                        <p className="text-sm font-bold">${(org.memberCount * (org.perCapitaRate || 0)).toLocaleString()}/mo</p>
                       </div>
                     </div>
                   ))}

@@ -1,16 +1,11 @@
 /**
  * Customer Success Dashboard Widgets
- * Placeholder components for customer health and retention monitoring
+ * Driven by real organization data passed from the Customer Success page.
  */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
- 
- 
- 
- 
- 
  
 import { 
   Heart, 
@@ -23,17 +18,37 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
-interface WidgetProps {
-  detailed?: boolean;
+export interface OrgData {
+  id: string;
+  name: string;
+  organizationType: string;
+  status: string;
+  memberCount: number;
+  activeMemberCount: number;
+  sectors: string[];
+  clcAffiliated: boolean;
+  subscriptionTier: string | null;
+  perCapitaRate: string | null;
+  createdAt: string;
 }
 
-export function CustomerHealthScoresWidget({ detailed: _detailed = false }: WidgetProps) {
-  const customers = [
-    { name: 'Unifor Local 1', health: 92, status: 'healthy', users: 450 },
-    { name: 'CUPE Local 416', health: 85, status: 'healthy', users: 320 },
-    { name: 'OPSEU Local 562', health: 68, status: 'at-risk', users: 180 },
-    { name: 'CWA Local 1', health: 95, status: 'healthy', users: 520 },
-  ];
+interface WidgetProps {
+  detailed?: boolean;
+  organizations?: OrgData[];
+}
+
+export function CustomerHealthScoresWidget({ detailed: _detailed = false, organizations = [] }: WidgetProps) {
+  const customers = organizations.map(org => {
+    const healthScore = org.status === 'active' 
+      ? Math.min(100, 60 + (org.activeMemberCount > 0 ? 20 : 0) + (org.clcAffiliated ? 10 : 0) + (org.sectors.length > 0 ? 10 : 0))
+      : 30;
+    return {
+      name: org.name,
+      health: healthScore,
+      status: healthScore >= 70 ? 'healthy' : 'at-risk',
+      users: org.memberCount,
+    };
+  });
   
   return (
     <Card>
@@ -45,38 +60,49 @@ export function CustomerHealthScoresWidget({ detailed: _detailed = false }: Widg
         <CardDescription>Overall customer health by organization</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {customers.map((customer) => (
-            <div key={customer.name} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">{customer.name}</p>
-                  <p className="text-xs text-muted-foreground">{customer.users} users</p>
+        {customers.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No organizations found</p>
+        ) : (
+          <div className="space-y-4">
+            {customers.map((customer) => (
+              <div key={customer.name} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{customer.name}</p>
+                    <p className="text-xs text-muted-foreground">{customer.users.toLocaleString()} members</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">{customer.health}%</span>
+                    {customer.status === 'healthy' ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-orange-600" />
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold">{customer.health}%</span>
-                  {customer.status === 'healthy' ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <AlertTriangle className="h-4 w-4 text-orange-600" />
-                  )}
-                </div>
+                <Progress value={customer.health} className="h-2" />
               </div>
-              <Progress value={customer.health} className="h-2" />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-export function OnboardingProgressWidget({ detailed: _detailed = false }: WidgetProps) {
-  const onboardingCustomers = [
-    { name: 'IBEW Local 353', stage: 'Setup', progress: 75, daysActive: 5 },
-    { name: 'Teamsters Local 141', stage: 'Training', progress: 45, daysActive: 3 },
-    { name: 'UAW Local 27', stage: 'Launch', progress: 90, daysActive: 12 },
-  ];
+export function OnboardingProgressWidget({ detailed: _detailed = false, organizations = [] }: WidgetProps) {
+  const onboardingCustomers = organizations.map(org => {
+    const daysSinceCreation = org.createdAt 
+      ? Math.floor((Date.now() - new Date(org.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+      : 0;
+    const hasMembers = org.memberCount > 0;
+    const hasSectors = org.sectors.length > 0;
+    const hasSubscription = !!org.subscriptionTier;
+    const progress = 25 + (hasMembers ? 25 : 0) + (hasSectors ? 25 : 0) + (hasSubscription ? 25 : 0);
+    const stage = progress >= 100 ? 'Complete' : progress >= 75 ? 'Training' : progress >= 50 ? 'Setup' : 'Onboarding';
+    
+    return { name: org.name, stage, progress, daysActive: daysSinceCreation };
+  });
   
   return (
     <Card>
@@ -85,36 +111,43 @@ export function OnboardingProgressWidget({ detailed: _detailed = false }: Widget
           <Users className="h-5 w-5" />
           Onboarding Progress
         </CardTitle>
-        <CardDescription>New customer activation status</CardDescription>
+        <CardDescription>Customer activation status</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {onboardingCustomers.map((customer) => (
-            <div key={customer.name} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">{customer.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {customer.stage} • Day {customer.daysActive}
-                  </p>
+        {onboardingCustomers.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No organizations found</p>
+        ) : (
+          <div className="space-y-4">
+            {onboardingCustomers.map((customer) => (
+              <div key={customer.name} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{customer.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {customer.stage} • Day {customer.daysActive}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold">{customer.progress}%</span>
                 </div>
-                <span className="text-sm font-bold">{customer.progress}%</span>
+                <Progress value={customer.progress} className="h-2" />
               </div>
-              <Progress value={customer.progress} className="h-2" />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-export function ChurnRiskWidget({ detailed: _detailed = false }: WidgetProps) {
-  const atRiskCustomers = [
-    { name: 'SEIU Local 87', risk: 'high', reason: 'Low usage last 30d', lastLogin: '15 days ago' },
-    { name: 'AFSCME Local 3299', risk: 'medium', reason: 'Support tickets increasing', lastLogin: '2 days ago' },
-    { name: 'UFCW Local 1518', risk: 'medium', reason: 'No admin activity', lastLogin: '8 days ago' },
-  ];
+export function ChurnRiskWidget({ detailed: _detailed = false, organizations = [] }: WidgetProps) {
+  const atRiskCustomers = organizations
+    .filter(org => org.status !== 'active' || org.activeMemberCount === 0)
+    .map(org => ({
+      name: org.name,
+      risk: org.status !== 'active' ? 'high' : 'medium',
+      reason: org.status !== 'active' ? `Status: ${org.status}` : 'No active members',
+      lastLogin: org.status !== 'active' ? 'Account inactive' : 'N/A',
+    }));
   
   return (
     <Card>
@@ -126,31 +159,61 @@ export function ChurnRiskWidget({ detailed: _detailed = false }: WidgetProps) {
         <CardDescription>Customers requiring attention</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {atRiskCustomers.map((customer) => (
-            <div key={customer.name} className="flex items-start justify-between border-b pb-2 last:border-0">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">{customer.name}</p>
-                <p className="text-xs text-muted-foreground">{customer.reason}</p>
-                <p className="text-xs text-muted-foreground">Last login: {customer.lastLogin}</p>
+        {atRiskCustomers.length === 0 ? (
+          <div className="text-center py-4">
+            <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">All customers are healthy — no churn risks detected</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {atRiskCustomers.map((customer) => (
+              <div key={customer.name} className="flex items-start justify-between border-b pb-2 last:border-0">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{customer.name}</p>
+                  <p className="text-xs text-muted-foreground">{customer.reason}</p>
+                </div>
+                <Badge variant={customer.risk === 'high' ? 'destructive' : 'secondary'}>
+                  {customer.risk} risk
+                </Badge>
               </div>
-              <Badge variant={customer.risk === 'high' ? 'destructive' : 'secondary'}>
-                {customer.risk} risk
-              </Badge>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-export function AdoptionMetricsWidget({ detailed: _detailed = false }: WidgetProps) {
+interface GrievanceData {
+  total: number;
+  open: number;
+  resolved: number;
+  highPriority: number;
+  inArbitration: number;
+}
+
+interface CBAData {
+  total: number;
+  active: number;
+  negotiating: number;
+  expired: number;
+}
+
+interface AdoptionWidgetProps {
+  detailed?: boolean;
+  grievances?: GrievanceData;
+  collectiveAgreements?: CBAData;
+}
+
+export function AdoptionMetricsWidget({ detailed: _detailed = false, grievances, collectiveAgreements }: AdoptionWidgetProps) {
+  const totalGrievances = grievances?.total ?? 0;
+  const totalCBAs = collectiveAgreements?.total ?? 0;
+  
   const features = [
-    { name: 'Claims Management', adoption: 87, trend: 'up' },
-    { name: 'CBA Library', adoption: 72, trend: 'up' },
-    { name: 'Bargaining Module', adoption: 45, trend: 'stable' },
-    { name: 'Health & Safety', adoption: 38, trend: 'down' },
+    { name: 'Grievance Management', adoption: totalGrievances > 0 ? Math.min(100, Math.round((grievances?.resolved ?? 0) / totalGrievances * 100)) : 0, trend: 'active' },
+    { name: 'CBA Library', adoption: totalCBAs > 0 ? Math.min(100, Math.round((collectiveAgreements?.active ?? 0) / totalCBAs * 100)) : 0, trend: 'active' },
+    { name: 'Bargaining Module', adoption: collectiveAgreements?.negotiating ?? 0 > 0 ? 100 : 0, trend: (collectiveAgreements?.negotiating ?? 0) > 0 ? 'active' : 'inactive' },
+    { name: 'Arbitration Pipeline', adoption: grievances?.inArbitration ?? 0 > 0 ? 100 : 0, trend: (grievances?.inArbitration ?? 0) > 0 ? 'active' : 'inactive' },
   ];
   
   return (
@@ -160,7 +223,7 @@ export function AdoptionMetricsWidget({ detailed: _detailed = false }: WidgetPro
           <Zap className="h-5 w-5" />
           Feature Adoption
         </CardTitle>
-        <CardDescription>Module usage across customers</CardDescription>
+        <CardDescription>Module usage across the platform</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -168,7 +231,7 @@ export function AdoptionMetricsWidget({ detailed: _detailed = false }: WidgetPro
             <div key={feature.name} className="space-y-2">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">{feature.name}</p>
-                <span className="text-sm font-bold">{feature.adoption}%</span>
+                <span className="text-sm font-bold">{feature.adoption > 0 ? `${feature.adoption}%` : 'N/A'}</span>
               </div>
               <Progress value={feature.adoption} className="h-2" />
             </div>
@@ -179,53 +242,52 @@ export function AdoptionMetricsWidget({ detailed: _detailed = false }: WidgetPro
   );
 }
 
-export function NPSWidget({ detailed: _detailed = false }: WidgetProps) {
-  const npsData = {
-    score: 72,
-    promoters: 65,
-    passives: 28,
-    detractors: 7,
-    responses: 156,
-  };
+interface NPSWidgetProps {
+  detailed?: boolean;
+  organizations?: OrgData[];
+}
+
+export function NPSWidget({ detailed: _detailed = false, organizations = [] }: NPSWidgetProps) {
+  const totalOrgs = organizations.length;
+  const activeOrgs = organizations.filter(o => o.status === 'active').length;
+  const affiliatedOrgs = organizations.filter(o => o.clcAffiliated).length;
+  // Compute a platform health score based on org status
+  const healthScore = totalOrgs > 0 ? Math.round((activeOrgs / totalOrgs) * 100) : 0;
   
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ThumbsUp className="h-5 w-5" />
-          Net Promoter Score
+          Platform Health Score
         </CardTitle>
-        <CardDescription>Customer satisfaction metric</CardDescription>
+        <CardDescription>Organization health metric</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="text-center">
-            <div className="text-4xl font-bold">{npsData.score}</div>
-            <p className="text-sm text-muted-foreground">World-class (70+)</p>
+            <div className="text-4xl font-bold">{healthScore}</div>
+            <p className="text-sm text-muted-foreground">
+              {healthScore >= 90 ? 'Excellent' : healthScore >= 70 ? 'Good' : healthScore >= 50 ? 'Fair' : 'Needs attention'}
+            </p>
           </div>
           
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-green-600">Promoters (9-10)</span>
-              <span className="font-medium">{npsData.promoters}%</span>
+              <span className="text-green-600">Active Organizations</span>
+              <span className="font-medium">{activeOrgs} / {totalOrgs}</span>
             </div>
-            <Progress value={npsData.promoters} className="h-2 [&>div]:bg-green-600" />
+            <Progress value={totalOrgs > 0 ? (activeOrgs / totalOrgs) * 100 : 0} className="h-2 [&>div]:bg-green-600" />
             
             <div className="flex items-center justify-between text-sm">
-              <span className="text-yellow-600">Passives (7-8)</span>
-              <span className="font-medium">{npsData.passives}%</span>
+              <span className="text-blue-600">CLC Affiliated</span>
+              <span className="font-medium">{affiliatedOrgs} / {totalOrgs}</span>
             </div>
-            <Progress value={npsData.passives} className="h-2 [&>div]:bg-yellow-600" />
-            
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-red-600">Detractors (0-6)</span>
-              <span className="font-medium">{npsData.detractors}%</span>
-            </div>
-            <Progress value={npsData.detractors} className="h-2 [&>div]:bg-red-600" />
+            <Progress value={totalOrgs > 0 ? (affiliatedOrgs / totalOrgs) * 100 : 0} className="h-2 [&>div]:bg-blue-600" />
           </div>
           
           <p className="text-xs text-center text-muted-foreground">
-            Based on {npsData.responses} responses
+            Based on {totalOrgs} organizations
           </p>
         </div>
       </CardContent>
@@ -233,38 +295,54 @@ export function NPSWidget({ detailed: _detailed = false }: WidgetProps) {
   );
 }
 
-export function CustomerFeedbackWidget({ detailed: _detailed = false }: WidgetProps) {
-  const feedback = [
-    { customer: 'Unifor Local 1', rating: 5, comment: 'Excellent claims tracking!', date: '2 hours ago' },
-    { customer: 'CUPE Local 416', rating: 4, comment: 'Good but needs better mobile app', date: '5 hours ago' },
-    { customer: 'UAW Local 27', rating: 5, comment: 'Love the bargaining module', date: '1 day ago' },
-  ];
+interface FeedbackWidgetProps {
+  detailed?: boolean;
+  organizations?: OrgData[];
+  settlements?: { total: number; totalMonetaryValue: number };
+}
+
+export function CustomerFeedbackWidget({ detailed: _detailed = false, organizations = [], settlements }: FeedbackWidgetProps) {
+  // Show real organizational activity as "feedback"
+  const activity = organizations.map(org => ({
+    customer: org.name,
+    type: org.organizationType,
+    members: org.memberCount,
+    sectors: org.sectors.join(', ') || 'No sector assigned',
+    status: org.status,
+  }));
   
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
-          Recent Feedback
+          Organization Activity
         </CardTitle>
-        <CardDescription>Latest customer comments</CardDescription>
+        <CardDescription>Customer organization overview</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {feedback.map((item, index) => (
-            <div key={index} className="border-b pb-2 last:border-0">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-sm font-medium">{item.customer}</p>
-                <div className="flex items-center gap-1">
-                  {[...Array(item.rating)].map((_, i) => (
-                    <span key={i} className="text-yellow-500">⭐</span>
-                  ))}
+          {activity.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No organization data available</p>
+          ) : (
+            activity.map((item) => (
+              <div key={item.customer} className="border-b pb-2 last:border-0">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-sm font-medium">{item.customer}</p>
+                  <Badge variant={item.status === 'active' ? 'default' : 'secondary'}>{item.status}</Badge>
                 </div>
+                <p className="text-sm text-muted-foreground capitalize">{item.type} • {item.members.toLocaleString()} members</p>
+                <p className="text-xs text-muted-foreground mt-1">{item.sectors}</p>
               </div>
-              <p className="text-sm text-muted-foreground">{item.comment}</p>
-              <p className="text-xs text-muted-foreground mt-1">{item.date}</p>
+            ))
+          )}
+          {settlements && settlements.total > 0 && (
+            <div className="mt-3 pt-3 border-t">
+              <p className="text-xs text-muted-foreground">
+                {settlements.total} settlement{settlements.total !== 1 ? 's' : ''} totaling ${settlements.totalMonetaryValue.toLocaleString()}
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </CardContent>
     </Card>

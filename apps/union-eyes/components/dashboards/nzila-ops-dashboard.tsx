@@ -5,6 +5,7 @@
  *
  * Platform-level dashboard for Nzila Ventures staff (app_owner, coo, cto, etc.).
  * Shows platform health, customer metrics, support queue, and revenue KPIs.
+ * Fetches real data from /api/platform/stats.
  */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,17 +28,20 @@ import {
   Globe,
   HeartPulse,
   Clock,
+  FileText,
+  Scale,
 } from "lucide-react";
-import { useOrganization } from "@/contexts/organization-context";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-interface PlatformStats {
+interface PlatformData {
   totalOrganizations: number;
+  activeOrganizations: number;
+  totalMemberCount: number;
+  registeredUsers: number;
   activeUsers: number;
-  openTickets: number;
-  mrr: number;
-  uptimePercent: number;
-  avgResponseTime: number;
+  grievances: { total: number; open: number; highPriority: number; resolved: number; inArbitration: number };
+  collectiveAgreements: { total: number; active: number; negotiating: number; expired: number };
+  settlements: { total: number; totalMonetaryValue: number };
+  clcAffiliatedCount: number;
 }
 
 interface QuickAction {
@@ -51,23 +55,21 @@ interface QuickAction {
 // ── Component ────────────────────────────────────────────────────────────────
 export default function NzilaOpsDashboard() {
   const { user } = useUser();
-  const { userOrganizations } = useOrganization();
   const [mounted, setMounted] = useState(false);
+  const [platformData, setPlatformData] = useState<PlatformData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    fetch('/api/platform/stats')
+      .then(res => res.ok ? res.json() : null)
+      .then(json => {
+        if (json?.data) setPlatformData(json.data);
+        else if (json) setPlatformData(json);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
-
-  // Derive stats from context (API calls will replace placeholder values)
-  const stats: PlatformStats = {
-    totalOrganizations: userOrganizations?.length ?? 0,
-    activeUsers: 0,
-    openTickets: 0,
-    mrr: 0,
-    uptimePercent: 99.9,
-    avgResponseTime: 0,
-  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -76,13 +78,15 @@ export default function NzilaOpsDashboard() {
     return "Good evening";
   };
 
+  const d = platformData;
+
   const kpis = [
-    { title: "Organizations", value: stats.totalOrganizations, icon: <Building2 size={20} />, color: "text-blue-600 bg-blue-100", change: "active on platform" },
-    { title: "Monthly Recurring Revenue", value: `$${stats.mrr.toLocaleString()}`, icon: <DollarSign size={20} />, color: "text-green-600 bg-green-100", change: "MRR" },
-    { title: "Platform Uptime", value: `${stats.uptimePercent}%`, icon: <HeartPulse size={20} />, color: "text-emerald-600 bg-emerald-100", change: "last 30 days" },
-    { title: "Avg Response Time", value: `${stats.avgResponseTime}ms`, icon: <Zap size={20} />, color: "text-amber-600 bg-amber-100", change: "p95 latency" },
-    { title: "Open Support Tickets", value: stats.openTickets, icon: <AlertTriangle size={20} />, color: "text-orange-600 bg-orange-100", change: "awaiting response" },
-    { title: "Active Users (30d)", value: stats.activeUsers, icon: <Users size={20} />, color: "text-purple-600 bg-purple-100", change: "unique logins" },
+    { title: "Organizations", value: d?.totalOrganizations ?? 0, icon: <Building2 size={20} />, color: "text-blue-600 bg-blue-100", change: `${d?.activeOrganizations ?? 0} active` },
+    { title: "Total Members", value: (d?.totalMemberCount ?? 0).toLocaleString(), icon: <Users size={20} />, color: "text-purple-600 bg-purple-100", change: `${d?.registeredUsers ?? 0} registered users` },
+    { title: "Open Grievances", value: d?.grievances?.open ?? 0, icon: <AlertTriangle size={20} />, color: "text-orange-600 bg-orange-100", change: `${d?.grievances?.highPriority ?? 0} high priority` },
+    { title: "Active CBAs", value: d?.collectiveAgreements?.active ?? 0, icon: <FileText size={20} />, color: "text-green-600 bg-green-100", change: `${d?.collectiveAgreements?.negotiating ?? 0} under negotiation` },
+    { title: "Settlements", value: d?.settlements?.total ?? 0, icon: <Scale size={20} />, color: "text-emerald-600 bg-emerald-100", change: `$${(d?.settlements?.totalMonetaryValue ?? 0).toLocaleString()} total value` },
+    { title: "CLC Affiliated", value: d?.clcAffiliatedCount ?? 0, icon: <Globe size={20} />, color: "text-indigo-600 bg-indigo-100", change: "affiliated organizations" },
   ];
 
   const quickActions: QuickAction[] = [
@@ -96,7 +100,7 @@ export default function NzilaOpsDashboard() {
     { title: "Sector Analytics", description: "Cross-sector performance data", href: "/dashboard/sector-analytics", icon: <TrendingUp size={24} />, color: "from-teal-500 to-teal-600" },
   ];
 
-  if (!mounted || !user) {
+  if (!mounted || !user || loading) {
     return (
       <div>
         <div className="animate-pulse space-y-6">
@@ -184,18 +188,18 @@ export default function NzilaOpsDashboard() {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { name: "Web Application", status: "operational", latency: "142ms" },
-                  { name: "PostgreSQL Database", status: "operational", latency: "8ms" },
-                  { name: "Redis Cache", status: "operational", latency: "2ms" },
-                  { name: "Clerk Auth", status: "operational", latency: "45ms" },
-                  { name: "Background Jobs", status: "operational", latency: "—" },
+                  { name: "Organizations", value: `${d?.totalOrganizations ?? 0} total`, status: (d?.totalOrganizations ?? 0) > 0 ? "operational" : "degraded" },
+                  { name: "Registered Users", value: `${d?.registeredUsers ?? 0} users`, status: (d?.registeredUsers ?? 0) > 0 ? "operational" : "degraded" },
+                  { name: "Grievance Pipeline", value: `${d?.grievances?.open ?? 0} open / ${d?.grievances?.total ?? 0} total`, status: "operational" },
+                  { name: "Collective Agreements", value: `${d?.collectiveAgreements?.active ?? 0} active`, status: "operational" },
+                  { name: "Database", value: platformData ? "Connected" : "Unavailable", status: platformData ? "operational" : "degraded" },
                 ].map(svc => (
                   <div key={svc.name} className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200">
                     <div className="flex items-center gap-3">
                       <div className={`w-2.5 h-2.5 rounded-full ${svc.status === "operational" ? "bg-green-500" : "bg-yellow-500"}`} />
                       <span className="text-sm font-medium text-gray-900">{svc.name}</span>
                     </div>
-                    <span className="text-xs text-gray-500">{svc.latency}</span>
+                    <span className="text-xs text-gray-500">{svc.value}</span>
                   </div>
                 ))}
               </div>
@@ -214,13 +218,34 @@ export default function NzilaOpsDashboard() {
               <CardDescription>Latest system activity</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <div className="inline-flex p-3 rounded-full bg-gray-100 mb-3">
-                  <Activity size={24} className="text-gray-400" />
+              {d?.grievances?.total ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200">
+                    <span className="text-sm font-medium">Total Grievances</span>
+                    <span className="text-sm font-bold">{d.grievances.total}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200">
+                    <span className="text-sm font-medium">Resolved</span>
+                    <span className="text-sm font-bold text-green-600">{d.grievances.resolved}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200">
+                    <span className="text-sm font-medium">In Arbitration</span>
+                    <span className="text-sm font-bold text-orange-600">{d.grievances.inArbitration}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200">
+                    <span className="text-sm font-medium">CBAs Under Negotiation</span>
+                    <span className="text-sm font-bold text-blue-600">{d.collectiveAgreements?.negotiating ?? 0}</span>
+                  </div>
                 </div>
-                <p className="text-gray-600">No recent events</p>
-                <p className="text-sm text-gray-500 mt-1">Platform activity will appear here</p>
-              </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="inline-flex p-3 rounded-full bg-gray-100 mb-3">
+                    <Activity size={24} className="text-gray-400" />
+                  </div>
+                  <p className="text-gray-600">No data available</p>
+                  <p className="text-sm text-gray-500 mt-1">Platform activity will appear here</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
