@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import { hasMinRole } from '@/lib/api-auth-guard';
 
 /* ── Types ── */
@@ -299,14 +300,16 @@ export default async function OperationsDashboard(props: {
   const tab = typeof searchParams.tab === 'string' ? searchParams.tab : 'overview';
   const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : 'all';
 
-  const [overview, services, incidents, slaMetrics, releases, capacity] = await Promise.all([
-    loadOverview(),
-    loadServices(),
-    loadIncidents(tab === 'incidents' ? statusFilter : undefined),
-    loadSlaMetrics(),
-    loadReleases(),
-    loadCapacity(),
-  ]);
+  const [overview, services, incidents, slaMetrics, releases, capacity] = await withSystemContext(() =>
+    Promise.all([
+      loadOverview(),
+      loadServices(),
+      loadIncidents(tab === 'incidents' ? statusFilter : undefined),
+      loadSlaMetrics(),
+      loadReleases(),
+      loadCapacity(),
+    ])
+  );
 
   const currentSla = slaMetrics.filter(m => {
     const d = new Date(m.measuredAt);

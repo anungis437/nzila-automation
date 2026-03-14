@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +15,9 @@ const ACTIVE_CLAIM_STATUSES = [
 
 /** GET /api/organizations — query organizations from DB */
 export async function GET(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { searchParams } = req.nextUrl;
   const parentId = searchParams.get('parent');
   const statusFilter = searchParams.get('status');
@@ -103,27 +108,32 @@ export async function GET(req: NextRequest) {
 
 /** POST /api/organizations — create organization in DB */
 export async function POST(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const body = await req.json();
 
-  const [created] = await db.insert(organizations).values({
-    name: body.name,
-    slug: body.slug,
-    displayName: body.display_name,
-    organizationType: body.organization_type ?? 'union',
-    parentId: body.parent_id,
-    hierarchyPath: body.hierarchy_path ?? [],
-    hierarchyLevel: body.hierarchy_level ?? 0,
-    sectors: body.sectors ?? [],
-    email: body.email,
-    phone: body.phone,
-    website: body.website,
-    status: body.status ?? 'active',
-    clcAffiliated: body.clc_affiliated ?? false,
-    memberCount: body.member_count ?? 0,
-    activeMemberCount: body.active_member_count ?? 0,
-    settings: body.settings ?? {},
-    featuresEnabled: body.features_enabled ?? [],
-  }).returning();
+  const [created] = await withRLSContext(async () =>
+    db.insert(organizations).values({
+      name: body.name,
+      slug: body.slug,
+      displayName: body.display_name,
+      organizationType: body.organization_type ?? 'union',
+      parentId: body.parent_id,
+      hierarchyPath: body.hierarchy_path ?? [],
+      hierarchyLevel: body.hierarchy_level ?? 0,
+      sectors: body.sectors ?? [],
+      email: body.email,
+      phone: body.phone,
+      website: body.website,
+      status: body.status ?? 'active',
+      clcAffiliated: body.clc_affiliated ?? false,
+      memberCount: body.member_count ?? 0,
+      activeMemberCount: body.active_member_count ?? 0,
+      settings: body.settings ?? {},
+      featuresEnabled: body.features_enabled ?? [],
+    }).returning()
+  );
 
   return NextResponse.json({ data: created }, { status: 201 });
 }

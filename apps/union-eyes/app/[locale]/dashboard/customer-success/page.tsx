@@ -16,6 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { hasMinRole } from '@/lib/api-auth-guard';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import Link from 'next/link';
 import {
   Heart,
@@ -333,13 +334,15 @@ export default async function CustomerSuccessDashboard({
   const tab = params.tab ?? 'overview';
 
   const [overview, orgHealth, onboarding, npsSurveys, featureAdoption] =
-    await Promise.all([
-      loadOverview(),
-      loadOrgHealth(),
-      loadOnboarding(),
-      loadNpsSurveys(),
-      loadFeatureAdoption(),
-    ]);
+    await withSystemContext(() =>
+      Promise.all([
+        loadOverview(),
+        loadOrgHealth(),
+        loadOnboarding(),
+        loadNpsSurveys(),
+        loadFeatureAdoption(),
+      ])
+    );
 
   // Derived
   const atRiskOrgs = orgHealth.filter((o) => o.healthScore < 60);

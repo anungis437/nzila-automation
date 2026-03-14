@@ -19,6 +19,7 @@ import { DollarSign, CreditCard, TrendingUp, Users, FileText, AlertCircle, Check
 import { logger } from '@/lib/logger';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -290,11 +291,13 @@ export default async function BillingAdminDashboard({
   let payments: Payment[] = [];
 
   try {
-    [subscriptions, invoices, payments] = await Promise.all([
-      loadSubscriptions(),
-      loadInvoices(),
-      loadPayments(),
-    ]);
+    [subscriptions, invoices, payments] = await withSystemContext(() =>
+      Promise.all([
+        loadSubscriptions(),
+        loadInvoices(),
+        loadPayments(),
+      ])
+    );
   } catch (error) {
     logger.error('Error loading billing data:', error);
   }

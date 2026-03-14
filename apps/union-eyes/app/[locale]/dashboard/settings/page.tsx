@@ -16,6 +16,7 @@ import { getUserRole } from "@/lib/auth/rbac-server";
 import { getOrganizationIdForUser } from "@/lib/organization-utils";
 import { db } from "@/db/db";
 import { sql } from "drizzle-orm";
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import PlatformSettingsContent from "./_components/platform-settings-content";
 import OrgSettingsContent from "./_components/org-settings-content";
 import type { PlatformSettingsData } from "./_components/platform-settings-content";
@@ -115,7 +116,7 @@ export default async function SettingsPage() {
   const userRole = await getUserRole(userId, organizationId);
 
   if (PLATFORM_ROLES.has(userRole)) {
-    const data = await loadPlatformSettings();
+    const data = await withSystemContext(() => loadPlatformSettings());
     return <PlatformSettingsContent initialData={data} />;
   }
 

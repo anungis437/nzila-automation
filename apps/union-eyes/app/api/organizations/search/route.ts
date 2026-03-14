@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
 import { ilike, or, ne } from 'drizzle-orm';
@@ -7,6 +8,9 @@ export const dynamic = 'force-dynamic';
 
 /** GET /api/organizations/search?q=...  Search organizations by name/slug */
 export async function GET(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const url = new URL(req.url);
   const q = url.searchParams.get('q') ?? url.searchParams.get('query') ?? '';
 

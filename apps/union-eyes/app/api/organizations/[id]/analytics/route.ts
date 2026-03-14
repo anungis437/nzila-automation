@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
 import { eq, sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +16,9 @@ const RESOLVED_STATUSES = ['settled', 'closed', 'withdrawn', 'denied'];
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
 
   // Fetch org

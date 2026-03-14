@@ -4,6 +4,7 @@
  */
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 

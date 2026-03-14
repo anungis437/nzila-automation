@@ -20,6 +20,7 @@ import { logger } from '@/lib/logger';
 import { getOrganizationIdForUser } from '@/lib/organization-utils';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -292,11 +293,13 @@ export default async function IntegrationsDashboard({
 
   if (organizationId) {
     try {
-      [apiKeys, webhooks, partners] = await Promise.all([
-        loadApiKeys(organizationId),
-        loadWebhooks(organizationId),
-        loadPartners(organizationId),
-      ]);
+      [apiKeys, webhooks, partners] = await withSystemContext(() =>
+        Promise.all([
+          loadApiKeys(organizationId),
+          loadWebhooks(organizationId),
+          loadPartners(organizationId),
+        ])
+      );
     } catch (error) {
       logger.error('Error loading integrations data:', error);
     }

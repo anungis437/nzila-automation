@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
 import { eq, inArray } from 'drizzle-orm';
@@ -8,6 +9,9 @@ export const dynamic = 'force-dynamic';
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
   // Get the org to read its hierarchy_path
   const [org] = await db.select({ hierarchyPath: organizations.hierarchyPath })

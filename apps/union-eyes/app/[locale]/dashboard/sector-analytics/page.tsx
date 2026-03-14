@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import { hasMinRole } from '@/lib/api-auth-guard';
 
 /* ── Types ── */
@@ -232,14 +233,16 @@ export default async function SectorAnalyticsPage(props: {
   const searchParams = await props.searchParams;
   const tab = typeof searchParams.tab === 'string' ? searchParams.tab : 'overview';
 
-  const [overview, orgs, sectors, cba, grievances, settlements] = await Promise.all([
-    loadOverview(),
-    loadOrganizations(),
-    loadSectorBreakdown(),
-    loadCbaStats(),
-    loadGrievanceStats(),
-    loadSettlementStats(),
-  ]);
+  const [overview, orgs, sectors, cba, grievances, settlements] = await withSystemContext(() =>
+    Promise.all([
+      loadOverview(),
+      loadOrganizations(),
+      loadSectorBreakdown(),
+      loadCbaStats(),
+      loadGrievanceStats(),
+      loadSettlementStats(),
+    ])
+  );
 
   const tabs = ['overview', 'sectors', 'organizations', 'bargaining'] as const;
   const tabLabels: Record<string, string> = {

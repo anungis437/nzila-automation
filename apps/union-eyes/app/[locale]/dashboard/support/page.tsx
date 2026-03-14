@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { hasMinRole } from '@/lib/api-auth-guard';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import Link from 'next/link';
 import {
   Headphones,
@@ -309,14 +310,16 @@ export default async function SupportDashboard({
   const ticketFilter = params.status ?? 'all';
 
   const [overview, tickets, grievances, orgBreakdown, categories, channels] =
-    await Promise.all([
-      loadOverview(),
-      loadTickets(tab === 'tickets' ? ticketFilter : undefined),
-      loadGrievances(),
-      loadOrgBreakdown(),
-      loadCategoryBreakdown(),
-      loadChannelBreakdown(),
-    ]);
+    await withSystemContext(() =>
+      Promise.all([
+        loadOverview(),
+        loadTickets(tab === 'tickets' ? ticketFilter : undefined),
+        loadGrievances(),
+        loadOrgBreakdown(),
+        loadCategoryBreakdown(),
+        loadChannelBreakdown(),
+      ])
+    );
 
   const tabs = [
     { key: 'overview', label: 'Overview', icon: BarChart3 },

@@ -17,6 +17,7 @@ import { hasMinRole } from '@/lib/api-auth-guard';
 import { BarChart3, Users, FileText, TrendingUp, Activity, Eye, LogIn, Layers, Building2, Clock, X } from 'lucide-react';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 /* ─── types ─── */
 interface ModuleUsage {
@@ -221,13 +222,15 @@ export default async function AnalyticsAdminDashboard({
   const activeTab = params.tab || 'overview';
   const moduleFilter = params.module;
 
-  const [stats, moduleUsage, orgInsights, features, loginBreakdown] = await Promise.all([
-    loadStats(),
-    loadModuleUsage(),
-    loadOrgInsights(),
-    loadFeatureAdoption(moduleFilter),
-    loadLoginBreakdown(),
-  ]);
+  const [stats, moduleUsage, orgInsights, features, loginBreakdown] = await withSystemContext(() =>
+    Promise.all([
+      loadStats(),
+      loadModuleUsage(),
+      loadOrgInsights(),
+      loadFeatureAdoption(moduleFilter),
+      loadLoginBreakdown(),
+    ])
+  );
 
   const maxModuleViews = moduleUsage.length > 0 ? Math.max(...moduleUsage.map((m) => m.views)) : 1;
   const maxFeatureUsage = features.length > 0 ? Math.max(...features.map((f) => f.total_usage)) : 1;

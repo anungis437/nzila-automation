@@ -20,6 +20,7 @@ import { logger } from '@/lib/logger';
 import { getOrganizationIdForUser } from '@/lib/organization-utils';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -213,10 +214,12 @@ export default async function SecurityDashboard({
 
   if (organizationId) {
     try {
-      [events, posture] = await Promise.all([
-        loadSecurityEvents(organizationId),
-        loadPostureChecks(organizationId),
-      ]);
+      [events, posture] = await withSystemContext(() =>
+        Promise.all([
+          loadSecurityEvents(organizationId),
+          loadPostureChecks(organizationId),
+        ])
+      );
     } catch (error) {
       logger.error('Error loading security data:', error);
     }

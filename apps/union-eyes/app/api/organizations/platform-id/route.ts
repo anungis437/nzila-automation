@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from '@clerk/nextjs/server';
 import { DEFAULT_ORGANIZATION_ID } from "@/lib/organization-utils";
 
 /**
@@ -7,5 +8,8 @@ import { DEFAULT_ORGANIZATION_ID } from "@/lib/organization-utils";
  * can distinguish "viewing platform" from "viewing a tenant org".
  */
 export async function GET() {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   return NextResponse.json({ platformOrgId: DEFAULT_ORGANIZATION_ID });
 }

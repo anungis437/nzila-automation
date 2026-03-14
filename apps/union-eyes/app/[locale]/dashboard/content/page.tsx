@@ -20,6 +20,7 @@ import { logger } from '@/lib/logger';
 import { getOrganizationIdForUser } from '@/lib/organization-utils';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 interface ContentItem {
   id: string;
@@ -170,10 +171,12 @@ export default async function ContentDashboard({
 
   if (organizationId) {
     try {
-      [items, courses] = await Promise.all([
-        loadContentData(organizationId),
-        loadTrainingCourses(organizationId),
-      ]);
+      [items, courses] = await withSystemContext(() =>
+        Promise.all([
+          loadContentData(organizationId),
+          loadTrainingCourses(organizationId),
+        ])
+      );
     } catch (error) {
       logger.error('Error loading content data:', error);
     }

@@ -19,6 +19,7 @@ import { getOrganizationIdForUser } from '@/lib/organization-utils';
 import { ContentWorkflowActions } from '../_components/content-workflow-actions';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 interface TemplateField {
   label: string;
@@ -190,7 +191,7 @@ export default async function TemplateDetailPage({
     redirect('/dashboard');
   }
 
-  const template = await loadTemplate(organizationId, slug);
+  const template = await withSystemContext(() => loadTemplate(organizationId, slug));
   if (!template) {
     notFound();
   }

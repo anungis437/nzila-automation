@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
 import { eq, sql } from 'drizzle-orm';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +45,9 @@ function mapOrg(row: typeof organizations.$inferSelect) {
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
   const [row] = await db.select().from(organizations).where(eq(organizations.id, id));
   if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -77,6 +82,9 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
   const body = await req.json();
   const updates: Record<string, unknown> = {};
@@ -92,17 +100,24 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (body.settings !== undefined) updates.settings = body.settings;
   updates.updatedAt = new Date();
 
-  const [updated] = await db.update(organizations).set(updates).where(eq(organizations.id, id)).returning();
+  const [updated] = await withRLSContext(async () =>
+    db.update(organizations).set(updates).where(eq(organizations.id, id)).returning()
+  );
   if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ data: mapOrg(updated) });
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
-  const [archived] = await db.update(organizations)
-    .set({ status: 'archived', updatedAt: new Date() })
-    .where(eq(organizations.id, id))
-    .returning();
+  const [archived] = await withRLSContext(async () =>
+    db.update(organizations)
+      .set({ status: 'archived', updatedAt: new Date() })
+      .where(eq(organizations.id, id))
+      .returning()
+  );
   if (!archived) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ data: mapOrg(archived) });
 }

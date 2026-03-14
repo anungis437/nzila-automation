@@ -4,13 +4,14 @@
  */
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 import { withApi } from '@/lib/api/framework';
 
 export const dynamic = 'force-dynamic';
 
 export const GET = withApi(
   { auth: { required: true, minRole: 'platform_lead' } },
-  async () => {
+  async () => withSystemContext(async () => {
     const sizeResult = await db.execute(
       sql`SELECT pg_database_size(current_database()) as db_size`
     );
@@ -38,6 +39,6 @@ export const GET = withApi(
       status: 'healthy',
       checkedAt: new Date().toISOString(),
     };
-  },
+  }),
 );
 
