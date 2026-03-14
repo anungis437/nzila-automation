@@ -69,14 +69,14 @@ async function loadPlatformSettings(): Promise<PlatformSettingsData> {
   // Load platform services as integrations
   const serviceRows = Array.from(
     await db.execute(sql`
-      SELECT service_name, status, service_type
+      SELECT service_name, status
       FROM platform_services
       ORDER BY service_name
     `)
   ).map((r: Record<string, unknown>) => ({
     label: String(r.service_name),
     status: String(r.status) as "healthy" | "degraded" | "down",
-    detail: String(r.service_type),
+    detail: String(r.status),
   }));
 
   return {
