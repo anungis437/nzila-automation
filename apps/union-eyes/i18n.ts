@@ -5,9 +5,13 @@ import { locales, defaultLocale, type Locale } from './lib/locales';
 // This allows middleware.ts to import locales without pulling in async imports
 export { locales, defaultLocale, type Locale } from './lib/locales';
 
-export default getRequestConfig(async ({ locale }) => {
-  // Validate that the incoming `locale` parameter is valid
-  const validLocale = locale && locales.includes(locale as Locale) ? locale : defaultLocale;
+export default getRequestConfig(async ({ requestLocale, locale }) => {
+  // next-intl 4.x: requestLocale comes from the [locale] URL segment (Promise),
+  // locale is only set when explicitly passed to server functions like
+  // getTranslations({locale: 'fr-CA'}). Prefer locale override, then
+  // await requestLocale from the middleware/URL segment.
+  const requested = locale ?? (await requestLocale);
+  const validLocale = requested && locales.includes(requested as Locale) ? requested : defaultLocale;
 
   return {
     locale: validLocale,

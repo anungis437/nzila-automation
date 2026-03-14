@@ -34,6 +34,8 @@ function resolveUserRole(raw: string | null | undefined): UserRole | null {
     // Common shortcuts
     'owner': UserRole.APP_OWNER,
     'admin_owner': UserRole.APP_OWNER,
+    // Nzila platform role stored in Clerk publicMetadata.role
+    'platform_admin': UserRole.APP_OWNER,
     // system_admin is already in UserRole, but keep alias in case stored differently
     'sysadmin': UserRole.SYSTEM_ADMIN,
   };

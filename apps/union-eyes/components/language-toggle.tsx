@@ -23,10 +23,8 @@ export function LanguageToggle() {
     // Get the current pathname without the locale prefix
     const currentPath = pathname.replace(`/${locale}`, '');
     
-    // Build the new path with the new locale
-    const newPath = newLocale === 'en-CA' 
-      ? currentPath || '/'  // Don&apos;t add /en for default locale
-      : `/${newLocale}${currentPath || '/'}`;
+    // Always include locale prefix (localePrefix: 'always' in middleware)
+    const newPath = `/${newLocale}${currentPath || '/'}`;
     
     // Navigate to the new path
     router.push(newPath);
