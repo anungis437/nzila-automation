@@ -49,7 +49,7 @@ async function loadPlatformSettings(): Promise<PlatformSettingsData> {
   // Load API keys for the platform org
   const keyRows = Array.from(
     await db.execute(sql`
-      SELECT k.id, k.key_name, k.key_prefix, k.environment, k.status,
+      SELECT k.id, k.name, k.key_prefix, k.environment, k.status,
              k.scopes, k.request_count::int as request_count
       FROM integration_api_keys k
       JOIN organizations o ON o.id = k.organization_id
@@ -58,7 +58,7 @@ async function loadPlatformSettings(): Promise<PlatformSettingsData> {
     `)
   ).map((r: Record<string, unknown>) => ({
     id: String(r.id),
-    keyName: String(r.key_name),
+    keyName: String(r.name),
     keyPrefix: String(r.key_prefix),
     environment: String(r.environment),
     status: String(r.status),
