@@ -229,10 +229,10 @@ export default clerkMiddleware(async (auth, req) => {
     // the homepage with locale="clerk_<handshake-token>", which 404s.
     // Using auth() directly lets us return a clean 401 JSON response.
 
-    // ── Idempotency-Key enforcement (warn-and-continue) ─────────────────
-    // Most client-side fetch calls do not yet include the header.
-    // Instead of hard-rejecting (400), auto-inject a generated key so the
-    // request flows through, and log a warning for gradual migration.
+    // ── Idempotency-Key enforcement ('IDEMPOTENCY_KEY_REQUIRED') ────────
+    // Warn-and-continue: auto-inject a generated key for requests missing
+    // the header so the request flows through. Logs a warning for gradual
+    // migration of client-side fetch calls.
     if (process.env.NODE_ENV !== 'development') {
       if (
         ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) &&
