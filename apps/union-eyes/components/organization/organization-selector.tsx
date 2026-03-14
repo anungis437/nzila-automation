@@ -98,6 +98,16 @@ export function OrganizationSelector() {
 
   const Icon = organizationTypeIcons[organization.type] || Building2;
 
+  // Single-org users don't need a picker — show static label
+  if (userOrganizations.length <= 1) {
+    return (
+      <div className="w-[280px] h-10 flex items-center border rounded-md px-3 bg-background">
+        <Icon className="h-4 w-4 text-muted-foreground mr-2 shrink-0" />
+        <span className="text-sm truncate">{organization.name}</span>
+      </div>
+    );
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

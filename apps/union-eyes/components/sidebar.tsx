@@ -66,8 +66,8 @@ const NZILA_ROLES = [
   "integration_specialist",
   // Content & training
   "content_manager", "training_coordinator",
-  // System & org-level admin
-  "admin", "system_admin",
+  // System admin
+  "system_admin",
 ] as const;
 
 type _NzilaRole = typeof NZILA_ROLES[number];

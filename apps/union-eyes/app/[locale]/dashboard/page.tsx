@@ -46,7 +46,6 @@ const NZILA_ROLES: string[] = [
   UserRole.CONTENT_MANAGER,
   UserRole.TRAINING_COORDINATOR,
   UserRole.SYSTEM_ADMIN,
-  UserRole.ADMIN,
 ];
 
 /** CLC (Congress) level roles */
