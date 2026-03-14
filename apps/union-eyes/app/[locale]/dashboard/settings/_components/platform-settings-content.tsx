@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Settings,
   Shield,
@@ -29,11 +30,57 @@ const SECTION_ORDER: PlatformSection[] = [
 const SECTION_META: Record<PlatformSection, { label: string; icon: typeof Shield; description: string; color: string }> = {
   security: { label: "Security", icon: Shield, description: "Authentication, session, and access-control policies", color: "bg-red-100 text-red-700" },
   notifications: { label: "Notifications", icon: Bell, description: "Default notification channels and digest frequency", color: "bg-yellow-100 text-yellow-700" },
-  integrations: { label: "Integrations", icon: Server, description: "Third-party service connections and API keys", color: "bg-orange-100 text-orange-700" },
+  integrations: { label: "Integrations", icon: Server, description: "Third-party service connections and platform services", color: "bg-orange-100 text-orange-700" },
   featureFlags: { label: "Feature Flags", icon: ToggleLeft, description: "Enable or disable platform features globally", color: "bg-green-100 text-green-700" },
   localization: { label: "Localization", icon: Globe, description: "Language and regional settings", color: "bg-blue-100 text-blue-700" },
   apiKeys: { label: "API Keys", icon: Key, description: "Platform API key management", color: "bg-purple-100 text-purple-700" },
 };
+
+/* ── Exported types for server → client props ─────────────────────────────── */
+export interface PlatformSettingsValues {
+  sessionTimeout: number;
+  mfaEnforcement: string;
+  passwordMinLength: number;
+  requireMixedCase: boolean;
+  requireSymbol: boolean;
+  rateLimitPerMin: number;
+  emailDigest: boolean;
+  digestFrequency: string;
+  pushNotifications: boolean;
+  smsAlerts: string;
+  webhookNotifications: boolean;
+  webhookUrl: string;
+  voiceGrievance: boolean;
+  aiClauseAnalysis: boolean;
+  mobileAccess: boolean;
+  crossUnionAnalytics: boolean;
+  defaultLanguage: string;
+  dateFormat: string;
+  currency: string;
+}
+
+export interface ApiKeyRow {
+  id: string;
+  keyName: string;
+  keyPrefix: string;
+  environment: string;
+  status: string;
+  scopes: string[];
+  requestCount: number;
+}
+
+export interface IntegrationRow {
+  label: string;
+  status: "healthy" | "degraded" | "down";
+  detail: string;
+}
+
+export interface PlatformSettingsData {
+  settings: PlatformSettingsValues;
+  apiKeys: ApiKeyRow[];
+  integrations: IntegrationRow[];
+  featuresEnabled: string[];
+}
 
 /* ── Toggle switch helper ─────────────────────────────────────────────────── */
 function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
@@ -45,54 +92,51 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
   );
 }
 
-export default function PlatformSettingsContent() {
+const STATUS_COLORS: Record<string, string> = {
+  healthy: "bg-green-100 text-green-700",
+  degraded: "bg-yellow-100 text-yellow-700",
+  down: "bg-red-100 text-red-700",
+  active: "bg-green-100 text-green-700",
+  revoked: "bg-red-100 text-red-700",
+};
+
+export default function PlatformSettingsContent({ initialData }: { initialData: PlatformSettingsData }) {
+  const { settings: init, apiKeys: dbKeys, integrations: dbIntegrations, featuresEnabled } = initialData;
+
   const [activeSection, setActiveSection] = useState<PlatformSection>("security");
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
 
   /* ── Security settings ──────────────────────────────────────────────────── */
-  const [sessionTimeout, setSessionTimeout] = useState(30);
-  const [mfaEnforcement, setMfaEnforcement] = useState("admins_only");
-  const [passwordMinLength, setPasswordMinLength] = useState(12);
-  const [requireMixedCase, setRequireMixedCase] = useState(true);
-  const [requireSymbol, setRequireSymbol] = useState(true);
-  const [rateLimitPerMin, setRateLimitPerMin] = useState(100);
+  const [sessionTimeout, setSessionTimeout] = useState(init.sessionTimeout);
+  const [mfaEnforcement, setMfaEnforcement] = useState(init.mfaEnforcement);
+  const [passwordMinLength, setPasswordMinLength] = useState(init.passwordMinLength);
+  const [requireMixedCase, setRequireMixedCase] = useState(init.requireMixedCase);
+  const [requireSymbol, setRequireSymbol] = useState(init.requireSymbol);
+  const [rateLimitPerMin, setRateLimitPerMin] = useState(init.rateLimitPerMin);
 
   /* ── Notification settings ──────────────────────────────────────────────── */
-  const [emailDigest, setEmailDigest] = useState(true);
-  const [digestFrequency, setDigestFrequency] = useState("daily");
-  const [pushNotifications, setPushNotifications] = useState(true);
-  const [smsAlerts, setSmsAlerts] = useState("critical");
-  const [webhookNotifications, setWebhookNotifications] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState("");
+  const [emailDigest, setEmailDigest] = useState(init.emailDigest);
+  const [digestFrequency, setDigestFrequency] = useState(init.digestFrequency);
+  const [pushNotifications, setPushNotifications] = useState(init.pushNotifications);
+  const [smsAlerts, setSmsAlerts] = useState(init.smsAlerts);
+  const [webhookNotifications, setWebhookNotifications] = useState(init.webhookNotifications);
+  const [webhookUrl, setWebhookUrl] = useState(init.webhookUrl);
 
   /* ── Feature flags ──────────────────────────────────────────────────────── */
-  const [voiceGrievance, setVoiceGrievance] = useState(true);
-  const [aiClauseAnalysis, setAiClauseAnalysis] = useState(true);
-  const [mobileAccess, setMobileAccess] = useState(true);
-  const [crossUnionAnalytics, setCrossUnionAnalytics] = useState(false);
+  const [voiceGrievance, setVoiceGrievance] = useState(init.voiceGrievance);
+  const [aiClauseAnalysis, setAiClauseAnalysis] = useState(init.aiClauseAnalysis);
+  const [mobileAccess, setMobileAccess] = useState(init.mobileAccess);
+  const [crossUnionAnalytics, setCrossUnionAnalytics] = useState(init.crossUnionAnalytics);
 
   /* ── Localization ───────────────────────────────────────────────────────── */
-  const [defaultLanguage, setDefaultLanguage] = useState("en");
-  const [dateFormat, setDateFormat] = useState("YYYY-MM-DD");
-  const [currency, setCurrency] = useState("CAD");
+  const [defaultLanguage, setDefaultLanguage] = useState(init.defaultLanguage);
+  const [dateFormat, setDateFormat] = useState(init.dateFormat);
+  const [currency, setCurrency] = useState(init.currency);
 
-  /* ── API keys (display only, with reveal) ───────────────────────────────── */
+  /* ── API keys (reveal / copy state) ───────────────────────────────────── */
   const [revealedKeys, setRevealedKeys] = useState<Record<string, boolean>>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const apiKeys = [
-    { id: "prod", label: "Production API key", value: "nzl_prod_sk_k7x2m9p3a1b4c5d6e8f0" },
-    { id: "staging", label: "Staging API key", value: "nzl_stg_sk_m3p9x2k7a1b4c5d6e8f0" },
-    { id: "webhook", label: "Webhook signing secret", value: "whsec_a1b4c5d6e8f0k7x2m3p9" },
-  ];
-
-  /* ── Integration statuses ───────────────────────────────────────────────── */
-  const integrations = [
-    { label: "Clerk authentication", status: "connected" as const, detail: "OAuth 2.0" },
-    { label: "Stripe payments", status: "connected" as const, detail: "API v2024-12" },
-    { label: "PayPal payments", status: "connected" as const, detail: "REST API" },
-    { label: "PostgreSQL database", status: "connected" as const, detail: "Drizzle ORM" },
-  ];
 
   const markChanged = () => setHasChanges(true);
 
@@ -306,18 +350,27 @@ export default function PlatformSettingsContent() {
               {/* ═══════════ INTEGRATIONS ═══════════ */}
               {activeSection === "integrations" && (
                 <div className="space-y-4">
-                  {integrations.map((integ) => (
+                  {dbIntegrations.map((integ) => (
                     <div key={integ.label} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                       <div>
                         <p className="font-medium text-gray-900">{integ.label}</p>
                         <p className="text-sm text-gray-600">{integ.detail}</p>
                       </div>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                        <span className="w-2 h-2 bg-green-500 rounded-full" />
-                        Connected
-                      </span>
+                      <Badge className={STATUS_COLORS[integ.status] ?? "bg-gray-100 text-gray-700"}>
+                        {integ.status}
+                      </Badge>
                     </div>
                   ))}
+                  {featuresEnabled.length > 0 && (
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Enabled Features</p>
+                      <div className="flex flex-wrap gap-2">
+                        {featuresEnabled.map(f => (
+                          <Badge key={f} variant="outline" className="capitalize">{f}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="flex items-start gap-2">
                       <Info size={16} className="text-blue-600 mt-0.5" />
@@ -403,12 +456,20 @@ export default function PlatformSettingsContent() {
               {/* ═══════════ API KEYS ═══════════ */}
               {activeSection === "apiKeys" && (
                 <div className="space-y-4">
-                  {apiKeys.map((k) => (
+                  {dbKeys.map((k) => (
                     <div key={k.id} className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm font-medium text-gray-700 mb-2">{k.label}</p>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-medium text-gray-700">{k.keyName}</p>
+                        <div className="flex items-center gap-2">
+                          <Badge className={STATUS_COLORS[k.status] ?? "bg-gray-100 text-gray-700"}>
+                            {k.status}
+                          </Badge>
+                          <Badge variant="outline">{k.environment}</Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mb-2">
                         <code className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-800 font-mono">
-                          {revealedKeys[k.id] ? k.value : "••••••••••••••••••••"}
+                          {revealedKeys[k.id] ? k.keyPrefix + "••••••••" : "••••••••••••••••••••"}
                         </code>
                         <button
                           onClick={() => setRevealedKeys((prev) => ({ ...prev, [k.id]: !prev[k.id] }))}
@@ -418,12 +479,17 @@ export default function PlatformSettingsContent() {
                           {revealedKeys[k.id] ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                         <button
-                          onClick={() => handleCopyKey(k.id, k.value)}
+                          onClick={() => handleCopyKey(k.id, k.keyPrefix)}
                           className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                          aria-label="Copy key"
+                          aria-label="Copy key prefix"
                         >
                           {copiedKey === k.id ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
                         </button>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <span>Scopes: {k.scopes.join(', ')}</span>
+                        <span>•</span>
+                        <span>{k.requestCount.toLocaleString()} requests</span>
                       </div>
                     </div>
                   ))}
