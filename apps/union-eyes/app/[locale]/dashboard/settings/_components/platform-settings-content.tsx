@@ -53,7 +53,7 @@ const SYSTEM_SETTINGS: Record<PlatformSection, {
       { label: "Clerk authentication", value: "Connected", status: "active" },
       { label: "Stripe payments", value: "Connected", status: "active" },
       { label: "PayPal payments", value: "Connected", status: "active" },
-      { label: "Django backend", value: "Connected", status: "active" },
+      { label: "PostgreSQL database", value: "Connected", status: "active" },
     ],
   },
   featureFlags: {

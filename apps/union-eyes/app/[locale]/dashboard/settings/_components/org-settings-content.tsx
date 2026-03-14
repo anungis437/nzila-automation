@@ -1,66 +1,136 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from 'next-intl';
 import { Card } from "@/components/ui/card";
-import { Building2, Settings as SettingsIcon, Palette, Users, Link2, Bell, Shield, CreditCard, Upload, Save, AlertCircle, Mail, MessageSquare, Database, Calendar, Check, Download, Info } from "lucide-react";
+import { Building2, Settings as SettingsIcon, Palette, Users, Link2, Bell, Shield, CreditCard, Upload, Save, AlertCircle, Mail, MessageSquare, Database, Calendar, Check, Download, Info, Loader2 } from "lucide-react";
 
 type OrgSettingsSection = "general" | "branding" | "members" | "integrations" | "notifications" | "security" | "billing";
+
+const DEFAULT_SETTINGS = {
+  general: {
+    organizationName: "",
+    shortName: "",
+    region: "",
+    timezone: "America/Toronto",
+    language: "en",
+    fiscalYearStart: "january"
+  },
+  branding: {
+    primaryColor: "#0066CC",
+    logoUrl: "",
+    showBranding: true,
+    customDomain: ""
+  },
+  members: {
+    autoApproval: false,
+    requireEmailVerification: true,
+    allowSelfRegistration: true,
+    defaultRole: "member",
+    memberIdPrefix: "MEM"
+  },
+  integrations: {
+    emailProvider: "sendgrid",
+    smsProvider: "twilio",
+    storageProvider: "s3",
+    calendarSync: false
+  },
+  notifications: {
+    sendAdminDigest: true,
+    digestFrequency: "daily",
+    alertThreshold: 10,
+    enableSystemAlerts: true
+  },
+  security: {
+    enforceStrongPasswords: true,
+    requireMFA: false,
+    sessionTimeout: 30,
+    allowedDomains: [] as string[],
+    ipWhitelist: ""
+  },
+  billing: {
+    plan: "Free",
+    memberCount: 0,
+    billingCycle: "monthly",
+    paymentMethod: ""
+  }
+};
 
 export default function OrgSettingsContent() {
   const t = useTranslations();
   const [activeSection, setActiveSection] = useState<OrgSettingsSection>("general");
   const [hasChanges, setHasChanges] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   
-  const [orgSettings, setOrgSettings] = useState({
-    general: {
-      organizationName: "UFCW Local 175 & 633",
-      shortName: "UFCW 175",
-      region: "ON",
-      timezone: "America/Toronto",
-      language: "en",
-      fiscalYearStart: "January"
-    },
-    branding: {
-      primaryColor: "#0066CC",
-      logoUrl: "",
-      showBranding: true,
-      customDomain: ""
-    },
-    members: {
-      autoApproval: false,
-      requireEmailVerification: true,
-      allowSelfRegistration: true,
-      defaultRole: "member",
-      memberIdPrefix: "MEM"
-    },
-    integrations: {
-      emailProvider: "sendgrid",
-      smsProvider: "twilio",
-      storageProvider: "s3",
-      calendarSync: false
-    },
-    notifications: {
-      sendAdminDigest: true,
-      digestFrequency: "daily",
-      alertThreshold: 10,
-      enableSystemAlerts: true
-    },
-    security: {
-      enforceStrongPasswords: true,
-      requireMFA: false,
-      sessionTimeout: 30,
-      allowedDomains: ["ufcw175.com", "ufcw633.com"],
-      ipWhitelist: ""
-    },
-    billing: {
-      plan: "Union Pro",
-      memberCount: 1234,
-      billingCycle: "monthly",
-      paymentMethod: "Visa ending in 4242"
+  const [orgSettings, setOrgSettings] = useState(DEFAULT_SETTINGS);
+
+  const loadSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/settings/organization');
+      const json = await res.json();
+      if (json.success && json.data?.organization) {
+        const org = json.data.organization;
+        const s = org.settings ?? {};
+        setOrgSettings(prev => ({
+          ...prev,
+          general: {
+            organizationName: org.name ?? '',
+            shortName: org.shortName ?? '',
+            region: org.provinceTerritory ?? '',
+            timezone: (s.timezone as string) ?? 'America/Toronto',
+            language: (s.language as string) ?? 'en',
+            fiscalYearStart: (s.fiscalYearStart as string) ?? 'january',
+          },
+          branding: {
+            primaryColor: (s.primaryColor as string) ?? '#0066CC',
+            logoUrl: (s.logoUrl as string) ?? '',
+            showBranding: s.showBranding !== false,
+            customDomain: (s.customDomain as string) ?? '',
+          },
+          members: {
+            autoApproval: s.autoApproval === true,
+            requireEmailVerification: s.requireEmailVerification !== false,
+            allowSelfRegistration: s.allowSelfRegistration !== false,
+            defaultRole: (s.defaultRole as string) ?? 'member',
+            memberIdPrefix: (s.memberIdPrefix as string) ?? 'MEM',
+          },
+          integrations: {
+            emailProvider: (s.emailProvider as string) ?? 'sendgrid',
+            smsProvider: (s.smsProvider as string) ?? 'twilio',
+            storageProvider: (s.storageProvider as string) ?? 's3',
+            calendarSync: s.calendarSync === true,
+          },
+          notifications: {
+            sendAdminDigest: s.sendAdminDigest !== false,
+            digestFrequency: (s.digestFrequency as string) ?? 'daily',
+            alertThreshold: Number(s.alertThreshold) || 10,
+            enableSystemAlerts: s.enableSystemAlerts !== false,
+          },
+          security: {
+            enforceStrongPasswords: s.enforceStrongPasswords !== false,
+            requireMFA: s.requireMFA === true,
+            sessionTimeout: Number(s.sessionTimeout) || 30,
+            allowedDomains: Array.isArray(s.allowedDomains) ? s.allowedDomains : [],
+            ipWhitelist: (s.ipWhitelist as string) ?? '',
+          },
+          billing: {
+            plan: org.subscriptionTier ?? 'Free',
+            memberCount: org.memberCount ?? 0,
+            billingCycle: (s.billingCycle as string) ?? 'monthly',
+            paymentMethod: (s.paymentMethod as string) ?? '',
+          },
+        }));
+      }
+    } catch {
+      // keep defaults on error
+    } finally {
+      setLoading(false);
     }
-  });
+  }, []);
+
+  useEffect(() => { loadSettings(); }, [loadSettings]);
 
   const settingsSections = [
     {
@@ -119,16 +189,71 @@ export default function OrgSettingsContent() {
     setHasChanges(true);
   };
 
-  const handleSave = () => {
-setHasChanges(false);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/settings/organization', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: orgSettings.general.organizationName,
+          shortName: orgSettings.general.shortName,
+          provinceTerritory: orgSettings.general.region,
+          settings: {
+            timezone: orgSettings.general.timezone,
+            language: orgSettings.general.language,
+            fiscalYearStart: orgSettings.general.fiscalYearStart,
+            primaryColor: orgSettings.branding.primaryColor,
+            logoUrl: orgSettings.branding.logoUrl,
+            showBranding: orgSettings.branding.showBranding,
+            customDomain: orgSettings.branding.customDomain,
+            autoApproval: orgSettings.members.autoApproval,
+            requireEmailVerification: orgSettings.members.requireEmailVerification,
+            allowSelfRegistration: orgSettings.members.allowSelfRegistration,
+            defaultRole: orgSettings.members.defaultRole,
+            memberIdPrefix: orgSettings.members.memberIdPrefix,
+            emailProvider: orgSettings.integrations.emailProvider,
+            smsProvider: orgSettings.integrations.smsProvider,
+            storageProvider: orgSettings.integrations.storageProvider,
+            calendarSync: orgSettings.integrations.calendarSync,
+            sendAdminDigest: orgSettings.notifications.sendAdminDigest,
+            digestFrequency: orgSettings.notifications.digestFrequency,
+            alertThreshold: orgSettings.notifications.alertThreshold,
+            enableSystemAlerts: orgSettings.notifications.enableSystemAlerts,
+            enforceStrongPasswords: orgSettings.security.enforceStrongPasswords,
+            requireMFA: orgSettings.security.requireMFA,
+            sessionTimeout: orgSettings.security.sessionTimeout,
+            allowedDomains: orgSettings.security.allowedDomains,
+            ipWhitelist: orgSettings.security.ipWhitelist,
+            billingCycle: orgSettings.billing.billingCycle,
+          },
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setHasChanges(false);
+      }
+    } catch {
+      // save failed — keep dirty state
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDiscard = () => {
-    window.location.reload();
+    setLoading(true);
+    setHasChanges(false);
+    loadSettings();
   };
 
   return (
     <div className="p-8">
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        </div>
+      ) : (
+      <>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -843,10 +968,11 @@ setHasChanges(false);
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  disabled={saving}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
                 >
-                  <Save size={16} />
-                  {t('settings.saveChanges')}
+                  {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                  {saving ? "Saving…" : t('settings.saveChanges')}
                 </button>
               </div>
             </div>
@@ -871,6 +997,8 @@ setHasChanges(false);
           </div>
         </div>
       </motion.div>
+      </>
+      )}
     </div>
   );
 }
