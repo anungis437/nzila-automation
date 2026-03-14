@@ -26,6 +26,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     id: row.id,
     name: row.name,
     slug: row.slug,
+    type: row.organizationType,
     organization_type: row.organizationType,
     hierarchy_level: row.hierarchyLevel,
     status: row.status,

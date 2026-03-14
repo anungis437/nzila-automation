@@ -490,8 +490,8 @@ alert("Failed to archive organization");
                 <div className="space-y-2">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {children.map((child: any) => {
-                    const childTypeInfo = typeConfig[child.type as OrganizationType];
-                    const childStatusInfo = statusConfig[child.status as OrganizationStatus];
+                    const childTypeInfo = typeConfig[(child.organization_type || child.type) as OrganizationType] ?? typeConfig.union;
+                    const childStatusInfo = statusConfig[child.status as OrganizationStatus] ?? statusConfig.active;
                     
                     return (
                       <Card key={child.id} className="p-4 hover:bg-accent cursor-pointer transition-colors"

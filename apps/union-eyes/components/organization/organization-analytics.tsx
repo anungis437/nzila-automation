@@ -219,7 +219,7 @@ export function OrganizationAnalytics({
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Activity Rate</span>
                     <Badge variant="outline">
-                      {((analytics.activeMembers / analytics.totalMembers) * 100).toFixed(1)}%
+                      {analytics.totalMembers > 0 ? ((analytics.activeMembers / analytics.totalMembers) * 100).toFixed(1) : 0}%
                     </Badge>
                   </div>
                 </div>
@@ -267,7 +267,7 @@ export function OrganizationAnalytics({
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Resolution Rate</span>
                     <Badge variant="outline">
-                      {((analytics.resolvedClaims / analytics.totalClaims) * 100).toFixed(1)}%
+                      {analytics.totalClaims > 0 ? ((analytics.resolvedClaims / analytics.totalClaims) * 100).toFixed(1) : 0}%
                     </Badge>
                   </div>
                 </div>

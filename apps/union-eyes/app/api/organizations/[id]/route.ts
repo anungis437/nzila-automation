@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/db';
 import { organizations } from '@/db/schema-organizations';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +46,34 @@ export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
   const [row] = await db.select().from(organizations).where(eq(organizations.id, id));
   if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  return NextResponse.json({ data: mapOrg(row) });
+
+  // Compute stats
+  const claimRows = Array.from(
+    await db.execute(
+      sql`SELECT
+            count(*)::int AS total,
+            count(*) FILTER (WHERE status::text IN ('draft','filed','acknowledged','investigating','response_due','response_received','escalated','mediation','arbitration'))::int AS active
+          FROM grievances WHERE organization_id = ${id}`
+    )
+  ) as Array<{ total: number; active: number }>;
+  const claims = claimRows[0] ?? { total: 0, active: 0 };
+
+  const childRows = Array.from(
+    await db.execute(
+      sql`SELECT count(*)::int AS cnt FROM organizations WHERE parent_id = ${id}`
+    )
+  ) as Array<{ cnt: number }>;
+
+  const mapped = mapOrg(row);
+  return NextResponse.json({
+    data: {
+      ...mapped,
+      memberCount: row.memberCount ?? 0,
+      activeClaims: claims.active,
+      totalClaims: claims.total,
+      childCount: childRows[0]?.cnt ?? 0,
+    },
+  });
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
