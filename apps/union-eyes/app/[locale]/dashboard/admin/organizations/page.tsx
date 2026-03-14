@@ -64,7 +64,10 @@ import { BulkImportOrganizations } from "@/components/admin/bulk-import-organiza
  
 import type { Organization, OrganizationType, OrganizationStatus } from "@/types/organization";
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const fetcher = (url: string) => fetch(url).then(res => {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
+});
 
 // Organization type configurations
 const typeConfig: Record<OrganizationType, { label: string; icon: React.ReactElement; color: string }> = {
@@ -105,7 +108,13 @@ export default function OrganizationsPage() {
   // Fetch organizations - show children of current organization by default
   const { data, error, isLoading, mutate } = useSWR(
     organizationId ? `/api/organizations?parent=${organizationId}&include_stats=true` : null,
-    fetcher
+    fetcher,
+    {
+      onErrorRetry: (_err, _key, _config, revalidate, { retryCount }) => {
+        if (retryCount >= 3) return;
+        setTimeout(() => revalidate({ retryCount }), 5000 * (retryCount + 1));
+      },
+    }
   );
 
   const organizations: OrganizationWithStats[] = data?.data || [];

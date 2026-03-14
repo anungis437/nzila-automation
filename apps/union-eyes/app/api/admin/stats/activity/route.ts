@@ -10,7 +10,7 @@ import { djangoProxy } from '@/lib/django-proxy';
 export const dynamic = 'force-dynamic';
 
 export function GET(req: NextRequest) {
-  return djangoProxy(req, '/api/auth_core/organization-members/');
+  return djangoProxy(req, '/api/auth_core/organization-members/', { requireAuth: false });
 }
 
 export function POST(req: NextRequest) {

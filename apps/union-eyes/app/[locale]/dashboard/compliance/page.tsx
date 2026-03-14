@@ -53,10 +53,14 @@ export default function CompliancePage() {
         fetch("/api/compliance/alerts"),
         fetch("/api/compliance/reports"),
       ]);
-      const alertsJson = await alertsRes.json();
-      const reportsJson = await reportsRes.json();
-      if (alertsJson.data) setAlerts(alertsJson.data);
-      if (reportsJson.data) setReports(reportsJson.data);
+      if (alertsRes.ok) {
+        const alertsJson = await alertsRes.json();
+        if (alertsJson.data) setAlerts(alertsJson.data);
+      }
+      if (reportsRes.ok) {
+        const reportsJson = await reportsRes.json();
+        if (reportsJson.data) setReports(reportsJson.data);
+      }
     } catch {
       // handle error
     } finally {

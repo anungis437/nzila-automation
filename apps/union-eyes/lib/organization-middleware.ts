@@ -9,6 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getOrganizationIdForUser, validateOrganizationExists } from "@/lib/organization-utils";
 import { requireUser, requireUserForOrganization } from "@/lib/api-auth-guard";
 import { cookies } from "next/headers";
+import { createLogger } from "@nzila/os-core";
+
+const logger = createLogger("organization-middleware");
 
 export interface OrganizationContext {
   organizationId: string;
@@ -64,6 +67,7 @@ export function withOrganizationAuth<T = any>(
       return await handler(request, context, params);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Internal server error';
+      logger.error("withOrganizationAuth failed", { error: message, stack: error instanceof Error ? error.stack : undefined });
       if (message === 'Unauthorized') {
         return NextResponse.json(
           { error: "Unauthorized - Authentication required" },

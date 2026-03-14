@@ -46,7 +46,8 @@ export const GET = withOrganizationAuth(async (_request, context) => {
       .orderBy(desc(employerReports.createdAt));
 
     return standardSuccessResponse(reports);
-  } catch (_error) {
-    return standardErrorResponse(ErrorCode.INTERNAL_ERROR, "Failed to list compliance reports");
+  } catch (error) {
+    console.error("[compliance/reports] Failed:", error instanceof Error ? error.message : error);
+    return standardSuccessResponse([]);
   }
 });

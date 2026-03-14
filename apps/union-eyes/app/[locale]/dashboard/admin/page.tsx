@@ -107,6 +107,7 @@ export default function AdminPage() {
   const loadSystemStats = async () => {
     try {
       const response = await fetch("/api/admin/stats/overview");
+      if (!response.ok) return;
       const data = await response.json();
       if (data.success) {
         setSystemStats(data.data);
@@ -118,6 +119,7 @@ export default function AdminPage() {
   const loadRecentActivity = async () => {
     try {
       const response = await fetch("/api/admin/stats/activity?limit=10");
+      if (!response.ok) return;
       const data = await response.json();
       if (data.success) {
         setActivity(data.data);

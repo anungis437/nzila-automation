@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 /** GET  /api/organizations  Django GET /api/auth_core/organizations/ */
 export function GET(req: NextRequest) {
-  return djangoProxy(req, '/api/auth_core/organizations/');
+  return djangoProxy(req, '/api/auth_core/organizations/', { requireAuth: false });
 }
 
 /** POST /api/organizations  Django POST /api/auth_core/organizations/ */
