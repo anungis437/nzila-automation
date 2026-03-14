@@ -5,11 +5,18 @@ import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
+/** Active grievance statuses (not closed/settled/withdrawn/denied) */
+const ACTIVE_CLAIM_STATUSES = [
+  'draft', 'filed', 'acknowledged', 'investigating',
+  'response_due', 'response_received', 'escalated', 'mediation', 'arbitration',
+];
+
 /** GET /api/organizations — query organizations from DB */
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const parentId = searchParams.get('parent');
   const statusFilter = searchParams.get('status');
+  const includeStats = searchParams.get('include_stats') === 'true';
 
   const conditions = [];
   if (parentId) conditions.push(eq(organizations.parentId, parentId));
@@ -21,6 +28,36 @@ export async function GET(req: NextRequest) {
 
   const rows = await db.select().from(organizations).where(where);
 
+  // When include_stats is requested, count active claims and children per org
+  let claimsByOrg: Record<string, number> = {};
+  let childrenByOrg: Record<string, number> = {};
+  if (includeStats && rows.length > 0) {
+    const orgIds = rows.map(r => r.id);
+    const claimCounts = await db.execute(
+      sql`SELECT organization_id::text as org_id, count(*)::int as cnt
+          FROM grievances
+          WHERE organization_id::text IN (${sql.join(orgIds.map(id => sql`${id}`), sql`,`)})
+            AND status::text IN ('draft','filed','acknowledged','investigating','response_due','response_received','escalated','mediation','arbitration')
+          GROUP BY organization_id`
+    );
+    for (const row of Array.from(claimCounts) as Array<{ org_id: string; cnt: number }>) {
+      claimsByOrg[row.org_id] = Number(row.cnt);
+    }
+
+    const childCounts = await db.execute(
+      sql`SELECT parent_id::text as parent, count(*)::int as cnt
+          FROM organizations
+          WHERE parent_id::text IN (${sql.join(orgIds.map(id => sql`${id}`), sql`,`)})
+          GROUP BY parent_id`
+    );
+    for (const row of Array.from(childCounts) as Array<{ parent: string; cnt: number }>) {
+      childrenByOrg[row.parent] = Number(row.cnt);
+    }
+  }
+
+  // Build parent name lookup from fetched rows
+  const nameById = new Map(rows.map(r => [r.id, r.name]));
+
   // Map camelCase DB fields to snake_case expected by frontend
   const mapped = rows.map(row => ({
     id: row.id,
@@ -30,6 +67,7 @@ export async function GET(req: NextRequest) {
     short_name: row.shortName,
     organization_type: row.organizationType,
     parent_id: row.parentId,
+    parentName: row.parentId ? nameById.get(row.parentId) ?? null : null,
     hierarchy_path: row.hierarchyPath,
     hierarchy_level: row.hierarchyLevel,
     province_territory: row.provinceTerritory,
@@ -42,6 +80,7 @@ export async function GET(req: NextRequest) {
     affiliation_date: row.affiliationDate,
     charter_number: row.charterNumber,
     member_count: row.memberCount,
+    memberCount: row.memberCount ?? 0,
     active_member_count: row.activeMemberCount,
     last_member_count_update: row.lastMemberCountUpdate,
     subscription_tier: row.subscriptionTier,
@@ -53,6 +92,10 @@ export async function GET(req: NextRequest) {
     updated_at: row.updatedAt,
     created_by: row.createdBy,
     legacy_org_id: row.legacyOrgId,
+    ...(includeStats ? {
+      activeClaims: claimsByOrg[row.id] ?? 0,
+      childCount: childrenByOrg[row.id] ?? 0,
+    } : {}),
   }));
 
   return NextResponse.json({ data: mapped });
