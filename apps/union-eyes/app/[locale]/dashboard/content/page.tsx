@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { hasMinRole } from '@/lib/api-auth-guard';
 import { FileText, BookOpen, Video, Download, Eye, TrendingUp, GraduationCap, FolderOpen } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { getOrganizationIdForUser } from '@/lib/organization-utils';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
 
@@ -141,7 +142,7 @@ function computeStats(items: ContentItem[], courses: TrainingCourse[]): ContentS
 }
 
 export default async function ContentDashboard() {
-  const { userId, orgId } = await auth();
+  const { userId } = await auth();
 
   if (!userId) {
     redirect('/sign-in');
@@ -152,14 +153,16 @@ export default async function ContentDashboard() {
     redirect('/dashboard');
   }
 
+  const organizationId = await getOrganizationIdForUser(userId);
+
   let items: ContentItem[] = [];
   let courses: TrainingCourse[] = [];
 
-  if (orgId) {
+  if (organizationId) {
     try {
       [items, courses] = await Promise.all([
-        loadContentData(orgId),
-        loadTrainingCourses(orgId),
+        loadContentData(organizationId),
+        loadTrainingCourses(organizationId),
       ]);
     } catch (error) {
       logger.error('Error loading content data:', error);
