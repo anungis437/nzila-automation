@@ -397,13 +397,15 @@ export default async function ContentDashboard({
                     <div key={template.id} className="flex items-start justify-between border-b pb-4 last:border-0 gap-4">
                       <div className="space-y-1.5 flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Badge variant={
-                            template.status === 'published' ? 'default' :
-                            template.status === 'draft' ? 'secondary' :
-                            'outline'
-                          }>
-                            {template.status}
-                          </Badge>
+                          <Link href={`/dashboard/content?tab=templates&status=${template.status}`}>
+                            <Badge variant={
+                              template.status === 'published' ? 'default' :
+                              template.status === 'draft' ? 'secondary' :
+                              'outline'
+                            } className="cursor-pointer hover:opacity-80">
+                              {template.status}
+                            </Badge>
+                          </Link>
                           <Link href={`/dashboard/content/${template.slug}`} className="text-sm font-semibold hover:underline">{template.title}</Link>
                         </div>
                         {template.description && (

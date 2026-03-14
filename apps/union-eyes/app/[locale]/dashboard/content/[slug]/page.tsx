@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { hasMinRole } from '@/lib/api-auth-guard';
 import { ArrowLeft, Download, Eye, Calendar, FolderOpen, FileText } from 'lucide-react';
 import { getOrganizationIdForUser } from '@/lib/organization-utils';
+import { ContentWorkflowActions } from '../_components/content-workflow-actions';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
 
@@ -229,6 +230,13 @@ export default async function TemplateDetailPage({
           <p className="text-muted-foreground">{template.description}</p>
         )}
       </div>
+
+      {/* Workflow actions */}
+      <ContentWorkflowActions
+        itemId={template.id}
+        currentStatus={template.status}
+        title={template.title}
+      />
 
       {/* Stats bar */}
       <div className="flex items-center gap-6 text-sm text-muted-foreground">
