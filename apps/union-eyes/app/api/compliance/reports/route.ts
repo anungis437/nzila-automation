@@ -11,12 +11,15 @@ import {
 } from "@/db/schema/domains/compliance/employer-compliance";
 import { withOrganizationAuth } from "@/lib/organization-middleware";
 import { hasMinRole } from "@/lib/api-auth-guard";
+import { createLogger } from "@nzila/os-core";
 import {
   ErrorCode,
   standardErrorResponse,
   standardSuccessResponse,
 } from "@/lib/api/standardized-responses";
 import { eq, desc, inArray } from "drizzle-orm";
+
+const logger = createLogger("compliance-reports");
 
 export const GET = withOrganizationAuth(async (_request, context) => {
   const { organizationId } = context;
@@ -47,7 +50,7 @@ export const GET = withOrganizationAuth(async (_request, context) => {
 
     return standardSuccessResponse(reports);
   } catch (error) {
-    console.error("[compliance/reports] Failed:", error instanceof Error ? error.message : error);
+    logger.error("Failed to list compliance reports", { error: error instanceof Error ? error.message : String(error) });
     return standardSuccessResponse([]);
   }
 });

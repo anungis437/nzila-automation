@@ -8,12 +8,15 @@ import { db } from "@/db/db";
 import { complianceAlerts } from "@/db/schema/domains/compliance/employer-compliance";
 import { withOrganizationAuth } from "@/lib/organization-middleware";
 import { hasMinRole } from "@/lib/api-auth-guard";
+import { createLogger } from "@nzila/os-core";
 import {
   ErrorCode,
   standardErrorResponse,
   standardSuccessResponse,
 } from "@/lib/api/standardized-responses";
 import { eq, desc } from "drizzle-orm";
+
+const logger = createLogger("compliance-alerts");
 
 export const GET = withOrganizationAuth(async (_request, context) => {
   const { organizationId } = context;
@@ -32,7 +35,7 @@ export const GET = withOrganizationAuth(async (_request, context) => {
 
     return standardSuccessResponse(alerts);
   } catch (error) {
-    console.error("[compliance/alerts] Failed:", error instanceof Error ? error.message : error);
+    logger.error("Failed to list compliance alerts", { error: error instanceof Error ? error.message : String(error) });
     return standardSuccessResponse([]);
   }
 });
