@@ -1,28 +1,62 @@
 /**
- * GET PATCH DELETE /api/admin/users/[userId]
- * -> Django auth_core: /api/auth_core/organization-members/
- * NOTE: auto-resolved from admin/users/[userId]
- * Auto-migrated by scripts/migrate_routes.py
+ * PUT /api/admin/users/[userId] — Toggle user status (active/inactive)
+ * DELETE /api/admin/users/[userId] — Soft-delete user (set deleted_at)
  */
-import { NextRequest } from 'next/server';
-import { djangoProxy } from '@/lib/django-proxy';
+import { db } from '@/db/db';
+import { organizationMembers } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
+function isPlatformAdmin(userId: string): boolean {
+  const ids = (process.env.PLATFORM_ADMIN_USER_IDS ?? '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  return ids.includes(userId);
+}
+
 type Params = { params: Promise<{ userId: string }> };
 
-export async function GET(req: NextRequest, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: Params) {
+  const { userId: authUserId } = await auth();
+  if (!authUserId || !isPlatformAdmin(authUserId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   const { userId } = await params;
-  return djangoProxy(req, '/api/auth_core/organization-members/' + userId + '/');
+
+  // Find current status and toggle
+  const [member] = await db
+    .select({ status: organizationMembers.status })
+    .from(organizationMembers)
+    .where(eq(organizationMembers.id, userId))
+    .limit(1);
+
+  const newStatus = member?.status === 'active' ? 'inactive' : 'active';
+
+  await db
+    .update(organizationMembers)
+    .set({ status: newStatus, updatedAt: new Date() })
+    .where(eq(organizationMembers.id, userId));
+
+  return NextResponse.json({ success: true, status: newStatus });
 }
 
-export async function PATCH(req: NextRequest, { params }: Params) {
-  const { userId } = await params;
-  return djangoProxy(req, '/api/auth_core/organization-members/' + userId + '/', { method: 'PATCH' });
-}
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const { userId: authUserId } = await auth();
+  if (!authUserId || !isPlatformAdmin(authUserId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
-export async function DELETE(req: NextRequest, { params }: Params) {
   const { userId } = await params;
-  return djangoProxy(req, '/api/auth_core/organization-members/' + userId + '/', { method: 'DELETE' });
+
+  // Soft delete
+  await db
+    .update(organizationMembers)
+    .set({ deletedAt: new Date(), updatedAt: new Date() })
+    .where(eq(organizationMembers.id, userId));
+
+  return NextResponse.json({ success: true });
 }
 

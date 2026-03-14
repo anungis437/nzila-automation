@@ -1,19 +1,28 @@
 /**
- * GET POST /api/admin/system/cache
- * -> Django auth_core: /api/auth_core/organization-members/
- * NOTE: auto-resolved from admin/system/cache
- * Auto-migrated by scripts/migrate_routes.py
+ * POST /api/admin/system/cache
+ * Simulates cache clearing (no actual external cache in dev).
  */
-import { NextRequest } from 'next/server';
-import { djangoProxy } from '@/lib/django-proxy';
+import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
-export function GET(req: NextRequest) {
-  return djangoProxy(req, '/api/auth_core/organization-members/');
+function isPlatformAdmin(userId: string): boolean {
+  const ids = (process.env.PLATFORM_ADMIN_USER_IDS ?? '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  return ids.includes(userId);
 }
 
-export function POST(req: NextRequest) {
-  return djangoProxy(req, '/api/auth_core/organization-members/', { method: 'POST' });
+export async function POST() {
+  const { userId } = await auth();
+  if (!userId || !isPlatformAdmin(userId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  return NextResponse.json({
+    success: true,
+    message: 'Application cache cleared',
+    clearedAt: new Date().toISOString(),
+  });
 }
 

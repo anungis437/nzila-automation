@@ -153,21 +153,7 @@ toast.error("Failed to load users");
       );
       const data = await response.json();
       if (data.success) {
-        // Map to LocalSection format
-        setOrganizations(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data.data.map((org: any) => ({
-            id: org.id,
-            number: org.slug,
-            name: org.name,
-            region: org.status,
-            memberCount: org.totalUsers,
-            activeCount: org.activeUsers,
-            president: org.contactEmail || "N/A",
-            contact: org.phone || "N/A",
-            status: org.status === "active" ? "active" : "inactive",
-          }))
-        );
+        setOrganizations(data.data);
       }
     } catch (_error) {
 toast.error("Failed to load organizations");
@@ -196,12 +182,12 @@ toast.error("Failed to remove user");
     }
   };
 
-  const handleToggleUserStatus = async (userId: string, organizationId: string) => {
+  const handleToggleUserStatus = async (userId: string, _organizationId: string) => {
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ organizationId, action: "toggleStatus" }),
+        body: JSON.stringify({ action: "toggleStatus" }),
       });
       const data = await response.json();
       if (data.success) {
@@ -330,7 +316,7 @@ toast.error("Failed to optimize database");
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {t('admin.title')}
           </h1>
           <p className="text-gray-600">
@@ -434,7 +420,9 @@ toast.error("Failed to optimize database");
                     <p className="text-sm text-gray-600 mb-1">
                       {t('admin.overview.systemHealth')}
                     </p>
-                    <p className="text-3xl font-bold text-green-600">98.7%</p>
+                    <p className="text-3xl font-bold text-green-600">
+                      {systemStats ? "Healthy" : "..."}
+                    </p>
                   </div>
                   <div className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
                     <Activity className="w-7 h-7 text-green-600" />

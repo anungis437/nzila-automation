@@ -1,19 +1,38 @@
 /**
- * GET POST /api/admin/database/optimize
- * -> Django auth_core: /api/auth_core/organization-members/
- * NOTE: auto-resolved from admin/database/optimize
- * Auto-migrated by scripts/migrate_routes.py
+ * POST /api/admin/database/optimize
+ * Runs ANALYZE on the database to update query planner statistics.
  */
-import { NextRequest } from 'next/server';
-import { djangoProxy } from '@/lib/django-proxy';
+import { db } from '@/db/db';
+import { sql } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
-export function GET(req: NextRequest) {
-  return djangoProxy(req, '/api/auth_core/organization-members/');
+function isPlatformAdmin(userId: string): boolean {
+  const ids = (process.env.PLATFORM_ADMIN_USER_IDS ?? '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  return ids.includes(userId);
 }
 
-export function POST(req: NextRequest) {
-  return djangoProxy(req, '/api/auth_core/organization-members/', { method: 'POST' });
+export async function POST() {
+  const { userId } = await auth();
+  if (!userId || !isPlatformAdmin(userId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  try {
+    await db.execute(sql`ANALYZE`);
+    return NextResponse.json({
+      success: true,
+      message: 'Database ANALYZE completed — query planner statistics updated',
+      optimizedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : 'Optimization failed' },
+      { status: 500 },
+    );
+  }
 }
 
