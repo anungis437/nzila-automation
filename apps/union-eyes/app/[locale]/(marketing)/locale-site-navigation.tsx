@@ -41,7 +41,7 @@ export default function LocaleSiteNavigation() {
   const [scrolled, setScrolled] = useState(false);
   const [platformOpen, setPlatformOpen] = useState(false);
   const [mobilePlatformOpen, setMobilePlatformOpen] = useState(false);
-  const platformTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const platformTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
