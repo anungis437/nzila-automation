@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { hasMinRole } from '@/lib/api-auth-guard';
+import Link from 'next/link';
 import { FileText, BookOpen, Video, Download, Eye, TrendingUp, GraduationCap, FolderOpen } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { getOrganizationIdForUser } from '@/lib/organization-utils';
@@ -359,7 +360,7 @@ export default async function ContentDashboard() {
                           }>
                             {template.status}
                           </Badge>
-                          <span className="text-sm font-semibold">{template.title}</span>
+                          <Link href={`/dashboard/content/${template.slug}`} className="text-sm font-semibold hover:underline">{template.title}</Link>
                         </div>
                         {template.description && (
                           <p className="text-xs text-muted-foreground line-clamp-2">{template.description}</p>
@@ -373,9 +374,9 @@ export default async function ContentDashboard() {
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <button className="p-2 hover:bg-muted rounded-md" title="View">
+                        <Link href={`/dashboard/content/${template.slug}`} className="p-2 hover:bg-muted rounded-md" title="View">
                           <Eye className="h-4 w-4" />
-                        </button>
+                        </Link>
                         <button className="p-2 hover:bg-muted rounded-md" title="Download">
                           <Download className="h-4 w-4" />
                         </button>
