@@ -788,10 +788,29 @@ export async function getUserRole(
 }
 
 /**
- * Check if user meets minimum role in hierarchy
+ * Check if user meets minimum role in hierarchy.
+ * Uses the canonical getUserRole() from rbac-server — the same resolution the
+ * dashboard root uses via /api/auth/user-role:
+ *   PLATFORM_ADMIN_USER_IDS → organization_users → organization_members → Clerk metadata
  */
 export async function hasMinRole(minRole: string): Promise<boolean> {
-  return hasRole(minRole);
+  try {
+    const { userId, orgId } = await auth();
+    if (!userId) return false;
+
+    const { getUserRole: getRole } = await import('./auth/rbac-server');
+    const { getRoleLevel } = await import('./auth/roles');
+
+    const resolvedRole = await getRole(userId, orgId);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userLevel = getRoleLevel(resolvedRole as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const minLevel = getRoleLevel(minRole as any);
+
+    return userLevel >= minLevel;
+  } catch {
+    return false;
+  }
 }
 
 // =============================================================================
