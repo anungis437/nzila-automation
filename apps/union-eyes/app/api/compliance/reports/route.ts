@@ -43,8 +43,16 @@ export const GET = withOrganizationAuth(async (_request, context) => {
     }
 
     const reports = await db
-      .select()
+      .select({
+        id: employerReports.id,
+        employerId: employerReports.employerId,
+        reportType: employerReports.reportType,
+        dataJson: employerReports.dataJson,
+        createdAt: employerReports.createdAt,
+        employerName: employers.name,
+      })
       .from(employerReports)
+      .innerJoin(employers, eq(employers.id, employerReports.employerId))
       .where(inArray(employerReports.employerId, employerIds))
       .orderBy(desc(employerReports.createdAt));
 

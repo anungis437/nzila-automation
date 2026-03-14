@@ -16,6 +16,7 @@ import {
 interface ComplianceAlert {
   id: string;
   employerId: string;
+  employerName?: string;
   alertType: string;
   severity: string;
   message: string;
@@ -26,6 +27,7 @@ interface ComplianceAlert {
 interface ComplianceReport {
   id: string;
   employerId: string;
+  employerName?: string;
   reportType: string;
   dataJson: Record<string, unknown>;
   createdAt: string;
@@ -173,6 +175,9 @@ export default function CompliancePage() {
                       <p className="text-sm font-medium">
                         {alert.alertType.replace(/_/g, " ")}
                       </p>
+                      {alert.employerName && (
+                        <p className="text-xs font-medium text-gray-600">{alert.employerName}</p>
+                      )}
                       <p className="text-xs text-gray-500">{alert.message}</p>
                       <p className="mt-1 text-xs text-gray-400">
                         {new Date(alert.createdAt).toLocaleDateString()}
@@ -211,7 +216,7 @@ export default function CompliancePage() {
                         {report.reportType.replace(/_/g, " ")}
                       </p>
                       <p className="text-xs text-gray-500">
-                        Employer: {report.employerId}
+                        Employer: {report.employerName || report.employerId}
                       </p>
                     </div>
                     <span className="text-xs text-gray-400">

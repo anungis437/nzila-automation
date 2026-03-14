@@ -15,22 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { hasMinRole } from '@/lib/api-auth-guard';
 import { Headphones, Clock, TrendingUp, CheckCircle2 } from 'lucide-react';
-import { logger } from '@/lib/logger';
-
-// Fetch support data from platform stats API (grievances serve as support items)
-async function getSupportData() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/platform/stats`, {
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json?.data ?? json ?? null;
-  } catch (error) {
-    logger.error('Error fetching support data:', error);
-    return null;
-  }
-}
+import { getPlatformStatsFromDb } from '@/lib/queries/platform-stats';
 
 export default async function SupportDashboard() {
   const { userId } = await auth();
@@ -46,11 +31,11 @@ export default async function SupportDashboard() {
   }
   
   // Fetch real data
-  const stats = await getSupportData();
+  const stats = await getPlatformStatsFromDb();
   
-  const grievances = stats?.grievances ?? { total: 0, open: 0, highPriority: 0, resolved: 0, inArbitration: 0 };
-  const settlements = stats?.settlements ?? { total: 0, totalMonetaryValue: 0 };
-  const totalOrgs = stats?.organizations?.length ?? 0;
+  const grievances = stats.grievances;
+  const settlements = stats.settlements;
+  const totalOrgs = stats.organizations?.length ?? 0;
   
   return (
     <div className="container mx-auto p-6 space-y-6">

@@ -25,21 +25,7 @@ import {
 } from '@/components/customer-success/dashboard-widgets';
 import type { OrgData } from '@/components/customer-success/dashboard-widgets';
 import { hasMinRole } from '@/lib/api-auth-guard';
-import { logger } from '@/lib/logger';
-
-async function getPlatformStats() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/platform/stats`, {
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json?.data ?? json ?? null;
-  } catch (error) {
-    logger.error('Error fetching platform stats:', error);
-    return null;
-  }
-}
+import { getPlatformStatsFromDb } from '@/lib/queries/platform-stats';
 
 export default async function CustomerSuccessDashboard() {
   const { userId } = await auth();
@@ -54,10 +40,10 @@ export default async function CustomerSuccessDashboard() {
     redirect('/dashboard');
   }
 
-  const stats = await getPlatformStats();
-  const organizations: OrgData[] = stats?.organizations ?? [];
-  const grievances = stats?.grievances ?? { total: 0, open: 0, resolved: 0, highPriority: 0, inArbitration: 0 };
-  const cba = stats?.collectiveAgreements ?? { total: 0, active: 0, negotiating: 0, expired: 0 };
+  const stats = await getPlatformStatsFromDb();
+  const organizations: OrgData[] = stats.organizations ?? [];
+  const grievances = stats.grievances;
+  const cba = stats.collectiveAgreements;
   const settlements = stats?.settlements ?? { total: 0, totalMonetaryValue: 0 };
   
   const totalOrgs = organizations.length;

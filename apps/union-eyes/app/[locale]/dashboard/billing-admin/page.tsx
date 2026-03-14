@@ -16,22 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { hasMinRole } from '@/lib/api-auth-guard';
 import { DollarSign, CreditCard, TrendingUp, Users, FileText, AlertCircle } from 'lucide-react';
-import { logger } from '@/lib/logger';
-
-// Fetch billing data from platform stats API
-async function getBillingData() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/platform/stats`, {
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json?.data ?? json ?? null;
-  } catch (error) {
-    logger.error('Error fetching billing data:', error);
-    return null;
-  }
-}
+import { getPlatformStatsFromDb } from '@/lib/queries/platform-stats';
 
 export default async function BillingAdminDashboard() {
   const { userId } = await auth();
@@ -47,16 +32,16 @@ export default async function BillingAdminDashboard() {
   }
   
   // Fetch real data
-  const stats = await getBillingData();
+  const stats = await getPlatformStatsFromDb();
   
-  const orgs: Array<{ name: string; type: string; memberCount: number; subscriptionTier: string; perCapitaRate: number; status: string; activeMemberCount: number }> = stats?.organizations ?? [];
+  const orgs: Array<{ name: string; type: string; memberCount: number; subscriptionTier: string; perCapitaRate: number; status: string; activeMemberCount: number }> = (stats.organizations ?? []) as any;
   const activeOrgs = orgs.filter((o) => o.status === 'active');
   
   // Compute billing metrics from real org data
   const totalMrr = orgs.reduce((sum, o) => sum + (o.memberCount * (o.perCapitaRate || 0)), 0);
   const activeSubscriptions = orgs.filter((o) => o.subscriptionTier && o.subscriptionTier !== 'none').length;
   const pastDueCount = orgs.filter((o) => o.status !== 'active' && o.subscriptionTier && o.subscriptionTier !== 'none').length;
-  const settlementValue = Number(stats?.settlements?.totalMonetaryValue ?? 0);
+  const settlementValue = Number(stats.settlements?.totalMonetaryValue ?? 0);
   
   const metrics = {
     total_mrr: totalMrr,

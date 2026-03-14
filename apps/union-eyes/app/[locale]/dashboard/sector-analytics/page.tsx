@@ -12,21 +12,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { BarChart3, Users, AlertTriangle, Scale, FileText } from "lucide-react";
 import { hasMinRole } from '@/lib/api-auth-guard';
-import { logger } from '@/lib/logger';
-
-async function getPlatformStats() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/platform/stats`, {
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json?.data ?? json ?? null;
-  } catch (error) {
-    logger.error('Error fetching platform stats for sector analytics:', error);
-    return null;
-  }
-}
+import { getPlatformStatsFromDb } from '@/lib/queries/platform-stats';
 
 export default async function SectorAnalyticsPage() {
   const { userId } = await auth();
@@ -34,12 +20,12 @@ export default async function SectorAnalyticsPage() {
   const hasAccess = await hasMinRole('platform_lead');
   if (!hasAccess) redirect('/dashboard');
 
-  const stats = await getPlatformStats();
-  const sectors: Array<{ sector: string; org_count: number; total_members: number }> = stats?.sectors ?? [];
-  const orgs = stats?.organizations ?? [];
-  const cba = stats?.collectiveAgreements ?? { total: 0, active: 0, negotiating: 0, expired: 0 };
-  const grievances = stats?.grievances ?? { total: 0, open: 0, resolved: 0 };
-  const settlements = stats?.settlements ?? { total: 0, totalMonetaryValue: 0 };
+  const stats = await getPlatformStatsFromDb();
+  const sectors = stats.sectors ?? [];
+  const orgs = stats.organizations ?? [];
+  const cba = stats.collectiveAgreements;
+  const grievances = stats.grievances;
+  const settlements = stats.settlements;
   
   const totalMembers = orgs.reduce((sum: number, o: { memberCount?: number }) => sum + (o.memberCount || 0), 0);
   const activeSectors = sectors.length;

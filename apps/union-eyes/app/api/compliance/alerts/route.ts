@@ -15,6 +15,7 @@ import {
   standardSuccessResponse,
 } from "@/lib/api/standardized-responses";
 import { eq, desc } from "drizzle-orm";
+import { employers } from "@/db/schema/domains/compliance/employer-compliance";
 
 const logger = createLogger("compliance-alerts");
 
@@ -28,8 +29,19 @@ export const GET = withOrganizationAuth(async (_request, context) => {
     }
 
     const alerts = await db
-      .select()
+      .select({
+        id: complianceAlerts.id,
+        orgId: complianceAlerts.orgId,
+        employerId: complianceAlerts.employerId,
+        alertType: complianceAlerts.alertType,
+        severity: complianceAlerts.severity,
+        message: complianceAlerts.message,
+        resolvedAt: complianceAlerts.resolvedAt,
+        createdAt: complianceAlerts.createdAt,
+        employerName: employers.name,
+      })
       .from(complianceAlerts)
+      .innerJoin(employers, eq(employers.id, complianceAlerts.employerId))
       .where(eq(complianceAlerts.orgId, organizationId))
       .orderBy(desc(complianceAlerts.createdAt));
 
