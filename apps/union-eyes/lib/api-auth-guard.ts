@@ -374,6 +374,16 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       (publicMetadata.organizationId as string) || (privateMetadata.organizationId as string) || null;
     const resolvedOrganizationId = orgId || metadataOrgId || legacyTenantId || null;
 
+    // Resolve role: PLATFORM_ADMIN_USER_IDS override → Clerk metadata → default
+    let role = (publicMetadata.role as string) || (privateMetadata.role as string) || 'member';
+    const platformAdminIds = (process.env.PLATFORM_ADMIN_USER_IDS || '')
+      .split(',')
+      .map(id => id.trim())
+      .filter(Boolean);
+    if (platformAdminIds.includes(userId)) {
+      role = 'app_owner';
+    }
+
     return {
       id: userId,
       email: user.emailAddresses?.[0]?.emailAddress || null,
@@ -382,7 +392,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       lastName: user.lastName || null,
       imageUrl: user.imageUrl || null,
       legacyTenantId,
-      role: (publicMetadata.role as string) || (privateMetadata.role as string) || 'member',
+      role,
       organizationId: resolvedOrganizationId,
       metadata: { ...publicMetadata },
     };

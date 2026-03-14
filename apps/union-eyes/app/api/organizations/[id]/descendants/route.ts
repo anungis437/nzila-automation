@@ -1,11 +1,30 @@
-import { NextRequest } from 'next/server';
-import { djangoProxy } from '@/lib/django-proxy';
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db/db';
+import { organizations } from '@/db/schema-organizations';
+import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function GET(req: NextRequest, { params }: Params) {
+/** GET /api/organizations/:id/descendants — orgs whose hierarchy_path contains this id */
+export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
-  return djangoProxy(req, '/api/unions/hierarchy/' + id + '/descendants/');
+
+  const rows = await db.select().from(organizations)
+    .where(sql`${id} = ANY(${organizations.hierarchyPath}) AND ${organizations.id} != ${id}`);
+
+  const mapped = rows.map(row => ({
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    organization_type: row.organizationType,
+    parent_id: row.parentId,
+    hierarchy_path: row.hierarchyPath,
+    hierarchy_level: row.hierarchyLevel,
+    member_count: row.memberCount,
+    status: row.status,
+  }));
+
+  return NextResponse.json({ data: mapped });
 }
