@@ -8,14 +8,15 @@
 
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
-import { Menu, X, LogIn } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Menu, X, LogIn, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/language-switcher';
 
 export default function LocaleSiteNavigation() {
   const t = useTranslations('marketing.nav');
+  const tf = useTranslations('marketing.footer');
   const pathname = usePathname();
   const params = useParams();
   const locale = (params?.locale as string) || 'en-CA';
@@ -29,8 +30,18 @@ export default function LocaleSiteNavigation() {
     { name: t('contact'),     href: `/${locale}/contact` },
   ];
 
+  const platformLinks = [
+    { name: tf('grievanceTracking'),  href: `/${locale}/features/grievance-tracking` },
+    { name: tf('memberPortal'),       href: `/${locale}/features/member-portal` },
+    { name: tf('aiWorkbench'),        href: `/${locale}/features/ai-workbench` },
+    { name: tf('analyticsReporting'), href: `/${locale}/features/analytics` },
+  ];
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [platformOpen, setPlatformOpen] = useState(false);
+  const [mobilePlatformOpen, setMobilePlatformOpen] = useState(false);
+  const platformTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -109,6 +120,55 @@ export default function LocaleSiteNavigation() {
               );
             })}
 
+            {/* Platform dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => { clearTimeout(platformTimeout.current); setPlatformOpen(true); }}
+              onMouseLeave={() => { platformTimeout.current = setTimeout(() => setPlatformOpen(false), 150); }}
+            >
+              <button
+                className={`text-sm font-medium transition-colors relative py-1 inline-flex items-center gap-1 ${
+                  pathname?.startsWith(`/${locale}/features`)
+                    ? scrolled ? 'text-electric' : 'text-white'
+                    : scrolled ? 'text-gray-600 hover:text-navy' : 'text-white/80 hover:text-white'
+                }`}
+              >
+                {tf('platform')}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${platformOpen ? 'rotate-180' : ''}`} />
+                {pathname?.startsWith(`/${locale}/features`) && (
+                  <motion.div
+                    layoutId="ue-locale-nav-indicator"
+                    className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-electric rounded-full"
+                  />
+                )}
+              </button>
+              <AnimatePresence>
+                {platformOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                  >
+                    {platformLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`block px-4 py-2.5 text-sm transition-colors ${
+                          pathname === link.href
+                            ? 'text-electric bg-electric/5 font-medium'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-navy'
+                        }`}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <div className="w-px h-6 bg-gray-300/30" />
 
             <LanguageSwitcher />
@@ -164,6 +224,36 @@ export default function LocaleSiteNavigation() {
                   {item.name}
                 </Link>
               ))}
+
+              {/* Platform section (mobile) */}
+              <button
+                onClick={() => setMobilePlatformOpen(!mobilePlatformOpen)}
+                className={`flex w-full items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  pathname?.startsWith(`/${locale}/features`)
+                    ? 'bg-electric/10 text-electric'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {tf('platform')}
+                <ChevronDown className={`h-4 w-4 transition-transform ${mobilePlatformOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {mobilePlatformOpen && (
+                <div className="pl-4 space-y-1">
+                  {platformLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block px-4 py-2.5 rounded-lg text-sm transition-colors ${
+                        pathname === link.href
+                          ? 'text-electric bg-electric/5 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
               <div className="pt-2 border-t border-gray-100 space-y-2">
                 <Link
                   href={`/${locale}/pilot-request`}
