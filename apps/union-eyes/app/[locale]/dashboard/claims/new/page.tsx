@@ -273,7 +273,7 @@ setIsSubmitting(false);
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10 flex items-center justify-center">
+      <div className="p-6 md:p-10 flex items-center justify-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -291,7 +291,7 @@ setIsSubmitting(false);
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div className="p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div

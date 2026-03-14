@@ -264,7 +264,7 @@ export default function GrievancesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-red-50">
+    <div>
       <div className="p-6 md:p-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

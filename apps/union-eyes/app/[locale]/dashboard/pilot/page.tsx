@@ -42,7 +42,7 @@ export default function PilotDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-600">Loading pilot metrics...</p>
         </div>
@@ -52,7 +52,7 @@ export default function PilotDashboardPage() {
 
   if (!metrics) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             No Active Pilot
@@ -74,7 +74,7 @@ export default function PilotDashboardPage() {
   const status = getHealthScoreStatus(breakdown.overall);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

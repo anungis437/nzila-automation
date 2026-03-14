@@ -139,7 +139,7 @@ export default function AgreementsPage() {
   const totalDocs = agreements.reduce((sum, a) => sum + a.pageCount, 0);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

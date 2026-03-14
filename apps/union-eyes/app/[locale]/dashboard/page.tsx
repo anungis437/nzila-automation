@@ -17,6 +17,7 @@ export const dynamic = 'force-dynamic';
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { UserRole } from "@/lib/auth/roles";
+import { useOrganization } from "@/contexts/organization-context";
 import {
   NzilaOpsDashboard,
   CLCDashboard,
@@ -73,22 +74,48 @@ function classifyRole(role: string): DashboardTier {
 
 // -- Main Page Component ------------------------------------------------------
 
+/** Map organization type to dashboard tier */
+function orgTypeToDashboardTier(orgType: string | undefined): DashboardTier {
+  switch (orgType) {
+    case "congress": return "clc";
+    case "federation": return "federation";
+    default: return "union";
+  }
+}
+
 export default function DashboardPage() {
   const { user } = useUser();
+  const { organizationId, organization } = useOrganization();
   const [mounted, setMounted] = useState(false);
   const [tier, setTier] = useState<DashboardTier | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
-  // Fetch raw RBAC role & classify into tier
+  // Fetch raw RBAC role & classify into tier, then override when
+  // a platform admin is viewing a tenant org.
   useEffect(() => {
     const fetchRole = async () => {
       try {
         const res = await fetch("/api/auth/user-role");
         if (res.ok) {
           const { role } = await res.json();
-          setTier(classifyRole(role));
+          const roleTier = classifyRole(role);
+
+          // Platform admin viewing a non-platform org → show that org's dashboard
+          if (roleTier === "nzila" && organizationId && organization) {
+            // Fetch the platform org ID to compare
+            const platformRes = await fetch("/api/organizations/platform-id");
+            if (platformRes.ok) {
+              const { platformOrgId } = await platformRes.json();
+              if (organizationId !== platformOrgId) {
+                setTier(orgTypeToDashboardTier(organization.type));
+                return;
+              }
+            }
+          }
+
+          setTier(roleTier);
         } else {
           setTier("union"); // fallback
         }
@@ -98,12 +125,12 @@ export default function DashboardPage() {
     };
 
     if (user?.id) fetchRole();
-  }, [user?.id]);
+  }, [user?.id, organizationId, organization]);
 
   // Loading skeleton while we resolve the user and their tier
   if (!mounted || !user || tier === null) {
     return (
-      <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+      <div className="p-6 md:p-10">
         <div className="animate-pulse space-y-6">
           <div className="h-24 bg-gray-200 rounded-lg" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -116,7 +143,7 @@ export default function DashboardPage() {
             <div className="h-96 bg-gray-200 rounded-lg" />
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 

@@ -457,7 +457,7 @@ setError(err instanceof Error ? err.message : 'Failed to load assigned claims');
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-orange-50 p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

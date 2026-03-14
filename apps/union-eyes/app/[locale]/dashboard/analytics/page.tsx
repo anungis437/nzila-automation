@@ -112,7 +112,7 @@ export default function AnalyticsPage() {
   const maxCaseValue = Math.max(...chartData.map(d => d.cases));
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50">
+    <div>
       <div className="p-6 md:p-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

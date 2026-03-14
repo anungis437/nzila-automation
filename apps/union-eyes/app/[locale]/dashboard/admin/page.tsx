@@ -326,7 +326,7 @@ toast.error("Failed to optimize database");
   );
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-gray-50 to-zinc-50 p-8">
+    <div className="p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

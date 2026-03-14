@@ -90,19 +90,19 @@ export default function CLCDashboard() {
 
   if (!mounted || !user) {
     return (
-      <main className="min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50 p-6 md:p-10">
+      <div>
         <div className="animate-pulse space-y-6">
           <div className="h-24 bg-gray-200 rounded-lg" />
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[1,2,3,4,5,6].map(i => <div key={i} className="h-28 bg-gray-200 rounded-lg" />)}
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50 p-6 md:p-10">
+    <div>
       {/* Welcome */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -213,6 +213,6 @@ export default function CLCDashboard() {
           </Card>
         </motion.div>
       </div>
-    </main>
+    </div>
   );
 }

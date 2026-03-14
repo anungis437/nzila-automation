@@ -78,6 +78,7 @@ interface SidebarProps {
   whopMonthlyPlanId: string;
   whopYearlyPlanId: string;
   userRole?: string;
+  platformOrgId?: string;
 }
 
 // ── Collapsible section sub-component ────────────────────────────────────────
@@ -132,7 +133,7 @@ function NavSection({
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanId: _whopMonthlyPlanId, whopYearlyPlanId: _whopYearlyPlanId, userRole = "member" }: SidebarProps) {
+export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanId: _whopMonthlyPlanId, whopYearlyPlanId: _whopYearlyPlanId, userRole = "member", platformOrgId }: SidebarProps) {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations();
@@ -144,6 +145,9 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
   const isActive = (path: string) => pathname === path;
   const isNzila = (NZILA_ROLES as readonly string[]).includes(userRole);
   const hasSelectedOrg = !!organizationId;
+  // Platform admin viewing a tenant org should see that tenant's navigation
+  const isViewingPlatformOrg = !organizationId || organizationId === platformOrgId;
+  const isViewingTenantOrg = isNzila && hasSelectedOrg && !isViewingPlatformOrg;
 
   // ── Helper: build role arrays quickly ──────────────────────────────────────
   const unionAll = ["member", "steward", "chief_steward", "officer", "president", "vice_president", "secretary_treasurer", "bargaining_committee", "health_safety_rep", "national_officer", "admin"];
@@ -183,15 +187,21 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
 
   // ── Org-specific sections (appear when an org is selected for Nzila users,
   //    or always for org-member roles) ───────────────────────────────────────
+  //
+  // "platform_viewer" is a virtual role used when platform/CLC management
+  // views a tenant org.  It grants visibility to oversight & leadership items
+  // but NOT to personal member features (My Cases, Pension, Dues, Voting…).
+  const mgmt = "platform_viewer";
+
   const orgSections = [
     {
       title: organization?.name ? `${organization.name}` : t('sidebar.yourUnion'),
-      roles: unionAll,
+      roles: [...unionAll, mgmt],
       items: [
-        { href: `/${locale}/dashboard`, icon: <Home size={16} />, label: t('navigation.dashboard'), roles: unionAll },
+        { href: `/${locale}/dashboard`, icon: <Home size={16} />, label: t('navigation.dashboard'), roles: [...unionAll, mgmt] },
         { href: `/${locale}/dashboard/claims`, icon: <FileText size={16} />, label: t('claims.myCases'), roles: unionAll },
         { href: `/${locale}/dashboard/claims/new`, icon: <Mic size={16} />, label: t('claims.submitNew'), roles: unionAll },
-        { href: `/${locale}/dashboard/health-safety`, icon: <Shield size={16} />, label: 'Health & Safety', roles: unionAll },
+        { href: `/${locale}/dashboard/health-safety`, icon: <Shield size={16} />, label: 'Health & Safety', roles: [...unionAll, mgmt] },
         { href: `/${locale}/dashboard/pension`, icon: <Briefcase size={16} />, label: 'My Pension & Benefits', roles: unionAll },
         { href: `/${locale}/dashboard/dues`, icon: <DollarSign size={16} />, label: 'Dues & Payments', roles: unionAll },
       ],
@@ -202,20 +212,20 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
       items: [
         { href: `/${locale}/dashboard/education`, icon: <GraduationCap size={16} />, label: 'Education & Training', roles: ["member", "steward", "officer", "admin"] },
         { href: `/${locale}/dashboard/voting`, icon: <Vote size={16} />, label: t('navigation.vote'), roles: ["member", "steward", "officer", "admin"] },
-        { href: `/${locale}/dashboard/agreements`, icon: <BookOpen size={16} />, label: t('sidebar.ourAgreements'), roles: ["member", "steward", "officer", "admin"] },
+        { href: `/${locale}/dashboard/agreements`, icon: <BookOpen size={16} />, label: t('sidebar.ourAgreements'), roles: ["member", "steward", "officer", "admin", mgmt] },
       ],
     },
     {
       title: t('sidebar.representativeTools'),
-      roles: repsAndAbove,
+      roles: [...repsAndAbove, mgmt],
       items: [
-        { href: `/${locale}/dashboard/workbench`, icon: <FileBarChart size={16} />, label: t('claims.caseQueue'), roles: repsAndAbove },
-        { href: `/${locale}/dashboard/members`, icon: <Users size={16} />, label: t('members.directory'), roles: repsAndAbove },
-        { href: `/${locale}/dashboard/clause-library`, icon: <Library size={16} />, label: t('sidebar.clauseLibrary'), roles: repsAndAbove },
-        { href: `/${locale}/dashboard/analytics`, icon: <BarChart3 size={16} />, label: t('sidebar.insights'), roles: repsAndAbove },
-        { href: `/${locale}/dashboard/precedents`, icon: <Scale size={16} />, label: 'Precedents', roles: repsAndAbove },
-        { href: `/${locale}/dashboard/stewards`, icon: <Users size={16} />, label: 'Steward Management', roles: ["chief_steward", "officer", "president", "vice_president", "national_officer", "admin"] },
-        { href: `/${locale}/dashboard/cross-union-analytics`, icon: <GitCompare size={16} />, label: 'Cross-Union Analytics', roles: ["officer", "president", "vice_president", "secretary_treasurer", "national_officer", "admin"] },
+        { href: `/${locale}/dashboard/workbench`, icon: <FileBarChart size={16} />, label: t('claims.caseQueue'), roles: [...repsAndAbove, mgmt] },
+        { href: `/${locale}/dashboard/members`, icon: <Users size={16} />, label: t('members.directory'), roles: [...repsAndAbove, mgmt] },
+        { href: `/${locale}/dashboard/clause-library`, icon: <Library size={16} />, label: t('sidebar.clauseLibrary'), roles: [...repsAndAbove, mgmt] },
+        { href: `/${locale}/dashboard/analytics`, icon: <BarChart3 size={16} />, label: t('sidebar.insights'), roles: [...repsAndAbove, mgmt] },
+        { href: `/${locale}/dashboard/precedents`, icon: <Scale size={16} />, label: 'Precedents', roles: [...repsAndAbove, mgmt] },
+        { href: `/${locale}/dashboard/stewards`, icon: <Users size={16} />, label: 'Steward Management', roles: ["chief_steward", "officer", "president", "vice_president", "national_officer", "admin", mgmt] },
+        { href: `/${locale}/dashboard/cross-union-analytics`, icon: <GitCompare size={16} />, label: 'Cross-Union Analytics', roles: ["officer", "president", "vice_president", "secretary_treasurer", "national_officer", "admin", mgmt] },
       ],
     },
     {
@@ -228,27 +238,27 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
     },
     {
       title: t('sidebar.leadership'),
-      roles: leadershipRoles,
+      roles: [...leadershipRoles, mgmt],
       items: [
-        { href: `/${locale}/dashboard/communications`, icon: <MessageSquare size={16} />, label: 'Communications', roles: leadershipRoles },
-        { href: `/${locale}/dashboard/grievances`, icon: <Scale size={16} />, label: t('grievance.title'), roles: leadershipRoles },
-        { href: `/${locale}/dashboard/bargaining`, icon: <Handshake size={16} />, label: 'Bargaining & Negotiations', roles: [...leadershipRoles, "bargaining_committee"] },
-        { href: `/${locale}/dashboard/financial`, icon: <Receipt size={16} />, label: 'Financial Management', roles: leadershipRoles },
-        { href: `/${locale}/dashboard/targets`, icon: <Target size={16} />, label: 'Performance Targets', roles: ["officer", "president", "vice_president", "national_officer", "admin"] },
-        { href: `/${locale}/dashboard/organizing`, icon: <Flag size={16} />, label: 'Organizing Campaigns', roles: ["officer", "president", "vice_president", "national_officer", "admin"] },
-        { href: `/${locale}/dashboard/strike-fund`, icon: <DollarSign size={16} />, label: 'Strike Fund', roles: leadershipRoles },
-        { href: `/${locale}/dashboard/notifications`, icon: <Bell size={16} />, label: t('sidebar.alerts'), roles: leadershipRoles },
-        { href: `/${locale}/dashboard/pension/admin`, icon: <Briefcase size={16} />, label: 'Pension Administration', roles: ["officer", "president", "secretary_treasurer", "national_officer", "admin"] },
-        { href: `/${locale}/dashboard/pension/trustee`, icon: <Shield size={16} />, label: 'Trustee Portal', roles: ["officer", "president", "secretary_treasurer", "national_officer", "admin"] },
+        { href: `/${locale}/dashboard/communications`, icon: <MessageSquare size={16} />, label: 'Communications', roles: [...leadershipRoles, mgmt] },
+        { href: `/${locale}/dashboard/grievances`, icon: <Scale size={16} />, label: t('grievance.title'), roles: [...leadershipRoles, mgmt] },
+        { href: `/${locale}/dashboard/bargaining`, icon: <Handshake size={16} />, label: 'Bargaining & Negotiations', roles: [...leadershipRoles, "bargaining_committee", mgmt] },
+        { href: `/${locale}/dashboard/financial`, icon: <Receipt size={16} />, label: 'Financial Management', roles: [...leadershipRoles, mgmt] },
+        { href: `/${locale}/dashboard/targets`, icon: <Target size={16} />, label: 'Performance Targets', roles: ["officer", "president", "vice_president", "national_officer", "admin", mgmt] },
+        { href: `/${locale}/dashboard/organizing`, icon: <Flag size={16} />, label: 'Organizing Campaigns', roles: ["officer", "president", "vice_president", "national_officer", "admin", mgmt] },
+        { href: `/${locale}/dashboard/strike-fund`, icon: <DollarSign size={16} />, label: 'Strike Fund', roles: [...leadershipRoles, mgmt] },
+        { href: `/${locale}/dashboard/notifications`, icon: <Bell size={16} />, label: t('sidebar.alerts'), roles: [...leadershipRoles, mgmt] },
+        { href: `/${locale}/dashboard/pension/admin`, icon: <Briefcase size={16} />, label: 'Pension Administration', roles: ["officer", "president", "secretary_treasurer", "national_officer", "admin", mgmt] },
+        { href: `/${locale}/dashboard/pension/trustee`, icon: <Shield size={16} />, label: 'Trustee Portal', roles: ["officer", "president", "secretary_treasurer", "national_officer", "admin", mgmt] },
       ],
     },
     {
       title: 'Executive Leadership',
-      roles: execRoles,
+      roles: [...execRoles, mgmt],
       items: [
-        { href: `/${locale}/dashboard/executive`, icon: <Building2 size={16} />, label: 'Executive Dashboard', roles: execRoles },
-        { href: `/${locale}/dashboard/governance`, icon: <FileText size={16} />, label: 'Governance', roles: execRoles },
-        { href: `/${locale}/dashboard/audits`, icon: <FileBarChart size={16} />, label: 'Audits & Compliance', roles: [...execRoles, "admin"] },
+        { href: `/${locale}/dashboard/executive`, icon: <Building2 size={16} />, label: 'Executive Dashboard', roles: [...execRoles, mgmt] },
+        { href: `/${locale}/dashboard/governance`, icon: <FileText size={16} />, label: 'Governance', roles: [...execRoles, mgmt] },
+        { href: `/${locale}/dashboard/audits`, icon: <FileBarChart size={16} />, label: 'Audits & Compliance', roles: [...execRoles, "admin", mgmt] },
       ],
     },
   ];
@@ -257,33 +267,33 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
   const fedSections = [
     {
       title: 'Federation & CLC Services',
-      roles: clcRoles,
+      roles: [...clcRoles, mgmt],
       items: [
-        { href: `/${locale}/dashboard/cross-union-analytics`, icon: <GitCompare size={16} />, label: 'Cross-Union Analytics', roles: clcRoles },
-        { href: `/${locale}/dashboard/precedents`, icon: <Scale size={16} />, label: 'Precedent Database', roles: clcRoles },
-        { href: `/${locale}/dashboard/clause-library`, icon: <Library size={16} />, label: 'Shared Clause Library', roles: clcRoles },
-        { href: `/${locale}/dashboard/admin/organizations`, icon: <Building2 size={16} />, label: 'Affiliate Management', roles: clcRoles },
-        { href: `/${locale}/dashboard/compliance`, icon: <FileBarChart size={16} />, label: 'Compliance Reports', roles: ["congress_staff", "federation_staff", "clc_staff", "clc_executive", "system_admin", "admin"] },
-        { href: `/${locale}/dashboard/sector-analytics`, icon: <BarChart3 size={16} />, label: 'Sector Analytics', roles: ["congress_staff", "clc_staff", "clc_executive", "system_admin", "admin"] },
+        { href: `/${locale}/dashboard/cross-union-analytics`, icon: <GitCompare size={16} />, label: 'Cross-Union Analytics', roles: [...clcRoles, mgmt] },
+        { href: `/${locale}/dashboard/precedents`, icon: <Scale size={16} />, label: 'Precedent Database', roles: [...clcRoles, mgmt] },
+        { href: `/${locale}/dashboard/clause-library`, icon: <Library size={16} />, label: 'Shared Clause Library', roles: [...clcRoles, mgmt] },
+        { href: `/${locale}/dashboard/admin/organizations`, icon: <Building2 size={16} />, label: 'Affiliate Management', roles: [...clcRoles, mgmt] },
+        { href: `/${locale}/dashboard/compliance`, icon: <FileBarChart size={16} />, label: 'Compliance Reports', roles: ["congress_staff", "federation_staff", "clc_staff", "clc_executive", "system_admin", "admin", mgmt] },
+        { href: `/${locale}/dashboard/sector-analytics`, icon: <BarChart3 size={16} />, label: 'Sector Analytics', roles: ["congress_staff", "clc_staff", "clc_executive", "system_admin", "admin", mgmt] },
       ],
     },
     {
       title: 'CLC National Operations',
-      roles: ["clc_staff", "clc_executive", "system_admin", "admin"],
+      roles: ["clc_staff", "clc_executive", "system_admin", "admin", mgmt],
       items: [
-        { href: `/${locale}/dashboard/clc`, icon: <Building2 size={16} />, label: 'CLC Dashboard', roles: ["clc_staff", "clc_executive", "system_admin", "admin"] },
-        { href: `/${locale}/dashboard/clc/affiliates`, icon: <Network size={16} />, label: 'Affiliates Management', roles: ["clc_staff", "clc_executive", "system_admin", "admin"] },
-        { href: `/${locale}/dashboard/clc/staff`, icon: <Users size={16} />, label: 'CLC Staff Operations', roles: ["clc_staff", "clc_executive", "system_admin", "admin"] },
-        { href: `/${locale}/dashboard/clc/compliance`, icon: <FileBarChart size={16} />, label: 'CLC Compliance', roles: ["clc_staff", "clc_executive", "system_admin", "admin"] },
+        { href: `/${locale}/dashboard/clc`, icon: <Building2 size={16} />, label: 'CLC Dashboard', roles: ["clc_staff", "clc_executive", "system_admin", "admin", mgmt] },
+        { href: `/${locale}/dashboard/clc/affiliates`, icon: <Network size={16} />, label: 'Affiliates Management', roles: ["clc_staff", "clc_executive", "system_admin", "admin", mgmt] },
+        { href: `/${locale}/dashboard/clc/staff`, icon: <Users size={16} />, label: 'CLC Staff Operations', roles: ["clc_staff", "clc_executive", "system_admin", "admin", mgmt] },
+        { href: `/${locale}/dashboard/clc/compliance`, icon: <FileBarChart size={16} />, label: 'CLC Compliance', roles: ["clc_staff", "clc_executive", "system_admin", "admin", mgmt] },
       ],
     },
     {
       title: 'Provincial Federation',
-      roles: ["fed_staff", "fed_executive", "system_admin", "admin"],
+      roles: ["fed_staff", "fed_executive", "system_admin", "admin", mgmt],
       items: [
-        { href: `/${locale}/dashboard/federation`, icon: <Network size={16} />, label: 'Federation Dashboard', roles: ["fed_staff", "fed_executive", "system_admin", "admin"] },
-        { href: `/${locale}/dashboard/federation/affiliates`, icon: <Building2 size={16} />, label: 'Affiliate Unions', roles: ["fed_staff", "fed_executive", "system_admin", "admin"] },
-        { href: `/${locale}/dashboard/federation/remittances`, icon: <DollarSign size={16} />, label: 'Remittance Tracking', roles: ["fed_staff", "fed_executive", "system_admin", "admin"] },
+        { href: `/${locale}/dashboard/federation`, icon: <Network size={16} />, label: 'Federation Dashboard', roles: ["fed_staff", "fed_executive", "system_admin", "admin", mgmt] },
+        { href: `/${locale}/dashboard/federation/affiliates`, icon: <Building2 size={16} />, label: 'Affiliate Unions', roles: ["fed_staff", "fed_executive", "system_admin", "admin", mgmt] },
+        { href: `/${locale}/dashboard/federation/remittances`, icon: <DollarSign size={16} />, label: 'Remittance Tracking', roles: ["fed_staff", "fed_executive", "system_admin", "admin", mgmt] },
       ],
     },
   ];
@@ -292,10 +302,10 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
   const systemSection = [
     {
       title: t('sidebar.system'),
-      roles: ["admin", "system_admin", ...nzilaAll],
+      roles: ["admin", "system_admin", mgmt, ...nzilaAll],
       items: [
-        { href: `/${locale}/dashboard/admin`, icon: <Shield size={16} />, label: t('navigation.adminPanel'), roles: ["admin", "system_admin", "app_owner", "coo", "cto"] },
-        { href: `/${locale}/dashboard/settings`, icon: <Settings size={16} />, label: t('sidebar.preferences'), roles: [...unionAll, "system_admin", "congress_staff", "federation_staff", "clc_staff", "clc_executive", "fed_staff", "fed_executive", ...nzilaAll] },
+        { href: `/${locale}/dashboard/admin`, icon: <Shield size={16} />, label: t('navigation.adminPanel'), roles: ["admin", "system_admin", "app_owner", "coo", "cto", mgmt] },
+        { href: `/${locale}/dashboard/settings`, icon: <Settings size={16} />, label: t('sidebar.preferences'), roles: [...unionAll, "system_admin", "congress_staff", "federation_staff", "clc_staff", "clc_executive", "fed_staff", "fed_executive", mgmt, ...nzilaAll] },
       ],
     },
   ];
@@ -311,13 +321,24 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
   const buildSections = useCallback(() => {
     let sections: SidebarSection[] = [];
 
-    if (isNzila) {
-      // Nzila platform users: always show super-org nav
-      sections = [...superOrgSections];
+    // When a platform admin is viewing a tenant org, show that tenant's nav
+    // so they can see exactly what the tenant sees — but skip personal member
+    // features (My Cases, Pension, Dues, Voting).  The "platform_viewer"
+    // virtual role is only added to oversight/leadership items above.
+    const effectiveRole = isViewingTenantOrg ? "platform_viewer" : userRole;
 
-      // When an org is selected, also show org-level sections so they can drill in
-      if (hasSelectedOrg) {
-        sections = [...sections, ...orgSections];
+    if (isNzila && !isViewingTenantOrg) {
+      // Platform view: show super-org nav
+      sections = [...superOrgSections];
+    } else if (isViewingTenantOrg) {
+      // Platform admin viewing a tenant — show tenant sections
+      const orgType = organization?.type;
+      if (orgType === 'congress') {
+        sections = [...orgSections, ...fedSections];
+      } else if (orgType === 'federation') {
+        sections = [...orgSections, ...fedSections];
+      } else {
+        sections = [...orgSections];
       }
     } else {
       // Union / federation / CLC roles: show org sections + fed sections
@@ -327,15 +348,15 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
     // Always append system section
     sections = [...sections, ...systemSection];
 
-    // Filter by role
+    // Filter by effective role
     return sections
       .map(section => ({
         ...section,
-        items: section.items.filter(item => item.roles.includes(userRole)),
+        items: section.items.filter(item => item.roles.includes(effectiveRole)),
       }))
-      .filter(section => section.items.length > 0 && section.roles.includes(userRole));
+      .filter(section => section.items.length > 0 && section.roles.includes(effectiveRole));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRole, isNzila, hasSelectedOrg, locale, organization]);
+  }, [userRole, isNzila, isViewingTenantOrg, hasSelectedOrg, locale, organization]);
 
   const visibleSections = buildSections();
 
@@ -404,12 +425,12 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
         </Link>
       </div>
 
-      {/* Org badge — shown when Nzila user has selected an org */}
-      {isNzila && hasSelectedOrg && organization && (
+      {/* Org badge — shown when platform admin is viewing a tenant org */}
+      {isViewingTenantOrg && organization && (
         <div className="px-3 mb-3 relative z-10">
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700">
             <Building2 size={12} />
-            <span className="text-[11px] font-medium truncate">{organization.name}</span>
+            <span className="text-[11px] font-medium truncate">Viewing: {organization.name}</span>
           </div>
         </div>
       )}

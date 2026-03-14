@@ -410,7 +410,7 @@ export default function UnionDashboard() {
   // SSR Guard
   if (!mounted || !user) {
     return (
-      <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+      <div>
         <div className="animate-pulse space-y-6">
           <div className="h-24 bg-gray-200 rounded-lg"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -423,12 +423,12 @@ export default function UnionDashboard() {
             <div className="h-96 bg-gray-200 rounded-lg"></div>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div>
       {/* Development Helper */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -750,6 +750,6 @@ export default function UnionDashboard() {
           </Card>
         </motion.div>
       )}
-    </main>
+    </div>
   );
 }

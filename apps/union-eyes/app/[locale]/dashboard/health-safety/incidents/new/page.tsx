@@ -53,7 +53,7 @@ export default function NewIncidentPage() {
 
   if (!organizationId) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-8">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -71,7 +71,7 @@ export default function NewIncidentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Page Header */}
         <motion.div

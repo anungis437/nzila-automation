@@ -14,7 +14,7 @@ import { OrganizationSelector } from "@/components/organization/organization-sel
 import { OrganizationBreadcrumb } from "@/components/organization/organization-breadcrumb";
 import LanguageSwitcher from "@/components/language-switcher";
 import { logger } from "@/lib/logger";
-import { getOrganizationIdForUser } from "@/lib/organization-utils";
+import { getOrganizationIdForUser, DEFAULT_ORGANIZATION_ID } from "@/lib/organization-utils";
 import { getUserRole } from "@/lib/auth/rbac-server";
 import { db } from "@/db/db";
 import { profiles } from "@/db/schema";
@@ -114,12 +114,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           whopMonthlyPlanId={process.env.WHOP_PLAN_ID_MONTHLY || ''}
           whopYearlyPlanId={process.env.WHOP_PLAN_ID_YEARLY || ''}
           userRole={userRole}
+          platformOrgId={DEFAULT_ORGANIZATION_ID}
         />
         
         {/* Main content area with organization selector */}
-        <div className="flex-1 overflow-auto relative">
+        <div className="flex-1 overflow-auto relative bg-linear-to-br from-slate-50 via-white to-blue-50">
           {/* Organization selector and breadcrumb in header - sticky at top */}
-          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center min-h-15">
+          <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200/60 px-6 py-4 flex justify-between items-center min-h-15">
             <OrganizationBreadcrumb />
             <div className="flex items-center gap-3">
               <LanguageSwitcher />
@@ -128,7 +129,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           </div>
           
           {/* Page content */}
-          <div className="p-6 mt-2">
+          <div className="dashboard-content p-6 mt-2">
             {children}
           </div>
         </div>

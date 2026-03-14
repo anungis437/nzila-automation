@@ -223,7 +223,7 @@ setError(err instanceof Error ? err.message : 'Failed to load claims');
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 p-6 md:p-10">
+    <div className="p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

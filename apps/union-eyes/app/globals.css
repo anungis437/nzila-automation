@@ -392,3 +392,30 @@ html {
     background: rgba(0,0,0,0.15);
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Dashboard Content — Unified Visual System
+   ═══════════════════════════════════════════════════════ */
+
+/* Subtle entrance animation for dashboard content */
+@keyframes dashboard-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-content > * {
+  animation: dashboard-fade-in 0.35s ease-out both;
+}
+
+/* Stagger children for a polished cascade effect */
+.dashboard-content > *:nth-child(2) { animation-delay: 0.05s; }
+.dashboard-content > *:nth-child(3) { animation-delay: 0.1s; }
+.dashboard-content > *:nth-child(4) { animation-delay: 0.15s; }
+.dashboard-content > *:nth-child(5) { animation-delay: 0.2s; }
+.dashboard-content > *:nth-child(n+6) { animation-delay: 0.25s; }
