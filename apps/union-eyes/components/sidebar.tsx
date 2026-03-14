@@ -175,12 +175,20 @@ export default function Sidebar({ profile: _profile, userEmail, whopMonthlyPlanI
       ],
     },
     {
-      title: 'Organizations',
+      title: 'Administration',
       roles: nzilaAll,
       items: [
+        { href: `/${locale}/dashboard/admin`, icon: <Shield size={16} />, label: 'Admin Panel', roles: ["app_owner", "coo", "cto", "platform_lead"] },
         { href: `/${locale}/dashboard/admin/organizations`, icon: <Globe size={16} />, label: 'Browse Organizations', roles: nzilaAll },
+        { href: `/${locale}/dashboard/admin/governance`, icon: <FileText size={16} />, label: 'Governance Dashboard', roles: ["app_owner", "coo", "platform_lead"] },
+        { href: `/${locale}/dashboard/admin/members`, icon: <Users size={16} />, label: 'Member Management', roles: ["app_owner", "coo", "platform_lead", "support_manager"] },
+        { href: `/${locale}/dashboard/admin/rewards`, icon: <DollarSign size={16} />, label: 'Rewards Administration', roles: ["app_owner", "coo", "customer_success_director"] },
+        { href: `/${locale}/dashboard/admin/scheduled-reports`, icon: <Bell size={16} />, label: 'Scheduled Reports', roles: ["app_owner", "coo", "cto", "data_analytics_manager"] },
+        { href: `/${locale}/dashboard/compliance-admin`, icon: <FileBarChart size={16} />, label: 'Compliance & Audit', roles: ["app_owner", "coo", "cto", "compliance_manager", "security_manager"] },
         { href: `/${locale}/dashboard/compliance`, icon: <FileBarChart size={16} />, label: 'Compliance Reports', roles: ["app_owner", "coo", "cto", "platform_lead"] },
         { href: `/${locale}/dashboard/sector-analytics`, icon: <BarChart3 size={16} />, label: 'Sector Analytics', roles: ["app_owner", "coo", "cto", "data_analytics_manager", "data_analyst"] },
+        { href: `/${locale}/dashboard/data-source`, icon: <Network size={16} />, label: 'Data Sources', roles: ["app_owner", "cto", "integration_manager", "data_analytics_manager"] },
+        { href: `/${locale}/dashboard/pilot`, icon: <Activity size={16} />, label: 'Pilot Dashboard', roles: ["app_owner", "coo", "platform_lead", "customer_success_director"] },
       ],
     },
   ];

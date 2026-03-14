@@ -20,7 +20,7 @@ export interface Organization {
   id: string;
   name: string;
   slug: string;
-  type: 'congress' | 'federation' | 'union' | 'local' | 'chapter';
+  type: 'platform' | 'congress' | 'federation' | 'union' | 'local' | 'district' | 'chapter';
   parentId: string | null;
   sector?: string;
   jurisdiction?: string;
