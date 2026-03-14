@@ -1,11 +1,10 @@
 /**
  * Content Dashboard
  * For Content Manager - Templates, resources, training materials
- * 
+ *
  * @role content_manager
  * @dashboard_path /dashboard/content
  */
-
 
 export const dynamic = 'force-dynamic';
 
@@ -15,57 +14,162 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { hasMinRole } from '@/lib/api-auth-guard';
-import { FileText, BookOpen, Video, Download, Eye, TrendingUp } from 'lucide-react';
+import { FileText, BookOpen, Video, Download, Eye, TrendingUp, GraduationCap, FolderOpen } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { db } from '@/db/db';
+import { sql } from 'drizzle-orm';
 
-// Fetch content templates from API
-async function getContentTemplates() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/content/templates?limit=50`, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      logger.error('Failed to fetch content templates');
-      return [];
-    }
-    
-    const data = await response.json();
-    return data.data?.templates || [];
-  } catch (error) {
-    logger.error('Error fetching content templates:', error);
-    return [];
-  }
+interface ContentItem {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  status: string;
+  category: string | null;
+  type: string;
+  fileUrl: string | null;
+  fileSizeMb: number | null;
+  downloads: number;
+  views: number;
+  publishedAt: string | null;
+  updatedAt: string | null;
+}
+
+interface TrainingCourse {
+  id: string;
+  courseCode: string;
+  name: string;
+  description: string | null;
+  category: string;
+  deliveryMethod: string;
+  durationLabel: string | null;
+  completions: number;
+  isActive: boolean;
+  isMandatory: boolean;
+}
+
+interface ContentStats {
+  templates: { total: number; published: number; draft: number; review: number; archived: number };
+  resources: { total: number; published: number };
+  views: number;
+  downloads: number;
+  mostViewed: { title: string; category: string; views: number } | null;
+  training: { total: number; active: number; totalCompletions: number };
+}
+
+async function loadContentData(orgId: string): Promise<ContentItem[]> {
+  const result = await db.execute(sql`
+    SELECT id, title, slug, meta_description, status, category,
+           content_type, file_url, file_size_mb, download_count,
+           view_count, published_at, updated_at
+    FROM cms_pages
+    WHERE organization_id = ${orgId}::uuid
+    ORDER BY updated_at DESC
+  `);
+
+  return Array.from(result).map((r: Record<string, unknown>) => ({
+    id: r.id as string,
+    title: r.title as string,
+    slug: r.slug as string,
+    description: r.meta_description as string | null,
+    status: r.status as string,
+    category: r.category as string | null,
+    type: r.content_type as string,
+    fileUrl: r.file_url as string | null,
+    fileSizeMb: r.file_size_mb ? Number(r.file_size_mb) : null,
+    downloads: Number(r.download_count ?? 0),
+    views: Number(r.view_count ?? 0),
+    publishedAt: r.published_at as string | null,
+    updatedAt: r.updated_at as string | null,
+  }));
+}
+
+async function loadTrainingCourses(orgId: string): Promise<TrainingCourse[]> {
+  const result = await db.execute(sql`
+    SELECT id, course_code, course_name, course_description,
+           course_category, delivery_method, duration_label,
+           completion_count, is_active, is_mandatory
+    FROM training_courses
+    WHERE organization_id = ${orgId}::uuid AND is_active = true
+    ORDER BY is_mandatory DESC, completion_count DESC
+  `);
+
+  return Array.from(result).map((r: Record<string, unknown>) => ({
+    id: r.id as string,
+    courseCode: r.course_code as string,
+    name: r.course_name as string,
+    description: r.course_description as string | null,
+    category: r.course_category as string,
+    deliveryMethod: r.delivery_method as string,
+    durationLabel: r.duration_label as string | null,
+    completions: Number(r.completion_count ?? 0),
+    isActive: r.is_active as boolean,
+    isMandatory: r.is_mandatory as boolean,
+  }));
+}
+
+function computeStats(items: ContentItem[], courses: TrainingCourse[]): ContentStats {
+  const templates = items.filter(i => i.type === 'template');
+  const resources = items.filter(i => i.type === 'resource');
+  const totalViews = items.reduce((sum, i) => sum + i.views, 0);
+  const totalDownloads = items.reduce((sum, i) => sum + i.downloads, 0);
+
+  const sorted = [...items].sort((a, b) => b.views - a.views);
+  const top = sorted[0] ?? null;
+
+  return {
+    templates: {
+      total: templates.length,
+      published: templates.filter(t => t.status === 'published').length,
+      draft: templates.filter(t => t.status === 'draft').length,
+      review: templates.filter(t => t.status === 'review').length,
+      archived: templates.filter(t => t.status === 'archived').length,
+    },
+    resources: {
+      total: resources.length,
+      published: resources.filter(r => r.status === 'published').length,
+    },
+    views: totalViews,
+    downloads: totalDownloads,
+    mostViewed: top ? { title: top.title, category: top.category ?? 'Uncategorized', views: top.views } : null,
+    training: {
+      total: courses.length,
+      active: courses.filter(c => c.isActive).length,
+      totalCompletions: courses.reduce((sum, c) => sum + c.completions, 0),
+    },
+  };
 }
 
 export default async function ContentDashboard() {
-  const { userId } = await auth();
-  
+  const { userId, orgId } = await auth();
+
   if (!userId) {
     redirect('/sign-in');
   }
-  
-  // Require content manager role
+
   const hasAccess = await hasMinRole('content_manager');
   if (!hasAccess) {
     redirect('/dashboard');
   }
-  
-  // Fetch real data
-  const templates = await getContentTemplates();
-  
-  // Calculate metrics
-  const totalTemplates = templates.length;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const publishedTemplates = templates.filter((t: any) => t.status === 'published').length;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const draftTemplates = templates.filter((t: any) => t.status === 'draft').length;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const totalViews = templates.reduce((sum: number, t: any) => sum + (t.views || 0), 0);
-  
+
+  let items: ContentItem[] = [];
+  let courses: TrainingCourse[] = [];
+
+  if (orgId) {
+    try {
+      [items, courses] = await Promise.all([
+        loadContentData(orgId),
+        loadTrainingCourses(orgId),
+      ]);
+    } catch (error) {
+      logger.error('Error loading content data:', error);
+    }
+  }
+
+  const stats = computeStats(items, courses);
+  const templates = items.filter(i => i.type === 'template');
+  const resources = items.filter(i => i.type === 'resource');
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div>
@@ -74,15 +178,15 @@ export default async function ContentDashboard() {
           Manage templates, resources, and training materials
         </p>
       </div>
-      
+
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="resources">Resources</TabsTrigger>
-          <TabsTrigger value="training">Training</TabsTrigger>
+          <TabsTrigger value="templates">Templates ({stats.templates.total})</TabsTrigger>
+          <TabsTrigger value="resources">Resources ({stats.resources.total})</TabsTrigger>
+          <TabsTrigger value="training">Training ({stats.training.total})</TabsTrigger>
         </TabsList>
-        
+
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -90,41 +194,41 @@ export default async function ContentDashboard() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                   <FileText className="h-4 w-4" />
-                  Total Templates
+                  Templates
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{totalTemplates}</div>
-                <p className="text-xs text-muted-foreground">{publishedTemplates} published</p>
+                <div className="text-2xl font-bold">{stats.templates.total}</div>
+                <p className="text-xs text-muted-foreground">{stats.templates.published} published</p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
+                  <FolderOpen className="h-4 w-4" />
                   Resources
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">156</div>
-                <p className="text-xs text-muted-foreground">Available resources</p>
+                <div className="text-2xl font-bold">{stats.resources.total}</div>
+                <p className="text-xs text-muted-foreground">{stats.resources.published} published</p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Video className="h-4 w-4" />
-                  Training Materials
+                  <GraduationCap className="h-4 w-4" />
+                  Training Courses
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">42</div>
-                <p className="text-xs text-muted-foreground">Videos & guides</p>
+                <div className="text-2xl font-bold">{stats.training.total}</div>
+                <p className="text-xs text-muted-foreground">{stats.training.totalCompletions.toLocaleString()} completions</p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -133,12 +237,12 @@ export default async function ContentDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{totalViews.toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground">Last 30 days</p>
+                <div className="text-2xl font-bold">{stats.views.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">{stats.downloads.toLocaleString()} downloads</p>
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
@@ -147,25 +251,27 @@ export default async function ContentDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Most Viewed Template</span>
-                    <span className="text-sm font-bold">Grievance Form</span>
+                    <span className="text-sm">Most Viewed</span>
+                    <span className="text-sm font-bold">{stats.mostViewed?.title ?? '—'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Avg. Template Views</span>
-                    <span className="text-sm font-bold">{totalTemplates > 0 ? Math.round(totalViews / totalTemplates) : 0}</span>
+                    <span className="text-sm">Top Views</span>
+                    <span className="text-sm font-bold">{stats.mostViewed?.views.toLocaleString() ?? '0'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Downloads (30d)</span>
-                    <span className="text-sm font-bold">2,345</span>
+                    <span className="text-sm">Total Downloads</span>
+                    <span className="text-sm font-bold">{stats.downloads.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Engagement Rate</span>
-                    <span className="text-sm font-bold text-green-600">87%</span>
+                    <span className="text-sm">Avg. Views per Item</span>
+                    <span className="text-sm font-bold">
+                      {items.length > 0 ? Math.round(stats.views / items.length).toLocaleString() : '0'}
+                    </span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Content Status</CardTitle>
@@ -174,31 +280,25 @@ export default async function ContentDashboard() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Published</span>
-                    <Badge variant="default">{publishedTemplates}</Badge>
+                    <Badge variant="default">{stats.templates.published + stats.resources.published}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">In Draft</span>
-                    <Badge variant="secondary">{draftTemplates}</Badge>
+                    <Badge variant="secondary">{stats.templates.draft}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Needs Review</span>
-                    <Badge variant="outline">
-                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                      {templates.filter((t: any) => t.status === 'review').length}
-                    </Badge>
+                    <Badge variant="outline">{stats.templates.review}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Archived</span>
-                    <Badge variant="outline">
-                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                      {templates.filter((t: any) => t.status === 'archived').length}
-                    </Badge>
+                    <Badge variant="outline">{stats.templates.archived}</Badge>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -208,31 +308,32 @@ export default async function ContentDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {templates
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  .sort((a: any, b: any) => (b.views || 0) - (a.views || 0))
+                {[...items]
+                  .sort((a, b) => b.views - a.views)
                   .slice(0, 5)
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  .map((template: any, index: number) => (
-                    <div key={template.id || index} className="flex items-center justify-between border-b pb-3 last:border-0">
+                  .map((item) => (
+                    <div key={item.id} className="flex items-center justify-between border-b pb-3 last:border-0">
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{template.name || template.title}</p>
-                        <p className="text-xs text-muted-foreground">{template.category || 'Uncategorized'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium">{item.title}</p>
+                          <Badge variant="outline" className="text-xs">{item.type}</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{item.category ?? 'Uncategorized'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-bold">{(template.views || 0).toLocaleString()}</p>
+                        <p className="text-sm font-bold">{item.views.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">views</p>
                       </div>
                     </div>
                   ))}
-                {templates.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No templates found</p>
+                {items.length === 0 && (
+                  <p className="text-sm text-muted-foreground">No content found</p>
                 )}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Templates Tab */}
         <TabsContent value="templates" className="space-y-4">
           <Card>
@@ -244,8 +345,7 @@ export default async function ContentDashboard() {
                 <p className="text-sm text-muted-foreground">No templates found</p>
               ) : (
                 <div className="space-y-3">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {templates.map((template: any) => (
+                  {templates.map((template) => (
                     <div key={template.id} className="flex items-center justify-between border-b pb-3 last:border-0">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -256,20 +356,20 @@ export default async function ContentDashboard() {
                           }>
                             {template.status}
                           </Badge>
-                          <span className="text-sm font-medium">{template.name || template.title}</span>
+                          <span className="text-sm font-medium">{template.title}</span>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {template.category} • {template.type || 'Document'}
+                          {template.category} &bull; Template
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {(template.views || 0).toLocaleString()} views • Last updated: {template.updated_at || 'Unknown'}
+                          {template.views.toLocaleString()} views &bull; {template.downloads.toLocaleString()} downloads
                         </p>
                       </div>
                       <div className="flex gap-2">
-                        <button className="p-2 hover:bg-muted rounded-md">
+                        <button className="p-2 hover:bg-muted rounded-md" title="View">
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="p-2 hover:bg-muted rounded-md">
+                        <button className="p-2 hover:bg-muted rounded-md" title="Download">
                           <Download className="h-4 w-4" />
                         </button>
                       </div>
@@ -280,7 +380,7 @@ export default async function ContentDashboard() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Resources Tab */}
         <TabsContent value="resources" className="space-y-4">
           <Card>
@@ -288,39 +388,36 @@ export default async function ContentDashboard() {
               <CardTitle>Resource Library</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">CBA Negotiation Guide</p>
-                    <p className="text-xs text-muted-foreground">PDF • 2.3 MB • 1,234 downloads</p>
-                  </div>
-                  <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                    Download
-                  </button>
+              {resources.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No resources found</p>
+              ) : (
+                <div className="space-y-3">
+                  {resources.map((resource) => (
+                    <div key={resource.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium">{resource.title}</p>
+                          {resource.status !== 'published' && (
+                            <Badge variant="secondary">{resource.status}</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {resource.category} &bull; PDF
+                          {resource.fileSizeMb ? ` \u2022 ${resource.fileSizeMb} MB` : ''}
+                          {' \u2022 '}{resource.downloads.toLocaleString()} downloads
+                        </p>
+                      </div>
+                      <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                        Download
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Health & Safety Checklist</p>
-                    <p className="text-xs text-muted-foreground">PDF • 1.1 MB • 892 downloads</p>
-                  </div>
-                  <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                    Download
-                  </button>
-                </div>
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Grievance Handling Manual</p>
-                    <p className="text-xs text-muted-foreground">PDF • 3.8 MB • 2,101 downloads</p>
-                  </div>
-                  <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                    Download
-                  </button>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Training Tab */}
         <TabsContent value="training" className="space-y-4">
           <Card>
@@ -328,44 +425,43 @@ export default async function ContentDashboard() {
               <CardTitle>Training Materials</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="space-y-1 flex items-center gap-3">
-                    <Video className="h-8 w-8 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium">Platform Onboarding</p>
-                      <p className="text-xs text-muted-foreground">Video • 15:30 • 45 completions</p>
+              {courses.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No training courses found</p>
+              ) : (
+                <div className="space-y-3">
+                  {courses.map((course) => (
+                    <div key={course.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                      <div className="space-y-1 flex items-center gap-3">
+                        {course.deliveryMethod === 'video' ? (
+                          <Video className="h-8 w-8 text-primary shrink-0" />
+                        ) : course.deliveryMethod === 'workshop' ? (
+                          <GraduationCap className="h-8 w-8 text-primary shrink-0" />
+                        ) : (
+                          <BookOpen className="h-8 w-8 text-primary shrink-0" />
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium">{course.name}</p>
+                            {course.isMandatory && (
+                              <Badge variant="destructive" className="text-xs">Required</Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {course.deliveryMethod === 'video' ? 'Video' :
+                             course.deliveryMethod === 'workshop' ? 'Workshop' : 'Document'}
+                            {course.durationLabel ? ` \u2022 ${course.durationLabel}` : ''}
+                            {' \u2022 '}{course.completions} completions
+                          </p>
+                        </div>
+                      </div>
+                      <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                        {course.deliveryMethod === 'video' ? 'Watch' :
+                         course.deliveryMethod === 'workshop' ? 'Enroll' : 'Read'}
+                      </button>
                     </div>
-                  </div>
-                  <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                    Watch
-                  </button>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="space-y-1 flex items-center gap-3">
-                    <Video className="h-8 w-8 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium">Claims Management Training</p>
-                      <p className="text-xs text-muted-foreground">Video • 22:15 • 67 completions</p>
-                    </div>
-                  </div>
-                  <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                    Watch
-                  </button>
-                </div>
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="space-y-1 flex items-center gap-3">
-                    <BookOpen className="h-8 w-8 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium">Admin Best Practices Guide</p>
-                      <p className="text-xs text-muted-foreground">Document • 89 reads</p>
-                    </div>
-                  </div>
-                  <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                    Read
-                  </button>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
