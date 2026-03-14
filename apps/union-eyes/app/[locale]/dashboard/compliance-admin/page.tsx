@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 import { Shield, AlertTriangle, CheckCircle2, Clock, Eye } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
@@ -49,7 +49,10 @@ export default async function ComplianceDashboard() {
   }
   
   // Require compliance manager role
-  await requireMinRole('compliance_manager');
+  const hasAccess = await hasMinRole('compliance_manager');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   // Fetch real data
   const auditLogs = await getAuditLogs();

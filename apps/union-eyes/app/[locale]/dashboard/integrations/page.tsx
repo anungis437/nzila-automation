@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 import { Key, Webhook, Activity, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
@@ -72,7 +72,10 @@ export default async function IntegrationsDashboard() {
   }
   
   // Require integration manager role
-  await requireMinRole('integration_manager');
+  const hasAccess = await hasMinRole('integration_manager');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   // Fetch real data
   const [apiKeys, webhooks] = await Promise.all([

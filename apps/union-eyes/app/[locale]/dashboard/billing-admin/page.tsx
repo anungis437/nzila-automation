@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 import { DollarSign, CreditCard, TrendingUp, Users, FileText, AlertCircle } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
@@ -48,7 +48,10 @@ export default async function BillingAdminDashboard() {
   }
   
   // Require billing role
-  await requireMinRole('billing_specialist');
+  const hasAccess = await hasMinRole('billing_specialist');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   // Fetch real data
   const billingData = await getBillingSubscriptions();

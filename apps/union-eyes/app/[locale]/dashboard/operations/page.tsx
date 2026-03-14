@@ -21,7 +21,7 @@ import {
   ReleaseCalendarWidget,
   CapacityOverviewWidget
 } from '@/components/operations/dashboard-widgets';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 
 export default async function OperationsDashboard() {
   const { userId } = await auth();
@@ -31,7 +31,10 @@ export default async function OperationsDashboard() {
   }
   
   // Require operations role
-  await requireMinRole('platform_lead');
+  const hasAccess = await hasMinRole('platform_lead');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   return (
     <div className="container mx-auto p-6 space-y-6">

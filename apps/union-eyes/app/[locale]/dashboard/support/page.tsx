@@ -13,7 +13,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 import { Headphones, Clock, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
@@ -70,7 +70,10 @@ export default async function SupportDashboard() {
   }
   
   // Require support role
-  await requireMinRole('support_agent');
+  const hasAccess = await hasMinRole('support_agent');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   // Fetch real data
   const [metrics, tickets] = await Promise.all([

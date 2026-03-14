@@ -13,7 +13,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 import { BarChart3, Users, FileText, TrendingUp, Database, Activity } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
@@ -47,7 +47,10 @@ export default async function AnalyticsAdminDashboard() {
   }
   
   // Require analytics role
-  await requireMinRole('data_analyst');
+  const hasAccess = await hasMinRole('data_analyst');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   // Fetch real data
   const analytics = await getCrossOrgAnalytics();

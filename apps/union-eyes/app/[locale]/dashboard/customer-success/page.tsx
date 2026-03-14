@@ -22,7 +22,7 @@ import {
   NPSWidget,
   CustomerFeedbackWidget
 } from '@/components/customer-success/dashboard-widgets';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 
 export default async function CustomerSuccessDashboard() {
   const { userId } = await auth();
@@ -32,7 +32,10 @@ export default async function CustomerSuccessDashboard() {
   }
   
   // Require customer success role
-  await requireMinRole('customer_success_director');
+  const hasAccess = await hasMinRole('customer_success_director');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   return (
     <div className="container mx-auto p-6 space-y-6">

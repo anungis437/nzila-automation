@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { requireMinRole } from '@/lib/api-auth-guard';
+import { hasMinRole } from '@/lib/api-auth-guard';
 import { FileText, BookOpen, Video, Download, Eye, TrendingUp } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
@@ -49,7 +49,10 @@ export default async function ContentDashboard() {
   }
   
   // Require content manager role
-  await requireMinRole('content_manager');
+  const hasAccess = await hasMinRole('content_manager');
+  if (!hasAccess) {
+    redirect('/dashboard');
+  }
   
   // Fetch real data
   const templates = await getContentTemplates();
