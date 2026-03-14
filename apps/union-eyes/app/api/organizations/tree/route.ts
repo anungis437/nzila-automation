@@ -28,6 +28,7 @@ export async function GET(_req: NextRequest) {
       id: o.id,
       name: o.name,
       slug: o.slug,
+      organization_type: o.organizationType ?? 'union',
       type: o.organizationType ?? 'union',
       parentId: o.parentId ?? null,
       sector: (o.sectors ?? [])[0] ?? null,

@@ -96,7 +96,7 @@ interface OrganizationWithStats extends Organization {
 
 export default function OrganizationsPage() {
   const router = useRouter();
-  const { organizationId, organization: _organization } = useOrganization();
+  const { organizationId } = useOrganization();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -105,9 +105,10 @@ export default function OrganizationsPage() {
   const [selectedOrgs, setSelectedOrgs] = useState<Set<string>>(new Set());
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
-  // Fetch organizations - show children of current organization by default
+  // Admin page: always show all organizations (no parent filter).
+  // Non-admin org pages use parent filter for scoped views.
   const { data, error, isLoading, mutate } = useSWR(
-    organizationId ? `/api/organizations?parent=${organizationId}&include_stats=true` : null,
+    `/api/organizations?include_stats=true`,
     fetcher,
     {
       onErrorRetry: (_err, _key, _config, revalidate, { retryCount }) => {

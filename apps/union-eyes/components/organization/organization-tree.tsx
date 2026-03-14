@@ -16,6 +16,7 @@ import type { Organization, OrganizationType } from "@/types/organization";
 
 interface OrganizationTreeNode extends Organization {
   children?: OrganizationTreeNode[];
+  parentId?: string;
   memberCount?: number;
   childCount?: number;
   isLoading?: boolean;
@@ -68,7 +69,45 @@ export function OrganizationTree({
       if (!response.ok) throw new Error("Failed to load organization tree");
       
       const data = await response.json();
-      setTreeData(data.data || data);
+      const raw = data.data || data;
+
+      // The tree API returns a flat list — build nested structure client-side
+      if (Array.isArray(raw)) {
+        const byId = new Map<string, OrganizationTreeNode>();
+        for (const org of raw) {
+          byId.set(org.id, { ...org, children: [], isExpanded: false });
+        }
+        const roots: OrganizationTreeNode[] = [];
+        for (const node of byId.values()) {
+          const parentId = node.parentId || node.parent_id;
+          if (parentId && byId.has(parentId)) {
+            byId.get(parentId)!.children!.push(node);
+            byId.get(parentId)!.childCount = byId.get(parentId)!.children!.length;
+          } else {
+            roots.push(node);
+          }
+        }
+        // If single root, use it; otherwise wrap roots in a virtual node
+        if (roots.length === 1) {
+          roots[0].isExpanded = true;
+          setTreeData(roots[0]);
+        } else {
+          setTreeData({
+            id: 'root',
+            name: 'All Organizations',
+            slug: 'root',
+            organization_type: 'platform' as OrganizationType,
+            status: 'active' as const,
+            children: roots,
+            childCount: roots.length,
+            isExpanded: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          } as OrganizationTreeNode);
+        }
+      } else {
+        setTreeData(raw);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load tree");
     } finally {
@@ -213,7 +252,8 @@ function TreeNode({ node, path, depth, maxDepth, onToggle, onSelect, selectedId,
   const hasChildren = (node.childCount && node.childCount > 0) || (node.children && node.children.length > 0);
   const isExpanded = node.isExpanded || false;
   const isSelected = selectedId === node.id;
-  const config = typeConfig[node.organization_type];
+  const orgType = (node.organization_type || (node as Record<string, unknown>).type || 'union') as OrganizationType;
+  const config = typeConfig[orgType] ?? typeConfig.union;
   const canExpand = hasChildren && depth < maxDepth;
 
   return (
