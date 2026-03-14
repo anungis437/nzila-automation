@@ -866,3 +866,5 @@ export default async function CustomerSuccessDashboard({
         </>
       )}
     </div>
+  );
+}
