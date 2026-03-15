@@ -584,49 +584,49 @@
     "admin": {
       "overview": {
         "title": "Recognition & Rewards Administration",
-        "description": "Manage recognition programs, approve awards, and track budget allocations",
-        "metrics": {
-          "activePrograms": "Active Programs",
-          "programsSubtext": "Recognition programs",
-          "pendingApprovals": "Pending Approvals",
-          "approvalsSubtext": "Awards awaiting review",
-          "totalIssued": "Total Issued",
-          "issuedSubtext": "Credits issued",
-          "totalRedeemed": "Total Redeemed",
-          "redeemedSubtext": "Credits redeemed"
+        "description": "Manage recognition programs, approve awards, and track budget allocations"
+      },
+      "metrics": {
+        "activePrograms": "Active Programs",
+        "programsSubtext": "Recognition programs",
+        "pendingApprovals": "Pending Approvals",
+        "approvalsSubtext": "Awards awaiting review",
+        "totalIssued": "Total Issued",
+        "issuedSubtext": "Credits issued",
+        "totalRedeemed": "Total Redeemed",
+        "redeemedSubtext": "Credits redeemed"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "programs": {
+          "title": "Manage Programs",
+          "description": "Create and configure recognition programs"
         },
-        "quickActions": {
-          "title": "Quick Actions",
-          "programs": {
-            "title": "Manage Programs",
-            "description": "Create and configure recognition programs"
-          },
-          "awards": {
-            "title": "Review Awards",
-            "description": "Approve and issue recognition awards"
-          },
-          "budgets": {
-            "title": "Manage Budgets",
-            "description": "Allocate and track budget envelopes"
-          },
-          "shopify": {
-            "title": "Shopify Config",
-            "description": "Configure Shop Moi Ça integration"
-          },
-          "reports": {
-            "title": "View Reports",
-            "description": "Analytics and insights dashboard"
-          },
-          "members": {
-            "title": "Member Wallets",
-            "description": "View member balances and history"
-          }
+        "awards": {
+          "title": "Review Awards",
+          "description": "Approve and issue recognition awards"
         },
-        "recentActivity": {
-          "title": "Recent Activity",
-          "description": "Latest awards and redemptions across the organization",
-          "placeholder": "Activity feed coming soon"
+        "budgets": {
+          "title": "Manage Budgets",
+          "description": "Allocate and track budget envelopes"
+        },
+        "shopify": {
+          "title": "Shopify Config",
+          "description": "Configure Shop Moi Ça integration"
+        },
+        "reports": {
+          "title": "View Reports",
+          "description": "Analytics and insights dashboard"
+        },
+        "members": {
+          "title": "Member Wallets",
+          "description": "View member balances and history"
         }
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "description": "Latest awards and redemptions across the organization",
+        "placeholder": "Activity feed coming soon"
       },
       "programs": {
         "title": "Recognition Programs",

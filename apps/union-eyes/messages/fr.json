@@ -338,49 +338,49 @@
     "admin": {
       "overview": {
         "title": "Administration Reconnaissance et Récompenses",
-        "description": "Gérer les programmes de reconnaissance, approuver les prix et suivre les allocations budgétaires",
-        "metrics": {
-          "activePrograms": "Programmes Actifs",
-          "programsSubtext": "Programmes de reconnaissance",
-          "pendingApprovals": "Approbations en Attente",
-          "approvalsSubtext": "Prix en attente de révision",
-          "totalIssued": "Total Émis",
-          "issuedSubtext": "Crédits émis",
-          "totalRedeemed": "Total Échangé",
-          "redeemedSubtext": "Crédits échangés"
+        "description": "Gérer les programmes de reconnaissance, approuver les prix et suivre les allocations budgétaires"
+      },
+      "metrics": {
+        "activePrograms": "Programmes Actifs",
+        "programsSubtext": "Programmes de reconnaissance",
+        "pendingApprovals": "Approbations en Attente",
+        "approvalsSubtext": "Prix en attente de révision",
+        "totalIssued": "Total Émis",
+        "issuedSubtext": "Crédits émis",
+        "totalRedeemed": "Total Échangé",
+        "redeemedSubtext": "Crédits échangés"
+      },
+      "quickActions": {
+        "title": "Actions Rapides",
+        "programs": {
+          "title": "Gérer les Programmes",
+          "description": "Créer et configurer des programmes de reconnaissance"
         },
-        "quickActions": {
-          "title": "Actions Rapides",
-          "programs": {
-            "title": "Gérer les Programmes",
-            "description": "Créer et configurer des programmes de reconnaissance"
-          },
-          "awards": {
-            "title": "Réviser les Prix",
-            "description": "Approuver et émettre des prix de reconnaissance"
-          },
-          "budgets": {
-            "title": "Gérer les Budgets",
-            "description": "Allouer et suivre les enveloppes budgétaires"
-          },
-          "shopify": {
-            "title": "Config Shopify",
-            "description": "Configurer l'intégration Shop Moi Ça"
-          },
-          "reports": {
-            "title": "Voir les Rapports",
-            "description": "Tableau de bord analytique et insights"
-          },
-          "members": {
-            "title": "Portefeuilles Membres",
-            "description": "Voir les soldes et l'historique des membres"
-          }
+        "awards": {
+          "title": "Réviser les Prix",
+          "description": "Approuver et émettre des prix de reconnaissance"
         },
-        "recentActivity": {
-          "title": "Activité Récente",
-          "description": "Derniers prix et échanges dans l'organisation",
-          "placeholder": "Flux d'activité à venir"
+        "budgets": {
+          "title": "Gérer les Budgets",
+          "description": "Allouer et suivre les enveloppes budgétaires"
+        },
+        "shopify": {
+          "title": "Config Shopify",
+          "description": "Configurer l'intégration Shop Moi Ça"
+        },
+        "reports": {
+          "title": "Voir les Rapports",
+          "description": "Tableau de bord analytique et insights"
+        },
+        "members": {
+          "title": "Portefeuilles Membres",
+          "description": "Voir les soldes et l'historique des membres"
         }
+      },
+      "recentActivity": {
+        "title": "Activité Récente",
+        "description": "Derniers prix et échanges dans l'organisation",
+        "placeholder": "Flux d'activité à venir"
       },
       "programs": {
         "title": "Programmes de Reconnaissance",
