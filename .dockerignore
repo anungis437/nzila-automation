@@ -6,12 +6,18 @@ node_modules
 
 # Build outputs
 .next
+**/.next
 .turbo
+**/.turbo
 dist
+**/dist
 out
 build
 coverage
+**/coverage
 *.log
+**/*.log
+**/playwright-report
 
 # Legacy folders
 legacy
@@ -45,6 +51,22 @@ corporate
 
 # Python
 __pycache__
+.venv
+**/.venv
+*.pyc
+
+# Large non-essential dirs
+demo-output
+reports
+plans
+tech-repo-scaffold
+templates
+audit-report.json
+contract-test-output.txt
+security
+docs/backlog
+docs/architecture
+docs/migration
 *.pyc
 *.pyo
 *.egg-info

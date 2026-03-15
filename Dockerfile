@@ -162,7 +162,8 @@ ENV NEXT_PUBLIC_CFO_URL=$NEXT_PUBLIC_CFO_URL
 # Build only apps that have deps installed in the Docker image (turbo filters)
 # Default: all apps. Override via --build-arg TURBO_FILTER for single-app builds.
 ARG TURBO_FILTER="--filter=@nzila/web --filter=@nzila/console --filter=@nzila/partners --filter=@nzila/union-eyes --filter=@nzila/abr --filter=@nzila/orchestrator-api --filter=@nzila/cfo"
-RUN pnpm turbo build ${TURBO_FILTER}
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN pnpm turbo build ${TURBO_FILTER} --concurrency=1
 # ============================================
 # Web production stage
 # ============================================
