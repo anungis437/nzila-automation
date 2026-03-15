@@ -37,8 +37,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={poppins.className} suppressHydrationWarning>
         <ClerkProvider
-          signInUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in"}
-          signUpUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL || "/sign-up"}
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
           signInFallbackRedirectUrl="/en-CA/dashboard"
           signUpFallbackRedirectUrl="/en-CA/dashboard"
           afterSignOutUrl="/"

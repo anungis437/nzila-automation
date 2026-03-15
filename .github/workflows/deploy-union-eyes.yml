@@ -118,9 +118,7 @@ jobs:
             --build-arg TURBO_FILTER="--filter=@nzila/union-eyes" \
             --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PK_UNION_EYES }} \
             --build-arg NEXT_PUBLIC_APP_URL=${{ secrets.UE_APP_URL }} \
-            --build-arg NEXT_PUBLIC_CLERK_IS_SATELLITE=true \
-            --build-arg NEXT_PUBLIC_CLERK_DOMAIN=nzila-os-union-eyes.delightfulisland-0d503d3c.eastus.azurecontainerapps.io \
-            --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_URL=https://nzila-os-web.delightfulisland-0d503d3c.eastus.azurecontainerapps.io/sign-in \
+            --build-arg NEXT_PUBLIC_CLERK_IS_SATELLITE=false \
             -t ${{ env.IMAGE }}:${{ github.sha }} \
             -t ${{ env.IMAGE }}:latest \
             .
@@ -143,9 +141,7 @@ jobs:
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --set-env-vars \
               "DJANGO_API_URL=http://localhost:8000" \
-              "NEXT_PUBLIC_CLERK_IS_SATELLITE=true" \
-              "NEXT_PUBLIC_CLERK_DOMAIN=nzila-os-union-eyes.delightfulisland-0d503d3c.eastus.azurecontainerapps.io" \
-              "NEXT_PUBLIC_CLERK_SIGN_IN_URL=https://nzila-os-web.delightfulisland-0d503d3c.eastus.azurecontainerapps.io/sign-in" \
+              "NEXT_PUBLIC_CLERK_IS_SATELLITE=false" \
               "PLATFORM_ADMIN_USER_IDS=${{ secrets.PLATFORM_ADMIN_USER_IDS }}" \
             --container-name ${{ env.APP_NAME }} \
             --image ${{ env.IMAGE }}:${{ github.sha }}
