@@ -346,7 +346,10 @@ export default async function CustomerSuccessDashboard({
 
   // Derived
   const atRiskOrgs = orgHealth.filter((o) => o.healthScore < 60);
-  const onboardingByOrg = Object.groupBy(onboarding, (m) => m.orgName);
+  const onboardingByOrg: Record<string, OnboardingRow[]> = {};
+  for (const m of onboarding) {
+    (onboardingByOrg[m.orgName] ??= []).push(m);
+  }
 
   const tabs = [
     { key: 'overview', label: 'Overview', icon: BarChart3 },
