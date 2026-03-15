@@ -1,19 +1,55 @@
 /**
  * GET POST /api/governance/reserved-matters
- * -> Django compliance: /api/compliance/data-classification-policy/
- * NOTE: auto-resolved from governance/reserved-matters
- * Auto-migrated by scripts/migrate_routes.py
+ * CRUD for reserved matter votes in PostgreSQL.
  */
-import { NextRequest } from 'next/server';
-import { djangoProxy } from '@/lib/django-proxy';
+import { withApi, z } from '@/lib/api/framework';
+import { db } from '@/db/db';
+import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
-export function GET(req: NextRequest) {
-  return djangoProxy(req, '/api/compliance/data-classification-policy/');
-}
+export const GET = withApi(
+  { auth: { required: true, minRole: 'admin' } },
+  async () => {
+    const rows = await db.execute(sql`
+      SELECT id, matter_type, title, description, proposed_by,
+             voting_deadline, status, class_a_votes_for, class_a_votes_against,
+             class_b_vote, created_at
+      FROM reserved_matter_votes ORDER BY created_at DESC LIMIT 50
+    `);
+    return { votes: Array.from(rows) };
+  },
+);
 
-export function POST(req: NextRequest) {
-  return djangoProxy(req, '/api/compliance/data-classification-policy/', { method: 'POST' });
-}
+export const POST = withApi(
+  {
+    auth: { required: true, minRole: 'admin' },
+    body: z.object({
+      matterType: z.string().min(1),
+      title: z.string().min(1),
+      description: z.string().min(1),
+      proposedBy: z.string().min(1),
+      votingDeadline: z.string().optional(),
+      classATotalVotes: z.number().int().optional(),
+      matterDetails: z.record(z.unknown()).optional(),
+    }),
+  },
+  async ({ body }) => {
+    const id = crypto.randomUUID();
+    await db.execute(sql`
+      INSERT INTO reserved_matter_votes (
+        id, created_at, updated_at, matter_type, title, description,
+        proposed_by, voting_deadline, class_a_total_votes, matter_details, status
+      ) VALUES (
+        ${id}::uuid, NOW(), NOW(), ${body.matterType}, ${body.title},
+        ${body.description}, ${body.proposedBy},
+        ${body.votingDeadline ? body.votingDeadline : null}::timestamptz,
+        ${body.classATotalVotes ?? 0},
+        ${JSON.stringify(body.matterDetails ?? {})}::jsonb,
+        'pending'
+      )
+    `);
+    return { id };
+  },
+);
 

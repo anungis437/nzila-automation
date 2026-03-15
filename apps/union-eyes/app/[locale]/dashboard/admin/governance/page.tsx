@@ -3,6 +3,7 @@
 
 export const dynamic = 'force-dynamic';
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -77,8 +78,18 @@ const jsonSafeParse = (value: string) => {
 };
 
 export default function GovernancePage() {
+  const { isLoaded, isSignedIn } = useAuth();
   const [dashboard, setDashboard] = useState<GovernanceDashboard | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Redirect unauthenticated users
+  if (isLoaded && !isSignedIn) {
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-500">
+        Please sign in to access the governance console.
+      </div>
+    );
+  }
 
   const [shareForm, setShareForm] = useState({
     certificateNumber: "",
