@@ -154,4 +154,6 @@ jobs:
             --name ${{ env.APP_NAME }} \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --container-name django-backend \
+            --set-env-vars \
+              "CLERK_JWKS_URL=https://known-hagfish-67.clerk.accounts.dev/.well-known/jwks.json" \
             --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
