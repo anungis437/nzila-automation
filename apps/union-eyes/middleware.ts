@@ -176,7 +176,8 @@ const isOriginAllowed = (origin: string | null): boolean => {
 };
 
 // This handles both payment provider use cases from whop-setup.md and stripe-setup.md
-export default clerkMiddleware(async (auth, req) => {
+const clerkHandler = clerkMiddleware(async (auth, req) => {
+  try {
   // os-core: generate / forward a request-id for distributed tracing
   const requestId = ensureRequestId(req);
 
@@ -328,7 +329,29 @@ export default clerkMiddleware(async (auth, req) => {
   const nr = NextResponse.next({ headers: new Headers((intlResponse as Response).headers) });
   nr.headers.set('x-request-id', requestId);
   return nr;
+  } catch (middlewareError) {
+    // Log error for debugging — this catch prevents silent 500s
+    console.error('[middleware] Unhandled error:', middlewareError);
+    return new NextResponse(
+      JSON.stringify({ error: 'Middleware error', message: String(middlewareError) }),
+      { status: 500, headers: { 'content-type': 'application/json' } }
+    );
+  }
 });
+
+// Wrap clerkMiddleware to catch errors at the Clerk SDK level (before our callback runs)
+import type { NextFetchEvent } from "next/server";
+export default async function middleware(req: NextRequest, event: NextFetchEvent) {
+  try {
+    return await clerkHandler(req, event);
+  } catch (outerError) {
+    console.error('[middleware] Clerk/outer error:', outerError);
+    return new NextResponse(
+      JSON.stringify({ error: 'Clerk middleware error', message: String(outerError) }),
+      { status: 500, headers: { 'content-type': 'application/json' } }
+    );
+  }
+}
 
 export const config = {
   matcher: [
