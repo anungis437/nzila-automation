@@ -66,7 +66,8 @@ async function checkAdminRole(): Promise<{ userId: string; orgId: string }> {
   );
 
   if (!member) throw new Error('User not associated with any organization');
-  if (!['admin', 'owner'].includes(member.role)) {
+  const adminRoles = ['admin', 'owner', 'platform_admin', 'local_admin', 'president', 'federation_exec', 'national_officer', 'app_owner', 'system_admin'];
+  if (!adminRoles.includes(member.role)) {
     throw new Error('Insufficient permissions');
   }
 

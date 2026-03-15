@@ -17,47 +17,51 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { getRewardsSummary } from '@/actions/rewards-actions';
-import { db } from '@/db';
+import { getUserRole } from '@/lib/auth/rbac-server';
+import { getOrganizationIdForUser } from '@/lib/organization-utils';
+import { UserRole } from '@/lib/auth/roles';
 
 export const metadata: Metadata = {
   title: 'Recognition & Rewards Admin | Union Eyes',
   description: 'Manage recognition programs, awards, and budgets',
 };
 
-async function checkAdminRole(userId: string, orgId: string): Promise<boolean> {
-  try {
-    // Query organizationMembers table to check if user has admin role
-    const member = await db.query.organizationMembers.findFirst({
-      where: (organizationMembers, { eq, and }) =>
-        and(
-          eq(organizationMembers.userId, userId),
-          eq(organizationMembers.organizationId, orgId)
-        ),
-    });
-
-    return member?.role === 'admin';
-  } catch (_error) {
-return false;
-  }
-}
+// Roles that can access the rewards admin section
+const REWARDS_ADMIN_ROLES: UserRole[] = [
+  UserRole.APP_OWNER,
+  UserRole.COO,
+  UserRole.CUSTOMER_SUCCESS_DIRECTOR,
+  UserRole.ADMIN,
+  UserRole.SYSTEM_ADMIN,
+  UserRole.PLATFORM_LEAD,
+];
 
 export default async function AdminRewardsPage() {
-  const { userId, orgId } = await auth();
+  const { userId } = await auth();
 
-  if (!userId || !orgId) {
+  if (!userId) {
     redirect('/sign-in');
   }
 
-  const isAdmin = await checkAdminRole(userId, orgId);
-  if (!isAdmin) {
+  // Use platform RBAC — same path as dashboard layout
+  const organizationId = await getOrganizationIdForUser(userId);
+  const userRole = await getUserRole(userId, organizationId);
+
+  if (!REWARDS_ADMIN_ROLES.includes(userRole)) {
     redirect('/dashboard');
   }
 
   const t = await getTranslations('rewards.admin');
 
-  // Fetch summary metrics
+  // Fetch summary metrics — catch errors to avoid page crash
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const summary = await getRewardsSummary() as { success: boolean; data?: Record<string, any>; error?: string };
+  let summary: { success: boolean; data?: Record<string, any>; error?: string } = { success: false, error: 'not loaded' };
+  try {
+    summary = await getRewardsSummary() as { success: boolean; data?: Record<string, any>; error?: string };
+  } catch (e) {
+    console.error('[REWARDS] getRewardsSummary failed:', e);
+    summary = { success: false, error: String(e) };
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-8">

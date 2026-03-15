@@ -3,8 +3,10 @@ export const dynamic = 'force-dynamic';
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { db } from '@/db';
 import { getTranslations } from 'next-intl/server';
+import { getUserRole } from '@/lib/auth/rbac-server';
+import { getOrganizationIdForUser } from '@/lib/organization-utils';
+import { UserRole } from '@/lib/auth/roles';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,19 +21,17 @@ export const metadata: Metadata = {
 };
 
 export default async function RewardsSettingsPage() {
-  const { userId, orgId } = await auth();
+  const { userId } = await auth();
 
-  if (!userId || !orgId) {
+  if (!userId) {
     redirect('/sign-in');
   }
 
-  // Check admin role
-  const member = await db.query.organizationMembers.findFirst({
-    where: (members, { eq, and }) =>
-      and(eq(members.userId, userId), eq(members.organizationId, orgId)),
-  });
+  const organizationId = await getOrganizationIdForUser(userId);
+  const userRole = await getUserRole(userId, organizationId);
 
-  if (!member || !['admin', 'owner'].includes(member.role)) {
+  const REWARDS_ADMIN_ROLES: UserRole[] = [UserRole.APP_OWNER, UserRole.COO, UserRole.CUSTOMER_SUCCESS_DIRECTOR, UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.PLATFORM_LEAD];
+  if (!REWARDS_ADMIN_ROLES.includes(userRole)) {
     redirect('/dashboard');
   }
 

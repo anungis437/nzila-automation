@@ -3,9 +3,11 @@ export const dynamic = 'force-dynamic';
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { db } from '@/db';
-import { withRLSContext } from '@/lib/db/with-rls-context';
 import { getTranslations } from 'next-intl/server';
+import { getUserRole } from '@/lib/auth/rbac-server';
+import { getOrganizationIdForUser } from '@/lib/organization-utils';
+import { UserRole } from '@/lib/auth/roles';
+import { withRLSContext } from '@/lib/db/with-rls-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -168,21 +170,20 @@ export default async function RewardsAnalyticsPage({
 }: {
   searchParams: Promise<{ period?: string }>;
 }) {
-  const { userId, orgId } = await auth();
+  const { userId } = await auth();
 
-  if (!userId || !orgId) {
+  if (!userId) {
     redirect('/sign-in');
   }
 
-  // Check admin role
-  const member = await db.query.organizationMembers.findFirst({
-    where: (members, { eq, and }) =>
-      and(eq(members.userId, userId), eq(members.organizationId, orgId)),
-  });
+  const organizationId = await getOrganizationIdForUser(userId);
+  const userRole = await getUserRole(userId, organizationId);
 
-  if (!member || !['admin', 'owner'].includes(member.role)) {
+  const REWARDS_ADMIN_ROLES: UserRole[] = [UserRole.APP_OWNER, UserRole.COO, UserRole.CUSTOMER_SUCCESS_DIRECTOR, UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.PLATFORM_LEAD];
+  if (!REWARDS_ADMIN_ROLES.includes(userRole)) {
     redirect('/dashboard');
   }
+  const orgId = organizationId;
 
   const t = await getTranslations('rewards.admin.analytics');
 
@@ -209,7 +210,19 @@ export default async function RewardsAnalyticsPage({
       startDate.setDate(endDate.getDate() - 30);
   }
 
-  const data = await getAnalyticsData(orgId, startDate, endDate);
+  let data;
+  try {
+    data = await getAnalyticsData(orgId, startDate, endDate);
+  } catch {
+    data = {
+      overview: { total_awards: 0, unique_recipients: 0, unique_issuers: 0, total_credits_awarded: 0, issued_awards: 0, pending_awards: 0 },
+      redemption: { total_redemptions: 0, total_credits_redeemed: 0, fulfilled_redemptions: 0 },
+      budgets: [],
+      topAwardTypes: [],
+      awardTrend: [],
+      topReceivers: [],
+    };
+  }
 
   // Calculate engagement rate
   const engagementRate = data.overview.total_awards > 0
