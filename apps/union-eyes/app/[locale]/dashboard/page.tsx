@@ -85,16 +85,20 @@ function orgTypeToDashboardTier(orgType: string | undefined): DashboardTier {
 
 export default function DashboardPage() {
   const { user } = useUser();
-  const { organizationId, organization } = useOrganization();
+  const { organizationId, organization, isLoading: orgLoading } = useOrganization();
   const [mounted, setMounted] = useState(false);
   const [tier, setTier] = useState<DashboardTier | null>(null);
+  const [isPlatformViewer, setIsPlatformViewer] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
   // Fetch raw RBAC role & classify into tier, then override when
   // a platform admin is viewing a tenant org.
+  // Wait for org context to finish loading to avoid flash of wrong dashboard.
   useEffect(() => {
+    if (!user?.id || orgLoading) return;
+
     const fetchRole = async () => {
       try {
         const res = await fetch("/api/auth/user-role");
@@ -103,18 +107,20 @@ export default function DashboardPage() {
           const roleTier = classifyRole(role);
 
           // Platform admin viewing a non-platform org → show that org's dashboard
+          // with admin context
           if (roleTier === "nzila" && organizationId && organization) {
-            // Fetch the platform org ID to compare
             const platformRes = await fetch("/api/organizations/platform-id");
             if (platformRes.ok) {
               const { platformOrgId } = await platformRes.json();
               if (organizationId !== platformOrgId) {
+                setIsPlatformViewer(true);
                 setTier(orgTypeToDashboardTier(organization.type));
                 return;
               }
             }
           }
 
+          setIsPlatformViewer(false);
           setTier(roleTier);
         } else {
           setTier("union"); // fallback
@@ -124,11 +130,11 @@ export default function DashboardPage() {
       }
     };
 
-    if (user?.id) fetchRole();
-  }, [user?.id, organizationId, organization]);
+    fetchRole();
+  }, [user?.id, organizationId, organization, orgLoading]);
 
   // Loading skeleton while we resolve the user and their tier
-  if (!mounted || !user || tier === null) {
+  if (!mounted || !user || tier === null || orgLoading) {
     return (
       <div className="p-6 md:p-10">
         <div className="animate-pulse space-y-6">
@@ -147,16 +153,36 @@ export default function DashboardPage() {
     );
   }
 
+  // Platform admin viewing tenant org — show admin banner + tenant dashboard
+  const adminBanner = isPlatformViewer && organization ? (
+    <div className="mx-6 mt-6 mb-0 flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>
+        <strong>Platform Admin View</strong> — You are viewing <strong>{organization.name}</strong> as a platform administrator.
+        This is an oversight view, not a membership view.
+      </span>
+    </div>
+  ) : null;
+
   // Render tier-specific dashboard
-  switch (tier) {
-    case "nzila":
-      return <NzilaOpsDashboard />;
-    case "clc":
-      return <CLCDashboard />;
-    case "federation":
-      return <FederationDashboard />;
-    case "union":
-    default:
-      return <UnionDashboard />;
-  }
+  const dashboard = (() => {
+    switch (tier) {
+      case "nzila":
+        return <NzilaOpsDashboard />;
+      case "clc":
+        return <CLCDashboard />;
+      case "federation":
+        return <FederationDashboard />;
+      case "union":
+      default:
+        return <UnionDashboard />;
+    }
+  })();
+
+  return (
+    <>
+      {adminBanner}
+      {dashboard}
+    </>
+  );
 }

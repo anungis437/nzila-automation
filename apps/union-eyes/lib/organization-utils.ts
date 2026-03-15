@@ -44,6 +44,13 @@ export async function getOrganizationIdForUser(userId: string): Promise<string> 
         .limit(1);
       
       if (org.length > 0) {
+        // Platform admin user IDs have unrestricted org access
+        const platformAdminIds = (process.env.PLATFORM_ADMIN_USER_IDS ?? '')
+          .split(',').map(s => s.trim()).filter(Boolean);
+        if (platformAdminIds.includes(userId)) {
+          return org[0].id;
+        }
+
         // Check if user is a super admin (has admin role in default org)
         const isSuperAdmin = await db
           .select({ role: organizationMembers.role })
@@ -57,7 +64,7 @@ export async function getOrganizationIdForUser(userId: string): Promise<string> 
           .limit(1);
         
         const hasAdminAccess = isSuperAdmin.length > 0 && 
-          (isSuperAdmin[0].role === 'admin' || isSuperAdmin[0].role === 'super_admin');
+          ['admin', 'super_admin', 'app_owner'].includes(isSuperAdmin[0].role);
         
         // If super admin, grant access to all organizations
         if (hasAdminAccess) {
