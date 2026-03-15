@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function AdminAwardsPage({
   searchParams,
 }: {
-  searchParams: { status?: string };
+  searchParams: Promise<{ status?: string }>;
 }) {
   const { userId, orgId } = await auth();
 
@@ -28,12 +28,13 @@ export default async function AdminAwardsPage({
   }
 
   const t = await getTranslations('rewards.admin.awards');
-  const activeTab = searchParams.status || 'pending';
+  const resolvedParams = await searchParams;
+  const activeTab = resolvedParams.status || 'pending';
 
   // Fetch awards by status
-  const pendingResult = await listAwardsByStatus({ status: 'pending_approval' });
-  const approvedResult = await listAwardsByStatus({ status: 'approved' });
-  const issuedResult = await listAwardsByStatus({ status: 'issued' });
+  const pendingResult = await listAwardsByStatus({ statuses: ['pending'] });
+  const approvedResult = await listAwardsByStatus({ statuses: ['approved'] });
+  const issuedResult = await listAwardsByStatus({ statuses: ['issued'] });
 
   const pendingAwards = pendingResult.success ? pendingResult.data || [] : [];
   const approvedAwards = approvedResult.success ? approvedResult.data || [] : [];

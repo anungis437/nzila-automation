@@ -4,10 +4,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, Gift } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { RecognitionAward } from '@/db/schema/recognition-rewards-schema';
+import type { RecognitionAward, RecognitionAwardType } from '@/db/schema/recognition-rewards-schema';
+
+type AwardWithRelations = RecognitionAward & {
+  awardType?: RecognitionAwardType | null;
+};
 
 interface AwardsQueueProps {
-  awards: RecognitionAward[];
+  awards: AwardWithRelations[];
   status: 'pending_approval' | 'approved' | 'issued';
 }
 
@@ -38,9 +42,8 @@ export function AwardsQueue({ awards, status }: AwardsQueueProps) {
           {awards.map((award) => (
             <TableRow key={award.id}>
               <TableCell className="font-medium">{award.recipientUserId}</TableCell>
-              <TableCell>{award.awardTypeId}</TableCell>
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              <TableCell>{(award as any).creditsAwarded ?? '—'}</TableCell>
+              <TableCell>{award.awardType?.name ?? award.awardTypeId}</TableCell>
+              <TableCell>{award.awardType?.defaultCreditAmount ?? '—'}</TableCell>
               <TableCell className="text-sm text-muted-foreground">
                 {new Date(award.createdAt).toLocaleDateString()}
               </TableCell>

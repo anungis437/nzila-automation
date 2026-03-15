@@ -475,10 +475,20 @@ export async function getRewardsSummary(input?: unknown) {
     const ledgerSummary = await rewardsService.getLedgerSummary(orgId, startDate, endDate);
     const budgetSummary = await rewardsService.getBudgetUsageSummary(orgId, validated.programId);
 
+    // Count active programs and pending awards for the dashboard
+    const programs = await rewardsService.listPrograms(orgId);
+    const activePrograms = programs.filter((p) => p.status === 'active');
+    const pendingAwards = await rewardsService.listAwardsByStatus(orgId, ['pending']);
+
     return {
       success: true,
       data: {
-        ...ledgerSummary,
+        active_programs_count: activePrograms.length,
+        pending_awards_count: pendingAwards.length,
+        total_credits_issued: ledgerSummary.totalCreditsIssued,
+        total_credits_redeemed: ledgerSummary.totalCreditsSpent,
+        total_credits_outstanding: ledgerSummary.totalCreditsOutstanding,
+        active_members: ledgerSummary.activeMembers,
         budgetUsage: budgetSummary,
       },
     };

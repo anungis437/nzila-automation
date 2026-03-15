@@ -21,6 +21,7 @@ import {
 import { sql } from 'drizzle-orm';
 import {
   recognitionAwards,
+  recognitionAwardTypes,
   recognitionPrograms,
   rewardWalletLedger,
   rewardBudgetEnvelopes,
@@ -40,10 +41,11 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
       COUNT(DISTINCT ra.id) as total_awards,
       COUNT(DISTINCT ra.recipient_user_id) as unique_recipients,
       COUNT(DISTINCT ra.issuer_user_id) as unique_issuers,
-      COALESCE(SUM(ra.credits_awarded), 0) as total_credits_awarded,
+      COALESCE(SUM(rat.default_credit_amount), 0) as total_credits_awarded,
       COUNT(DISTINCT CASE WHEN ra.status = 'issued' THEN ra.id END) as issued_awards,
       COUNT(DISTINCT CASE WHEN ra.status = 'pending' THEN ra.id END) as pending_awards
     FROM ${recognitionAwards} ra
+    LEFT JOIN ${recognitionAwardTypes} rat ON rat.id = ra.award_type_id
     WHERE ra.org_id = ${orgId}
       AND ra.created_at BETWEEN ${startDate} AND ${endDate}
   `;
@@ -52,7 +54,7 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
   const redemptionQuery = sql`
     SELECT 
       COUNT(rr.id) as total_redemptions,
-      COALESCE(SUM(rr.credits_redeemed), 0) as total_credits_redeemed,
+      COALESCE(SUM(rr.credits_spent), 0) as total_credits_redeemed,
       COUNT(CASE WHEN rr.status = 'fulfilled' THEN 1 END) as fulfilled_redemptions
     FROM ${rewardRedemptions} rr
     WHERE rr.org_id = ${orgId}
@@ -63,9 +65,9 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
   const budgetQuery = sql`
     SELECT 
       rbe.id,
-      rbe.budget_name,
-      rbe.total_credits,
-      rbe.used_credits,
+      rbe.name as budget_name,
+      rbe.amount_limit as total_credits,
+      rbe.amount_used as used_credits,
       rbe.scope_type,
       rp.name as program_name
     FROM ${rewardBudgetEnvelopes} rbe
@@ -73,7 +75,7 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
     WHERE rbe.org_id = ${orgId}
       AND rbe.starts_at <= ${endDate}
       AND rbe.ends_at >= ${startDate}
-    ORDER BY rbe.used_credits DESC
+    ORDER BY rbe.amount_used DESC
     LIMIT 10
   `;
 
@@ -82,15 +84,14 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
     SELECT 
       ra.award_type_id,
       rat.name as award_type_name,
-      rat.icon,
       COUNT(ra.id) as count,
-      SUM(ra.credits_awarded) as total_credits
+      COALESCE(SUM(rat.default_credit_amount), 0) as total_credits
     FROM ${recognitionAwards} ra
-    LEFT JOIN recognition_award_types rat ON rat.id = ra.award_type_id
+    LEFT JOIN ${recognitionAwardTypes} rat ON rat.id = ra.award_type_id
     WHERE ra.org_id = ${orgId}
       AND ra.created_at BETWEEN ${startDate} AND ${endDate}
       AND ra.status = 'issued'
-    GROUP BY ra.award_type_id, rat.name, rat.icon
+    GROUP BY ra.award_type_id, rat.name
     ORDER BY count DESC
     LIMIT 10
   `;
@@ -100,8 +101,9 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
     SELECT 
       DATE_TRUNC('month', ra.created_at) as month,
       COUNT(ra.id) as award_count,
-      SUM(ra.credits_awarded) as credits_awarded
+      COALESCE(SUM(rat.default_credit_amount), 0) as credits_awarded
     FROM ${recognitionAwards} ra
+    LEFT JOIN ${recognitionAwardTypes} rat ON rat.id = ra.award_type_id
     WHERE ra.org_id = ${orgId}
       AND ra.created_at BETWEEN ${startDate} AND ${endDate}
       AND ra.status = 'issued'
@@ -113,15 +115,15 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
   const topReceiversQuery = sql`
     SELECT 
       rwl.user_id,
-      om.user_name,
+      om.name as user_name,
       COUNT(DISTINCT rwl.id) as award_count,
-      SUM(rwl.amount) as total_credits
+      SUM(rwl.amount_credits) as total_credits
     FROM ${rewardWalletLedger} rwl
     LEFT JOIN organization_members om ON om.user_id = rwl.user_id
     WHERE rwl.org_id = ${orgId}
       AND rwl.created_at BETWEEN ${startDate} AND ${endDate}
       AND rwl.event_type = 'earn'
-    GROUP BY rwl.user_id, om.user_name
+    GROUP BY rwl.user_id, om.name
     ORDER BY award_count DESC
     LIMIT 10
   `;
@@ -164,7 +166,7 @@ async function getAnalyticsData(orgId: string, startDate: Date, endDate: Date) {
 export default async function RewardsAnalyticsPage({
   searchParams,
 }: {
-  searchParams: { period?: string };
+  searchParams: Promise<{ period?: string }>;
 }) {
   const { userId, orgId } = await auth();
 
@@ -185,7 +187,8 @@ export default async function RewardsAnalyticsPage({
   const t = await getTranslations('rewards.admin.analytics');
 
   // Date range calculation
-  const period = searchParams.period || '30d';
+  const resolvedParams = await searchParams;
+  const period = resolvedParams.period || '30d';
   const endDate = new Date();
   const startDate = new Date();
 
@@ -329,7 +332,6 @@ export default async function RewardsAnalyticsPage({
                   {data.topAwardTypes.map((type: any) => (
                     <div key={type.award_type_id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        {type.icon && <span className="text-xl">{type.icon}</span>}
                         <span className="font-medium">{type.award_type_name}</span>
                       </div>
                       <div className="text-right">
