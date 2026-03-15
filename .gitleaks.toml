@@ -26,6 +26,11 @@ paths = [
   '''content/.*\.md$''',               # Content files
   '''governance/.*\.md$''',            # Governance docs
   '''tmp-.*''',                        # Temporary analysis files (not committed to production)
+  '''db/seeds/.*\.sql$''',             # Seed files use env-var placeholders, not real secrets
+]
+
+commits = [
+  "897a20a39661623fcef2a005542c30a5f3c01e9a",  # seed-staging-full.sql had placeholder-like password (now removed)
 ]
 
 # Known placeholder patterns used in tests/CI

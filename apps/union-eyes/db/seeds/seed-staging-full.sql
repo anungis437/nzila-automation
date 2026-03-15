@@ -3,7 +3,7 @@
 -- Brings staging DB to full parity with the expected demo state.
 --
 -- Run via:
---   docker exec -e PGPASSWORD=DGq0sA78YFbInSW5 nzila-postgres \
+--   docker exec -e PGPASSWORD=$STAGING_DB_PASSWORD nzila-postgres \
 --     psql -h nzila-staging-db.postgres.database.azure.com \
 --     -U nzilaadmin -d nzila_os_staging -p 5432
 --
