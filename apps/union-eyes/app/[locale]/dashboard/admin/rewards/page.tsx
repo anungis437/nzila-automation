@@ -18,6 +18,7 @@ import {
 import Link from 'next/link';
 import { getRewardsSummary } from '@/actions/rewards-actions';
 import { getUserRole } from '@/lib/auth/rbac-server';
+import { logger } from '@/lib/logger';
 import { getOrganizationIdForUser } from '@/lib/organization-utils';
 import { UserRole } from '@/lib/auth/roles';
 
@@ -59,7 +60,7 @@ export default async function AdminRewardsPage() {
   try {
     summary = await getRewardsSummary() as { success: boolean; data?: Record<string, any>; error?: string };
   } catch (e) {
-    console.error('[REWARDS] getRewardsSummary failed:', e);
+    logger.error('[REWARDS] getRewardsSummary failed', e instanceof Error ? e : new Error(String(e)));
     summary = { success: false, error: String(e) };
   }
 

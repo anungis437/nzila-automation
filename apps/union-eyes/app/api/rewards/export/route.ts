@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const type = searchParams.get('type') || 'awards';
 
+  return withSystemContext(async () => {
   let csvContent: string;
   let filename: string;
 
@@ -69,6 +71,7 @@ export async function GET(req: NextRequest) {
       'Content-Type': 'text/csv',
       'Content-Disposition': `attachment; filename="${filename}"`,
     },
+  });
   });
 }
 

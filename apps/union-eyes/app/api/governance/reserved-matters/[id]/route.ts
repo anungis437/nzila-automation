@@ -5,6 +5,7 @@
 import { withApi, z } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ export const PATCH = withApi(
     }),
   },
   async ({ body, params }) => {
+    return withSystemContext(async () => {
     const id = params.id;
     await db.execute(sql`
       UPDATE reserved_matter_votes
@@ -28,6 +30,7 @@ export const PATCH = withApi(
       WHERE id = ${id}::uuid
     `);
     return { updated: true };
+    });
   },
 );
 

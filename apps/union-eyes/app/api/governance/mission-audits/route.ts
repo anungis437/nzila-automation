@@ -5,12 +5,14 @@
 import { withApi, z } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
 export const GET = withApi(
   { auth: { required: true, minRole: 'admin' } },
   async () => {
+    return withSystemContext(async () => {
     const rows = await db.execute(sql`
       SELECT id, audit_year, auditor_firm, auditor_name, audit_date,
              union_revenue_percent, member_satisfaction_percent,
@@ -18,6 +20,7 @@ export const GET = withApi(
       FROM mission_audits ORDER BY audit_date DESC LIMIT 50
     `);
     return { audits: Array.from(rows) };
+    });
   },
 );
 
@@ -38,6 +41,7 @@ export const POST = withApi(
     }),
   },
   async ({ body }) => {
+    return withSystemContext(async () => {
     const id = crypto.randomUUID();
     const revenuePass = body.unionRevenuePercent >= 50;
     const satisfactionPass = body.memberSatisfactionPercent >= 70;
@@ -64,6 +68,7 @@ export const POST = withApi(
       )
     `);
     return { id, overallPass };
+    });
   },
 );
 

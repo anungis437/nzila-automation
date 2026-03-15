@@ -5,12 +5,14 @@
 import { withApi, z } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
 export const GET = withApi(
   { auth: { required: true, minRole: 'admin' } },
   async () => {
+    return withSystemContext(async () => {
     const rows = await db.execute(sql`
       SELECT id, election_year, election_date, positions_available,
              candidates, winners, total_votes, participation_rate,
@@ -18,6 +20,7 @@ export const GET = withApi(
       FROM council_elections ORDER BY election_date DESC LIMIT 50
     `);
     return { elections: Array.from(rows) };
+    });
   },
 );
 
@@ -35,6 +38,7 @@ export const POST = withApi(
     }),
   },
   async ({ body }) => {
+    return withSystemContext(async () => {
     const id = crypto.randomUUID();
     await db.execute(sql`
       INSERT INTO council_elections (
@@ -50,6 +54,7 @@ export const POST = withApi(
       )
     `);
     return { id };
+    });
   },
 );
 

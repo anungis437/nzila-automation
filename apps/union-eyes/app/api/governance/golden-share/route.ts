@@ -5,12 +5,14 @@
 import { withApi, z } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
 export const GET = withApi(
   { auth: { required: true, minRole: 'admin' } },
   async () => {
+    return withSystemContext(async () => {
     const rows = await db.execute(sql`
       SELECT id, certificate_number, issue_date, share_class, holder_type,
              council_members, status, sunset_clause_active,
@@ -19,6 +21,7 @@ export const GET = withApi(
     `);
     const share = Array.from(rows)[0] as Record<string, unknown> | undefined;
     return { share: share ?? null };
+    });
   },
 );
 
@@ -32,6 +35,7 @@ export const POST = withApi(
     }),
   },
   async ({ body }) => {
+    return withSystemContext(async () => {
     const id = crypto.randomUUID();
     await db.execute(sql`
       INSERT INTO golden_shares (
@@ -47,6 +51,7 @@ export const POST = withApi(
       )
     `);
     return { id };
+    });
   },
 );
 

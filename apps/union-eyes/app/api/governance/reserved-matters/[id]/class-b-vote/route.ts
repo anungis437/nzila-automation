@@ -5,6 +5,7 @@
 import { withApi, z } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ export const POST = withApi(
     }),
   },
   async ({ body, params }) => {
+    return withSystemContext(async () => {
     const id = params.id;
     const newStatus = body.vote === 'veto' ? 'vetoed' : 'approved';
     await db.execute(sql`
@@ -30,6 +32,7 @@ export const POST = withApi(
       WHERE id = ${id}::uuid
     `);
     return { updated: true, status: newStatus };
+    });
   },
 );
 

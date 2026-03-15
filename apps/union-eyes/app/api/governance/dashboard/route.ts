@@ -6,12 +6,14 @@
 import { withApi } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
 export const GET = withApi(
   { auth: { required: true, minRole: 'admin' } },
   async () => {
+    return withSystemContext(async () => {
     // Golden share (latest)
     const gsRows = await db.execute(sql`
       SELECT id, certificate_number, issue_date, share_class, holder_type,
@@ -114,6 +116,7 @@ export const GET = withApi(
         },
       },
     };
+    });
   },
 );
 

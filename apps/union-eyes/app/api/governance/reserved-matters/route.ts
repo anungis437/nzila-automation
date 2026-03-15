@@ -5,12 +5,14 @@
 import { withApi, z } from '@/lib/api/framework';
 import { db } from '@/db/db';
 import { sql } from 'drizzle-orm';
+import { withSystemContext } from '@/lib/db/with-rls-context';
 
 export const dynamic = 'force-dynamic';
 
 export const GET = withApi(
   { auth: { required: true, minRole: 'admin' } },
   async () => {
+    return withSystemContext(async () => {
     const rows = await db.execute(sql`
       SELECT id, matter_type, title, description, proposed_by,
              voting_deadline, status, class_a_votes_for, class_a_votes_against,
@@ -18,6 +20,7 @@ export const GET = withApi(
       FROM reserved_matter_votes ORDER BY created_at DESC LIMIT 50
     `);
     return { votes: Array.from(rows) };
+    });
   },
 );
 
@@ -35,6 +38,7 @@ export const POST = withApi(
     }),
   },
   async ({ body }) => {
+    return withSystemContext(async () => {
     const id = crypto.randomUUID();
     await db.execute(sql`
       INSERT INTO reserved_matter_votes (
@@ -50,6 +54,7 @@ export const POST = withApi(
       )
     `);
     return { id };
+    });
   },
 );
 
